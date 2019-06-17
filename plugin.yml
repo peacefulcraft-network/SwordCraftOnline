@@ -1,0 +1,9 @@
+name: SwordCraftOnline
+main: net.peacefulcraft.sco.SwordCraftOnline
+version: 1.0
+api-version: 1.14
+
+commands:
+    setWaystone:
+      description: Set waystone teleports.
+      usage: /<command> To set waystone

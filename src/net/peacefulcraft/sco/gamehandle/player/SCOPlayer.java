@@ -11,4 +11,8 @@ public class SCOPlayer
 		this.user = user;
 	}
 	
+	public int getLevel() {
+		return user.getLevel();
+	}
+	
 }

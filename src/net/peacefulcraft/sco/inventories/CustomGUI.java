@@ -88,6 +88,22 @@ public class CustomGUI implements Listener
         items[row.getRow() * 9 + position] = getItem(item, name, lore);
         return this;
     }
+    
+    /**
+     * Fills row in inventory from right to left with item.
+     * @param row
+     * @param amount
+     * @param item
+     * @param name
+     * @param lore
+     * @return
+     */
+    public CustomGUI fillRow(Row row, int amount, ItemStack item, String name, String lore) {
+    	for(int i = 8-amount; i<=8; i++) {
+    		items[row.getRow() * 9 + i] = getItem(item, name, lore); 
+    	}
+    	return this;
+    }
  
     public Row getRowFromSlot(int slot) {
         return new Row(slot / 9, items);

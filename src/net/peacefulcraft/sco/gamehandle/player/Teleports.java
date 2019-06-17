@@ -15,4 +15,13 @@ public class Teleports
 				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getWaystone(index).get("z"))
 			);
 	}
+	
+	public static Location getSpawn() {
+		return new Location(
+			Bukkit.getWorld((String) SwordCraftOnline.getSCOConfig().getSpawn().get("world")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getSpawn().get("x")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getSpawn().get("y")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getSpawn().get("z"))
+			);
+	}
 }
