@@ -7,3 +7,6 @@ commands:
     setWaystone:
       description: Set waystone teleports.
       usage: /<command> To set waystone
+    setTeleport:
+      description: Set teleports.
+      usage/<command> To set teleport

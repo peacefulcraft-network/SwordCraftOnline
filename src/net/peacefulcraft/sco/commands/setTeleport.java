@@ -26,22 +26,27 @@ public class setTeleport implements CommandExecutor
 				p.sendMessage("Invalid Argument");
 				return true;
 			}
-			if(p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
-				p.sendMessage("Invalid location for spawn.");
+			if(!(p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)) {
+				if(args[0].equalsIgnoreCase("spawn")) {
+					spawn(p);
+					p.sendMessage("Game spawn set to your location.");
+					return true;
+				} else if (args[0].equalsIgnoreCase("quit")) {
+					quit(p);
+					p.sendMessage("Game quit set to your location.");
+					return true;
+				} else {
+					p.sendMessage("Invalid Argument");
+					return true;
+				}
+			} else {
+				p.sendMessage("Invalid location for teleport.");
 				return true;
-			}
-			if(args[0].equalsIgnoreCase("spawn")) {
-				spawn(p);
-				p.sendMessage("Game spawn set to your location.");
-				return true;
-			} else if (args[0].equalsIgnoreCase("quit")) {
-				quit(p);
-				p.sendMessage("Game quit set to your location.");
-				return true;
-			}
-			
-		} 
-		return false;
+			}			
+		} else { 
+			return false;
+		}
+		
 	}
 	
 	private void spawn(Player p) {
