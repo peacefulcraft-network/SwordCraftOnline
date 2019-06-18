@@ -5,11 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.player.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
