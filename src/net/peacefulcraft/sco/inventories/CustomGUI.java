@@ -13,8 +13,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import net.peacefulcraft.sco.items.utilities.BlockedSlot;
+import net.peacefulcraft.sco.items.utilities.UnlockSlot;
 
 
 public class CustomGUI implements Listener
@@ -26,11 +30,11 @@ public class CustomGUI implements Listener
  
     private ItemStack[] items;
  
-    public CustomGUI(String name, int size, onClick click) {
+    public CustomGUI(String name, int size) {
         this.name = name;
         this.size = size * 9;
         items = new ItemStack[this.size];
-        this.click = click;
+        //this.click = click;
         Bukkit.getPluginManager().registerEvents(this, Bukkit.getPluginManager().getPlugins()[0]);
     }
  
@@ -70,11 +74,14 @@ public class CustomGUI implements Listener
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (viewing.contains(event.getWhoClicked().getName())) {
-            event.setCancelled(true);
+            if(event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE ) {
+            	event.setCancelled(true);
+            } else {
             Player p = (Player) event.getWhoClicked();
             Row row = getRowFromSlot(event.getSlot());
             if (!click.click(p, this, row, event.getSlot() - row.getRow() * 9, event.getCurrentItem()))
                 close(p);
+            }
         }
     }
  
@@ -84,8 +91,12 @@ public class CustomGUI implements Listener
             viewing.remove(event.getPlayer().getName());
     }
  
-    public CustomGUI addButton(Row row, int position, ItemStack item, String name, String... lore) {
-        items[row.getRow() * 9 + position] = getItem(item, name, lore);
+    public CustomGUI addButton(Row row, int position, ItemStack item, String name, String lore, Boolean remove, Boolean create) {
+        if(create == true) {
+        	items[row.getRow() * 9 + position] = item;
+        } else {
+        	items[row.getRow() * 9 + position] = getItem(item, name, lore, remove);
+        }
         return this;
     }
     
@@ -98,9 +109,16 @@ public class CustomGUI implements Listener
      * @param lore
      * @return
      */
-    public CustomGUI fillRow(Row row, int amount, ItemStack item, String name, String lore) {
+    public CustomGUI fillRow(Row row, int amount, ItemStack item) {
     	for(int i = 8-amount; i<=8; i++) {
-    		items[row.getRow() * 9 + i] = getItem(item, name, lore); 
+    		items[row.getRow() * 9 + i] = item;
+    	}
+    	return this;
+    }
+    
+    public CustomGUI emptyRow(Row row) {
+    	for(int i = 0; i<=8; i++) {
+    		items[row.getRow() * 9 + i] = new ItemStack(Material.AIR);
     	}
     	return this;
     }
@@ -143,10 +161,13 @@ public class CustomGUI implements Listener
         }
     }
  
-    private ItemStack getItem(ItemStack item, String name, String... lore) {
+    private ItemStack getItem(ItemStack item, String name, String lore, Boolean remove) {
         ItemMeta im = item.getItemMeta();
         im.setDisplayName(name);
         im.setLore(Arrays.asList(lore));
+        if(remove == true) {
+        	im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        }
         item.setItemMeta(im);
         return item;
     }

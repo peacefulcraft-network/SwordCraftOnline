@@ -7,23 +7,22 @@ import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 
-public class scoJoin implements CommandExecutor
+public class scoLeave implements CommandExecutor
 {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if(command.getName().equalsIgnoreCase("scojoin")) {
+		if(command.getName().equalsIgnoreCase("scoLeave")) {
 			if(sender instanceof Player) {
 				Player p = (Player) sender;
-				SwordCraftOnline.getGameManager().joinGame(p);
-				return true;				
-			} else {
-				System.out.println("@" + sender + " Command only executable by players");
+				SwordCraftOnline.getGameManager().leaveGame(p);
+				return true;
 			}
 		}
+
 		
 		return false;
 	}
-	
+
 }

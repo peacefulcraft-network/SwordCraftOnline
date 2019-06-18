@@ -8,23 +8,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class SwordSkillTome implements net.peacefulcraft.sco.items.scoItem
+public class UnlockSlot implements net.peacefulcraft.sco.items.scoItem
 {
 
 	@Override
 	public ItemStack create()
 	{
-		ItemStack tome = new ItemStack(Material.BOOK, 1);
-		ItemMeta meta = tome.getItemMeta();
-		meta.setDisplayName(ChatColor.GOLD + "Sword Skill Tome");
+		ItemStack unlockSlot = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
+		ItemMeta meta = unlockSlot.getItemMeta();
+		meta.setDisplayName(ChatColor.GOLD + "Locked Tome Page");
 		
 		ArrayList<String> desc = new ArrayList<String>();
-		desc.add(ChatColor.DARK_PURPLE + "Right click to store your sword skill knowledge.");
+		desc.add("Gain more experience to unlock");
 		meta.setLore(desc);
 		
-		tome.setItemMeta(meta);
+		unlockSlot.setItemMeta(meta);
 		
-		return tome;
+		return unlockSlot;
 	}
 
 }

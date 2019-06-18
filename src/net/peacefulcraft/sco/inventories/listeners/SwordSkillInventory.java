@@ -13,24 +13,16 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.player.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CustomGUI;
-import net.peacefulcraft.sco.inventories.CustomGUI.Row;
-import net.peacefulcraft.sco.inventories.CustomGUI.onClick;
+import net.peacefulcraft.sco.items.utilities.BlockedSlot;
+import net.peacefulcraft.sco.items.utilities.UnlockSlot;
 
 public class SwordSkillInventory implements Listener
 {
-	private CustomGUI SkillInventory = new CustomGUI("Sword Skill Inventory", 4, new onClick() {
-		@Override
-	    public boolean click(Player p, CustomGUI menu, Row row, int slot, ItemStack item) {
-	        if(row.getRow() == 0 || row.getRow() == 2){
-	            //TODO: Logic
-	        }
-	        return true;
-	    }
-	});
+	private CustomGUI SkillInventory = new CustomGUI("Sword Skill Inventory", 4);
 	
 	public SwordSkillInventory() {
 		for(int i = 0; i<=8; i++) {
-			SkillInventory.addButton(SkillInventory.getRow(1), i, new ItemStack(Material.RED_STAINED_GLASS_PANE), "", "");
+			SkillInventory.addButton(SkillInventory.getRow(1), i, (new BlockedSlot()).create(), null, null, null, true);
 		}
 		
 	}
@@ -39,7 +31,7 @@ public class SwordSkillInventory implements Listener
 	public void onRightclick(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		
-		if(!(p.getInventory().getItemInMainHand().getType() == Material.ENCHANTED_BOOK)) return;
+		if(!(p.getInventory().getItemInMainHand().getType() == Material.BOOK)) return;
 		if(!(p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Sword Skill Tome"))) return;
 		
 		SCOPlayer s = GameManager.findSCOPlayer(p);
@@ -54,7 +46,7 @@ public class SwordSkillInventory implements Listener
 		
 		ItemStack pane = new ItemStack(Material.RED_STAINED_GLASS_PANE);
 		ItemMeta meta = pane.getItemMeta();
-		meta.setDisplayName("");
+		meta.setDisplayName(" ");
 		pane.setItemMeta(meta);
 		
 		if(e.getDestination().contains(pane)) {
@@ -66,7 +58,8 @@ public class SwordSkillInventory implements Listener
 	}
 	
 	private void menuOpen(Player p) {
-		SkillInventory.fillRow(SkillInventory.getRow(0), 8-slotUnlock(p), new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Locked Tome Page", "Gain more experience to unlock");
+		SkillInventory.emptyRow(SkillInventory.getRow(0));
+		SkillInventory.fillRow(SkillInventory.getRow(0), 8-slotUnlock(p), (new UnlockSlot().create()));
 		
 		SkillInventory.open(p);
 	}

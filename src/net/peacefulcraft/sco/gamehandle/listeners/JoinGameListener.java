@@ -12,10 +12,6 @@ public class JoinGameListener implements Listener
 {
 	@EventHandler
 	public void joinEvent(PlayerJoinEvent e) {
-		Inventory inv = e.getPlayer().getInventory();
-		ItemStack tome = (new SwordSkillTome()).create();
-		if(!(inv.contains(tome))) {
-			inv.setItem(8, tome);
-		}
+		//TODO:
 	}
 }

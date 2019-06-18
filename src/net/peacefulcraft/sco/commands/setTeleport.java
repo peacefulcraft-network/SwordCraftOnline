@@ -53,7 +53,7 @@ public class setTeleport implements CommandExecutor
 		Hashtable<String, Object> loc = new Hashtable<String, Object>();
 		loc.put("world", p.getLocation().getWorld().getName());
 		loc.put("x", "" + p.getLocation().getBlockX());
-		loc.put("y", "" + (p.getLocation().getBlockY() - 1));
+		loc.put("y", "" + (p.getLocation().getBlockY()));
 		loc.put("z", "" + p.getLocation().getBlockZ());
 		SwordCraftOnline.getSCOConfig().setSpawn(loc);
 	}
@@ -62,7 +62,7 @@ public class setTeleport implements CommandExecutor
 		Hashtable<String, Object> loc = new Hashtable<String, Object>();
 		loc.put("world", p.getLocation().getWorld().getName());
 		loc.put("x", "" + p.getLocation().getBlockX());
-		loc.put("y", "" + (p.getLocation().getBlockY() - 1));
+		loc.put("y", "" + (p.getLocation().getBlockY()));
 		loc.put("z", "" + p.getLocation().getBlockZ());
 		SwordCraftOnline.getSCOConfig().setQuit(loc);
 	}

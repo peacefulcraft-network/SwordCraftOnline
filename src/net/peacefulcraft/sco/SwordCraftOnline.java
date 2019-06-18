@@ -2,9 +2,12 @@ package net.peacefulcraft.sco;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.peacefulcraft.sco.commands.scoJoin;
+import net.peacefulcraft.sco.commands.scoLeave;
 import net.peacefulcraft.sco.commands.setTeleport;
 import net.peacefulcraft.sco.commands.setWaystone;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
+import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.GameManager;
 import net.peacefulcraft.sco.inventories.listeners.SwordSkillInventory;
 
@@ -46,6 +49,8 @@ public class SwordCraftOnline extends JavaPlugin{
 	private void loadCommands() {
 		this.getCommand("setWaystone").setExecutor(new setWaystone());
 		this.getCommand("setTeleport").setExecutor(new setTeleport());
+		this.getCommand("scoJoin").setExecutor(new scoJoin());
+		this.getCommand("scoLeave").setExecutor(new scoLeave());
 		
 	}
 	
@@ -54,6 +59,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		//Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
+		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		
 		//Menu Listeners
 		getServer().getPluginManager().registerEvents(new SwordSkillInventory(), this);

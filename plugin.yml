@@ -6,7 +6,13 @@ api-version: 1.14
 commands:
     setWaystone:
       description: Set waystone teleports.
-      usage: /<command> To set waystone
+      usage: "/<command> [ 1 | 2 | 3 ]"
     setTeleport:
       description: Set teleports.
-      usage/<command> To set teleport
+      usage: "/<command> [ spawn | quit ]"
+    scoJoin:
+      description: Joins SwordCraft
+      usage: /<command> To join
+    scoLeave:
+      description: Leaves SwordCraft
+      usage: /<command> To Leave

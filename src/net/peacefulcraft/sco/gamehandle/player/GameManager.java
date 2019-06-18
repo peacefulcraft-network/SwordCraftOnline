@@ -6,6 +6,9 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
+
 public class GameManager {
 	
 	private static HashMap<UUID, SCOPlayer> players;
@@ -16,7 +19,7 @@ public class GameManager {
 		
 	}
 	
-	public SCOPlayer joinGame(Player p) {
+	public void joinGame(Player p) {
 		
 		if(findSCOPlayer(p) != null)
 			throw new RuntimeException("Command executor is already in SCO");
@@ -24,7 +27,8 @@ public class GameManager {
 		SCOPlayer s = new SCOPlayer(p);
 		players.put(p.getUniqueId(), s);
 		p.teleport(Teleports.getSpawn());
-		return s;
+		p.getInventory().setItem(8, (new SwordSkillTome().create()));
+		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
 	}
 	
 	public void leaveGame(Player p) {
@@ -33,7 +37,9 @@ public class GameManager {
 			throw new RuntimeException("Command executor is not playing SCO");
 		}
 		
+		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
+		p.sendMessage("You have left " + ChatColor.BLUE + "SwordCraftOnline");
 	}
 	
 	public static SCOPlayer findSCOPlayer(Player p) {
