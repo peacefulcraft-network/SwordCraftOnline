@@ -43,13 +43,15 @@ public class SwordSkillInventory implements Listener
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		if(e.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE ) {
-        	e.setCancelled(true);
-        } else if(e.getCurrentItem().getItemMeta().hasLore()) {
-        	if(!e.getCurrentItem().getItemMeta().getLore().contains("Sword Skill")) {
-        		e.setCancelled(true);
-        	}
-        } 
+		if(e.getCurrentItem() != null) {	
+			if(e.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE ) {
+	        	e.setCancelled(true);
+	        } else if(e.getCurrentItem().getItemMeta().hasLore()) {
+	        	if(!e.getCurrentItem().getItemMeta().getLore().contains("Sword Skill")) {
+	        		e.setCancelled(true);
+	        	}
+	        } 
+		}
 	}
 	
 	private void menuOpen(Player p) {

@@ -73,18 +73,6 @@ public class CustomGUI implements Listener
     }
  
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (viewing.contains(event.getWhoClicked().getName())) {
-            
-            Player p = (Player) event.getWhoClicked();
-            Row row = getRowFromSlot(event.getSlot());
-            if (!click.click(p, this, row, event.getSlot() - row.getRow() * 9, event.getCurrentItem()))
-                close(p);
-            
-        }
-    }
- 
-    @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         if (viewing.contains(event.getPlayer().getName()))
             viewing.remove(event.getPlayer().getName());

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
+import net.peacefulcraft.sco.items.utilities.TeleportCrystal;
 
 public class GameManager {
 	
@@ -28,6 +29,7 @@ public class GameManager {
 		players.put(p.getUniqueId(), s);
 		p.teleport(Teleports.getSpawn());
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
+		p.getInventory().setItem(7, (new TeleportCrystal()).create());
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
 	}
 	
