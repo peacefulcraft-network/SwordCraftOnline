@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -74,14 +75,12 @@ public class CustomGUI implements Listener
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (viewing.contains(event.getWhoClicked().getName())) {
-            if(event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE ) {
-            	event.setCancelled(true);
-            } else {
+            
             Player p = (Player) event.getWhoClicked();
             Row row = getRowFromSlot(event.getSlot());
             if (!click.click(p, this, row, event.getSlot() - row.getRow() * 9, event.getCurrentItem()))
                 close(p);
-            }
+            
         }
     }
  

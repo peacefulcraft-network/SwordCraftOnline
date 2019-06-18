@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,20 +42,14 @@ public class SwordSkillInventory implements Listener
 	}
 	
 	@EventHandler
-	public void moveEvent(InventoryMoveItemEvent e) {
-		ItemStack item = e.getItem();
-		
-		ItemStack pane = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-		ItemMeta meta = pane.getItemMeta();
-		meta.setDisplayName(" ");
-		pane.setItemMeta(meta);
-		
-		if(e.getDestination().contains(pane)) {
-			if(!(item.getItemMeta().getLore().contains("Sword Skill"))) { 
-				e.setCancelled(true);
-				return;
-			}
-		}
+	public void onInventoryClick(InventoryClickEvent e) {
+		if(e.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE ) {
+        	e.setCancelled(true);
+        } else if(e.getCurrentItem().getItemMeta().hasLore()) {
+        	if(!e.getCurrentItem().getItemMeta().getLore().contains("Sword Skill")) {
+        		e.setCancelled(true);
+        	}
+        } 
 	}
 	
 	private void menuOpen(Player p) {
