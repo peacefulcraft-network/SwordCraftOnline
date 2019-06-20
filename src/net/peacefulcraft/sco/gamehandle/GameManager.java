@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.gamehandle.player;
+package net.peacefulcraft.sco.gamehandle;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
 import net.peacefulcraft.sco.items.utilities.TeleportCrystal;
 

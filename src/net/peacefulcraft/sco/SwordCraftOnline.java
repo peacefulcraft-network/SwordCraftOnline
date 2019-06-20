@@ -6,9 +6,10 @@ import net.peacefulcraft.sco.commands.scoJoin;
 import net.peacefulcraft.sco.commands.scoLeave;
 import net.peacefulcraft.sco.commands.setTeleport;
 import net.peacefulcraft.sco.commands.setWaystone;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
-import net.peacefulcraft.sco.gamehandle.player.GameManager;
 import net.peacefulcraft.sco.inventories.listeners.SwordSkillInventory;
 
 public class SwordCraftOnline extends JavaPlugin{
@@ -21,6 +22,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	public static GameManager gameManager;
 		public static GameManager getGameManager() {return gameManager;}
+		
+	public static PartyManager partyManager;
+		public static PartyManager getPartyManager() {return partyManager;}
 		
 	public SwordCraftOnline() {
 
@@ -36,6 +40,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.loadEventListeners();
 		
 		gameManager = new GameManager();
+		partyManager = new PartyManager();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 		
