@@ -1,8 +1,13 @@
 package net.peacefulcraft.sco.gamehandle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 
-import net.peacefulcraft.sco.gamehandle.party.Party;
+import org.bukkit.Bukkit;
+
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 
 public class PartyManager
 {
@@ -30,8 +35,8 @@ public class PartyManager
 	
 	public boolean reloadParty(String name) {
 		if(getListParties().containsKey(name)) {
-			//TODO: database get party 
-			//TODO: put name party 
+			Party party = (Party) SwordCraftOnline.getSCOConfig().getParty(name); //TODO: Possible fix
+			getListParties().put(name, party);
 			
 			return true;
 		}
@@ -41,9 +46,9 @@ public class PartyManager
 	public Party getParty(String name) {
 		Party ret = null;
 		if(name != null && !name.isEmpty()) {
-			ret = getListParties().get(name.toLowerCase());
+			ret = getListParties().get(name);
 			if(ret == null) {
-				//TODO: Databse join party name
+				//ret = //TODO: Get party from database
 			} 
 		}
 		return ret;

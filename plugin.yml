@@ -16,3 +16,6 @@ commands:
     scoLeave:
       description: Leaves SwordCraft
       usage: /<command> To Leave
+    party:
+      description: all party commands.
+      usage: "/<command> [ create | rename | invite | disband | cancelinvite | accept | deny | setleader | leave | name ]"

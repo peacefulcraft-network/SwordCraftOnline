@@ -26,9 +26,12 @@ public class GameManager {
 		
 		if(findSCOPlayer(p) != null)
 			throw new RuntimeException("Command executor is already in SCO");
+		if(Teleports.getSpawn() == null)
+			throw new RuntimeException("No teleport spawn set.");
 		
 		SCOPlayer s = new SCOPlayer(p);
 		players.put(p.getUniqueId(), s);
+		if(Teleports.getSpawn() == null) 
 		p.teleport(Teleports.getSpawn());
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
 		p.getInventory().setItem(7, (new TeleportCrystal()).create());
@@ -41,6 +44,8 @@ public class GameManager {
 			throw new RuntimeException("Command executor is not playing SCO");
 		}
 		
+		s.setLastInvite("");
+		
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
 		p.sendMessage("You have left " + ChatColor.BLUE + "SwordCraftOnline");
@@ -48,5 +53,14 @@ public class GameManager {
 	
 	public static SCOPlayer findSCOPlayer(Player p) {
 		return players.get(p.getUniqueId());
+	}
+	
+	public static SCOPlayer findSCOPlayerByName(String name) {
+		for(SCOPlayer p : players.values()) {
+			if(p.getName().equalsIgnoreCase(name)) {
+				return p;
+			}
+		}
+		return null;
 	}
 }

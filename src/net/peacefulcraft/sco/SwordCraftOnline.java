@@ -2,6 +2,7 @@ package net.peacefulcraft.sco;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.scoJoin;
 import net.peacefulcraft.sco.commands.scoLeave;
 import net.peacefulcraft.sco.commands.setTeleport;
@@ -42,6 +43,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
 		
+		
+		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 		
 	}
@@ -56,6 +59,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.getCommand("setTeleport").setExecutor(new setTeleport());
 		this.getCommand("scoJoin").setExecutor(new scoJoin());
 		this.getCommand("scoLeave").setExecutor(new scoLeave());
+		this.getCommand("party").setExecutor(new partyCommands());
 		
 	}
 	

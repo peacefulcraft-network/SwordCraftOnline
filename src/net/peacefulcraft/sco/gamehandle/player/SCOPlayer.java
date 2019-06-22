@@ -1,13 +1,19 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
+import java.io.File;
+import java.util.Hashtable;
 import java.util.UUID;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-public class SCOPlayer
+public class SCOPlayer 
 {
 	private String partyName;
 	private String lastInvite;
+	private boolean redPlayer;
+
+	private FileConfiguration playerConfig;
 	
 	private Player user;
 		public Player getPlayer() {return this.user;}
@@ -17,6 +23,8 @@ public class SCOPlayer
 		this.user = user;
 		
 		partyName = "";
+		lastInvite = "";
+		redPlayer = false;
 	}
 	
 	public boolean isInParty() {
@@ -31,19 +39,44 @@ public class SCOPlayer
 		return user.getLevel();
 	}
 	
+	public String getName() {
+		return user.getName();
+	}
+
 	public String getPartyName() {
 		return this.partyName;
 	}
-	
+
 	public void setPartyName(String name) {
 		this.partyName = name;
+		updateConfig();
 	}
-	
-	public void setLastInvite(String invite) {
-		this.lastInvite = invite;
-	}
-	
+
 	public String getLastInvite() {
 		return this.lastInvite;
+	}
+
+	public void setLastInvite(String invite) {
+		this.lastInvite = invite;
+		updateConfig();
+	}
+
+	public boolean getRedPlayer() {
+		return this.redPlayer;
+	}
+	
+	public void setRedPlayer(boolean red) {
+		this.redPlayer = red;
+		updateConfig();
+	}
+	
+	private void updateConfig() {
+		Hashtable<String, Object> playerTable = new Hashtable<String, Object>();
+		
+		playerTable.put("party", getPartyName());
+		playerTable.put("lastInvite", getLastInvite());
+		playerTable.put("redPlayer", getRedPlayer());
+		
+		playerConfig.set(getUUID().toString(), playerTable);
 	}
 }

@@ -15,6 +15,8 @@ public class SCOConfig {
 	private Map<String, Object> spawn;
 	private Map<String, Object> quit;
 	
+	private Map<String, Object> parties;
+	
 	private String db_ip = "";
 	private String db_name = "";
 	private String db_user = "";
@@ -33,6 +35,7 @@ public class SCOConfig {
 		waystone_floor_3 = c.getConfigurationSection("waystones.3").getValues(false);
 		spawn = c.getConfigurationSection("teleport.spawn").getValues(false);
 		quit = c.getConfigurationSection("teleport.quit").getValues(false);
+		parties = c.getConfigurationSection("parties").getValues(false);
 	}
 	
 	public void setWaystone(Map<String, Object> waystone, int index) {
@@ -80,6 +83,27 @@ public class SCOConfig {
 	
 	public Map<String, Object> getQuit() {
 		return quit;
+	}
+	
+	public void setParties(Map<String, Object> parties) {
+		this.parties = parties;
+		c.set("parties", this.parties);
+	}
+	
+	public Map<String, Object> getParties() {
+		return parties;
+	}
+	
+	public void setParty(String name, Object party) {
+		this.parties.put(name, party);
+		c.set("parties", this.parties);
+	}
+	public Object getParty(String name) {
+		return parties.get(name);
+	}
+	
+	public void removeParty(String name) {
+		this.parties.remove(name);
 	}
 	
 	public String getDb_ip() {
