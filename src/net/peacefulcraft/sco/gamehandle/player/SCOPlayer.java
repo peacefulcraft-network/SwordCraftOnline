@@ -1,6 +1,5 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
-import java.io.File;
 import java.util.Hashtable;
 import java.util.UUID;
 
@@ -11,7 +10,7 @@ public class SCOPlayer
 {
 	private String partyName;
 	private String lastInvite;
-	private boolean redPlayer;
+	private int playerKills;
 
 	private FileConfiguration playerConfig;
 	
@@ -24,7 +23,8 @@ public class SCOPlayer
 		
 		partyName = "";
 		lastInvite = "";
-		redPlayer = false;
+		playerKills = 0;
+		
 	}
 	
 	public boolean isInParty() {
@@ -61,12 +61,12 @@ public class SCOPlayer
 		updateConfig();
 	}
 
-	public boolean getRedPlayer() {
-		return this.redPlayer;
+	public int getPlayerKills() {
+		return this.playerKills;
 	}
 	
-	public void setRedPlayer(boolean red) {
-		this.redPlayer = red;
+	public void setPlayerKills(int red) {
+		this.playerKills = red;
 		updateConfig();
 	}
 	
@@ -75,7 +75,7 @@ public class SCOPlayer
 		
 		playerTable.put("party", getPartyName());
 		playerTable.put("lastInvite", getLastInvite());
-		playerTable.put("redPlayer", getRedPlayer());
+		playerTable.put("playerKills", getPlayerKills());
 		
 		playerConfig.set(getUUID().toString(), playerTable);
 	}
