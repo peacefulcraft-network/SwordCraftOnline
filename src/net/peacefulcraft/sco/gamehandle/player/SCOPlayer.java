@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import net.peacefulcraft.sco.inventories.InventoryManager;
+
 public class SCOPlayer 
 {
 	private String partyName;
@@ -18,6 +20,9 @@ public class SCOPlayer
 		public Player getPlayer() {return this.user;}
 		public UUID getUUID() {return this.user.getUniqueId();}
 	
+	private InventoryManager inventoryManager;
+		public InventoryManager getInventoryManager() { return inventoryManager; }
+		
 	public SCOPlayer (Player user) {
 		this.user = user;
 		
@@ -25,6 +30,7 @@ public class SCOPlayer
 		lastInvite = "";
 		playerKills = 0;
 		
+		inventoryManager = new InventoryManager(this);
 	}
 	
 	public boolean isInParty() {
