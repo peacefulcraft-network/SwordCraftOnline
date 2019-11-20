@@ -10,14 +10,15 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CustomGUI;
+import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.utilities.BlockedSlot;
 import net.peacefulcraft.sco.items.utilities.UnlockSlot;
 
-public class SwordSkillInventory implements Listener
+public class SwordSkillInventoryOpener implements Listener
 {
 	private CustomGUI SkillInventory = new CustomGUI("Sword Skill Inventory", 4);
 	
-	public SwordSkillInventory() {
+	public SwordSkillInventoryOpener() {
 		for(int i = 0; i<=8; i++) {
 			SkillInventory.addButton(SkillInventory.getRow(1), i, (new BlockedSlot()).create(), null, null, null, true);
 		}
@@ -34,7 +35,13 @@ public class SwordSkillInventory implements Listener
 		SCOPlayer s = GameManager.findSCOPlayer(p);
 		if(s == null) {return;}
 		
-		menuOpen(p);
+		//If player doesnt have inventory open empty inventory
+		SwordSkillInventory inv = s.getInventoryManager().getInventory(SwordSkillInventory.class);
+		if(inv == null) {
+			newSkillInv(p); 
+		}
+		
+		inv.openInventory();
 	}
 	
 	@EventHandler
@@ -50,7 +57,11 @@ public class SwordSkillInventory implements Listener
 		}
 	}
 	
-	private void menuOpen(Player p) {
+	private void SkillInvOpen(SCOPlayer p, SwordSkillInventory inv) {
+		
+	}
+	
+	private void newSkillInv(Player p) {
 		SkillInventory.emptyRow(SkillInventory.getRow(0));
 		SkillInventory.fillRow(SkillInventory.getRow(0), 8-slotUnlock(p), (new UnlockSlot().create()));
 		

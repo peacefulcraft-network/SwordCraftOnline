@@ -24,4 +24,6 @@ public abstract class InventoryBase{
 		this.observer = observer;
 	}
 	
+	
+	
 }

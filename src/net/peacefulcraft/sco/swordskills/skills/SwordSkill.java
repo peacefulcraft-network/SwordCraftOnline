@@ -21,14 +21,18 @@ public abstract class SwordSkill
 		public long getCooldown() { return cooldown; }
 		public long getCooldownSeconds() { return cooldown / 1000;}
 		public void setCooldown(Long delay) { cooldown = delay; }
+		
+	private int multipler;
+		public int getMultipler() {return multipler; }		
 	
 	/**
 	 * Set the cooldown time, in ms, between clicks
 	 * @param delay
 	 */
-	public SwordSkill(SCOPlayer s, long delay) {
+	public SwordSkill(SCOPlayer s, long delay, int multipler) {
 		this.s = s;
 		cooldowndelay = delay;
+		this.multipler = multipler;
 	}
 	
 	public boolean canUseSkill() {

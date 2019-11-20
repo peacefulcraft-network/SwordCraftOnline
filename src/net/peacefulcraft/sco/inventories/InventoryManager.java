@@ -15,7 +15,7 @@ public class InventoryManager {
 	private HashMap<Class, InventoryBase> invCache;	
 	
 		/**
-		 * @param invType: Tpye of inventory to get
+		 * @param invType: Type of inventory to get
 		 * @return: The Inventory
 		 */
 		public <T extends InventoryBase> T getInventory(Class<T> type) {
