@@ -36,7 +36,7 @@ public class InventoryManager {
 				 */
 				Player p = data.getSCOPlayer().getPlayer();
 				T inventory = (T) type.getConstructors()[0].newInstance( p );
-				
+				invCache.put(type, inventory);
 				/* 
 				 * All InventoryBase children can throw FileNotFoundExceptions because InventoryBase constructor does.
 				 * Java doesn't know this because reflection so we need to trick it into 
@@ -59,6 +59,8 @@ public class InventoryManager {
 					Player p = data.getSCOPlayer().getPlayer();
 					T inventory = (T) type.getConstructors()[0].newInstance( p );
 					inventory.initializeDefaultLoadout();
+					invCache.put(type, inventory);
+					
 					
 				} catch (FileNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 					// We went even deeper and it still didn't work
