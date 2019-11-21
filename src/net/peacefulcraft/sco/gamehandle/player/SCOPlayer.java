@@ -1,12 +1,11 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
-import java.util.Hashtable;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
 import net.peacefulcraft.sco.inventories.InventoryManager;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 
 public class SCOPlayer 
 {
