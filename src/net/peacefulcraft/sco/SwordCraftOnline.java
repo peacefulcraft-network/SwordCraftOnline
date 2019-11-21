@@ -1,5 +1,8 @@
 package net.peacefulcraft.sco;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.peacefulcraft.sco.commands.partyCommands;
@@ -11,6 +14,7 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryOpeners;
 
 public class SwordCraftOnline extends JavaPlugin{
@@ -50,6 +54,13 @@ public class SwordCraftOnline extends JavaPlugin{
 	}
 	
 	public void onDisable() {
+		this.getLogger().info("Disabling player inventories...");
+		HashMap<UUID, SCOPlayer> players = gameManager.getPlayers();
+		for(UUID u : players.keySet()) {
+			players.get(u).playerDisconnect();
+		}
+		this.getLogger().info("Player inventories disabled.");
+		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
 	}

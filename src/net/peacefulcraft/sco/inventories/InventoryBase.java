@@ -6,13 +6,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 
@@ -156,9 +159,26 @@ public abstract class InventoryBase{
     }
     
     public void emptyRow(int row) {
-    	for(int i = 0; i<=8; i++) {
-    		inventory.setItem(0, new ItemStack(Material.AIR));
-    	}
+    	fillRow(row, 1, new ItemStack(Material.AIR));
+    }
+    
+    public void addButton(int row, int col, ItemStack item) {
+    	inventory.setItem(row * 9 + col, item);
+    }
+    
+    public void addButton(int row, int col, ItemStack item, String name, String lore, Boolean hidden) {
+    	inventory.setItem(row * 9 + col, createButtomItem(item, name, lore, hidden)); 
+    }
+    
+    private ItemStack createButtomItem(ItemStack item, String name, String lore, Boolean hidden) {
+        ItemMeta im = item.getItemMeta();
+        im.setDisplayName(name);
+        im.setLore(Arrays.asList(lore));
+        if(hidden == true) {
+        	im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        }
+        item.setItemMeta(im);
+        return item;
     }
 	
 }

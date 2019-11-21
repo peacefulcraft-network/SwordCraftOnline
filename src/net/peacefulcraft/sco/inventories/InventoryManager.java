@@ -76,6 +76,10 @@ public class InventoryManager {
 	public void unregisterInventories() {
 		Set<Class> inventories = invCache.keySet();
 		for(Class inventory : inventories) {
+			try{ invCache.get(inventory).closeInventory(); }
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 			invCache.get(inventory).destroy();
 		}
 	}

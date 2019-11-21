@@ -1,7 +1,6 @@
 package net.peacefulcraft.sco.gamehandle;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -15,7 +14,7 @@ import net.peacefulcraft.sco.items.utilities.TeleportCrystal;
 public class GameManager {
 	
 	private static HashMap<UUID, SCOPlayer> players;
-		public static Set<UUID> getPlayers() {return players.keySet();}
+		public static HashMap<UUID, SCOPlayer> getPlayers(){ return players; }
 		
 	public GameManager() {
 		players = new HashMap<UUID, SCOPlayer>();
