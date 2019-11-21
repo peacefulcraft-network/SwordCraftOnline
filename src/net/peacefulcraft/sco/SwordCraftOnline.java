@@ -11,7 +11,7 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
-import net.peacefulcraft.sco.inventories.listeners.SwordSkillInventoryOpener;
+import net.peacefulcraft.sco.inventories.listeners.InventoryOpeners;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -70,8 +70,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		
-		//Menu Listeners
-		getServer().getPluginManager().registerEvents(new SwordSkillInventoryOpener(), this);
+		//Register Menu Opener
+		getServer().getPluginManager().registerEvents(new InventoryOpeners(), this);
+	
+		/**
+		 * The Inventories manage their own event listeners
+		 */
 	}
 	
 }

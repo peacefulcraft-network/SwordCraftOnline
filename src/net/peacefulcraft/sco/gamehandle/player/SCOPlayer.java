@@ -2,25 +2,22 @@ package net.peacefulcraft.sco.gamehandle.player;
 
 import java.util.UUID;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import net.peacefulcraft.sco.inventories.InventoryManager;
+import net.peacefulcraft.sco.gamehandle.storage.SCOPlayerDataManager;
 
 public class SCOPlayer 
 {
 	private String partyName;
 	private String lastInvite;
 	private int playerKills;
-
-	private FileConfiguration playerConfig;
 	
 	private Player user;
 		public Player getPlayer() {return this.user;}
 		public UUID getUUID() {return this.user.getUniqueId();}
 	
-	private InventoryManager inventoryManager;
-		public InventoryManager getInventoryManager() { return inventoryManager; }
+	private SCOPlayerDataManager scopData;
+		public SCOPlayerDataManager getData() { return scopData; }
 		
 	public SCOPlayer (Player user) {
 		this.user = user;
@@ -28,6 +25,13 @@ public class SCOPlayer
 		partyName = "";
 		lastInvite = "";
 		playerKills = 0;
+		
+		scopData = new SCOPlayerDataManager(this);
+	}
+	
+	public void playerDisconnect() {
+		scopData.saveConfig();
+		scopData.getInventories().unregisterInventories();
 	}
 	
 	public boolean isInParty() {

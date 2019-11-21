@@ -3,6 +3,9 @@ package net.peacefulcraft.sco.inventories;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Set;
+
+import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.gamehandle.storage.SCOPlayerDataManager;
 
@@ -29,12 +32,10 @@ public class InventoryManager {
 			try{
 				/*
 				 * Use reflection to get the constructor for the inventory type passed.
-				 * Instantiate a new object of that inventory type
+				 * Instantiate a new object of an existing inventory of type T
 				 */
-				T inventory = (T) type.getConstructors()[0].newInstance(
-									data.getSCOPlayer().getPlayer(),
-									type
-								);
+				Player p = data.getSCOPlayer().getPlayer();
+				T inventory = (T) type.getConstructors()[0].newInstance( p );
 				
 				/* 
 				 * All InventoryBase children can throw FileNotFoundExceptions because InventoryBase constructor does.
@@ -52,13 +53,13 @@ public class InventoryManager {
 				
 				try {
 					// Attempt to create the inventory new
-					InventoryBase.createNewInventory(type, 9, data.getSCOPlayer().getPlayer().getUniqueId());
+					InventoryBase.createNewInventory(type, 9, data.getSCOPlayer().getPlayer());
 					
-					// Try to instantiate the inventory ( see above )
-					T inventory = (T) type.getConstructors()[0].newInstance(
-										data.getSCOPlayer().getPlayer(),
-										type
-									);
+					// Try to instantiate a new instance of the inventory ( see above )
+					Player p = data.getSCOPlayer().getPlayer();
+					T inventory = (T) type.getConstructors()[0].newInstance( p );
+					inventory.initializeDefaultLoadout();
+					
 				} catch (FileNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 					// Unable to write to disk
 					e.printStackTrace();
@@ -70,5 +71,12 @@ public class InventoryManager {
 		}
 		
 		return (T) invCache.get(type);
+	}
+	
+	public void unregisterInventories() {
+		Set<Class> inventories = invCache.keySet();
+		for(Class inventory : inventories) {
+			invCache.get(inventory).destroy();
+		}
 	}
 }

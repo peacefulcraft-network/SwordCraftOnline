@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -73,75 +72,21 @@ public class CustomGUI implements Listener
             viewing.remove(event.getPlayer().getName());
     }
  
-    public CustomGUI addButton(Row row, int position, ItemStack item, String name, String lore, Boolean remove, Boolean create) {
+    public CustomGUI addButton(int row, int position, ItemStack item, String name, String lore, Boolean remove, Boolean create) {
         if(create == true) {
-        	items[row.getRow() * 9 + position] = item;
+        	items[row * 9 + position] = item;
         } else {
-        	items[row.getRow() * 9 + position] = getItem(item, name, lore, remove);
+        	items[row * 9 + position] = getItem(item, name, lore, remove);
         }
         return this;
     }
     
-    /**
-     * Fills row in inventory from right to left with item.
-     * @param row
-     * @param amount
-     * @param item
-     * @param name
-     * @param lore
-     * @return
-     */
-    public CustomGUI fillRow(Row row, int amount, ItemStack item) {
-    	for(int i = 8-amount; i<=8; i++) {
-    		items[row.getRow() * 9 + i] = item;
-    	}
-    	return this;
-    }
-    
-    public CustomGUI emptyRow(Row row) {
-    	for(int i = 0; i<=8; i++) {
-    		items[row.getRow() * 9 + i] = new ItemStack(Material.AIR);
-    	}
-    	return this;
-    }
- 
-    public Row getRowFromSlot(int slot) {
-        return new Row(slot / 9, items);
-    }
- 
-    public Row getRow(int row) {
-        return new Row(row, items);
-    }
  
     public interface onClick {
-        public abstract boolean click(Player clicker, CustomGUI menu, Row row, int slot, ItemStack item);
+        public abstract boolean click(Player clicker, CustomGUI menu, int row, int slot, ItemStack item);
     }
  
-    public class Row {
-        private ItemStack[] rowItems = new ItemStack[9];
-        int row;
- 
-        public Row(int row, ItemStack[] items) {
-            this.row = row;
-            int j = 0;
-            for (int i = (row * 9); i < (row * 9) + 9; i++) {
-                rowItems[j] = items[i];
-                j++;
-            }
-        }
- 
-        public ItemStack[] getRowItems() {
-            return rowItems;
-        }
- 
-        public ItemStack getRowItem(int item) {
-            return rowItems[item] == null ? new ItemStack(Material.AIR) : rowItems[item];
-        }
- 
-        public int getRow() {
-            return row;
-        }
-    }
+
  
     private ItemStack getItem(ItemStack item, String name, String lore, Boolean remove) {
         ItemMeta im = item.getItemMeta();

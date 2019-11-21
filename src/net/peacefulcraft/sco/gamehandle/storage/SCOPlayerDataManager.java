@@ -14,6 +14,8 @@ public class SCOPlayerDataManager {
 	
 	private SCOPlayer s;
 		public SCOPlayer getSCOPlayer() { return s; }
+	
+	File dataFile;
 	private FileConfiguration c;
 	
 	private InventoryManager inventories;
@@ -21,6 +23,10 @@ public class SCOPlayerDataManager {
 	
 	public SCOPlayerDataManager(SCOPlayer s) {
 		this.s = s;
+		dataFile = new File(
+			SwordCraftOnline.getPluginInstance().getDataFolder().getPath() + "/data/" + s.getUUID() + "/playerdata.yml"
+		);
+		
 		inventories = new InventoryManager(this);
 		
 		initPlayerConfig();
@@ -32,10 +38,6 @@ public class SCOPlayerDataManager {
 		 * If it does not exist, create it
 		 */
 		private void initPlayerConfig() {
-			// Get file pointer
-			File dataFile = new File(
-				SwordCraftOnline.getPluginInstance().getDataFolder().getPath() + "/data/" + s.getUUID() + "/playerdata.yml"
-			);
 	
 			if(dataFile.exists()) {
 				// If the file exists, load it
@@ -46,14 +48,19 @@ public class SCOPlayerDataManager {
 				}
 				
 			}else {
-				// If the file doesn't exist, create it
-				try {
-					c.save(dataFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				saveConfig();
 			}
 		}
+		
+	public void saveConfig() {
+		try {
+			c.save(dataFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Parse all the config values from the players' default playerdata.yml file
 	 */

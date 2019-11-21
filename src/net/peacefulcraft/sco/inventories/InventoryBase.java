@@ -9,12 +9,14 @@ import java.nio.file.FileAlreadyExistsException;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 
-public class InventoryBase{
+public abstract class InventoryBase{
 
 	private File invData;
 	
@@ -38,6 +40,23 @@ public class InventoryBase{
 		
 		loadInventory();
 	}		
+	
+	/**
+	 * Default configuration for inventory
+	 */
+	public abstract void initializeDefaultLoadout();
+	
+	/**
+	 * Create a new inventory of the desired size, keeping || removing items
+	 * accordingly
+	 */
+	public abstract void resizeInventory(int size);
+	
+	/**
+	 * Object destructor
+	 * Called when player leaves so we can remove any assocaited event listeners
+	 */
+	public abstract void destroy();
 	
 		/**
 		 * Load serialized inventory from disk
@@ -80,9 +99,9 @@ public class InventoryBase{
 		 * @param u: UUID of player
 		 * @throws FileNotFoundException 
 		 */
-		public static void createNewInventory(Class type, int size, UUID u) throws FileNotFoundException {
-			Inventory inventory = Bukkit.getServer().createInventory(null, size);
-			saveInventory(inventory, type, u);
+		public static void createNewInventory(Class type, int size, Player p) throws FileNotFoundException {
+			Inventory inventory = Bukkit.getServer().createInventory(null, size, p.getDisplayName() + "'s " + type);
+			saveInventory(inventory, type, p.getUniqueId());
 		}
 		
 		
@@ -129,5 +148,17 @@ public class InventoryBase{
 			e.printStackTrace();
 		}
 	};
+	
+	public void fillRow(int row, int amount, ItemStack item) {
+    	for(int i = 8-amount; i<=8; i++) {
+    		inventory.setItem( row * 9 + i, item);
+    	}
+    }
+    
+    public void emptyRow(int row) {
+    	for(int i = 0; i<=8; i++) {
+    		inventory.setItem(0, new ItemStack(Material.AIR));
+    	}
+    }
 	
 }
