@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 public class SwordSkillInventory extends InventoryBase{
 
 	private Player p;
+		public Player getPlayer() { return p; }
+
 	
 	public SwordSkillInventory(Player p) {
 		super(p);
@@ -15,4 +17,5 @@ public class SwordSkillInventory extends InventoryBase{
 	public Class getInventoryType() {
 		return SwordSkillInventory.class;
 	}
+	
 }

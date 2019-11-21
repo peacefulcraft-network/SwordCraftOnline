@@ -28,7 +28,7 @@ public class PartyManager
 	}
 	
 	public boolean reloadParty(String name) {
-		if(getListParties().containsKey(name)) {
+		if(getListParties().containsKey(name.toLowerCase())) {
 			Party party = (Party) SwordCraftOnline.getSCOConfig().getParty(name); //TODO: Get datamanger
 			getListParties().put(name, party);
 			

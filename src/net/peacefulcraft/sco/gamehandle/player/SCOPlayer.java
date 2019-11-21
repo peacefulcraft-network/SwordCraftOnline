@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-
 import net.peacefulcraft.sco.inventories.InventoryManager;
+import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 
 public class SCOPlayer 
 {
@@ -82,6 +82,7 @@ public class SCOPlayer
 		playerTable.put("party", getPartyName());
 		playerTable.put("lastInvite", getLastInvite());
 		playerTable.put("playerKills", getPlayerKills());
+		playerTable.put("swordSkillInventory", getInventoryManager().getInventory(SwordSkillInventory.class));
 		
 		playerConfig.set(getUUID().toString(), playerTable);
 	}
