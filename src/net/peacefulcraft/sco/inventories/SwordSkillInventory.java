@@ -23,7 +23,6 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 	
 	/**
 	 * Called when the player disconnects 
-	 * Remove the event listener for this inventory
 	 */
 	public void destroy() {
 		
