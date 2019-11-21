@@ -61,7 +61,7 @@ public class InventoryManager {
 					inventory.initializeDefaultLoadout();
 					
 				} catch (FileNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
-					// Unable to write to disk
+					// We went even deeper and it still didn't work
 					e.printStackTrace();
 				}
 			
