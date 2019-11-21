@@ -19,8 +19,6 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 	
 	public SwordSkillInventory(Player p) throws FileNotFoundException {
 		super(p, SwordSkillInventory.class);
-		
-		SwordCraftOnline.getPluginInstance().getServer().getPluginManager().registerEvents(this, SwordCraftOnline.getPluginInstance());
 	}
 	
 	/**
@@ -28,7 +26,7 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 	 * Remove the event listener for this inventory
 	 */
 	public void destroy() {
-		InventoryClickEvent.getHandlerList().unregister(this);
+		
 	}
 
 /****************************************************
@@ -80,4 +78,15 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 		
 	}
 	
+	@Override
+	public void openInventory() {
+		SwordCraftOnline.getPluginInstance().getServer().getPluginManager().registerEvents(this, SwordCraftOnline.getPluginInstance());
+		super.openInventory();
+	}
+	
+	@Override
+	public void closeInventory() {
+		super.closeInventory();
+		InventoryClickEvent.getHandlerList().unregister(this);
+	}
 }
