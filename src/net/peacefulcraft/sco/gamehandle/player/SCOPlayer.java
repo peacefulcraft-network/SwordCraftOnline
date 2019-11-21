@@ -29,8 +29,6 @@ public class SCOPlayer
 		partyName = "";
 		lastInvite = "";
 		playerKills = 0;
-		
-		inventoryManager = new InventoryManager(this);
 	}
 	
 	public boolean isInParty() {
