@@ -53,7 +53,6 @@ public class SCOPlayer
 
 	public void setPartyName(String name) {
 		this.partyName = name;
-		updateConfig();
 	}
 
 	public String getLastInvite() {
@@ -62,7 +61,6 @@ public class SCOPlayer
 
 	public void setLastInvite(String invite) {
 		this.lastInvite = invite;
-		updateConfig();
 	}
 
 	public int getPlayerKills() {
@@ -71,17 +69,6 @@ public class SCOPlayer
 	
 	public void setPlayerKills(int red) {
 		this.playerKills = red;
-		updateConfig();
 	}
 	
-	private void updateConfig() {
-		Hashtable<String, Object> playerTable = new Hashtable<String, Object>();
-		
-		playerTable.put("party", getPartyName());
-		playerTable.put("lastInvite", getLastInvite());
-		playerTable.put("playerKills", getPlayerKills());
-		playerTable.put("swordSkillInventory", getInventoryManager().getInventory(SwordSkillInventory.class));
-		
-		playerConfig.set(getUUID().toString(), playerTable);
-	}
 }
