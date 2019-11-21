@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
@@ -28,6 +29,7 @@ public class SCOPlayerDataManager {
 		);
 		
 		inventories = new InventoryManager(this);
+		c = new YamlConfiguration();
 		
 		initPlayerConfig();
 		loadPlayerData();

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.scoJoin;
 import net.peacefulcraft.sco.commands.scoLeave;
@@ -71,6 +72,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.getCommand("scoJoin").setExecutor(new scoJoin());
 		this.getCommand("scoLeave").setExecutor(new scoLeave());
 		this.getCommand("party").setExecutor(new partyCommands());
+		this.getCommand("scoadmin").setExecutor(new SCOAdmin());
 		
 	}
 	

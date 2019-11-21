@@ -17,6 +17,7 @@ public class InventoryManager {
 		
 	public InventoryManager(SCOPlayerDataManager data) {
 		this.data = data;
+		invCache = new HashMap<Class, InventoryBase>();
 	}
 	
 	/**
@@ -69,6 +70,7 @@ public class InventoryManager {
 			
 			}catch(RuntimeException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
 				// We're in too deep at this point
+				ex.printStackTrace();
 			}
 		}
 		
