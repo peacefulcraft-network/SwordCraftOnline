@@ -1,7 +1,11 @@
 package net.peacefulcraft.sco;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.scoJoin;
 import net.peacefulcraft.sco.commands.scoLeave;
@@ -11,7 +15,8 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
-import net.peacefulcraft.sco.inventories.listeners.SwordSkillInventoryOpener;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.listeners.InventoryOpeners;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -50,6 +55,13 @@ public class SwordCraftOnline extends JavaPlugin{
 	}
 	
 	public void onDisable() {
+		this.getLogger().info("Disabling player inventories...");
+		HashMap<UUID, SCOPlayer> players = gameManager.getPlayers();
+		for(UUID u : players.keySet()) {
+			players.get(u).playerDisconnect();
+		}
+		this.getLogger().info("Player inventories disabled.");
+		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
 	}
@@ -60,6 +72,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.getCommand("scoJoin").setExecutor(new scoJoin());
 		this.getCommand("scoLeave").setExecutor(new scoLeave());
 		this.getCommand("party").setExecutor(new partyCommands());
+		this.getCommand("scoadmin").setExecutor(new SCOAdmin());
 		
 	}
 	
@@ -70,8 +83,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		
-		//Menu Listeners
-		getServer().getPluginManager().registerEvents(new SwordSkillInventoryOpener(), this);
+		//Register Menu Opener
+		getServer().getPluginManager().registerEvents(new InventoryOpeners(), this);
+	
+		/**
+		 * The Inventories manage their own event listeners
+		 */
 	}
 	
 }

@@ -4,6 +4,9 @@ version: 1.0
 api-version: 1.14
 
 commands:
+    scoadmin:
+      description: Admin Resources
+      usage: "/<command> [ swordskillbook ]"
     setWaystone:
       description: Set waystone teleports.
       usage: "/<command> [ 1 | 2 | 3 ]"

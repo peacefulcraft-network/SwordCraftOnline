@@ -2,7 +2,7 @@ package net.peacefulcraft.sco.inventories;
 
 import java.util.Map;
 import java.util.Map.Entry;
- 
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -20,12 +20,12 @@ import net.peacefulcraft.sco.SwordCraftOnline;
  * 6/24/2019 parsonswy: Updated to use new item IDs and namespaced enchantments
  */
 public class InventorySerializer {
-	public static String InventoryToString (Inventory invInventory)
+	public static String InventoryToString (Inventory inventory)
     {
-        String serialization = invInventory.getSize() + ";";
-        for (int i = 0; i < invInventory.getSize(); i++)
+        String serialization = inventory.getSize() + ";";
+        for (int i = 0; i < inventory.getSize(); i++)
         {
-            ItemStack is = invInventory.getItem(i);
+            ItemStack is = inventory.getItem(i);
             if (is != null)
             {
                 String serializedItemStack = new String();
@@ -61,9 +61,9 @@ public class InventorySerializer {
         return serialization;
     }
    
-    public static Inventory StringToInventory (String invString)
+    public static Inventory StringToInventory (String inventoryData)
     {
-        String[] serializedBlocks = invString.split(";");
+        String[] serializedBlocks = inventoryData.split(";");
         String invInfo = serializedBlocks[0];
         Inventory deserializedInventory = Bukkit.getServer().createInventory(null, Integer.valueOf(invInfo));
        

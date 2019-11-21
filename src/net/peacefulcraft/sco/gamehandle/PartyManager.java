@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.gamehandle;
 
 import java.util.HashMap;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
 
 public class PartyManager

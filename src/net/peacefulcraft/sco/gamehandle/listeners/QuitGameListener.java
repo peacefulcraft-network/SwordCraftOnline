@@ -10,6 +10,7 @@ public class QuitGameListener implements Listener
 {
 	@EventHandler
 	public void quitGame(PlayerQuitEvent e) {
+		SwordCraftOnline.getGameManager().findSCOPlayer(e.getPlayer()).playerDisconnect();
 		SwordCraftOnline.getGameManager().leaveGame(e.getPlayer());
 	}
 }
