@@ -2,9 +2,6 @@ package net.peacefulcraft.sco.inventories;
 
 import java.util.HashMap;
 
-import org.bukkit.inventory.Inventory;
-
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.storage.InventoryDataSaver;
 
