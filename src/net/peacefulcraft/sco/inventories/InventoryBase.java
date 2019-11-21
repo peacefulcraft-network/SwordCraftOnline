@@ -3,6 +3,8 @@ package net.peacefulcraft.sco.inventories;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
+
 public abstract class InventoryBase{
 
 	private Player observer;
@@ -22,8 +24,11 @@ public abstract class InventoryBase{
 	
 	public InventoryBase(Player observer) {
 		this.observer = observer;
+		inventory = new SwordCraftOnline().getPluginInstance().getServer().createInventory(observer, 36);
 	}
 	
-	
+	public void reloadInventory() {
+		
+	}
 	
 }
