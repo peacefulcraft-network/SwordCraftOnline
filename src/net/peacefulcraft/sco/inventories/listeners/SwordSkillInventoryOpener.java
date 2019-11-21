@@ -44,6 +44,10 @@ public class SwordSkillInventoryOpener implements Listener
 		inv.openInventory();
 	}
 	
+	/**
+	 * Checks if items can be moved or not
+	 * @param e
+	 */
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
 		if(e.getCurrentItem() != null) {	
@@ -51,7 +55,8 @@ public class SwordSkillInventoryOpener implements Listener
 	        	e.setCancelled(true);
 	        } else if(e.getCurrentItem().getItemMeta().hasLore()) {
 	        	if(!e.getCurrentItem().getItemMeta().getLore().contains("Sword Skill")) {
-	        		e.setCancelled(true);
+					System.out.println("Pip");
+					e.setCancelled(true);
 	        	}
 	        } 
 		}
@@ -61,6 +66,9 @@ public class SwordSkillInventoryOpener implements Listener
 		
 	}
 	
+	/**
+	 * 
+	 */
 	private void newSkillInv(Player p) {
 		SkillInventory.emptyRow(SkillInventory.getRow(0));
 		SkillInventory.fillRow(SkillInventory.getRow(0), 8-slotUnlock(p), (new UnlockSlot().create()));
@@ -68,12 +76,27 @@ public class SwordSkillInventoryOpener implements Listener
 		SkillInventory.open(p);
 	}
 	
+	/**
+	 * Calculates amount of slots unlocked
+	 * @param Player p
+	 * @return int of lots unlocked
+	 */
 	private int slotUnlock(Player p) {
 		int level = GameManager.findSCOPlayer(p).getLevel();
 		if(level >= 0 && level <= 10) {
 			return 1;
 		} else if(level > 10 && level <= 20) {
 			return 2;
+		} else if(level > 20 && level <= 30) {
+			return 3;
+		} else if(level > 30 && level <= 40) {
+			return 4;
+		} else if(level > 40 && level <= 50) {
+			return 5;
+		} else if(level > 50 && level <= 60) {
+			return 6;
+		} else if(level > 70 && level <= 80) {
+			return 7;
 		}
 		return 0;
 	}
