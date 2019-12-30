@@ -36,7 +36,7 @@ public class SwordSkillInventoryOpener implements Listener
 		if(s == null) {return;}
 		
 		//If player doesnt have inventory open empty inventory
-		SwordSkillInventory inv = s.getInventoryManager().getInventory(SwordSkillInventory.class);
+		SwordSkillInventory inv = s.getData().getInventories().getInventory(SwordSkillInventory.class);
 		if(inv == null) {
 			newSkillInv(p); 
 		}
