@@ -1,7 +1,5 @@
 package net.peacefulcraft.sco.inventories;
 
-import java.io.FileNotFoundException;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,7 +15,7 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 	public Class getInventoryType() { return SwordSkillInventory.class; }
 	
 	
-	public SwordSkillInventory(Player p) throws FileNotFoundException {
+	public SwordSkillInventory(Player p) {
 		super(p, SwordSkillInventory.class);
 	}
 	

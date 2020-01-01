@@ -27,21 +27,21 @@ public abstract class InventoryBase{
 		public Player getObserver() { return observer; }
 	
 	private Class inventoryType;
-		public Class getInventoryType() { return inventoryType; }
+		public abstract Class getInventoryType();
 		
 	private Inventory inventory;
 		public Inventory getInventory() { return inventory; }
 		
 		
-	public InventoryBase(Player observer, Class type) throws FileNotFoundException {
+	public InventoryBase(Player observer, Class type){
 		this.observer = observer;
-	
+		this.inventoryType = type;
+		
 		invData = new File(
 			SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
-			+ "/data/" + observer.getUniqueId() + "/" + inventoryType + ".inv" 
+			+ "/data/" + observer.getUniqueId() + "/" + inventoryType.getName() + ".inv" 
 		); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
 		
-		loadInventory();
 	}		
 	
 	/**
@@ -61,77 +61,77 @@ public abstract class InventoryBase{
 	 */
 	public abstract void destroy();
 	
-		/**
-		 * Load serialized inventory from disk
-		 * Create actual MC inventory that we can .open
-		 * @throws FileNotFoundException 
-		 */
-		private void loadInventory() throws FileNotFoundException {
-			if(invData.exists()) {
-				try {
-					FileReader fr = new FileReader(invData);
-					
-					long size = invData.length();
-					if(size > Integer.MAX_VALUE) {
-						// char array can only be of length int so if the file is too big it will not load properly
-						fr.close();
-						throw new RuntimeException("Datafile " + invData + " exceeds maximium readin size. Aborint file load.");
-					}
-					
-					int length = (int) invData.length();
-					char[] data = new char[length];
-					
-					fr.read(data);
-					fr.close();
-					inventory = InventorySerializer.StringToInventory( String.valueOf(data) );
-					
-				} catch (RuntimeException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}else {
-				// Use InventoryBase.createNewInventory( size ) to create a new inventory
-				throw new FileNotFoundException("Inventory " + invData + " does not exist.");
-			}
-		}
-	
-		/**
-		 * Create a new inventory
-		 * @param type: <T extends InventoryBase>
-		 * @param size: # of slots
-		 * @param u: UUID of player
-		 * @throws FileNotFoundException 
-		 */
-		public static void createNewInventory(Class type, int size, Player p) throws FileNotFoundException {
-			Inventory inventory = Bukkit.getServer().createInventory(null, size, p.getDisplayName() + "'s " + type);
-			saveInventory(inventory, type, p.getUniqueId());
-		}
-		
-		
-		/**
-		 * proxy the static function for internal use because it's less typing
-		 * @throws FileNotFoundException 
-		 * @throws FileAlreadyExistsException
-		 */
-		private void saveInventory() throws FileNotFoundException {
-			InventoryBase.saveInventory(inventory, inventoryType, observer.getUniqueId());
-		}
-		
-			/**
-			 * Save serialized inventory to disk
-			 * @throws FileNotFoundException 
-			 */
-			private static void saveInventory(Inventory inventory, Class type, UUID u) throws FileNotFoundException {
-				String serializedInventory = InventorySerializer.InventoryToString(inventory);
-				File invData = new File(
-						SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
-						+ "/data/" + u + "/" + type + ".inv" 
-					); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
+	/**
+	 * Load serialized inventory from disk
+	 * Create actual MC inventory that we can .open
+	 * @throws FileNotFoundException 
+	 */
+	public void loadInventory() throws FileNotFoundException {
+		if(invData.exists()) {
+			try {
+				FileReader fr = new FileReader(invData);
 				
-				PrintWriter pw = new PrintWriter(invData);
-				pw.write(serializedInventory);
-				pw.close();
+				long size = invData.length();
+				if(size > Integer.MAX_VALUE) {
+					// char array can only be of length int so if the file is too big it will not load properly
+					fr.close();
+					throw new RuntimeException("Datafile " + invData + " exceeds maximium readin size. Aborint file load.");
+				}
+				
+				int length = (int) invData.length();
+				char[] data = new char[length];
+				
+				fr.read(data);
+				fr.close();
+				inventory = InventorySerializer.StringToInventory( String.valueOf(data) );
+				
+			} catch (RuntimeException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+		}else {
+			// Use InventoryBase.createNewInventory( size ) to create a new inventory
+			throw new FileNotFoundException("Inventory " + invData + " does not exist.");
+		}
+	}
+	
+	/**
+	 * Create a new inventory
+	 * @param type: <T extends InventoryBase>
+	 * @param size: # of slots
+	 * @param u: UUID of player
+	 * @throws FileNotFoundException 
+	 */
+	public static void createNewInventory(Class type, int size, Player p) throws FileNotFoundException {
+		Inventory inventory = Bukkit.getServer().createInventory(null, size, p.getDisplayName() + "'s " + type.getName());
+		saveInventory(inventory, type, p.getUniqueId());
+	}
+	
+	
+	/**
+	 * proxy the static function for internal use because it's less typing
+	 * @throws FileNotFoundException 
+	 * @throws FileAlreadyExistsException
+	 */
+	public void saveInventory() throws FileNotFoundException {
+		InventoryBase.saveInventory(inventory, inventoryType, observer.getUniqueId());
+	}
+		
+		/**
+		 * Save serialized inventory to disk
+		 * @throws FileNotFoundException 
+		 */
+		private static void saveInventory(Inventory inventory, Class type, UUID u) throws FileNotFoundException {
+			String serializedInventory = InventorySerializer.InventoryToString(inventory);
+			File invData = new File(
+					SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
+					+ "/data/" + u + "/" + type.getName() + ".inv" 
+				); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
+			
+			PrintWriter pw = new PrintWriter(invData);
+			pw.write(serializedInventory);
+			pw.close();
+		}
 		
 	/**
 	 * Open inventory for player
