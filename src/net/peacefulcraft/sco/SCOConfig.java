@@ -21,6 +21,8 @@ public class SCOConfig {
 	private String db_name = "";
 	private String db_user = "";
 	private String db_password = "";
+
+	private boolean autoTarget = true;
 	
 	public SCOConfig(FileConfiguration c) {
 		
@@ -122,4 +124,11 @@ public class SCOConfig {
 		return db_password;
 	}
 
+	public void setAutoTarget(boolean b) {
+		autoTarget = b;
+	}
+
+	public boolean autoTargetEnabled() {
+		return autoTarget;
+	}
 }

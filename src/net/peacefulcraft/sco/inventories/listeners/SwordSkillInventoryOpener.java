@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
@@ -13,6 +15,7 @@ import net.peacefulcraft.sco.inventories.CustomGUI;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.utilities.BlockedSlot;
 import net.peacefulcraft.sco.items.utilities.UnlockSlot;
+import net.peacefulcraft.sco.swordskills.skills.SkillBase;
 
 public class SwordSkillInventoryOpener implements Listener
 {
@@ -55,15 +58,24 @@ public class SwordSkillInventoryOpener implements Listener
 	        	e.setCancelled(true);
 	        } else if(e.getCurrentItem().getItemMeta().hasLore()) {
 	        	if(!e.getCurrentItem().getItemMeta().getLore().contains("Sword Skill")) {
-					System.out.println("Pip");
+					//System.out.println("Pip");
 					e.setCancelled(true);
 	        	}
 	        } 
 		}
 	}
 	
-	private void SkillInvOpen(SCOPlayer p, SwordSkillInventory inv) {
-		
+	/**
+	 * Handle loading skills here based on items in inventory.
+	 */
+	private void SkillInvOpen(SCOPlayer p, SwordSkillInventory SSInv) {
+		Inventory inv = SSInv.getInventory();
+		for(int i = 0; i < 9; i++) {
+			SkillBase skill = SkillBase.getSkillByName(inv.getItem(i).getItemMeta().getDisplayName().toLowerCase());
+			if(skill != null) {
+				
+			}
+		}
 	}
 	
 	/**
