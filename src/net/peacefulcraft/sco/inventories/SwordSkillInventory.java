@@ -36,9 +36,12 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 			if(e.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE ) {
 	        	e.setCancelled(true);
 	        } else if(e.getCurrentItem().getItemMeta().hasLore()) {
-	        	if(!e.getCurrentItem().getItemMeta().getLore().contains("Sword Skill")) {
-	        		e.setCancelled(true);
-	        	}
+				for(String s : e.getCurrentItem().getItemMeta().getLore()) {
+					if(s.contains("Sword Skill")) {
+						return;	
+					}
+				}
+				e.setCancelled(true);
 	        } 
 		}
 	}
