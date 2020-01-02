@@ -14,20 +14,21 @@ public interface SwordSkillItem
 		ArrayList<String> desc = new ArrayList<String>();
 		switch(itemTiers.valueOf(tier.toUpperCase())) {
 		case COMMON:
-			desc.add(getTierColor(tier) + "Common");
+			desc.add(getTierColor(tier) + "Common Sword Skill");
 		break;case UNCOMMON:
-			desc.add(getTierColor(tier) + "Uncommon");
+			desc.add(getTierColor(tier) + "Uncommon Sword Skill");
 		break;case RARE:
-			desc.add(getTierColor(tier) + "Rare");
+			desc.add(getTierColor(tier) + "Rare Sword Skill");
 		break;case LEGENDARY:
-			desc.add(getTierColor(tier) + "Legendary");
+			desc.add(getTierColor(tier) + "Legendary Sword Skill");
 		break;case MASTERY:
-			desc.add(getTierColor(tier) + "Mastery");
+			desc.add(getTierColor(tier) + "Mastery Sword Skill");
 		break;case ETHEREAL:
-			desc.add(getTierColor(tier) + "Etheral");
+			desc.add(getTierColor(tier) + "Etheral Sword Skill");
 		}
 		return desc;
 	}
+	
 	public static ChatColor getTierColor(String tier) {
 		switch(itemTiers.valueOf(tier.toUpperCase())) {
 		case COMMON:
