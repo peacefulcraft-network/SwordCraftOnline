@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,18 +28,6 @@ public class InventoryOpeners implements Listener{
 		//else if.....
 		
 	}
-
-	/*
-	@EventHandler
-	public void InvClose(InventoryCloseEvent e) {
-		SCOPlayer s = GameManager.findSCOPlayer((Player) e.getPlayer());
-		if(s == null) { return; }
-
-		SwordSkillInventory inv = s.getData().getInventories().getInventory(SwordSkillInventory.class);
-		inv.closeInventory();
-		((Player) e.getPlayer()).sendMessage("Pip");
-	 }
-	 */
 	
 		private void swordSkillListener(Player p, PlayerInteractEvent e) {
 			

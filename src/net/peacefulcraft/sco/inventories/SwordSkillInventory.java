@@ -13,8 +13,7 @@ import net.peacefulcraft.sco.items.utilities.UnlockSlot;
 public class SwordSkillInventory extends InventoryBase implements Listener{
 	@Override
 	public Class getInventoryType() { return SwordSkillInventory.class; }
-	
-	
+		
 	public SwordSkillInventory(Player p) {
 		super(p, SwordSkillInventory.class);
 	}
