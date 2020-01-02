@@ -19,23 +19,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 
-public abstract class InventoryBase<T extends InventoryBase>{
+public abstract class InventoryBase{
 
 	private File invData;
 	
 	private Player observer;
 		public Player getObserver() { return observer; }
 	
-	private Class<T> inventoryType;
-		public abstract Class<T> getInventoryType();
+	private Class inventoryType;
+		public abstract Class getInventoryType();
 		
 	private Inventory inventory;
 		public Inventory getInventory() { return inventory; }
 		
 		
-	public InventoryBase(Player observer, Class<T> inventoryType){
+	public InventoryBase(Player observer, Class type){
 		this.observer = observer;
-		this.inventoryType = inventoryType;
+		this.inventoryType = type;
 		
 		invData = new File(
 			SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
@@ -102,19 +102,11 @@ public abstract class InventoryBase<T extends InventoryBase>{
 	 * @param u: UUID of player
 	 * @throws FileNotFoundException 
 	 */
-	public static void createNewInventory(Class inventoryType, int size, Player p) throws FileNotFoundException {
-		Inventory inventory = Bukkit.getServer().createInventory(null, size, p.getDisplayName() + "'s " + inventoryType.getName());
-		saveInventory(inventory, inventoryType, p.getUniqueId());
+	public static void createNewInventory(Class type, int size, Player p) throws FileNotFoundException {
+		Inventory inventory = Bukkit.getServer().createInventory(null, size, p.getDisplayName() + "'s " + type.getName());
+		saveInventory(inventory, type, p.getUniqueId());
 	}
 	
-	public static boolean InventoryExists(UUID uuid, Class inventoryType) {
-		File dataLoc = new File(
-			SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
-			+ "/data/" + uuid + "/" + inventoryType.getName() + ".inv" 
-		); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
-		
-		return dataLoc.exists();
-	}
 	
 	/**
 	 * proxy the static function for internal use because it's less typing
@@ -129,11 +121,11 @@ public abstract class InventoryBase<T extends InventoryBase>{
 		 * Save serialized inventory to disk
 		 * @throws FileNotFoundException 
 		 */
-		private static void saveInventory(Inventory inventory, Class inventoryType, UUID u) throws FileNotFoundException {
+		private static void saveInventory(Inventory inventory, Class type, UUID u) throws FileNotFoundException {
 			String serializedInventory = InventorySerializer.InventoryToString(inventory);
 			File invData = new File(
 					SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
-					+ "/data/" + u + "/" + inventoryType.getName() + ".inv" 
+					+ "/data/" + u + "/" + type.getName() + ".inv" 
 				); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
 			
 			PrintWriter pw = new PrintWriter(invData);
