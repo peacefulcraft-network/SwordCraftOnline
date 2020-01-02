@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.items.swordskills;
 
 import java.util.ArrayList;
 
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.items.itemTiers;
@@ -13,18 +14,36 @@ public interface SwordSkillItem
 		ArrayList<String> desc = new ArrayList<String>();
 		switch(itemTiers.valueOf(tier.toUpperCase())) {
 		case COMMON:
-			desc.add("Common");
+			desc.add(getTierColor(tier) + "Common");
 		break;case UNCOMMON:
-			desc.add("Uncommon");
+			desc.add(getTierColor(tier) + "Uncommon");
 		break;case RARE:
-			desc.add("Rare");
+			desc.add(getTierColor(tier) + "Rare");
 		break;case LEGENDARY:
-			desc.add("Legendary");
+			desc.add(getTierColor(tier) + "Legendary");
 		break;case MASTERY:
-			desc.add("Mastery");
+			desc.add(getTierColor(tier) + "Mastery");
 		break;case ETHEREAL:
-			desc.add("Etheral");
+			desc.add(getTierColor(tier) + "Etheral");
 		}
 		return desc;
+	}
+	public static ChatColor getTierColor(String tier) {
+		switch(itemTiers.valueOf(tier.toUpperCase())) {
+		case COMMON:
+			return ChatColor.WHITE;
+		case UNCOMMON:
+			return ChatColor.GREEN;
+		case RARE:
+			return ChatColor.BLUE;
+		case LEGENDARY:
+			return ChatColor.LIGHT_PURPLE;
+		case MASTERY:
+			return ChatColor.AQUA;
+		case ETHEREAL:
+			return ChatColor.GOLD;
+		default:
+			return ChatColor.WHITE;
+		}
 	}
 }

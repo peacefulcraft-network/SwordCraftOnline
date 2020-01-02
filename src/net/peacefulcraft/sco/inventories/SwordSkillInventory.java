@@ -16,7 +16,6 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 	@Override
 	public Class getInventoryType() { return SwordSkillInventory.class; }
 	
-	
 	public SwordSkillInventory(Player p) throws FileNotFoundException {
 		super(p, SwordSkillInventory.class);
 	}

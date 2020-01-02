@@ -1,20 +1,13 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.gamehandle.storage.SCOPlayerDataManager;
-import net.peacefulcraft.sco.swordskills.ISkillProvider;
-import net.peacefulcraft.sco.swordskills.skills.SkillActive;
-import net.peacefulcraft.sco.swordskills.skills.SkillBase;
+import net.peacefulcraft.sco.swordskills.skills.SwordSkill;
 
 public class SCOPlayer 
 {
@@ -35,18 +28,16 @@ public class SCOPlayer
 		public void setAttackTime(int ticks) { this.attackTime = ticks; }
 
 	/**Stores info on player's skills */
-	private final Map<Integer, SkillBase> skills;
+	private final ArrayList<SwordSkill> skills;
+		public ArrayList<SwordSkill> getSkills() { return skills; }
 
-	/**Used to temp store skill */
-	private SkillBase itemSkill = null;
-
-	/**Dummy version of basic sword skill for use with SkillItem skills when skill level 0 */
-	private SkillBase dummySwordSkill = null;
-
-	/**Slot of item providing persistent dummy sword skill if any */
-	private int persistentDummySlot = -1;
-
-	private final List<SkillActive> activeSkills = new LinkedList<SkillActive>();
+	/**Stores players critical damage chance 
+	 * TODO:Handle situation where chance is above 100
+	*/
+	private int criticalChance;
+		public int getCriticalChance() { return criticalChance; }
+		public void setCriticalChance(int num) { criticalChance = num; }
+		public void addCritical(int num) { criticalChance+=num; }
 
 	public SCOPlayer (Player user) {
 		this.user = user;
@@ -57,7 +48,7 @@ public class SCOPlayer
 		
 		scopData = new SCOPlayerDataManager(this);
 
-		this.skills = new HashMap<Integer, SkillBase>(SkillBase.getNumSkills());
+		this.skills = new ArrayList<SwordSkill>();
 	}
 
 	/**True if player can perform left click */
@@ -70,94 +61,22 @@ public class SCOPlayer
 			resetSkills();
 			return true;
 		} else {
-			SkillBase dummy = null;
-			for(SkillBase skill : skills.values()) {
-				if(skill.getName().equals(name)) {
-					dummy = skill;
-					break;
+			for(SwordSkill skill : skills) {
+				if(name == skill.getName()) {
+					removeSkill(skill);
+					return true;
 				}
-			}
-			if(dummy != null) {
-				removeSkill(dummy);
-				return true;
 			}
 		}
 		return false;
 	}
 
-	private void removeSkill(SkillBase skill) {
-		SkillBase dummy = skill.newInstance();
-		skills.put(dummy.getId(), dummy);
-		//validateSkill();
-		skills.remove(dummy.getId());
-	}
+	private void removeSkill(SwordSkill skill) {
+		skills.remove(skill);
+	}	
 
-	/**Resets all data related to skills */
 	public void resetSkills() {
-		for(SkillBase skill : SkillBase.getSkills()) {
-			skills.put(skill.getId(), skill.newInstance());
-		}
-		//validateSkill();
 		skills.clear();
-	}
-	/*
-	public boolean hasSkill(SkillBase skill) {
-		return hasSkill(skill.getId());
-	}
-	
-	private boolean hasSkill(int id) {
-		return getSkillLevel(id) > 0;
-	}
-
-	public int getSkillLevel(SkillBase skill) {
-		return getSkillLevel(skill.getId());
-	}*/
-	/*
-	public int getSkillLevel(int id) {
-		int level = 0;
-		if(itemSkill != null && itemSkill.getId() == id) {
-			level = itemSkill.getLevel();
-		} else if (id == SkillBase.skillBasic.getId()) {
-			if(user.getInventory().getItemInMainHand() == null || user.getInventory().getItemInMainHand().getType() == Material.AIR) {
-				retrieveDummySwordSkill();
-			}
-			if(dummySwordSkill != null) {
-				level = dummySwordSkill.getLevel();
-			}
- 		} else if(itemSkill == null || dummySwordSkill == null) {
-			 for(int i = 0; i < 9; ++i) {
-				 ItemStack stack = user.getInventory().getItem(i);
-				 
-			 }
-		 }
-	}*/
-
-	/**Return player's true skill level. */
-	private int getTrueSkillLevel(int id) {
-		return(skills.containsKey(id) ? skills.get(id).getLevel() : 0);
-	}
-
-	private void retrieveDummySwordSkill() {
-		boolean needsDummy = (getTrueSkillLevel(SkillBase.skillBasic.getId()) < 1 && dummySwordSkill == null);
-		if((needsDummy || itemSkill == null) && persistentDummySlot == -1) {
-			for(int i = 0; i < 9; ++i) {
-				ItemStack stack = user.getInventory().getItem(i);
-				//TODO:Double check this cast
-				if(((ISkillProvider) stack).grantsBasicSwordSkill(stack)) {
-					dummySwordSkill = SkillBase.createLeveledSkill(SkillBase.skillBasic.getId(), 1);
-					persistentDummySlot = i;
-				}
-				if(itemSkill == null) {
-					itemSkill = SkillBase.getSkillFromItem(stack, (ISkillProvider) stack);
-				}
-				if(!needsDummy || dummySwordSkill != null) {
-					break;
-				}
-			}
-			if(dummySwordSkill == null) {
-				persistentDummySlot = -30;
-			}
-		}
 	}
 	
 	public void playerDisconnect() {

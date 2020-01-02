@@ -11,28 +11,35 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 public abstract class SwordSkill
 {
 	
-	//Time between allowed clicks
 	protected SCOPlayer s;
 		public SCOPlayer getSCOPlayer() { return s; }
+	/**Time allowed between activation */
 	private long cooldowndelay;
 		
-		//Next time ability can be used
+	/**Next time ability can be used*/
 	private long cooldown = 0L;
 		public long getCooldown() { return cooldown; }
 		public long getCooldownSeconds() { return cooldown / 1000;}
-		public void setCooldown(Long delay) { cooldown = delay; }
-		
-	private int multipler;
-		public int getMultipler() {return multipler; }		
+		public void setCooldown(Long delay) { cooldown = delay; }	
 	
+	private String name;
+		public String getName() { return name; }
+		public void setName(String s) { name = s; }
+
+	protected int level = 0;
+		public final int getLevel() { return level; }
+
+	protected final int MAX_LEVEL = 5;
+		public int getMaxLevel() { return MAX_LEVEL; }
+
 	/**
 	 * Set the cooldown time, in ms, between clicks
 	 * @param delay
 	 */
-	public SwordSkill(SCOPlayer s, long delay, int multipler) {
+	public SwordSkill(SCOPlayer s, long delay, String name) {
 		this.s = s;
 		cooldowndelay = delay;
-		this.multipler = multipler;
+		this.name = name;
 	}
 	
 	public boolean canUseSkill() {
@@ -88,5 +95,10 @@ public abstract class SwordSkill
 	 * @param ev
 	 */
 	public abstract void triggerSkill(Event ev);
+
+	/**Returns true if player can level up skill. */
+	protected boolean canIncreaseLevel(SCOPlayer p, int targetLevel) {
+		return ((level + 1) == targetLevel && targetLevel <= getMaxLevel());
+	}
 	
 } 

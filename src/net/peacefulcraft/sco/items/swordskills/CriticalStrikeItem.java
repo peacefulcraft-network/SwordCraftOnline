@@ -14,11 +14,10 @@ public class CriticalStrikeItem implements SwordSkillItem
 	{
 		ItemStack item = new ItemStack(Material.FLINT, 1);
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("Critical Strike");
-		
-		ArrayList<String> desc;
-		desc = SwordSkillItem.addDesc(tier);
-		desc.add("Chance to deal critical damage!");
+		meta.setDisplayName(SwordSkillItem.getTierColor(tier) + "Critical Strike");
+	
+		ArrayList<String> desc = SwordSkillItem.addDesc(tier);
+		desc.add("Chance to deal critical damage.");
 		meta.setLore(desc);
 		
 		item.setItemMeta(meta);

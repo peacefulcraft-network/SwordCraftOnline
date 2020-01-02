@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -64,11 +65,18 @@ public class SwordSkillInventoryOpener implements Listener
 	        } 
 		}
 	}
+
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent e) {
+		//Detect if ssInv is open, register the sword skills and apply effects.
+		
+	}
 	
 	/**
 	 * Handle loading skills here based on items in inventory.
+	 * TODO: CHANGE TO ON CLOSE
 	 */
-	private void SkillInvOpen(SCOPlayer p, SwordSkillInventory SSInv) {
+	private void SkillInvClose(SCOPlayer p, SwordSkillInventory SSInv) {
 		Inventory inv = SSInv.getInventory();
 		for(int i = 0; i < 9; i++) {
 			SkillBase skill = SkillBase.getSkillByName(inv.getItem(i).getItemMeta().getDisplayName().toLowerCase());
