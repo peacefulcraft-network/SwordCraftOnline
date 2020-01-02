@@ -37,13 +37,8 @@ public class InventoryManager {
 				 */
 				Player p = data.getSCOPlayer().getPlayer();
 				T inventory = (T) type.getConstructors()[0].newInstance( p );
+				inventory.loadInventory();
 				invCache.put(type, inventory);
-				/* 
-				 * All InventoryBase children can throw FileNotFoundExceptions because InventoryBase constructor does.
-				 * Java doesn't know this because reflection so we need to trick it into 
-				 * letting us include the exception in the catch block.
-				 */
-				if(false) { throw new FileNotFoundException(); }
 			
 			/*
 			 * FileNotFound is thrown when the Inventory doesn't exist and we need to create it.
@@ -59,9 +54,10 @@ public class InventoryManager {
 					// Try to instantiate a new instance of the inventory ( see above )
 					Player p = data.getSCOPlayer().getPlayer();
 					T inventory = (T) type.getConstructors()[0].newInstance( p );
+					inventory.loadInventory();
 					inventory.initializeDefaultLoadout();
+					inventory.saveInventory();
 					invCache.put(type, inventory);
-					
 					
 				} catch (FileNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 					// We went even deeper and it still didn't work
