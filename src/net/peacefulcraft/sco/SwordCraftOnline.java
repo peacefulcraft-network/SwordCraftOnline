@@ -13,10 +13,12 @@ import net.peacefulcraft.sco.commands.setTeleport;
 import net.peacefulcraft.sco.commands.setWaystone;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
+import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryOpeners;
+import net.peacefulcraft.sco.swordskills.skills.DamageBase;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -78,10 +80,12 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	private void loadEventListeners() {
 		//Sword Skill Listeners
-		
+		getServer().getPluginManager().registerEvents(new DamageBase(), this);
+
 		//Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
+		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryOpeners(), this);

@@ -30,7 +30,8 @@ public class GameManager {
 		
 		SCOPlayer s = new SCOPlayer(p);
 		players.put(p.getUniqueId(), s);
-		if(Teleports.getSpawn() == null) 
+		if(Teleports.getSpawn() != null) 
+		
 		p.teleport(Teleports.getSpawn());
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
 		p.getInventory().setItem(7, (new TeleportCrystal()).create());
@@ -47,6 +48,9 @@ public class GameManager {
 		
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
+
+		p.getInventory().clear(p.getInventory().first((new SwordSkillTome().create())));
+
 		p.sendMessage("You have left " + ChatColor.BLUE + "SwordCraftOnline");
 	}
 	
