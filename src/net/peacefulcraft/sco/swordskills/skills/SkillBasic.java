@@ -9,11 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.Util.TargetUtils;
-import net.peacefulcraft.sco.swordskills.skills.Combo;
-import net.peacefulcraft.sco.swordskills.skills.ICombo;
-import net.peacefulcraft.sco.swordskills.skills.LockOnTarget;
-import net.peacefulcraft.sco.swordskills.skills.SkillActive;
+import net.peacefulcraft.sco.swordskills.util.Combo;
+import net.peacefulcraft.sco.swordskills.util.ICombo;
+import net.peacefulcraft.sco.swordskills.util.LockOnTarget;
+import net.peacefulcraft.sco.swordskills.util.TargetUtils;
 
 /**
  * Foundational skill for all other skills

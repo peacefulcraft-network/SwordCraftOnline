@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskills.skills;
+package net.peacefulcraft.sco.swordskills.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+
+import net.peacefulcraft.sco.swordskills.skills.SkillBase;
 
 /**
  * Self-contained module containing all data necessary to track player's current

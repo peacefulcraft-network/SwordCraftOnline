@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskills.skills;
+package net.peacefulcraft.sco.swordskills.util;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
