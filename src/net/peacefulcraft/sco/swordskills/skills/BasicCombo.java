@@ -6,6 +6,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.swordskills.util.Combo;
+import net.peacefulcraft.sco.swordskills.util.ICombo;
 
 public class BasicCombo extends SwordSkill implements ICombo {
 
