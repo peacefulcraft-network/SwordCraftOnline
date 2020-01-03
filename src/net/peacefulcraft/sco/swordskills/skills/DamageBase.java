@@ -11,6 +11,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.util.CriticalHit;
+import net.peacefulcraft.sco.swordskills.util.Parry;
 
 /**
  * Base damage event for all SCOPlayer damage dealing. Is effected by players
@@ -28,20 +29,9 @@ public class DamageBase implements Listener {
 
             CriticalHit c = new CriticalHit(e);
             e.setDamage(c.getDamage());
-            
-            Random rand = new Random();
-            if(e.getEntity() instanceof Player) {
-                Player vic = (Player) e.getEntity();
 
-                SCOPlayer SCOvic = GameManager.findSCOPlayer(vic);
-                if(SCOvic == null) { return; }
-
-                if(rand.nextInt(100) <= SCOvic.getParryChance()) {
-                    vic.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Damage Parried!");
-                    p.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Damage Parried!");
-                    e.setCancelled(true);
-                }
-            }
+            Parry par = new Parry(e);
+            e.setCancelled(par.ParryCalc());
         }
     }
 }
