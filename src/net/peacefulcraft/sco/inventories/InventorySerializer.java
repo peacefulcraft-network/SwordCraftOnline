@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.inventories;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,6 +11,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 
@@ -18,6 +20,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
  * Credit: https://bukkit.org/threads/serialize-inventory-to-single-string-and-vice-versa.92094/
  * --
  * 6/24/2019 parsonswy: Updated to use new item IDs and namespaced enchantments
+ * 1/4/2020 parsonswy : Added support for serializing custom display names and lore
  */
 public class InventorySerializer {
 	public static String InventoryToString (Inventory inventory)
@@ -29,10 +32,33 @@ public class InventorySerializer {
 			if (is != null)
 			{
 				String serializedItemStack = new String();
-
+				
+				// Get the item type
 				String isType = String.valueOf(is.getType().name());
 				serializedItemStack += "t@" + isType;
-
+				
+				
+				ItemMeta im = is.getItemMeta();
+				
+				// Get the item name
+				if(im.hasDisplayName()) {
+					serializedItemStack += ":n@" + im.getDisplayName();
+				}
+					
+				// Get the lore
+				if(im.getLore() != null) {
+					String lore = ":l@" + im.getLore().size() + "@";
+					for(int l=0; l<im.getLore().size(); l++) {
+						lore += im.getLore().get(l);
+						
+						// If there is not another lore line, don't add the @ to the end
+						if( (l+1) < im.getLore().size()) {
+							lore += "@";
+						}
+					}
+					serializedItemStack += lore;
+				}
+					
 				if (((org.bukkit.inventory.meta.Damageable) is.getItemMeta()).getDamage() != 0)
 				{
 					String isDurability = String.valueOf(((org.bukkit.inventory.meta.Damageable) is.getItemMeta()).getDamage());
@@ -88,6 +114,18 @@ public class InventorySerializer {
 				{
 					is = new ItemStack(Material.getMaterial(itemAttribute[1]));
 					createdItemStack = true;
+				}
+				else if (itemAttribute[0].equals("n") && createdItemStack) 
+				{
+					is.getItemMeta().setDisplayName(itemAttribute[1]);
+				}
+				else if(itemAttribute[0].equals("l") && createdItemStack) 
+				{
+					ArrayList<String> lore = new ArrayList<String>();
+					for(int lc = 0; lc < Integer.valueOf(itemAttribute[1]); lc++) {
+						lore.add(itemAttribute[lc+2]);
+					}
+					is.getItemMeta().setLore(lore);
 				}
 				else if (itemAttribute[0].equals("d") && createdItemStack)
 				{
