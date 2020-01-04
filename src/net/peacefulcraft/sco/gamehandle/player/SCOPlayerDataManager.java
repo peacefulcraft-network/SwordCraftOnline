@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.gamehandle.storage;
+package net.peacefulcraft.sco.gamehandle.player;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 
 public class SCOPlayerDataManager {
