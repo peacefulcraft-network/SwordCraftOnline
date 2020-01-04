@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.listeners.InventoryCloser;
 import net.peacefulcraft.sco.inventories.listeners.InventoryOpeners;
 import net.peacefulcraft.sco.swordskills.skills.DamageBase;
 
@@ -89,6 +90,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryOpeners(), this);
+		getServer().getPluginManager().registerEvents(new InventoryCloser(), this);
 	
 		/**
 		 * The Inventories manage their own event listeners
