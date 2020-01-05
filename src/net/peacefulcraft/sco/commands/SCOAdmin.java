@@ -10,6 +10,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
+import net.peacefulcraft.sco.inventories.listeners.InventoryCloser;
 import net.peacefulcraft.sco.items.Item;
 
 public class SCOAdmin implements CommandExecutor {
@@ -29,6 +30,9 @@ public class SCOAdmin implements CommandExecutor {
 						.getInventory(SwordSkillInventory.class);
 				
 				inv.openInventory();
+				
+				// Track the inventory so it saves when closed
+				InventoryCloser.trackInventory(p.getUniqueId(), inv);
 				return true;
 			}
 

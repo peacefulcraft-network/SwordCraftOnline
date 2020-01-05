@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
-import net.peacefulcraft.sco.gamehandle.storage.SCOPlayerDataManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayerDataManager;
 
 public class InventoryManager {
 
