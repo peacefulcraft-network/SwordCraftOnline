@@ -34,8 +34,9 @@ public class LoadPlayerInventory extends BukkitRunnable{
 	
 	@Override
 	public void run() {
+		Connection con = null;
 		try {
-			Connection con = SwordCraftOnline.getHikariPool().getConnection();
+			con = SwordCraftOnline.getHikariPool().getConnection();
 			PreparedStatement stmt = con.prepareStatement(""
 				+ "SELECT `name`,`level`,`rarity`,`slot` FROM "
 				+ "`player_swordskills` LEFT JOIN `swordskills` ON `swordskill`=`id` "
@@ -62,8 +63,6 @@ public class LoadPlayerInventory extends BukkitRunnable{
 				
 			}while(res.next());
 			
-			con.close();
-			
 			// Get back on main thread to generate the inventory from identifier list
 			(new GeneratePlayerInventory(s, t, identifiers)).runTask(SwordCraftOnline.getPluginInstance());
 			
@@ -71,8 +70,15 @@ public class LoadPlayerInventory extends BukkitRunnable{
 			SwordCraftOnline.logSevere("[TASK][LoadPlayerInventory] Failed for " + name);
 			SwordCraftOnline.logSevere(e.getMessage());
 			SwordCraftOnline.logSevere("---------------------------------------------------");
+		} finally {
+			if(con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
-		
 	}
-
 }
