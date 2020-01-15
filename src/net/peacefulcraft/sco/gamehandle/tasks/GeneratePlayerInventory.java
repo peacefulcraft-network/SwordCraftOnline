@@ -86,11 +86,6 @@ public class GeneratePlayerInventory extends BukkitRunnable{
 			SwordCraftOnline.logSevere("[TASK][GeneratePlayerInventory] Error, Inventory type " + t + " not recognized. ");
 		break;
 		}
-		
-		// Register all skills provided by this inventory to the player's skill manager
-		for(SkillProvider provider : providers) {
-			provider.registerSkill(s);
-		}
 	}
 
 }
