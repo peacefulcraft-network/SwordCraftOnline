@@ -17,10 +17,10 @@ public class SCOConfig {
 	
 	private Map<String, Object> parties;
 	
-	private String db_ip = "";
-	private String db_name = "";
-	private String db_user = "";
-	private String db_password = "";
+	private String db_ip;
+	private String db_name;
+	private String db_user;
+	private String db_password;
 
 	private boolean autoTarget = true;
 	
@@ -31,7 +31,7 @@ public class SCOConfig {
 		db_name = (String) c.getString("database.name");
 		db_user = (String) c.getString("database.username");
 		db_password = (String) c.getString("database.password");
-		
+
 		waystone_floor_1 = c.getConfigurationSection("waystones.1").getValues(false);
 		waystone_floor_2 = c.getConfigurationSection("waystones.2").getValues(false);
 		waystone_floor_3 = c.getConfigurationSection("waystones.3").getValues(false);

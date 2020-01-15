@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.storage.HikariManager;
 import net.peacefulcraft.sco.inventories.listeners.InventoryOpeners;
 import net.peacefulcraft.sco.swordskills.skills.DamageBase;
 
@@ -27,6 +28,9 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	public static SCOConfig cfg;
 		public static SCOConfig getSCOConfig() { return cfg; }
+	
+	public static HikariManager hikari;
+		public static HikariManager getHikariPool() { return hikari; }
 		
 	public static GameManager gameManager;
 		public static GameManager getGameManager() {return gameManager;}
@@ -51,6 +55,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		partyManager = new PartyManager();
 		
 		
+		hikari = new HikariManager(cfg);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 		
