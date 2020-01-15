@@ -1,6 +1,6 @@
-package net.peacefulcraft.sco.items;
+package net.peacefulcraft.sco.item;
 
-public enum itemTiers
+public enum ItemTier
 {
 	COMMON, UNCOMMON, RARE, LEGENDARY,
 	MASTERY, ETHEREAL

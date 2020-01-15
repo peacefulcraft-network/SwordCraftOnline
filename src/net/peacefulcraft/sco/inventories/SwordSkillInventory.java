@@ -1,25 +1,33 @@
 package net.peacefulcraft.sco.inventories;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventory.InventoryBase;
+import net.peacefulcraft.sco.inventory.InventoryType;
 import net.peacefulcraft.sco.items.utilities.UnlockSlot;
 
 public class SwordSkillInventory extends InventoryBase implements Listener{
-	@Override
-	public Class getInventoryType() { return SwordSkillInventory.class; }
-		
-	public SwordSkillInventory(Player p) {
-		super(p, SwordSkillInventory.class);
+	
+	private Inventory inv;
+		public Inventory getInventory() { return inv; }
+	
+	public SwordSkillInventory(SCOPlayer s, ArrayList<ItemStack> items, int size) {
+		super(s.getPlayer(), InventoryType.ACTIVE_SKILL);
+		inv = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, size);
+		for(int i=0; i<items.size(); i++) {
+			inv.setItem(i, items.get(i));
+		}
 	}
 	
 	/**

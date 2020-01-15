@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.inventories;
+package net.peacefulcraft.sco.inventory;
 
 import java.util.Map;
 import java.util.Map.Entry;

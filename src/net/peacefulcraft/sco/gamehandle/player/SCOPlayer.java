@@ -1,6 +1,5 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
@@ -8,7 +7,9 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.storage.SCOPlayerDataManager;
-import net.peacefulcraft.sco.swordskills.skills.SwordSkill;
+import net.peacefulcraft.sco.inventory.InventoryManager;
+import net.peacefulcraft.sco.swordskill.SwordSkill;
+import net.peacefulcraft.sco.swordskill.SwordSkillManager;
 
 public class SCOPlayer 
 {
@@ -22,15 +23,25 @@ public class SCOPlayer
 	
 	private SCOPlayerDataManager scopData;
 		public SCOPlayerDataManager getData() { return scopData; }
-
+		public InventoryManager getInventoryManager() { return scopData.getInventories(); }
+		
 	/**Time remaining until another attack can be performed */
 	private int attackTime;
 		public int getAttackTime() { return attackTime; }
 		public void setAttackTime(int ticks) { this.attackTime = ticks; }
 
-	/**Stores info on player's skills */
-	private final ArrayList<SwordSkill> skills;
-		public ArrayList<SwordSkill> getSkills() { return skills; }
+	private SwordSkillManager swordSkillManager;
+		public SwordSkillManager getSwordSkillManager() { return swordSkillManager; }
+
+		
+	private double exhaustion = 0.0;
+		public double getExhaustion() { return exhaustion; }
+		public void addExhaustion(double exhaustion) { this.exhaustion += exhaustion; }
+		public void removeExhaustion(double exhaustion) { 
+			// Prevent exhaustion from going below 0
+			this.exhaustion = ((this.exhaustion - exhaustion) < 0)? 0 : this.exhaustion - exhaustion;
+		}
+		public void resetExhaustion() { this.exhaustion = 0.0; }
 
 	/**Stores players critical damage chance 
 	 * TODO:Handle situation where chance is above 100
@@ -60,8 +71,7 @@ public class SCOPlayer
 		playerKills = 0;
 		
 		scopData = new SCOPlayerDataManager(this);
-
-		this.skills = new ArrayList<SwordSkill>();
+		swordSkillManager = new SwordSkillManager(this);
 	}
 
 	/**True if player can perform left click */
@@ -69,32 +79,8 @@ public class SCOPlayer
 		return attackTime == 0 || getPlayer().getGameMode() == GameMode.CREATIVE;
 	}
 
-	public boolean removeSkill(String name) {
-		if(("all").equals(name)) {
-			resetSkills();
-			return true;
-		} else {
-			for(SwordSkill skill : skills) {
-				if(name == skill.getName()) {
-					removeSkill(skill);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private void removeSkill(SwordSkill skill) {
-		skills.remove(skill);
-	}	
-
-	public void resetSkills() {
-		skills.clear();
-	}
-	
 	public void playerDisconnect() {
 		scopData.saveConfig();
-		scopData.getInventories().unregisterInventories();
 	}
 	
 	public boolean isInParty() {
@@ -148,8 +134,8 @@ public class SCOPlayer
 		String override = ChatColor.GOLD + "Admin Override: " + ChatColor.BLUE + hasOverride() + '\n';
 		
 		String skills = ChatColor.GOLD + "Active Skills: " + ChatColor.BLUE;
-		for(SwordSkill s : getSkills()) {
-			skills.concat(s.getName() + ", ");
+		for(SwordSkill s : swordSkillManager.getSkills()) {
+			skills.concat(s.getProvider().getName() + ", ");
 		}
 
 		return header + partyName + playerKills + critChance + critMult + pChance + override + skills;

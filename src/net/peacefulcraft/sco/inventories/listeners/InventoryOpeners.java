@@ -11,6 +11,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
+import net.peacefulcraft.sco.inventory.InventoryType;
 
 public class InventoryOpeners implements Listener{
 
@@ -38,7 +39,7 @@ public class InventoryOpeners implements Listener{
 			 * Open the player's sword skill inventory
 			 * Creates one if it does not already exist
 			 */
-			SwordSkillInventory inv = s.getData().getInventories().getInventory(SwordSkillInventory.class);
+			SwordSkillInventory inv = s.getData().getInventories().getInventory(InventoryType.ACTIVE_SKILL);
 			
 			inv.openInventory();
 		}

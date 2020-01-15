@@ -10,7 +10,10 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.items.Item;
+import net.peacefulcraft.sco.inventory.InventoryType;
+import net.peacefulcraft.sco.item.ItemTier;
+import net.peacefulcraft.sco.swordskills.util.Generator;
+import net.peacefulcraft.sco.swordskills.util.Validator;
 
 public class SCOAdmin implements CommandExecutor {
 
@@ -26,7 +29,7 @@ public class SCOAdmin implements CommandExecutor {
 				Player p = (Player) sender;
 				SwordCraftOnline.getGameManager();
 				SwordSkillInventory inv = GameManager.findSCOPlayer(p).getData().getInventories()
-						.getInventory(SwordSkillInventory.class);
+						.getInventory(InventoryType.MAIN_INVENTORY);
 				
 				inv.openInventory();
 				return true;
@@ -34,16 +37,18 @@ public class SCOAdmin implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("generateitem")) {
 				Player p = (Player) sender;
-				if(!Item.itemExists(args[1])) { return false; }
+				// TODO: ITEM VALIDATION
+				//if(!Item.itemExists(args[1])) { return false; }
 
+				// TODO: MAKE UTIL ITEMS SKILLPROVIDERS WITH NO EQUIP ABILITY
 				if(args.length == 2) {
-					p.getInventory().addItem(Item.giveItem(args[1], null));
+					//p.getInventory().addItem(Item.giveItem(args[1], null));
 					return true;
 				} 
 				if(args.length == 3) {
-					if(!Item.tierExists(args[2])) {return false; }
+					if(!Validator.teirExists(args[2])) {return false; }
 
-					p.getInventory().addItem(Item.giveItem(args[1], args[2]));
+					p.getInventory().addItem(Generator.generateItem(args[1], 1, ItemTier.valueOf(args[2])));
 					return true;
 				}
 				return false;

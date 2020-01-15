@@ -2,13 +2,12 @@ package net.peacefulcraft.sco;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
-import net.peacefulcraft.sco.commands.scoJoin;
-import net.peacefulcraft.sco.commands.scoLeave;
 import net.peacefulcraft.sco.commands.setTeleport;
 import net.peacefulcraft.sco.commands.setWaystone;
 import net.peacefulcraft.sco.gamehandle.GameManager;
@@ -19,12 +18,11 @@ import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.storage.HikariManager;
 import net.peacefulcraft.sco.inventories.listeners.InventoryOpeners;
-import net.peacefulcraft.sco.swordskills.skills.DamageBase;
 
 public class SwordCraftOnline extends JavaPlugin{
 
-	public static SwordCraftOnline sao;
-		public static SwordCraftOnline getPluginInstance() { return sao; }
+	public static SwordCraftOnline sco;
+		public static SwordCraftOnline getPluginInstance() { return sco; }
 	
 	public static SCOConfig cfg;
 		public static SCOConfig getSCOConfig() { return cfg; }
@@ -40,7 +38,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	public SwordCraftOnline() {
 
-		sao = this;
+		sco = this;
 		cfg = new SCOConfig(getConfig());
 		
 	}
@@ -53,7 +51,6 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
-		
 		
 		hikari = new HikariManager(cfg);
 		
@@ -69,6 +66,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		}
 		this.getLogger().info("Player inventories disabled.");
 		
+		hikari.close();
+		this.getLogger().info("Database connection closed.");
+		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
 	}
@@ -76,16 +76,12 @@ public class SwordCraftOnline extends JavaPlugin{
 	private void loadCommands() {
 		this.getCommand("setWaystone").setExecutor(new setWaystone());
 		this.getCommand("setTeleport").setExecutor(new setTeleport());
-		this.getCommand("scoJoin").setExecutor(new scoJoin());
-		this.getCommand("scoLeave").setExecutor(new scoLeave());
 		this.getCommand("party").setExecutor(new partyCommands());
 		this.getCommand("scoadmin").setExecutor(new SCOAdmin());
 		
 	}
 	
 	private void loadEventListeners() {
-		//Sword Skill Listeners
-		getServer().getPluginManager().registerEvents(new DamageBase(), this);
 
 		//Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
@@ -98,6 +94,18 @@ public class SwordCraftOnline extends JavaPlugin{
 		/**
 		 * The Inventories manage their own event listeners
 		 */
+	}
+	
+	public static void logInfo(String info) {
+		sco.getLogger().log(Level.INFO, info);
+	}
+	
+	public static void logWarning(String warning) {
+		sco.getLogger().log(Level.WARNING, warning);
+	}
+	
+	public static void logSevere(String severe) {
+		sco.getLogger().log(Level.SEVERE, severe);
 	}
 	
 }

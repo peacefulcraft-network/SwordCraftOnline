@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskills.skills;
+package net.peacefulcraft.sco.swordskill;
 
 public enum SwordSkillType
 {
