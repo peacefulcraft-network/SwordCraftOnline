@@ -50,8 +50,7 @@ public class LoadPlayerInventory extends BukkitRunnable{
 			
 			ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
 			do {
-				// Remove all spaces from string and tag the slot number onto the end
-				String itemName = res.getString(1).replaceAll("\\s", "");
+				String itemName = res.getString(1);
 				int itemLevel = res.getInt(2);
 				ItemTier itemRarity = ItemTier.valueOf(res.getString(3));
 				int invLoc = res.getInt(4);

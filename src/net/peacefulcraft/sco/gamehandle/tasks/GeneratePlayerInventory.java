@@ -40,7 +40,7 @@ public class GeneratePlayerInventory extends BukkitRunnable{
 			try {
 				
 				// Instantiate the provider
-				Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + identifier.getSkillName() + "Item");
+				Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + identifier.getSkillName().replaceAll("\\s", "") + "Item");
 				Constructor<?> constructor = classs.getConstructor(int.class, ItemTier.class);
 				Object[] args = { identifier.getSkillLevel(), identifier.getRarity() };
 				
