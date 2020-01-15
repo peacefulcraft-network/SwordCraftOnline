@@ -5,4 +5,8 @@ waystones:
 teleport:
   spawn: {}
   quit: {}
+dungeon:
+  1:
+    entrance: {}
+    arena: {}
 parties: {}
