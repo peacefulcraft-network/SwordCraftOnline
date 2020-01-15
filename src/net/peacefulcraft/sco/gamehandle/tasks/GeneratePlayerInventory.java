@@ -34,6 +34,14 @@ public class GeneratePlayerInventory extends BukkitRunnable{
 	
 	@Override
 	public void run() {
+		
+		/*
+		 * Task can be queued my an async task and it is possible the player disconnected while the
+		 * async task was executing so we need to make sure the player is still connected.
+		 * If they've disconnected, abort as we don't need to load their inventory now that their gone.
+		 */
+		if(s.getPlayer() == null || !s.getPlayer().isOnline()) { return; }
+		
 		ArrayList<SkillProvider> providers = new ArrayList<SkillProvider>(); 
 		HashMap<Integer, ItemStack> items = new HashMap<Integer, ItemStack>();
 		for(SkillIdentifier identifier : identifiers) {
