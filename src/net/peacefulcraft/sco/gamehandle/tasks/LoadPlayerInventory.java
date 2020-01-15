@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.inventory.InventoryType;
 import net.peacefulcraft.sco.item.ItemTier;
 import net.peacefulcraft.sco.item.SkillIdentifier;
@@ -36,7 +37,7 @@ public class LoadPlayerInventory extends BukkitRunnable{
 		try {
 			Connection con = SwordCraftOnline.getHikariPool().getConnection();
 			PreparedStatement stmt = con.prepareStatement(""
-				+ "SELECT `name`,`level`,`rarity` FROM "
+				+ "SELECT `name`,`level`,`rarity`,`slot` FROM "
 				+ "`player_swordskills` LEFT JOIN `swordskills` ON `swordskill`=`id` "
 				+ "WHERE `uuid`=? AND inventory=?"
 			);
@@ -49,13 +50,16 @@ public class LoadPlayerInventory extends BukkitRunnable{
 			
 			ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
 			do {
-				// Remove all spaces from string
+				// Remove all spaces from string and tag the slot number onto the end
 				String itemName = res.getString(1).replaceAll("\\s", "");
 				int itemLevel = res.getInt(2);
 				ItemTier itemRarity = ItemTier.valueOf(res.getString(3));
+				int invLoc = res.getInt(4);
 				
 				// Generate the identifier for this swordskill and add to the list
-				identifiers.add(new SkillIdentifier(itemName, itemLevel, itemRarity));
+				SkillIdentifier identifier = new SkillIdentifier(itemName, itemLevel, itemRarity);
+				identifier.setInventoryLocation(invLoc);
+				identifiers.add(identifier);
 				
 			}while(res.next());
 			

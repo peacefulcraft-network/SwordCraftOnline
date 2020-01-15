@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.inventories;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,12 +23,13 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 	private Inventory inv;
 		public Inventory getInventory() { return inv; }
 	
-	public SwordSkillInventory(SCOPlayer s, ArrayList<ItemStack> items, int size) {
+	public SwordSkillInventory(SCOPlayer s, HashMap<Integer, ItemStack> items, int size) {
 		super(s.getPlayer(), InventoryType.ACTIVE_SKILL);
 		inv = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, size);
-		for(int i=0; i<items.size(); i++) {
-			inv.setItem(i, items.get(i));
+		for(Integer loc : items.keySet()) {
+			inv.setItem(loc, items.get(loc));
 		}
+
 	}
 	
 	/**

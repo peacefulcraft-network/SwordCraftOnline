@@ -13,6 +13,13 @@ public class SkillIdentifier{
 	private ItemTier rarity;
 		public ItemTier getRarity() { return rarity; }
 	
+	/**
+	 * Optional value used when generating inventories from the database
+	 */
+	private int loc;
+		public int getInventoryLocation(){ return loc; }
+		public void setInventoryLocation(int loc) { this.loc = loc; }
+		
 	public SkillIdentifier(String skillName, int skillLevel, ItemTier rarity) {
 		this.skillName = skillName;
 		this.skillLevel = skillLevel;

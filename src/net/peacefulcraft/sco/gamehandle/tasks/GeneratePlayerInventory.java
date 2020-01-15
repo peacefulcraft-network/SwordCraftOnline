@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.gamehandle.tasks;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -34,9 +35,10 @@ public class GeneratePlayerInventory extends BukkitRunnable{
 	@Override
 	public void run() {
 		ArrayList<SkillProvider> providers = new ArrayList<SkillProvider>(); 
-		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+		HashMap<Integer, ItemStack> items = new HashMap<Integer, ItemStack>();
 		for(SkillIdentifier identifier : identifiers) {
 			try {
+				
 				// Instantiate the provider
 				Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + identifier.getSkillName() + "Item");
 				Constructor<?> constructor = classs.getConstructor(int.class, ItemTier.class);
@@ -47,7 +49,7 @@ public class GeneratePlayerInventory extends BukkitRunnable{
 				providers.add(provider);
 				
 				// Generate & add the item to list for the inventory
-				items.add(provider.getItem());
+				items.put(identifier.getInventoryLocation(), provider.getItem());
 				
 			} catch (ClassNotFoundException e) {
 				SwordCraftOnline.logSevere("Attempted to create item " + identifier.getSkillName() + ", but no coresponding class was found in net.peacefulcraft.sco.items");
