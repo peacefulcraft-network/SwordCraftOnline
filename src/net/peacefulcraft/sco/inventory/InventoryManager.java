@@ -3,7 +3,6 @@ package net.peacefulcraft.sco.inventory;
 import java.util.HashMap;
 
 import net.peacefulcraft.sco.gamehandle.storage.SCOPlayerDataManager;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 
 public class InventoryManager {
 
@@ -31,9 +30,9 @@ public class InventoryManager {
 		if(posInv == inv) { invCache.remove(posInv.getType()); }
 	}
 
-	public SwordSkillInventory getInventory(InventoryType activeSkill) {
+	public InventoryBase getInventory(InventoryType activeSkill) {
 		// TODO Auto-generated method stub
 		// Observer things / return the inventory
-		return null;
+		return invCache.get(activeSkill);
 	}
 }
