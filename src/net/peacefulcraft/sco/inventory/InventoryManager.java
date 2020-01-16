@@ -2,7 +2,7 @@ package net.peacefulcraft.sco.inventory;
 
 import java.util.HashMap;
 
-import net.peacefulcraft.sco.gamehandle.storage.SCOPlayerDataManager;
+import net.peacefulcraft.sco.storage.SCOPlayerDataManager;
 
 public class InventoryManager {
 

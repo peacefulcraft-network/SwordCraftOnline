@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.gamehandle.storage;
+package net.peacefulcraft.sco.storage;
 
 import java.io.File;
 import java.io.IOException;

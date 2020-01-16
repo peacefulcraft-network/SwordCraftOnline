@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.gamehandle.tasks;
+package net.peacefulcraft.sco.storage.tasks;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

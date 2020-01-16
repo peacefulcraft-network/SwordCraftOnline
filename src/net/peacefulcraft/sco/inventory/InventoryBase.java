@@ -14,9 +14,9 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.gamehandle.tasks.SavePlayerInventory;
 import net.peacefulcraft.sco.item.ItemTier;
 import net.peacefulcraft.sco.item.SkillIdentifier;
+import net.peacefulcraft.sco.storage.tasks.SavePlayerInventory;
 
 public abstract class InventoryBase{
 	

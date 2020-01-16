@@ -28,8 +28,8 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("swordskillbook")) {
 				Player p = (Player) sender;
 				SwordCraftOnline.getGameManager();
-				SwordSkillInventory inv = GameManager.findSCOPlayer(p).getData().getInventories()
-						.getInventory(InventoryType.MAIN_INVENTORY);
+				SwordSkillInventory inv = (SwordSkillInventory) GameManager.findSCOPlayer(p).getData().getInventories()
+						.getInventory(InventoryType.SWORD_SKILL);
 				
 				inv.openInventory();
 				return true;
