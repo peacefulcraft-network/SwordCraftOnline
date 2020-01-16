@@ -8,6 +8,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.SwordSkillInventory;
+import net.peacefulcraft.sco.item.SkillIdentifier;
 
 public class SwordSkillManager
 {
@@ -135,6 +137,38 @@ public class SwordSkillManager
 			dummy.addAll(s);
 		}
 		return dummy;
+	}
+	
+	public void unregisterAllSkills() {
+		for(SwordSkill skill : getSkills()) {
+			unregisterSkill(skill);
+		}
+		skills = new HashMap<SwordSkillType, ArrayList<SwordSkill>>();
+	}
+	
+		/**
+		 * Doesn't actually remove the skill, just tells it it is going to be removed
+		 * @param skill to remove
+		 */
+		private void unregisterSkill(SwordSkill skill) {
+			for(SwordSkill registeredSkill : getSkills()) {
+				if(registeredSkill == skill) {
+					((SwordSkill) skill).destroy();
+					skill.destroy();
+					return;
+				}
+			}
+		}
+	
+	/**
+	 * Unregisters all of a player's SwordSkills, then re-registers a new
+	 * set of abilities based off of what is currently in the player's SwordSkill Inventory
+	 */
+	public void syncSkillInventory(SwordSkillInventory inv) {
+		unregisterAllSkills();
+		for(SkillIdentifier identifier : inv.generateSkillIdentifiers()) {
+			identifier.getProvider().registerSkill(s);
+		}
 	}
 
 }

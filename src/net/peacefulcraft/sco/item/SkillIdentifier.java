@@ -1,5 +1,11 @@
 package net.peacefulcraft.sco.item;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.swordskill.SkillProvider;
+
 /**
  * Item that unique identifies a SwordSkill.
  * Can be used to instantiate a SwordSkillProvider in package net.peacefulcraft.sco.items
@@ -24,5 +30,37 @@ public class SkillIdentifier{
 		this.skillName = skillName;
 		this.skillLevel = skillLevel;
 		this.rarity = rarity;
+	}
+	
+	public SkillProvider getProvider() throws RuntimeException{
+		try {
+			
+			// Instantiate the provider
+			Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + skillName.replaceAll("\\s", "") + "Item");
+			Constructor<?> constructor = classs.getConstructor(int.class, ItemTier.class);
+			Object[] args = { skillLevel, rarity };
+			
+			// Add to provider list to setup skills below
+			SkillProvider provider = (SkillProvider) constructor.newInstance(args);
+			return provider;
+			
+		} catch (ClassNotFoundException e) {
+			SwordCraftOnline.logSevere("Attempted to create item " + skillName + ", but no coresponding class was found in net.peacefulcraft.sco.items");
+		} catch (NoSuchMethodException e) {
+			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + skillName + " must have a constuctor with arguments (int, ItemTier)");
+		} catch (SecurityException e) {
+			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + skillName + " does not have a public constructor.");
+		} catch (InstantiationException | InvocationTargetException e) {
+			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + skillName + " generated exception during reflective instantiation:");
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + skillName + " is an abstract class and cannot be instantiated.");
+		} catch (IllegalArgumentException e) {
+			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + skillName + " received an invalid arguement type during insantiation. Arguements must be of type (int, ItemTier).");
+		} catch (ClassCastException e) {
+			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + skillName + " must implement SwordSkillProvider.");
+		}
+		
+		throw new RuntimeException();
 	}
 }

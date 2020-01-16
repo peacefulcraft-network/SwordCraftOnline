@@ -19,7 +19,7 @@ public class JoinGameListener implements Listener
 		
 		@SuppressWarnings("static-access")
 		SCOPlayer s = SwordCraftOnline.getGameManager().findSCOPlayer(p);
-		(new LoadPlayerInventory(s, InventoryType.ACTIVE_SKILL)).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
+		(new LoadPlayerInventory(s, InventoryType.SWORD_SKILL)).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
 		// (new LoadPlayerInventory(s, InventoryType.MAIN_INVENTORY)).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
 	}
 }

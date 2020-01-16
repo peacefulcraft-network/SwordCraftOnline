@@ -43,6 +43,13 @@ public abstract class SwordSkill
 	}
 	
 	/**
+	 * Called when the SwordSkill is being unregistered
+	 */
+	public void destroy() {
+		if(isUsingTimer && isCountingDown) { resetObjectiveTimer(); }
+	}
+	
+	/**
 	 * @return True, cooldown in effect. False, not in effect.
 	 */
 	public boolean isCoolingDown() {

@@ -1,10 +1,7 @@
 package net.peacefulcraft.sco.inventory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.FileAlreadyExistsException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,9 +10,15 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public abstract class InventoryBase{
+import de.tr7zw.nbtapi.NBTItem;
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.tasks.SavePlayerInventory;
+import net.peacefulcraft.sco.item.ItemTier;
+import net.peacefulcraft.sco.item.SkillIdentifier;
 
-	private File invData;
+public abstract class InventoryBase{
 	
 	private Player observer;
 		public Player getObserver() { return observer; }
@@ -45,30 +48,32 @@ public abstract class InventoryBase{
 	public abstract void resizeInventory(int size);
 	
 	/**
-	 * Object destructor
-	 * Called when player leaves so we can remove any assocaited event listeners
+	 * Examines all items currently in the player's inventory and creates a list of
+	 * Sword Skill identifiers that indicate which sword skills the player has.
+	 * @return
 	 */
-	public abstract void destroy();
-	
-	/**
-	 *
-	 */
-	public void loadInventory() {
-		
+	public ArrayList<SkillIdentifier> generateSkillIdentifiers(){
+		ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
+		for(ItemStack item : inventory) {
+			NBTItem nbtItem = new NBTItem(item);
+			
+			String skillName = item.getItemMeta().getDisplayName();
+			ItemTier tier = ItemTier.valueOf(nbtItem.getString("tier"));
+			int skilLevel = nbtItem.getInteger("skill_level");
+			
+			SkillIdentifier identifier = new SkillIdentifier(skillName, skilLevel, tier);
+			identifiers.add(identifier);
+		}
+		return identifiers;
 	}
 	
-	
-	public static boolean InventoryExists(UUID uuid, Class inventoryType) {
-		return false;
-	}
-	
 	/**
-	 * proxy the static function for internal use because it's less typing
-	 * @throws FileNotFoundException 
-	 * @throws FileAlreadyExistsException
+	 * Generates SkillIdentifiers based on what is in the player's inventory and
+	 * schedules a database task to save the inventory state
 	 */
 	public void saveInventory() {
-		
+		SCOPlayer s = GameManager.findSCOPlayer(observer);
+		(new SavePlayerInventory(s, type, generateSkillIdentifiers())).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
 	}
 			
 	/**
