@@ -12,8 +12,8 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.inventory.InventoryType;
 import net.peacefulcraft.sco.item.ItemTier;
-import net.peacefulcraft.sco.swordskills.util.Generator;
-import net.peacefulcraft.sco.swordskills.util.Validator;
+import net.peacefulcraft.sco.swordskills.utilities.Generator;
+import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
 

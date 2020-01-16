@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskills.util;
+package net.peacefulcraft.sco.swordskills.utilities;
 
 import java.util.List;
 
