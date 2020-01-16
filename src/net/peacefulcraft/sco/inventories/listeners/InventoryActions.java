@@ -54,7 +54,7 @@ public class InventoryActions implements Listener{
 			 * Open the player's sword skill inventory
 			 * Creates one if it does not already exist
 			 */
-			SwordSkillInventory inv = s.getData().getInventories().getInventory(InventoryType.SWORD_SKILL);
+			SwordSkillInventory inv = (SwordSkillInventory) s.getData().getInventories().getInventory(InventoryType.SWORD_SKILL);
 			
 			inv.openInventory();
 			openInventories.put(p, (InventoryBase) inv);
