@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.listeners;
+package net.peacefulcraft.sco.swordskills.listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
