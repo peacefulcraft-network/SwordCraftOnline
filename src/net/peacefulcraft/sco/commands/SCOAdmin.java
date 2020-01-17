@@ -34,7 +34,6 @@ public class SCOAdmin implements CommandExecutor {
 				
 				inv.openInventory();
 				
-				// Track the inventory so it saves when closed
 				return true;
 			}
 
