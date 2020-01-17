@@ -37,7 +37,7 @@ public class SavePlayerInventory extends BukkitRunnable{
 			con = SwordCraftOnline.getHikariPool().getConnection();
 			con.setAutoCommit(false);
 			
-			PreparedStatement stmt_delete = con.prepareStatement("DELETE FROM `player_swordskils` WHERE `uuid`=? AND `inventory`=?");
+			PreparedStatement stmt_delete = con.prepareStatement("DELETE FROM `player_swordskills` WHERE `uuid`=? AND `inventory`=?");
 			stmt_delete.setString(1, uuid.toString());
 			stmt_delete.setString(2, t.toString());
 			int numrows = stmt_delete.executeUpdate();
