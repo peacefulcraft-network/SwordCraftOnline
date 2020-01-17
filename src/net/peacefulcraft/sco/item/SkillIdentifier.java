@@ -36,8 +36,8 @@ public class SkillIdentifier{
 		try {
 			
 			// Instantiate the provider
-			skillName = skillName.replaceAll(" ", "");
-			Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + skillName + "Item");
+			skillName = skillName.replaceAll(" ", "") + "Item";
+			Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + skillName);
 			Constructor<?> constructor = classs.getConstructor(int.class, ItemTier.class);
 			Object[] args = { skillLevel, rarity };
 			
