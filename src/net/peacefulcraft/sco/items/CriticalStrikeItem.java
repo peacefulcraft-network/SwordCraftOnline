@@ -49,8 +49,7 @@ public class CriticalStrikeItem implements SkillProvider{
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return NAME;
 	}
 
 

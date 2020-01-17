@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.inventory.InventoryType;
 import net.peacefulcraft.sco.item.ItemTier;
+import net.peacefulcraft.sco.swordskill.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
@@ -114,6 +115,22 @@ public class SCOAdmin implements CommandExecutor {
 								"player_kills, parry, admin_override, admin_over");
 					return true;
 				}
+			}
+			
+			if(args[0].equalsIgnoreCase("swordskills")) {
+				SCOPlayer s;
+				if(args.length > 0) {
+					s = GameManager.findSCOPlayerByName(args[1]);
+					if(s == null) { sender.sendMessage(ChatColor.RED + "Could not find player"); return true; }
+				}else {
+					s = GameManager.findSCOPlayer((Player) sender);
+				}
+				
+				sender.sendMessage(s.getName() + "'s currently active Sword Skills");
+				for(SwordSkill skill : s.getSwordSkillManager().getSkills()) {
+					sender.sendMessage("- " + skill.getProvider().getName());
+				}
+				return true;
 			}
 
 		}
