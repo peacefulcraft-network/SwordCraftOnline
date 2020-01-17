@@ -26,7 +26,7 @@ public abstract class InventoryBase{
 	private InventoryType type;
 		public InventoryType getType() { return type; }
 		
-	private Inventory inventory;
+	protected Inventory inventory;
 		public Inventory getInventory() { return inventory; }
 		
 		
@@ -55,6 +55,7 @@ public abstract class InventoryBase{
 	public ArrayList<SkillIdentifier> generateSkillIdentifiers(){
 		ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
 		for(ItemStack item : inventory) {
+			if(item == null) { continue; }
 			NBTItem nbtItem = new NBTItem(item);
 			
 			String skillName = item.getItemMeta().getDisplayName();
