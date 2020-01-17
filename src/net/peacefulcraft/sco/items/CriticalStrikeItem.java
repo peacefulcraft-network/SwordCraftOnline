@@ -30,50 +30,40 @@ public class CriticalStrikeItem implements SkillProvider{
 	private ArrayList<String> LORE = new ArrayList<String>();
 	private Material MATERIAL = Material.FLINT;
 
-	
 	public CriticalStrikeItem(int level, ItemTier tier) {
 		this.level = level;
 		this.tier = tier;
+		
+		// initialize lore. Either once or with variance based on the level / tier
 	}
 
-	
 	@Override
 	public void registerSkill(SCOPlayer s) {
 		CriticalStrikeSkill cs = new CriticalStrikeSkill(s, 5000, (SkillProvider) this, 3, 4);
 		s.getSwordSkillManager().registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY, cs);
 		
-		// add variance based on item teir and/or level
+		// add variance based on item tier and/or level
 	}
-
-
 
 	@Override
 	public String getName() {
 		return NAME;
 	}
 
-
-
 	@Override
 	public ArrayList<String> getLore() {
 		return LORE;
 	}
-
-
 
 	@Override
 	public int getSkillLevel() {
 		return this.level;
 	}
 
-
-
 	@Override
 	public void setSkillLevel(int level) {
 		this.level = level;
 	}
-
-
 
 	@Override
 	public ItemStack getItem() {
