@@ -29,8 +29,8 @@ public class SCOConfig {
 		this.c = c;
 		db_ip = (String) c.getString("database.ip");
 		db_name = (String) c.getString("database.name");
-		db_user = (String) c.getString("database.username");
-		db_password = (String) c.getString("database.password");
+		db_user = (String) c.getString("database.user");
+		db_password = (String) c.getString("database.secret");
 
 		waystone_floor_1 = c.getConfigurationSection("waystones.1").getValues(false);
 		waystone_floor_2 = c.getConfigurationSection("waystones.2").getValues(false);
