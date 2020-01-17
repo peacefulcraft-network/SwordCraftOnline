@@ -14,23 +14,16 @@ public class HikariManager {
 	
 	public HikariManager(SCOConfig c) {
 		HikariConfig hc = new HikariConfig();
-		hc.setJdbcUrl("jdbc:mysql://" + c.getDb_ip() + ":3306/" + c.getDb_name());
+		// hc.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+		hc.setDriverClassName("org.mariadb.jdbc.Driver");
+		hc.setJdbcUrl("jdbc:mariadb://" + c.getDb_ip() + ":3306/" + c.getDb_name());
 		hc.setUsername(c.getDb_user());
 		hc.setPassword(c.getDb_password());
 		hc.setPoolName("SCOData");
-		
 		/*
-		 * Recomended optimizations
+		 * TODO: Recomended optimizations
 		 * https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration
 		 */
-		hc.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
-		hc.addDataSourceProperty("cachePrepStmts", "true");
-		hc.addDataSourceProperty("prepStmtCacheSize", "250");
-		hc.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-		hc.addDataSourceProperty("useServerPrepStmts", "true");
-		hc.addDataSourceProperty("cacheResultSetMetadata", "true");
-		hc.addDataSourceProperty("cacheServerConfiguration", "true");
-		hc.addDataSourceProperty("maintainTimeStats", "false");
 		
 		ds = new HikariDataSource(hc);
 	}
