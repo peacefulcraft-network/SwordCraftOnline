@@ -39,9 +39,9 @@ public class SavePlayerInventory extends BukkitRunnable{
 				"SELECT `id` FROM `swordskills` WHERE `name`=? AND `rarity`=? AND `level`=?"
 			);
 			PreparedStatement stmt_insert = con.prepareStatement(
-				"INSERT INTO `player_swordskill` ON DUPLICATE KEY UPDATE VALUES("
+				"INSERT INTO `player_swordskills` VALUES(?,?,?,?)"
+				+ "ON DUPLICATE KEY UPDATE"
 				+ "`uuid`=?, `swordskill`=?, `inventory`=?,`slot`=?"
-				+ ")"
 			);
 			
 			for(SkillIdentifier identifier : identifiers) {
@@ -60,12 +60,16 @@ public class SavePlayerInventory extends BukkitRunnable{
 				int swordSkillId = res.getInt(1);
 				
 				stmt_insert.setString(1, uuid.toString());
+				stmt_insert.setString(5, uuid.toString());
 				stmt_insert.setInt(2, swordSkillId);
+				stmt_insert.setInt(6, swordSkillId);
 				stmt_insert.setString(3, t.toString());
+				stmt_insert.setString(7, t.toString());
 				stmt_insert.setInt(4, identifier.getInventoryLocation());
-				res = stmt_insert.executeQuery();
+				stmt_insert.setInt(8, identifier.getInventoryLocation());
+				int numrows = stmt_insert.executeUpdate();
 				
-				if(!res.rowUpdated() && !res.rowInserted()) {
+				if(numrows > 0) {
 					SwordCraftOnline.logSevere("[TASK][SavePlayerInventory] Generated error for " + name);
 					SwordCraftOnline.logSevere("Sword Skill " + identifier.getSkillName() + " failed to save.");
 				}
