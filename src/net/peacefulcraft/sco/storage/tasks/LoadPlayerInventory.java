@@ -56,8 +56,7 @@ public class LoadPlayerInventory extends BukkitRunnable{
 				int invLoc = res.getInt(4);
 				
 				// Generate the identifier for this swordskill and add to the list
-				SkillIdentifier identifier = new SkillIdentifier(itemName, itemLevel, itemRarity);
-				identifier.setInventoryLocation(invLoc);
+				SkillIdentifier identifier = new SkillIdentifier(itemName, itemLevel, itemRarity, invLoc);
 				identifiers.add(identifier);
 				
 			}while(res.next());

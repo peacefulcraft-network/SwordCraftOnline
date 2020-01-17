@@ -32,6 +32,13 @@ public class SkillIdentifier{
 		this.rarity = rarity;
 	}
 	
+	public SkillIdentifier(String skillName, int skillLevel, ItemTier rarity, int loc) {
+		this.skillName = skillName;
+		this.skillLevel = skillLevel;
+		this.rarity = rarity;
+		this.loc = loc;
+	}
+	
 	public SkillProvider getProvider() throws RuntimeException{
 		try {
 			

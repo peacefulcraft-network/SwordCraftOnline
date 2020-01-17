@@ -54,7 +54,8 @@ public abstract class InventoryBase{
 	 */
 	public ArrayList<SkillIdentifier> generateSkillIdentifiers(){
 		ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
-		for(ItemStack item : inventory) {
+		for(int i=0; i<inventory.getSize(); i++) {
+			ItemStack item = inventory.getItem(i);
 			if(item == null) { continue; }
 			NBTItem nbtItem = new NBTItem(item);
 			
@@ -62,7 +63,7 @@ public abstract class InventoryBase{
 			ItemTier tier = ItemTier.valueOf(nbtItem.getString("tier"));
 			int skilLevel = nbtItem.getInteger("skill_level");
 			
-			SkillIdentifier identifier = new SkillIdentifier(skillName, skilLevel, tier);
+			SkillIdentifier identifier = new SkillIdentifier(skillName, skilLevel, tier, i);
 			identifiers.add(identifier);
 		}
 		return identifiers;
