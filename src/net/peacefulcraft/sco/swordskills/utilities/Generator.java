@@ -20,6 +20,7 @@ public class Generator {
 	public static ItemStack generateItem(String itemName, int skillLevel, ItemTier teir){
 		try {
 			// Instantiate the provider
+			itemName = itemName.replaceAll(" ", "");
 			Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + itemName + "Item");
 			Constructor<?> constructor = classs.getConstructor(int.class, ItemTier.class);
 			Object[] args = { skillLevel, teir };
