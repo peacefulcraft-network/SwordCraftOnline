@@ -35,6 +35,13 @@ public class SavePlayerInventory extends BukkitRunnable{
 		Connection con = null;
 		try {
 			con = SwordCraftOnline.getHikariPool().getConnection();
+			con.setAutoCommit(false);
+			
+			PreparedStatement stmt_delete = con.prepareStatement("DELETE FROM `player_swordskils` WHERE `uuid`=? AND `inventory`=?");
+			stmt_delete.setString(1, uuid.toString());
+			stmt_delete.setString(2, t.toString());
+			int numrows = stmt_delete.executeUpdate();
+			
 			PreparedStatement stmt_select = con.prepareStatement(
 				"SELECT `id` FROM `swordskills` WHERE `name`=? AND `rarity`=? AND `level`=?"
 			);
@@ -67,14 +74,11 @@ public class SavePlayerInventory extends BukkitRunnable{
 				stmt_insert.setString(7, t.toString());
 				stmt_insert.setInt(4, identifier.getInventoryLocation());
 				stmt_insert.setInt(8, identifier.getInventoryLocation());
-				int numrows = stmt_insert.executeUpdate();
-				
-				if(numrows > 0) {
-					SwordCraftOnline.logSevere("[TASK][SavePlayerInventory] Generated error for " + name);
-					SwordCraftOnline.logSevere("Sword Skill " + identifier.getSkillName() + " failed to save.");
-				}
+				numrows = stmt_insert.executeUpdate();
 				
 			}
+			
+			con.commit();
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -82,6 +86,8 @@ public class SavePlayerInventory extends BukkitRunnable{
 		} finally {
 			if(con != null) { 
 				try {
+					con.rollback();
+					con.setAutoCommit(true);
 					con.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
