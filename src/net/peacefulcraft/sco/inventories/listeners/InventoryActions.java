@@ -64,7 +64,7 @@ public class InventoryActions implements Listener{
 	public void onInventoryClose(InventoryCloseEvent e) {
 		if(!openInventories.containsKey(e.getPlayer())) { return; }
 		
-		InventoryBase inv = openInventories.get(e.getPlayer());
+		InventoryBase inv = openInventories.remove(e.getPlayer());
 		inv.saveInventory();
 		
 		if(inv instanceof SwordSkillInventory) {
