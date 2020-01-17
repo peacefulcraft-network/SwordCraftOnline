@@ -100,9 +100,13 @@ public abstract class SkillProvider{
 	 */
 	public abstract void registerSkill(SCOPlayer s);
 	
-	public static ArrayList<String> addDesc(String tier) {
+	public static ArrayList<String> addDesc(String tier){
+		return addDesc(ItemTier.valueOf(tier));
+	}
+	
+	public static ArrayList<String> addDesc(ItemTier tier) {
 		ArrayList<String> desc = new ArrayList<String>();
-		switch(ItemTier.valueOf(tier.toUpperCase())) {
+		switch(tier) {
 		case COMMON:
 			desc.add(getTierColor(tier) + "Common Sword Skill");
 		break;case UNCOMMON:
@@ -120,7 +124,11 @@ public abstract class SkillProvider{
 	}
 	
 	public static ChatColor getTierColor(String tier) {
-		switch(ItemTier.valueOf(tier.toUpperCase())) {
+		return getTierColor(ItemTier.valueOf(tier));
+	}
+	
+	public static ChatColor getTierColor(ItemTier tier) {
+		switch(tier) {
 		case COMMON:
 			return ChatColor.WHITE;
 		case UNCOMMON:

@@ -18,7 +18,6 @@ public class CriticalStrikeItem extends SkillProvider{
 
 	public CriticalStrikeItem(int level, ItemTier tier) {
 		super("Critical Strike", level, tier, null, Material.FLINT);
-		// initialize lore. Either once or with variance based on the level / tier
 	}
 
 	@Override
