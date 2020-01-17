@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.item.ItemTier;
 import net.peacefulcraft.sco.item.SkillIdentifier;
@@ -22,22 +24,25 @@ public class CriticalStrikeItem implements SkillProvider{
 	
 	private SkillIdentifier id;
 		public SkillIdentifier getId() { return id; }
-	private static final String NAME = "Critical Strike";
-	private static final ArrayList<String> LORE = new ArrayList<String>();
-	private static final Material MATERIAL = Material.FLINT;
-	private static final ItemTier TIER = ItemTier.COMMON;
-	private int skillLevel;
+	private String NAME = "Critical Strike";
+	private int level;
+	private ItemTier tier;
+	private ArrayList<String> LORE = new ArrayList<String>();
+	private Material MATERIAL = Material.FLINT;
+
 	
-	private static final int COOLDOWN = 5000;
-	private static final int HITSTOTRIGGER = 3;
-	private static final int DAMAGE = 3;
-	
+	public CriticalStrikeItem(int level, ItemTier tier) {
+		this.level = level;
+		this.tier = tier;
+	}
 
 	
 	@Override
 	public void registerSkill(SCOPlayer s) {
-		CriticalStrikeSkill cs = new CriticalStrikeSkill(s, COOLDOWN, (SkillProvider) this, HITSTOTRIGGER, DAMAGE);
+		CriticalStrikeSkill cs = new CriticalStrikeSkill(s, 5000, (SkillProvider) this, 3, 4);
 		s.getSwordSkillManager().registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY, cs);
+		
+		// add variance based on item teir and/or level
 	}
 
 
@@ -52,32 +57,38 @@ public class CriticalStrikeItem implements SkillProvider{
 
 	@Override
 	public ArrayList<String> getLore() {
-		// TODO Auto-generated method stub
-		return null;
+		return LORE;
 	}
 
 
 
 	@Override
 	public int getSkillLevel() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.level;
 	}
 
 
 
 	@Override
 	public void setSkillLevel(int level) {
-		// TODO Auto-generated method stub
-		
+		this.level = level;
 	}
 
 
 
 	@Override
 	public ItemStack getItem() {
-		// TODO Auto-generated method stub
-		return null;
+		ItemStack item = new ItemStack(MATERIAL);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName("Critical Strike");
+		item.setItemMeta(meta);
+		
+		NBTItem nbti = new NBTItem(item);
+		nbti.setString("tier", tier.toString());
+		nbti.setInteger("skill_level", level);
+		nbti.setBoolean("movable", true);
+		nbti.setBoolean("dropable", false);
+		return nbti.getItem();
 	}
 
 }
