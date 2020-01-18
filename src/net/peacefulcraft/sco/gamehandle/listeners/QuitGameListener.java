@@ -8,6 +8,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 
 public class QuitGameListener implements Listener
 {
+	@SuppressWarnings("static-access")
 	@EventHandler
 	public void quitGame(PlayerQuitEvent e) {
 		SwordCraftOnline.getGameManager().findSCOPlayer(e.getPlayer()).playerDisconnect();

@@ -8,10 +8,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class TeleportCrystal implements net.peacefulcraft.sco.items.scoItem
+public class TeleportCrystal
 {
 
-	@Override
 	public ItemStack create()
 	{
 		ItemStack crystal = new ItemStack(Material.DIAMOND, 1);
