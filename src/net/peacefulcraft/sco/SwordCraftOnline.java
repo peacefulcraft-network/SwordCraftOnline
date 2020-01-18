@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,11 +40,15 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	public static DungeonManager dungeonManager;
 		public static DungeonManager getDungeonManager() { return dungeonManager; }
+
+	public static Random r;
 		
 	public SwordCraftOnline() {
 
 		sao = this;
 		cfg = new SCOConfig(getConfig());
+
+		this.r = new Random();
 		
 	}
 	

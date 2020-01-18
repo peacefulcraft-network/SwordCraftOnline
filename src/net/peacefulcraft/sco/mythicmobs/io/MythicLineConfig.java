@@ -7,6 +7,9 @@ import java.util.Set;
 
 import org.bukkit.Color;
 
+import net.peacefulcraft.sco.mythicmobs.adapters.BukkitColor;
+
+
 public class MythicLineConfig implements GenericConfig {
     private String fileName = "Unknown";
     
@@ -418,11 +421,12 @@ public class MythicLineConfig implements GenericConfig {
       if (c == null)
         return null; 
       if (c.startsWith("#") && c.length() == 7)
-        return Color.decode(c); 
+        return BukkitColor.decode(c); 
       //MythicLogger.errorGenericConfig(this, "Couldn't parse color '" + c + "': must be in Hex or R,G,B format");
       return Color.RED;
     }
     
+    /*
     public static String unparseBlock(String s) {
       if (s.contains("\"")) {
         String[] split = s.split("\"");
@@ -478,7 +482,8 @@ public class MythicLineConfig implements GenericConfig {
       parsed = parsed + s.substring(ss, pos);
       return parsed;
     }
-    
+    */
+
     public static String parseBlock(String s) {
       return s.replace("<&csp>", " ").replace("<&da>", "-").trim();
     }

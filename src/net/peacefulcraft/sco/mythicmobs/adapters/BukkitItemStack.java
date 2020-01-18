@@ -59,7 +59,12 @@ public class BukkitItemStack implements AbstractItemStack, Cloneable {
     
     @SuppressWarnings("Deprecated")
     public BukkitItemStack colorData(DyeColor dc) {
-        this.item.setDurability((short)dc.getWoolData());
+        //this.item.setDurability((short)dc.getWoolData());
+        if(this.item.getItemMeta() instanceof Damageable) {
+          ItemMeta meta = this.item.getItemMeta();
+          ((Damageable)meta).setDamage((short)dc.getWoolData());
+          this.item.setItemMeta(meta);
+        }
         return this;
     }
     

@@ -5,12 +5,16 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractBiome;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
+
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractItemStack;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
@@ -83,5 +87,11 @@ public final class BukkitAdapter {
     
     public static Vector adapt(AbstractVector vector) {
         return new Vector(vector.getX(), vector.getY(), vector.getZ());
+    }
+
+    public static AbstractBiome adapt(Biome b) {
+        if (b == null)
+        return null; 
+        return new AbstractBiome(b.toString());
     }
 }

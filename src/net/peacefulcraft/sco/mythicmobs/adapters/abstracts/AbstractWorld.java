@@ -3,8 +3,6 @@ package net.peacefulcraft.sco.mythicmobs.adapters.abstracts;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.block.Biome;
-
 public interface AbstractWorld {
     List<AbstractEntity> getLivingEntities();
 
@@ -38,7 +36,7 @@ public interface AbstractWorld {
 
     boolean isLocationLoaded(AbstractLocation paramAbstractLocation);
 
-    Biome getLocationBiome(AbstractLocation paramAbstractLocation);
+    //Biome getLocationBiome(AbstractLocation paramAbstractLocation);
 
     long getFullTime();
 

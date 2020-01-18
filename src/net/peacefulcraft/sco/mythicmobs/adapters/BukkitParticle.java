@@ -3,10 +3,29 @@ package net.peacefulcraft.sco.mythicmobs.adapters;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Material;
+
+
 import org.bukkit.Particle;
+
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractVector;
+import net.peacefulcraft.sco.mythicmobs.io.MythicLineConfig;
+
+
+
+
 
 public enum BukkitParticle {
     EXPLOSION_NORMAL(new String[] { "poof", "explode", "explosion", "explosion_small" }),
@@ -139,7 +158,7 @@ public enum BukkitParticle {
           return Bukkit.getServer().createBlockData(Material.STONE);
         } 
       } 
-      if (particle.getDataType().equals(MaterialData.class)) {
+      if (particle.getDataType().equals(BlockData.class)) {
         String strMaterial = config.getString(new String[] { "material", "m" }, "STONE", new String[0]);
         try {
           Material.matchMaterial(strMaterial.toUpperCase()).getData();
@@ -148,8 +167,9 @@ public enum BukkitParticle {
         } 
       } 
       if (particle.getDataType().equals(Particle.DustOptions.class)) {
+        //TODO: Get string may not serialize correctly.
         String strColor = config.getString(new String[] { "color", "c" }, "#FF0000", new String[0]);
-        Color color = Color.decode(strColor);
+        Color color = BukkitColor.decode(strColor);
         float size = config.getFloat(new String[] { "size" }, 1.0F);
         int r = color.getRed();
         int g = color.getGreen();
@@ -185,7 +205,7 @@ public enum BukkitParticle {
     
     public void send(AbstractLocation location, float speed, int amount, float offsetX, float offsetY, float offsetZ, Object data) {
       if (!validateData(data)) {
-        MythicMobs.error("Could not send particle: invalid particle data supplied.");
+        //MythicMobs.error("Could not send particle: invalid particle data supplied.");
         return;
       } 
       Particle particle = toBukkitParticle();
@@ -200,7 +220,7 @@ public enum BukkitParticle {
       Particle particle = toBukkitParticle();
       Location loc = BukkitAdapter.adapt(location);
       for (int i = 0; i < amount; i++) {
-        Location ln = loc.clone().add((0.0F - offsetX) + MythicMobs.r.nextDouble() * offsetX * 2.0D, (offsetY - offsetY) + MythicMobs.r.nextDouble() * offsetY * 2.0D, (0.0F - offsetZ) + MythicMobs.r.nextDouble() * offsetZ * 2.0D);
+        Location ln = loc.clone().add((0.0F - offsetX) + SwordCraftOnline.r.nextDouble() * offsetX * 2.0D, (offsetY - offsetY) + SwordCraftOnline.r.nextDouble() * offsetY * 2.0D, (0.0F - offsetZ) + SwordCraftOnline.r.nextDouble() * offsetZ * 2.0D);
         for (Player player : Bukkit.getOnlinePlayers()) {
           if (player.getWorld().equals(loc.getWorld()))
             player.spawnParticle(particle, ln, 0, (float)direction.getX(), (float)direction.getY(), (float)direction.getZ(), speed); 
@@ -217,7 +237,7 @@ public enum BukkitParticle {
       if (r < 1.17549435E-38F)
         r = 1.17549435E-38F; 
       for (int i = 0; i < amount; i++) {
-        Location ln = loc.clone().add((0.0F - offsetX) + MythicMobs.r.nextDouble() * offsetX * 2.0D, (offsetY - offsetY) + MythicMobs.r.nextDouble() * offsetY * 2.0D, (0.0F - offsetZ) + MythicMobs.r.nextDouble() * offsetZ * 2.0D);
+        Location ln = loc.clone().add((0.0F - offsetX) + SwordCraftOnline.r.nextDouble() * offsetX * 2.0D, (offsetY - offsetY) + SwordCraftOnline.r.nextDouble() * offsetY * 2.0D, (0.0F - offsetZ) + SwordCraftOnline.r.nextDouble() * offsetZ * 2.0D);
         for (Player player : Bukkit.getOnlinePlayers()) {
           if (player.getWorld().equals(loc.getWorld()))
             player.spawnParticle(particle, ln, 0, r, g, b, (speed > 0.0F) ? speed : 1.0D); 
