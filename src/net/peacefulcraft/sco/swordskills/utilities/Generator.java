@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.item.ItemTier;
-import net.peacefulcraft.sco.swordskill.SkillProvider;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.swordskills.SkillProvider;
 
 /**
  * Attempts to generate an SCO SkillProvider item

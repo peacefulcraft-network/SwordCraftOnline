@@ -13,9 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.InventoryBase;
+import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.inventory.InventoryBase;
-import net.peacefulcraft.sco.inventory.InventoryType;
 
 /**
  * Tracks opening and closing of inventories

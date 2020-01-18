@@ -1,12 +1,9 @@
-package net.peacefulcraft.sco.swordskills.skills;
+package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.swordskill.SkillProvider;
-import net.peacefulcraft.sco.swordskill.SwordSkill;
-import net.peacefulcraft.sco.swordskill.SwordSkillComboType;
 
 public class CriticalStrikeSkill extends SwordSkill{
 	

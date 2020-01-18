@@ -1,10 +1,10 @@
-package net.peacefulcraft.sco.item;
+package net.peacefulcraft.sco.items;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.swordskill.SkillProvider;
+import net.peacefulcraft.sco.swordskills.SkillProvider;
 
 /**
  * Item that unique identifies a SwordSkill.

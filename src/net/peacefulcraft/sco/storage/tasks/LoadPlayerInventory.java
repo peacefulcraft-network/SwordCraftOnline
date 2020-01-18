@@ -10,9 +10,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventory.InventoryType;
-import net.peacefulcraft.sco.item.ItemTier;
-import net.peacefulcraft.sco.item.SkillIdentifier;
+import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
 
 /**
  * Async task that pulls player's inventory data out of mysql

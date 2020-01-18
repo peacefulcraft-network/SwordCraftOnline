@@ -8,10 +8,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.inventory.InventoryType;
-import net.peacefulcraft.sco.item.SkillIdentifier;
-import net.peacefulcraft.sco.swordskill.SkillProvider;
+import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.swordskills.SkillProvider;
 
 /**
  * Sync task that task a list of item identifiers, generates the actual ItemStacks

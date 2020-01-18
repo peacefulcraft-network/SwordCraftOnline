@@ -3,10 +3,9 @@ package net.peacefulcraft.sco.items;
 import org.bukkit.Material;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.item.ItemTier;
-import net.peacefulcraft.sco.swordskill.SkillProvider;
-import net.peacefulcraft.sco.swordskill.SwordSkillType;
-import net.peacefulcraft.sco.swordskills.skills.CriticalStrikeSkill;
+import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
+import net.peacefulcraft.sco.swordskills.SkillProvider;
+import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
  * Common Critical Strike - Flint

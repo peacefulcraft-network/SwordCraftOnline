@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskill;
+package net.peacefulcraft.sco.swordskills;
 
 public enum SwordSkillComboType {
 	CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE,

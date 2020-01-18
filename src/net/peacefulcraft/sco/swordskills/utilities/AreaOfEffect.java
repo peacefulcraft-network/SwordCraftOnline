@@ -5,7 +5,7 @@ import java.util.List;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import net.peacefulcraft.sco.swordskill.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkill;
 
 public class AreaOfEffect {
 

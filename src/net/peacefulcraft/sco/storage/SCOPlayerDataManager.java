@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventory.InventoryManager;
+import net.peacefulcraft.sco.inventories.InventoryManager;
 
 public class SCOPlayerDataManager {
 	

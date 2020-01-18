@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskill;
+package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;

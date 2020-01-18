@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.item;
+package net.peacefulcraft.sco.items;
 
 public enum ItemTier
 {

@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.inventory.InventoryType;
-import net.peacefulcraft.sco.item.ItemTier;
-import net.peacefulcraft.sco.swordskill.SwordSkill;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 

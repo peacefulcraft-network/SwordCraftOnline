@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.inventory;
+package net.peacefulcraft.sco.inventories;
 
 import java.util.HashMap;
 

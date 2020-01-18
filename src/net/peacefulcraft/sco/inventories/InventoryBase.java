@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.inventory;
+package net.peacefulcraft.sco.inventories;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +14,8 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.item.ItemTier;
-import net.peacefulcraft.sco.item.SkillIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
 import net.peacefulcraft.sco.storage.tasks.SavePlayerInventory;
 
 public abstract class InventoryBase{

@@ -1,6 +1,6 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
-import net.peacefulcraft.sco.item.ItemTier;
+import net.peacefulcraft.sco.items.ItemTier;
 
 public class Validator {
 	public static boolean teirExists(String str) {

@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskill;
+package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.item.SkillIdentifier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
 
 public class SwordSkillManager
 {

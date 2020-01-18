@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventory.InventoryType;
+import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.storage.tasks.LoadPlayerInventory;
 
 public class JoinGameListener implements Listener

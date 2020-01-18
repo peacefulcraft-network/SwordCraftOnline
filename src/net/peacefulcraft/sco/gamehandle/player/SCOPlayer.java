@@ -6,10 +6,10 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.peacefulcraft.sco.inventory.InventoryManager;
+import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.storage.SCOPlayerDataManager;
-import net.peacefulcraft.sco.swordskill.SwordSkill;
-import net.peacefulcraft.sco.swordskill.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 
 public class SCOPlayer 
 {

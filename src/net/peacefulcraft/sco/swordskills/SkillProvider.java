@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.swordskill;
+package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
 
@@ -9,8 +9,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.item.ItemTier;
-import net.peacefulcraft.sco.item.SkillIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
 
 /**
  * An item which provides a sword skill to the player when equipped
