@@ -17,6 +17,11 @@ public class SCOPlayer
 	private String lastInvite;
 	private int playerKills;
 	
+	/**Tracks the players current floor in SCO */
+	private int floor;
+		public int getFloor() { return floor; }
+		public void setFloor(int num) { floor = num; }
+	
 	private Player user;
 		public Player getPlayer() {return this.user;}
 		public UUID getUUID() {return this.user.getUniqueId();}
@@ -69,6 +74,7 @@ public class SCOPlayer
 		partyName = "";
 		lastInvite = "";
 		playerKills = 0;
+		floor = 0; //TODO: Load this from scopData
 		
 		scopData = new SCOPlayerDataManager(this);
 		swordSkillManager = new SwordSkillManager(this);

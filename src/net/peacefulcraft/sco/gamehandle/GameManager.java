@@ -18,7 +18,6 @@ public class GameManager {
 		
 	public GameManager() {
 		players = new HashMap<UUID, SCOPlayer>();
-		
 	}
 	
 	public void joinGame(Player p) {
@@ -32,7 +31,8 @@ public class GameManager {
 		players.put(p.getUniqueId(), s);
 		if(Teleports.getSpawn() != null) 
 		
-		p.teleport(Teleports.getSpawn());
+		//Set to teleport player to floor.
+		p.teleport(Teleports.getWaystone(s.getFloor()));
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
 		p.getInventory().setItem(7, (new TeleportCrystal()).create());
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");

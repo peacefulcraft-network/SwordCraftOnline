@@ -33,4 +33,24 @@ public class Teleports
 				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getQuit().get("z"))
 			);
 	}
+
+	/**Returns teleport location of dungeon entrance */
+	public static Location getDungeonEntrance(int index) {
+		return new Location(
+			Bukkit.getWorld((String) SwordCraftOnline.getSCOConfig().getDungeonEntrance(index).get("world")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getDungeonEntrance(index).get("x")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getDungeonEntrance(index).get("y")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getDungeonEntrance(index).get("x"))
+		);
+	}
+
+	/**Returns teleport location of dungeon arena */
+	public static Location getDungeonArena(int index) {
+		return new Location(
+			Bukkit.getWorld((String) SwordCraftOnline.getSCOConfig().getDungeonArena(index).get("world")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getDungeonArena(index).get("x")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getDungeonArena(index).get("y")),
+				Double.parseDouble( (String) SwordCraftOnline.getSCOConfig().getDungeonArena(index).get("x"))
+		);
+	}
 }
