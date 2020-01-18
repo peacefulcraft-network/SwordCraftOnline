@@ -8,10 +8,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class UnlockSlot implements net.peacefulcraft.sco.items.scoItem
+public class UnlockSlot
 {
 
-	@Override
 	public ItemStack create()
 	{
 		ItemStack unlockSlot = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
