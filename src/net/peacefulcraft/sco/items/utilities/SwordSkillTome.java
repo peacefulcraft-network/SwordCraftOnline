@@ -8,10 +8,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class SwordSkillTome implements net.peacefulcraft.sco.items.scoItem
+public class SwordSkillTome
 {
 
-	@Override
 	public ItemStack create()
 	{
 		ItemStack tome = new ItemStack(Material.BOOK, 1);

@@ -9,9 +9,12 @@ import org.bukkit.entity.Player;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.inventories.listeners.InventoryCloser;
-import net.peacefulcraft.sco.items.Item;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.utilities.Generator;
+import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
 
@@ -26,28 +29,28 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("swordskillbook")) {
 				Player p = (Player) sender;
 				SwordCraftOnline.getGameManager();
-				SwordSkillInventory inv = GameManager.findSCOPlayer(p).getData().getInventories()
-						.getInventory(SwordSkillInventory.class);
+				SwordSkillInventory inv = (SwordSkillInventory) GameManager.findSCOPlayer(p).getData().getInventories()
+						.getInventory(InventoryType.SWORD_SKILL);
 				
 				inv.openInventory();
 				
-				// Track the inventory so it saves when closed
-				InventoryCloser.trackInventory(p.getUniqueId(), inv);
 				return true;
 			}
 
 			if (args[0].equalsIgnoreCase("generateitem")) {
 				Player p = (Player) sender;
-				if(!Item.itemExists(args[1])) { return false; }
+				// TODO: ITEM VALIDATION
+				//if(!Item.itemExists(args[1])) { return false; }
 
+				// TODO: MAKE UTIL ITEMS SKILLPROVIDERS WITH NO EQUIP ABILITY
 				if(args.length == 2) {
-					p.getInventory().addItem(Item.giveItem(args[1], null));
+					//p.getInventory().addItem(Item.giveItem(args[1], null));
 					return true;
 				} 
 				if(args.length == 3) {
-					if(!Item.tierExists(args[2])) {return false; }
+					if(!Validator.teirExists(args[2])) {return false; }
 
-					p.getInventory().addItem(Item.giveItem(args[1], args[2]));
+					p.getInventory().addItem(Generator.generateItem(args[1], 1, ItemTier.valueOf(args[2])));
 					return true;
 				}
 				return false;
@@ -113,6 +116,22 @@ public class SCOAdmin implements CommandExecutor {
 								"player_kills, parry, admin_override, admin_over");
 					return true;
 				}
+			}
+			
+			if(args[0].equalsIgnoreCase("swordskills")) {
+				SCOPlayer s;
+				if(args.length > 0) {
+					s = GameManager.findSCOPlayerByName(args[1]);
+					if(s == null) { sender.sendMessage(ChatColor.RED + "Could not find player"); return true; }
+				}else {
+					s = GameManager.findSCOPlayer((Player) sender);
+				}
+				
+				sender.sendMessage(s.getName() + "'s currently active Sword Skills");
+				for(SwordSkill skill : s.getSwordSkillManager().getSkills()) {
+					sender.sendMessage("- " + skill.getProvider().getName());
+				}
+				return true;
 			}
 
 		}

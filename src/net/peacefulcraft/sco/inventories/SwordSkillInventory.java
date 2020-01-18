@@ -1,25 +1,32 @@
 package net.peacefulcraft.sco.inventories;
 
-import java.util.List;
+import java.util.HashMap;
 
 import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
+import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.utilities.UnlockSlot;
 
 public class SwordSkillInventory extends InventoryBase implements Listener{
-	@Override
-	public Class getInventoryType() { return SwordSkillInventory.class; }
-		
-	public SwordSkillInventory(Player p) {
-		super(p, SwordSkillInventory.class);
+	
+	// private Inventory inventory from InventoryBase
+	
+	public SwordSkillInventory(SCOPlayer s, HashMap<Integer, ItemStack> items, int size) {
+		super(s.getPlayer(), InventoryType.SWORD_SKILL);
+		this.inventory = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, size);
+		for(Integer loc : items.keySet()) {
+			inventory.setItem(loc, items.get(loc));
+		}
+
 	}
 	
 	/**
@@ -40,22 +47,12 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 		if(s == null) { return; }
 		if(s.hasOverride()) { return; }
 		
-		if(e.getCurrentItem() != null) {	
-			if(e.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE ) {
-	        	e.setCancelled(true);
-	        } else if(e.getCurrentItem().getItemMeta().hasLore()) {
-				for(String str : e.getCurrentItem().getItemMeta().getLore()) {
-					if(str.contains("Sword Skill")) {
-						return;	
-					}
-				}
-				e.setCancelled(true);
-	        } else {
-				e.setCancelled(true);
-			}
-		}
+		if(e.getCurrentItem() == null) { return; }
+		
+		NBTItem nbti = new NBTItem(e.getCurrentItem());
+		if(nbti.hasKey("movable") && nbti.getBoolean("movable") == true) { return; }
+		e.setCancelled(true);
 	}
-
 	
 /****************************************************
  * 

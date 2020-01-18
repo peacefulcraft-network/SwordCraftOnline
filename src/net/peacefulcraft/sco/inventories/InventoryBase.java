@@ -1,15 +1,8 @@
 package net.peacefulcraft.sco.inventories;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.FileAlreadyExistsException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -17,30 +10,29 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.storage.tasks.SavePlayerInventory;
 
-public abstract class InventoryBase<T extends InventoryBase>{
-
-	private File invData;
+public abstract class InventoryBase{
 	
 	private Player observer;
 		public Player getObserver() { return observer; }
 	
-	private Class<T> inventoryType;
-		public abstract Class<T> getInventoryType();
+	private InventoryType type;
+		public InventoryType getType() { return type; }
 		
-	private Inventory inventory;
+	protected Inventory inventory;
 		public Inventory getInventory() { return inventory; }
 		
 		
-	public InventoryBase(Player observer, Class<T> inventoryType){
+	public InventoryBase(Player observer, InventoryType inventoryType){
 		this.observer = observer;
-		this.inventoryType = inventoryType;
-		
-		invData = new File(
-			SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
-			+ "/data/" + observer.getUniqueId() + "/" + inventoryType.getName() + ".inv" 
-		); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
+		this.type = inventoryType;
 		
 	}		
 	
@@ -56,91 +48,36 @@ public abstract class InventoryBase<T extends InventoryBase>{
 	public abstract void resizeInventory(int size);
 	
 	/**
-	 * Object destructor
-	 * Called when player leaves so we can remove any assocaited event listeners
+	 * Examines all items currently in the player's inventory and creates a list of
+	 * Sword Skill identifiers that indicate which sword skills the player has.
+	 * @return
 	 */
-	public abstract void destroy();
-	
-	/**
-	 * Load serialized inventory from disk
-	 * Create actual MC inventory that we can .open
-	 * @throws FileNotFoundException 
-	 */
-	public void loadInventory() throws FileNotFoundException {
-		if(invData.exists()) {
-			try {
-				FileReader fr = new FileReader(invData);
-				
-				long size = invData.length();
-				if(size > Integer.MAX_VALUE) {
-					// char array can only be of length int so if the file is too big it will not load properly
-					fr.close();
-					throw new RuntimeException("Datafile " + invData + " exceeds maximium readin size. Aborint file load.");
-				}
-				
-				int length = (int) invData.length();
-				char[] data = new char[length];
-				
-				fr.read(data);
-				fr.close();
-				inventory = InventorySerializer.StringToInventory( String.valueOf(data) );
-				
-			} catch (RuntimeException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}else {
-			// Use InventoryBase.createNewInventory( size ) to create a new inventory
-			throw new FileNotFoundException("Inventory " + invData + " does not exist.");
-		}
-	}
-	
-	/**
-	 * Create a new inventory
-	 * @param type: <T extends InventoryBase>
-	 * @param size: # of slots
-	 * @param u: UUID of player
-	 * @throws FileNotFoundException 
-	 */
-	public static void createNewInventory(Class inventoryType, int size, Player p) throws FileNotFoundException {
-		Inventory inventory = Bukkit.getServer().createInventory(null, size, p.getDisplayName() + "'s " + inventoryType.getName());
-		saveInventory(inventory, inventoryType, p.getUniqueId());
-	}
-	
-	public static boolean InventoryExists(UUID uuid, Class inventoryType) {
-		File dataLoc = new File(
-			SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
-			+ "/data/" + uuid + "/" + inventoryType.getName() + ".inv" 
-		); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
-		
-		return dataLoc.exists();
-	}
-	
-	/**
-	 * proxy the static function for internal use because it's less typing
-	 * @throws FileNotFoundException 
-	 * @throws FileAlreadyExistsException
-	 */
-	public void saveInventory() throws FileNotFoundException {
-		InventoryBase.saveInventory(inventory, inventoryType, observer.getUniqueId());
-	}
-		
-		/**
-		 * Save serialized inventory to disk
-		 * @throws FileNotFoundException 
-		 */
-		private static void saveInventory(Inventory inventory, Class inventoryType, UUID u) throws FileNotFoundException {
-			String serializedInventory = InventorySerializer.InventoryToString(inventory);
-			File invData = new File(
-					SwordCraftOnline.getPluginInstance().getDataFolder().getPath() 
-					+ "/data/" + u + "/" + inventoryType.getName() + ".inv" 
-				); // plugins/SwordCraftOnline/data/[uuid]/[SwordSkillInventory].inv
+	public ArrayList<SkillIdentifier> generateSkillIdentifiers(){
+		ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
+		for(int i=0; i<inventory.getSize(); i++) {
+			ItemStack item = inventory.getItem(i);
+			if(item == null) { continue; }
+			NBTItem nbtItem = new NBTItem(item);
 			
-			PrintWriter pw = new PrintWriter(invData);
-			pw.write(serializedInventory);
-			pw.close();
+			String skillName = item.getItemMeta().getDisplayName();
+			ItemTier tier = ItemTier.valueOf(nbtItem.getString("tier"));
+			int skilLevel = nbtItem.getInteger("skill_level");
+			
+			SkillIdentifier identifier = new SkillIdentifier(skillName, skilLevel, tier, i);
+			identifiers.add(identifier);
 		}
-		
+		return identifiers;
+	}
+	
+	/**
+	 * Generates SkillIdentifiers based on what is in the player's inventory and
+	 * schedules a database task to save the inventory state
+	 */
+	public void saveInventory() {
+		SCOPlayer s = GameManager.findSCOPlayer(observer);
+		(new SavePlayerInventory(s, type, generateSkillIdentifiers())).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
+	}
+			
 	/**
 	 * Open inventory for player
 	 */
@@ -153,11 +90,7 @@ public abstract class InventoryBase<T extends InventoryBase>{
 	 */
 	public void closeInventory() {
 		observer.closeInventory();
-		try {
-			this.saveInventory();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		this.saveInventory();
 	};
 	
 	public void fillRow(int row, int amount, ItemStack item) {

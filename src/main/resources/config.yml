@@ -1,3 +1,8 @@
+database:
+  ip:
+  name:
+  user:
+  secret:
 waystones:
   1: {}
   2: {}
