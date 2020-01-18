@@ -130,7 +130,7 @@ public class SCOPlayer
 		String playerKills = ChatColor.GOLD + "Player Kills: " + ChatColor.BLUE + getPlayerKills() + '\n';
 		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCriticalChance() + '\n';
 		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCriticalMultiplier() + '\n'; 
-		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getParryChance();
+		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getParryChance() + '\n';
 		String override = ChatColor.GOLD + "Admin Override: " + ChatColor.BLUE + hasOverride() + '\n';
 		
 		String skills = ChatColor.GOLD + "Active Skills: " + ChatColor.BLUE;
