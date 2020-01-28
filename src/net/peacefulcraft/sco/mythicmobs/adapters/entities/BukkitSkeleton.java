@@ -12,7 +12,7 @@ import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 public class BukkitSkeleton extends MythicEntity {
     private static final int height = 2;
    
-   public void instantiate(MythicConfig mc) {}
+    public void instantiate(MythicConfig mc) {}
    
     public Entity spawn(MythicMob mm, Location location) {
         Skeleton skeleton = (Skeleton)location.getWorld().spawnEntity(location, EntityType.SKELETON);

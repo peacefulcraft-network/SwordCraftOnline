@@ -20,6 +20,10 @@ import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
+import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
+import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
+import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 
 public class SwordCraftOnline extends JavaPlugin{
@@ -43,13 +47,22 @@ public class SwordCraftOnline extends JavaPlugin{
 		public static DungeonManager getDungeonManager() { return dungeonManager; }
 
 	public static Random r;
+
+	private ServerInterface server;
+		public ServerInterface server() { return this.server; }
+
+	private DropManager dropManager;
+		public DropManager getDropManager() { return this.dropManager; }
 		
+	private MobManager mobManager;
+		public MobManager getMobManager() { return this.mobManager; }
+	
 	public SwordCraftOnline() {
 
 		sco = this;
 		cfg = new SCOConfig(getConfig());
 
-		this.r = new Random();
+		r = new Random();
 		
 	}
 	
@@ -65,9 +78,12 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		hikari = new HikariManager(cfg);
 		dungeonManager = new DungeonManager();
+
+		this.server = (ServerInterface)new BukkitServer();
+		this.dropManager = new DropManager(this);
+		this.mobManager = new MobManager(this);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
-		
 	}
 	
 	public void onDisable() {

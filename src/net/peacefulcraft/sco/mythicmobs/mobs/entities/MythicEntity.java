@@ -7,8 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitBabyDrowned;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitBabyHusk;
@@ -130,7 +128,7 @@ public abstract class MythicEntity {
             }
         }
         try {
-            return (MythicEntity)clazz1.getDeclaredConstructor().newInstance();
+            return (MythicEntity)clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

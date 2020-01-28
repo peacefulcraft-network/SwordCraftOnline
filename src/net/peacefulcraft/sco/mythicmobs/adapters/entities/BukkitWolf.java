@@ -9,6 +9,7 @@ import org.bukkit.entity.Wolf;
 
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.properties.AgeableProperty;
@@ -71,8 +72,9 @@ public class BukkitWolf extends MythicEntity {
       return this.tameable;
     }
     
+    /**TODO: Hotfixed removed cast */
     public Player getOwner(ActiveMob am) {
-      Entity e = am.getEntity();
+      Entity e = (Entity)am.getEntity();
       if (e instanceof Wolf) {
         Wolf w = (Wolf)e;
         if (w.getOwner() instanceof Player)

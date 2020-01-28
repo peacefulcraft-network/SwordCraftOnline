@@ -16,6 +16,7 @@ public class IOLoader<T extends JavaPlugin> {
   private T plugin;
 
   private File file = null;
+    public File getFile() { return this.file; }
 
   private FileConfiguration fileConfig = null;
 
