@@ -7,7 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-
+/**
+ * Weighted collection for drop table item distribution
+ */
 public class RandomCollection<E extends WeightedItem> {
     private List<E> items = new ArrayList<>();
 

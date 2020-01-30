@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.inventory.ItemStack;
-
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
@@ -17,7 +16,7 @@ public class DropTable {
     private final String internalName;
         public String getInternalName() { return this.internalName; }
 
-    private RandomCollection<Drop> drops = new RandomCollection();
+    private RandomCollection<Drop> drops = new RandomCollection<Drop>();
         public boolean hasDrops() { return (this.drops.size() > 0); }
 
     private int initems = -1;
@@ -32,6 +31,7 @@ public class DropTable {
 
     private boolean hasConditions = false;
 
+    /**Reads config file into data structure */
     public DropTable(String file, String name, MythicConfig mc) {
         this.fileName = file;
         this.internalName = name;
@@ -40,12 +40,11 @@ public class DropTable {
         this.minItems = mc.getInteger("MinItems", totalItems);
         //this.bonusLevelItems = SwordCraftOnline.r.nextDouble(mc.getInteger("BonusLevelItems", 0));
         List<String> strDrops = mc.getStringList("Drops");
-        SwordCraftOnline.getPluginInstance().getDropManager().queueSecondPass(() -> {
-            for(String s : strDrops) {
-                Drop d = new Drop(s);
-                this.drops.add(d);
-            }
-        });
+        for(String s : strDrops) {
+            System.out.println("[DROPTABLE DEBUG] String: " + s);
+            Drop d = new Drop(s);
+            this.drops.add(d);
+        }
 
         List<String> nTConditions = mc.getStringList("Conditions");
         for(String s : nTConditions) {
@@ -53,6 +52,7 @@ public class DropTable {
         }
     }
 
+    /**Loads data structure from list of drops */
     public DropTable(String file, String name, List<String> drops) {
         this.fileName = file;
         this.internalName = name;
@@ -62,6 +62,7 @@ public class DropTable {
         }
     }
     
+    /**Generates drops from drop table using weighted collection */
     public List<Drop> generate(SCOPlayer s) {
         List<Drop> drops = new ArrayList<Drop>();
 
@@ -119,4 +120,11 @@ public class DropTable {
         }
         return drops;
     }
+
+    /*
+    public String getInfo() {
+        String s = ChatColor.BLUE + "Droptable info for: " + ChatColor.GOLD + "" + this.fileName;
+
+    }
+    */
 }

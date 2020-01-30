@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.MetadataValue;
 
+import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
@@ -45,7 +46,7 @@ public class MobManager {
     }
 
     public void loadMobs() {
-        IOLoader<SwordCraftOnline> defaultMobs = new IOLoader(SwordCraftOnline.getPluginInstance(), "VanillaMobs.yml", "Mobs");
+        IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "VanillaMobs.yml", "Mobs");
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         List<File> mobFiles = IOHandler.getAllFiles(defaultMobs.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> mobLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), mobFiles, "Mobs");
@@ -53,7 +54,7 @@ public class MobManager {
         this.mmList.clear();
         this.mmDefault.clear();
         
-        System.out.println("[MOB DEBUG] Beginning loading...");
+        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Beginning loading...");
 
         for(IOLoader<SwordCraftOnline> sl : mobLoaders) {
             for(String name : sl.getCustomConfig().getConfigurationSection("").getKeys(false)) {
@@ -65,7 +66,7 @@ public class MobManager {
                         MythicEntityType met = MythicEntityType.get(name);
                         MythicMob mm = new MythicMob(file, name, mc);
                         this.mmDefault.put(met, mm);
-                        System.out.println("[MOB DEBUG] Loaded To Default: " + name);
+                        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded " + name + "to default.");
                         continue;
                     }
                     
@@ -78,14 +79,14 @@ public class MobManager {
                     if(display != null) {
                         this.mmDisplay.put(display, mm);
                     }
-                    System.out.println("[MOB DEBUG] Loaded To List: " + name);
+                    SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded " + name + " to list.");
 
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
             }
         }
-        System.out.println("[MOB DEBUG] Loading Complete!");
+        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loading complete!");
     }
 
     public MythicMob getMythicMob(String s) {

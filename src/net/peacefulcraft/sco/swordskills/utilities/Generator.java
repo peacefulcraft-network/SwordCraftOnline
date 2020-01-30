@@ -50,7 +50,7 @@ public class Generator {
 		ItemStack item = new ItemStack(Material.FIRE);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("The server");
-		meta.setLore((List) lore);
+		meta.setLore(lore);
 		item.setItemMeta(meta);
 		
 		return item;

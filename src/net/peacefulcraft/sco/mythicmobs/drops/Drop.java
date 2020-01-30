@@ -1,6 +1,13 @@
 package net.peacefulcraft.sco.mythicmobs.drops;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.swordskills.utilities.Generator;
 
 public class Drop extends WeightedItem implements Cloneable {
     private final String line;
@@ -29,18 +36,35 @@ public class Drop extends WeightedItem implements Cloneable {
         public String[] getSSInfo() { return this.ssInfo; }
         public boolean isSkill() { return (ssInfo == null ? true : false); }
 
+    private ItemStack item;
+        public ItemStack getItem() { return this.item; }
+
     public Drop(String line) {
         this.line = line;
         try{
             /* Breaking arguments into format:
              * 0 Name, 1 Amount (x-y) or (x), 2 Chance to drop 0-1
              * SwordSkills information stored in name seperated by '-'
+             * Custom Items store in name. I.e. GoldCoin
+             * Non-Custom names format: GOLD_INGOT
              * i.e. CriticalStrike-1-common
              */
             String[] split = line.split(" ");
+            //Checking if sword skill
             if(split[0].contains("-")) {
-                this.ssInfo = split[0].split("-");
+                String[] split2 = split[0].split("-");
+                if(SkillIdentifier.itemExists(split2[0])) {
+                    this.ssInfo = split2;
+                    this.item = Generator.generateItem(this.ssInfo[0], Integer.valueOf(this.ssInfo[1]), ItemTier.valueOf(this.ssInfo[2]));
+                }
+            } else if(ItemIdentifier.itemExists(split[0])) {
+                //Checking if custom item
+                this.item = ItemIdentifier.generate(split[0]);
+            } else {
+                //Not custom or skill. Make new item stack
+                this.item = new ItemStack(Material.getMaterial(split[0]));
             }
+
             if(split.length == 2) {
                 if(split[1].contains("-")) {
                     String[] split2 = split[1].split("-");

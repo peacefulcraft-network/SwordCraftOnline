@@ -17,6 +17,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
@@ -359,14 +360,17 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.fakePlayer;
     }
 
-    private final String BANNER = "[MYTHIC MOB]";
-
+    /**
+     * Constructor and decoder for MythicMobs
+     * @param file MM file i.e. SkeletonKing.yml
+     * @param internalName Name of file i.e. SkeletonKing
+     */
     public MythicMob(String file, String internalName, MythicConfig mc) {
         this.config = mc;
         this.file = file;
         this.internalName = internalName;
 
-        System.out.println(BANNER + "Loading MythicMob " + this.internalName); 
+        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Loading Mythic Mob: " + this.internalName);
 
         this.strMobType = mc.getString("Type", this.strMobType);
         this.strMobType = mc.getString("MobType", this.strMobType);
@@ -374,13 +378,13 @@ public class MythicMob implements Comparable<MythicMob> {
         if(this.strMobType == null) {
             MythicEntity me = MythicEntity.getMythicEntity(internalName);
             if(me == null) {
-                System.out.println(BANNER + "Could not load MythicMob" + this.internalName);
+                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Could not load MythicMob " + this.internalName);
                 this.strMobType = "NULL";
                 this.mobType = MythicEntity.getMythicEntity("SKELETON");
                 this.displayName = "ERROR: MOB TYPE FOR '" + this.internalName + "' IS NOT OPTIONAL";
                 return;
             }
-            System.out.println(BANNER + "EntityType is vanilla override for " + this.strMobType);
+            SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "EntityType is vanilla override for " + this.strMobType);
             this.mobType = me;
         } 
         this.mobType = MythicEntity.getMythicEntity(this.strMobType);
@@ -480,11 +484,19 @@ public class MythicMob implements Comparable<MythicMob> {
         
         //Drops, droptables, killmessages
         this.drops = mc.getStringList("Drops");
-        this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+        /**Passing to drop table constructor.
+         * FILE NAMES SHOULD MATCH.
+         */
+        if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(this.drops.get(0))) {
+            //Check if Custom drop table loaded from file.
+            this.dropTable = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(this.drops.get(0));
+        } else {
+            this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+        }
         this.equipment = mc.getStringList("Equipment");
         List<String> killMessages = mc.getStringList("KillMessages");
         if(killMessages != null && killMessages.size() > 0) {
-            //Log loading kill messages
+            //TODO: Log loading kill messages
             if(this.killMessages == null) {
                 this.killMessages = new ArrayList<>();
             }
@@ -542,14 +554,14 @@ public class MythicMob implements Comparable<MythicMob> {
                 this.spawnVelocityXRange = true;
             } catch(Exception ex) {
                 this.spawnVelocityX = 0.0D;
-                //TODO: Log invalid velocity on load
+                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid X Velocity Modifier.");
             }
         } else {
             try {
                 this.spawnVelocityX = Double.valueOf(strSpawnVelocityX).doubleValue();
             } catch (Exception ex) {
                 this.spawnVelocityX = 0.0D;
-                //TODO: log invalid velocity on load
+                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid X Velocity Modifier.");
             }
         }
         if(strSpawnVelocityY.contains("to")) {
@@ -560,14 +572,14 @@ public class MythicMob implements Comparable<MythicMob> {
                 this.spawnVelocityYRange = true;
             } catch(Exception ex) {
                 this.spawnVelocityY = 0.0D;
-                //TODO: Log invalid velocity on load
+                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid Y Velocity Modifier.");
             }
         } else {
             try {
                 this.spawnVelocityY = Double.valueOf(strSpawnVelocityY).doubleValue();
             } catch(Exception ex) {
                 this.spawnVelocityY = 0.0D;
-                //TODO: Log invalid velocity on load
+                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid Y Velocity Modifier.");
             }
         }
         if(strSpawnVelocityZ.contains("to")) {
@@ -578,14 +590,14 @@ public class MythicMob implements Comparable<MythicMob> {
                 this.spawnVelocityZRange = true;
             } catch(Exception ex) {
                 this.spawnVelocityZ = 0.0D;
-                //TODO: Log invalid velocity on load
+                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid Z Velocity Modifier.");
             }
         } else {
             try {
                 this.spawnVelocityZ = Double.valueOf(strSpawnVelocityZ).doubleValue();
             }  catch (Exception ex) {
                 this.spawnVelocityZ = 0.0D;
-                //TODO: log invalid velocity on load
+                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid Z Velocity Modifier.");
             }
         }
 
@@ -605,13 +617,10 @@ public class MythicMob implements Comparable<MythicMob> {
     public ActiveMob spawn(AbstractLocation loc, int level) {
         Entity e;
         if(this.mobType != null) {
-            System.out.println("[MOB DEBUG] Point 1 Hit.");
             e = this.mobType.spawn(this, BukkitAdapter.adapt(loc));
         } else {
-            System.out.println("[MOB DEBUG] Point 2 Hit.");
             return null;
         }
-        System.out.println("[MOB DEBUG] Point 3 Hit.");
         ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level);
         SwordCraftOnline.getPluginInstance().getMobManager().registerActiveMob(am);
         am = applyMobOptions(am, level);
@@ -634,7 +643,7 @@ public class MythicMob implements Comparable<MythicMob> {
                 asLiving.setCanPickupItems(false);
             }
             if(this.damage > 0.0D && asLiving.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
-                //asLiving.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(am.getDamage());
+                asLiving.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(am.getDamage());
             }
             if(this.attrMovementSpeed != 0.0D) {
                 asLiving.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(getMovementSpeed(level));
@@ -666,7 +675,45 @@ public class MythicMob implements Comparable<MythicMob> {
                 }
             }
 
+            /**Handling equipment. ALL drop chances set to 0. 
+             * Drops handled by drop tables
+             * Format: 0-Material, 1-Location
+             */
+            if(!this.equipment.isEmpty()) {
+                EntityEquipment ee = asLiving.getEquipment();
+                for(String s : this.equipment) {
+                    String[] split = s.split(" ");
+                    /**TODO: Add compatability with Custom Items.
+                     * Check if item is in custom item list.
+                    */
+                    try {
+                        if(split[1].equalsIgnoreCase("HEAD")) {
+                            ee.setHelmet(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setHelmetDropChance(0.0F);
+                        } else if(split[1].equalsIgnoreCase("CHEST")) {
+                            ee.setChestplate(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setChestplateDropChance(0.0F);
+                        } else if(split[1].equalsIgnoreCase("LEGS")) {
+                            ee.setLeggings(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setLeggingsDropChance(0.0F);
+                        } else if(split[1].equalsIgnoreCase("FEET")) {
+                            ee.setBoots(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setBootsDropChance(0.0F);
+                        } else if(split[1].equalsIgnoreCase("HAND")) {
+                            ee.setItemInMainHand(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setItemInMainHandDropChance(0.0F);
+                        } else if(split[1].equalsIgnoreCase("OFFHAND")) {
+                            ee.setItemInOffHand(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setItemInOffHandDropChance(0.0F);
+                        }
+                    } catch(Exception ex) {
+                        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Could not load items. Invalid material name.");
+                    }
+                }
+            }
+
             asLiving.setMaximumNoDamageTicks(this.noDamageTicks);
+
             if(e instanceof Creature) {
                 if(this.preventRandomEquipment.booleanValue()) {
                     EntityEquipment ee = asLiving.getEquipment();

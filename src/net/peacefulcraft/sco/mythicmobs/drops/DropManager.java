@@ -12,14 +12,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.inventory.ItemStack;
-
+import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 
 public class DropManager {
+    /**Storing droptables by filename */
     private HashMap<String, DropTable> dropTables = new HashMap<String, DropTable>();
     
     private List<Runnable> secondPass;
@@ -27,24 +27,35 @@ public class DropManager {
     private SwordCraftOnline inst;
         public SwordCraftOnline getInst() { return this.inst; }
 
+    /**Loads tables from folder into map */
     public void loadDropTables() {
-        IOLoader<SwordCraftOnline> defaultDropTables = new IOLoader(SwordCraftOnline.getPluginInstance(), "ExampleDropTables.yml", "DropTables");
+        IOLoader<SwordCraftOnline> defaultDropTables = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleDropTables.yml", "DropTables");
         List<File> droptableFiles = IOHandler.getAllFiles(defaultDropTables.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> droptableLoader = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), droptableFiles, "DropTables");
         this.dropTables.clear();
+
+        SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Beginning loading...");
         for(IOLoader<SwordCraftOnline> sl : droptableLoader) {
+            /*
             for(String s : sl.getCustomConfig().getConfigurationSection("").getKeys(false)) {
+                //s is name of file
                 if(sl.getCustomConfig().getStringList(s + ".Drops") != null) {
                     String file = sl.getFile().getName();
                     MythicConfig mc = new MythicConfig(s, sl.getCustomConfig());
                     DropTable dt = new DropTable(file, s, mc);
                     this.dropTables.put(s, dt);
-                    System.out.println("[DROPTABLE DEBUG] LOADED: " + file);
+                    SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Succesfully Loaded: " + s);
 
-                    readTable(sl.getFile());
+                    //readTable(sl.getFile());
                 }
-            }
+            }*/
+            String file = sl.getFile().getName();
+            MythicConfig mc = new MythicConfig(file, sl.getCustomConfig());
+            DropTable dt = new DropTable(file, file, mc);
+            this.dropTables.put(file, dt);
+            SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Succesfully Loaded: " + file);
         }
+        SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Loading complete!");
         runSecondPass();
     }
 
@@ -87,17 +98,27 @@ public class DropManager {
         this.secondPass.add(r);
     }
 
-    public Optional<DropTable> getDropTable(String name) {
-        return Optional.ofNullable(this.dropTables.getOrDefault(name, null));
+    /** Checks if table contains key*/
+    public boolean isInDropTable(String s) {
+        return this.dropTables.keySet().contains(s);
+    }
+
+    /**Returns drop table from hashmap */
+    public DropTable getDropTable(String name) {
+        return this.dropTables.get(name);
     }
 
     public Collection<DropTable> getDropTables() {
         return this.dropTables.values();
     }
 
-    public static void Drop(Location loc, int exp, List<ItemStack> drops) {
-        for(ItemStack is : drops) {
-            loc.getWorld().dropItemNaturally(loc, is);
+    public HashMap<String, DropTable> getDroptableMap() {
+        return this.dropTables;
+    }
+
+    public static void drop(Location loc, int exp, List<Drop> drops) {
+        for(Drop d : drops) {
+            loc.getWorld().dropItemNaturally(loc, d.getItem());
         }
         if(exp != 0) {
             int i = exp % 4;
