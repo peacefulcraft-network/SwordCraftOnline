@@ -16,8 +16,8 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.mythicmobs.drops.Drop;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
+import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
@@ -142,7 +142,6 @@ public class SCOAdmin implements CommandExecutor {
 			}
 
 			if(args[0].equalsIgnoreCase("mm")) {
-				Player p = (Player) sender;
 				if(args[1].equalsIgnoreCase("loadDropTables")) {
 					SwordCraftOnline.getPluginInstance().getDropManager().loadDropTables();
 					return true;
@@ -152,6 +151,11 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 				}
 				if(args[1].equalsIgnoreCase("spawn")) {
+					if(!(sender instanceof Player)) {
+						sender.sendMessage(ChatColor.GREEN + "Cannot perform command from console.");
+						return true;
+					}
+					Player p = (Player)sender;
 					if(SwordCraftOnline.getPluginInstance().getMobManager().getMMList().keySet().contains(args[2])) {
 						ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(args[2], p.getLocation());
 						if(am != null) {
@@ -196,6 +200,11 @@ public class SCOAdmin implements CommandExecutor {
 					}
 				}
 				if(args[1].equalsIgnoreCase("generatedroptable")) {
+					if(!(sender instanceof Player)) {
+						sender.sendMessage(ChatColor.GREEN + "Cannot perform command from console.");
+						return true;
+					}
+					Player p = (Player) sender;
 					if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(args[2])) {
 						SCOPlayer s = GameManager.findSCOPlayer(p);
 						if(s == null) {
@@ -205,8 +214,8 @@ public class SCOAdmin implements CommandExecutor {
 						}
 						SwordCraftOnline.logInfo("Loading droptable from manager...");
 						try{
-							List<Drop> d = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(args[0]).generate(s);
-							DropManager.drop(p.getLocation(), 0, d);
+							LootBag d = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(args[0]).generate(s);
+							DropManager.drop(p.getLocation(), d);
 						} catch(NullPointerException e) {
 							p.sendMessage(ChatColor.GREEN + "Specified droptable has invalid drops");
 						}
@@ -217,6 +226,12 @@ public class SCOAdmin implements CommandExecutor {
 					p.sendMessage(ChatColor.GREEN + "Specified droptable not loaded.");
 					SwordCraftOnline.logInfo("Attempted to load invalid droptable.");
 					return true;
+				}
+				if(args[1].equalsIgnoreCase("getdata")) {
+					if(args[2].equalsIgnoreCase("Droptable")) {
+						sender.sendMessage(SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(args[3]).getInfo());
+						return true;
+					}
 				}
 			}
 

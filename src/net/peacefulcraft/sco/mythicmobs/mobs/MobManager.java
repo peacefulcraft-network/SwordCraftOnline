@@ -34,6 +34,7 @@ public class MobManager {
 
     /**Stores MM by display name */
     private HashMap<String, MythicMob> mmDisplay = new HashMap<>();
+        public HashMap<String, MythicMob> getMMDisplay() { return this.mmDisplay; }
 
     /**Stores by default entity type */
     private HashMap<MythicEntityType, MythicMob> mmDefault = new HashMap<>();

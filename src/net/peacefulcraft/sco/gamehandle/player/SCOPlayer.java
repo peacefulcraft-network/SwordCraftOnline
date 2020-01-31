@@ -78,6 +78,11 @@ public class SCOPlayer
 		public double getDropMod() { return this.bonusDropMod; }
 		public void setDropMod(double d) { this.bonusDropMod = d; }
 
+	/**Players exp multiplier */
+	private double expMod = 1.0D;
+		public double getExpMod() { return this.expMod; }
+		public void  setExpMod(double d) { this.expMod = d; }
+
 	public SCOPlayer (Player user) {
 		this.user = user;
 		

@@ -36,10 +36,10 @@ public class DropManager {
 
         SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Beginning loading...");
         for(IOLoader<SwordCraftOnline> sl : droptableLoader) {
-            /*
+            //sl is name of file. I.e. Dungeon1.yml
             for(String s : sl.getCustomConfig().getConfigurationSection("").getKeys(false)) {
-                //s is name of file
-                if(sl.getCustomConfig().getStringList(s + ".Drops") != null) {
+                //s is name of droptable. I.e. SkeletonKingDrops
+                if(sl.getCustomConfig().getStringList(".Drops") != null) {
                     String file = sl.getFile().getName();
                     MythicConfig mc = new MythicConfig(s, sl.getCustomConfig());
                     DropTable dt = new DropTable(file, s, mc);
@@ -48,40 +48,20 @@ public class DropManager {
 
                     //readTable(sl.getFile());
                 }
-            }*/
+            }
+            /**Passing "SkeletonKing.yml" as DropTable file.
+             * Contains one drop table per file
+             */
+            /*
             String file = sl.getFile().getName();
             MythicConfig mc = new MythicConfig(file, sl.getCustomConfig());
             DropTable dt = new DropTable(file, file, mc);
             this.dropTables.put(file, dt);
             SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Succesfully Loaded: " + file);
+            */
         }
         SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Loading complete!");
         runSecondPass();
-    }
-
-    /**Loads and prints droptable information to console. */
-    private void readTable(File f) {
-        new YamlConfiguration();
-        FileConfiguration c = YamlConfiguration.loadConfiguration(f);
-        String name = f.getName().replace(".yml", "");
-
-        String conditions = "";
-        for(String s : c.getStringList(name + ".Conditions")) {
-            conditions += s + ", ";
-        }
-        System.out.println("[DROPTABLE DEBUG] CONDITIONS: " + conditions);
-        String drop = "";
-        for(String s : c.getStringList(name + ".Drops")) {
-            drop += s + ", ";
-        }
-        System.out.println("[DROPTABLE DEBUG] DROPS: " + drop);
-        System.out.println("[DROPTABLE DEBUG] MINITEMS: " + c.getInt(name + "Items.MinItems"));
-        System.out.println("[DROPTABLE DEBUG] MAXITEMS: " + c.getInt(name + "Items.MaxItems"));
-        String items = "";
-        for(String s : c.getStringList(name + "Items.Drops")) {
-            items += s + ", ";
-        }
-        System.out.println("[DROPTABLE DEBUG] ITEM DROPS: " + items);
     }
 
     public DropManager(SwordCraftOnline inst) {
@@ -116,10 +96,11 @@ public class DropManager {
         return this.dropTables;
     }
 
-    public static void drop(Location loc, int exp, List<Drop> drops) {
-        for(Drop d : drops) {
+    public static void drop(Location loc, LootBag bag) {
+        for(Drop d : bag.getDrops()) {
             loc.getWorld().dropItemNaturally(loc, d.getItem());
         }
+        int exp = bag.getExp();
         if(exp != 0) {
             int i = exp % 4;
             int per = (exp - exp % 4) / 4;
