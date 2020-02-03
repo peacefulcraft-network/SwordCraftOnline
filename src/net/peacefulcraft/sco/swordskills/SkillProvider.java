@@ -82,6 +82,11 @@ public abstract class SkillProvider{
 		ItemStack item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("Critical Strike");
+		
+		if(lore != null && lore.size() > 0) {
+			meta.setLore(lore);
+		}
+		
 		item.setItemMeta(meta);
 		
 		NBTItem nbti = new NBTItem(item);
