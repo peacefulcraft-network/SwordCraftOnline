@@ -3,7 +3,6 @@ package net.peacefulcraft.sco.swordskills.utilities;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

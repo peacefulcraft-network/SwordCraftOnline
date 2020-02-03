@@ -16,7 +16,7 @@ import net.peacefulcraft.sco.swordskills.SwordSkillType;
 public class CriticalStrikeItem extends SkillProvider{
 
 	public CriticalStrikeItem(int level, ItemTier tier) {
-		super("Critical Strike", level, tier, null, Material.FLINT);
+		super("Critical Strike", level, tier, null, Material.FLINT);	
 	}
 
 	@Override
@@ -26,5 +26,4 @@ public class CriticalStrikeItem extends SkillProvider{
 		
 		// add variance based on item tier and/or level
 	}
-
 }

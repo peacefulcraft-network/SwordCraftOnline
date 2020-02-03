@@ -58,8 +58,8 @@ public class Drop implements Cloneable {
              * i.e. CriticalStrike-1-common
              */
             String[] split = line.split(" ");
-            //Checking if sword skill
             if(split[0].contains("-")) {
+                //Checking if sword skill
                 String[] split2 = split[0].split("-");
                 if(SkillIdentifier.itemExists(split2[0])) {
                     this.ssInfo = split2;
