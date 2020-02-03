@@ -1,8 +1,10 @@
 package net.peacefulcraft.sco.gamehandle.listeners;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -20,13 +22,22 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
-public class MythicMobDeathEvent implements Listener {
+public class MythicMobDeathEvent implements Listener {    
     @EventHandler
     public void MythicMobDeath(EntityDeathEvent e) {
         Entity ent = e.getEntity();
         e.setDroppedExp(0);
         //Range to detect nearby players. Changed if has condition.
         int range = 20;
+
+        //Removing normal drops.
+        Iterator<ItemStack> itr = e.getDrops().iterator();
+        while(itr.hasNext()) {
+            ItemStack item = itr.next();
+            if(item != null && !item.getType().equals(Material.AIR)) {
+                itr.remove();
+            }
+        }
 
         if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
             
@@ -41,37 +52,23 @@ public class MythicMobDeathEvent implements Listener {
                         switch(Conditions.valueOf(c.toUpperCase())) {
                             case PLAYER_WITHIN:
                             range = Integer.valueOf(conditions.get(c));
-                            if(ent.getNearbyEntities(range, range, range).isEmpty()) {
-                                return;
-                            }
+                            if(ent.getNearbyEntities(range, range, range).isEmpty()) { return; }
+
                             break; case IN_BIOME:
                             Biome biome = ent.getWorld().getBiome((int)ent.getLocation().getX(), (int)ent.getLocation().getZ());
-                            if(biome != Biome.valueOf(conditions.get(c))) {
-                                return;
-                            }
+                            if(biome != Biome.valueOf(conditions.get(c))) { return; }
+
                             break; case KILLED_WITH:
                             ItemStack item = p.getInventory().getItemInMainHand();
                             ItemStack killedWith = ItemIdentifier.generate(conditions.get(c));
-                            if(!item.equals(killedWith)) {
-                                return;
-                            }
+                            if(!item.equals(killedWith)) { return; }
                         }
                     }
                 }
 
-                //Checking for SCOPlayer killer or nearby.
+                //Checking for SCOPlayer killer.
                 SCOPlayer s = GameManager.findSCOPlayer((Player)ent.getLastDamageCause());
-                if(s == null) {
-                    List<Entity> l = ent.getNearbyEntities(range, range, range);
-                    for(Entity temp : l) {
-                        if(temp instanceof Player) {
-                            SCOPlayer ss = GameManager.findSCOPlayer((Player) temp);
-                            if(ss == null) { continue; }
-                            s = ss;
-                            break;
-                        }
-                    }
-                }
+                if(s == null) { return; }
 
                 LootBag bag = mm.getDropTable().generate(s);
                 DropManager.drop(ent.getLocation(), bag);
@@ -84,6 +81,27 @@ public class MythicMobDeathEvent implements Listener {
                     if(temp instanceof Player) {
                         SCOPlayer s = GameManager.findSCOPlayer((Player)temp);
                         if(s == null) { return; }
+
+                        if(mm.getDropTable().hasConditions()) {
+                            HashMap<String, String> conditions = mm.getDropTable().getConditions();
+                            for(String c : conditions.keySet()) {
+                                switch(Conditions.valueOf(c.toUpperCase())) {
+                                    case PLAYER_WITHIN:
+                                    range = Integer.valueOf(conditions.get(c));
+                                    if(ent.getNearbyEntities(range, range, range).isEmpty()) { return; }
+        
+                                    break; case IN_BIOME:
+                                    Biome biome = ent.getWorld().getBiome((int)ent.getLocation().getX(), (int)ent.getLocation().getZ());
+                                    if(biome != Biome.valueOf(conditions.get(c))) { return; }
+                                    
+                                    break; case KILLED_WITH:
+                                    ItemStack item = ((Player)temp).getInventory().getItemInMainHand();
+                                    ItemStack killedWith = ItemIdentifier.generate(conditions.get(c));
+                                    if(!item.equals(killedWith)) { return; }
+                                }
+                            }
+                        }
+
                         LootBag bag = mm.getDropTable().generate(s);
                         DropManager.drop(ent.getLocation(), bag);
 

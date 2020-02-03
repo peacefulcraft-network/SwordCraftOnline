@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
+
 import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
@@ -29,6 +27,8 @@ public class DropManager {
 
     /**Loads tables from folder into map */
     public void loadDropTables() {
+        this.dropTables.clear();
+        
         IOLoader<SwordCraftOnline> defaultDropTables = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleDropTables.yml", "DropTables");
         List<File> droptableFiles = IOHandler.getAllFiles(defaultDropTables.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> droptableLoader = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), droptableFiles, "DropTables");

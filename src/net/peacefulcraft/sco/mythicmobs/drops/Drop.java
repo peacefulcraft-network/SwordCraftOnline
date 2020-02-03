@@ -11,7 +11,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.SkillIdentifier;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 
-public class Drop extends WeightedItem implements Cloneable {
+public class Drop implements Cloneable {
     private String name;
         public String getName() { return this.name; }
     
@@ -19,7 +19,7 @@ public class Drop extends WeightedItem implements Cloneable {
         public String getLine() { return this.line; }
 
     /**Amount above dropAmount for items to be dropped
-     * i.e. dropamount + 1
+     * i.e. dropamount + var
      */
     protected String dropVar = null;
         public String getDropVar() { return this.dropVar; }
@@ -29,9 +29,9 @@ public class Drop extends WeightedItem implements Cloneable {
     private String dropAmount = "1";
         public String getDropAmount() { return this.dropAmount; }
 
-    private double amount = 0.0D;
+    private int amount = 0;
         public double getAmount() { return this.amount; }
-        public void setAmount(double amount) { this.amount = amount; }
+        public void setAmount(int amount) { this.amount = amount; }
 
     /**Percentage 0-1 chance that item drops */
     private double weight = 0.0D;
@@ -78,14 +78,17 @@ public class Drop extends WeightedItem implements Cloneable {
             }
 
             //String format: NAME AMOUNT
+            //No weight, defaulted to 1.0D
             if(split.length == 2) {
                 //If drop amount is variable or not.
                 if(split[1].contains("-")) {
                     String[] split2 = split[1].split("-");
                     this.dropAmount = split2[0];
-                    this.dropVar = Double.toString(Double.valueOf(split2[1]) - Double.valueOf(split2[0]));
+                    this.dropVar = Integer.toString(Integer.valueOf(split2[1]) - Integer.valueOf(split2[0]));
+                    this.weight = 1.0D;
                 } else {
                     this.dropAmount = split[1];
+                    this.weight = 1.0D;
                 }
             //String format: NAME AMOUNT WEIGHT
             } else if(split.length == 3) {
@@ -93,7 +96,7 @@ public class Drop extends WeightedItem implements Cloneable {
                 if(split[1].contains("-")) {
                     String[] split2 = split[1].split("-");
                     this.dropAmount = split2[0];
-                    this.dropVar = Double.toString(Double.valueOf(split2[1]) - Double.valueOf(split2[0]));
+                    this.dropVar = Integer.toString(Integer.valueOf(split2[1]) - Integer.valueOf(split2[0]));
                     this.weight = Double.valueOf(split[2]);
                 } else {
                     this.dropAmount = split[1];

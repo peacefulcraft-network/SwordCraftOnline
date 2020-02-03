@@ -47,6 +47,11 @@ public class MobManager {
     }
 
     public void loadMobs() {
+        this.mmList.clear();
+        this.mmDisplay.clear();
+        this.mmDefault.clear();
+        this.mobRegistry.clear();
+
         IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "VanillaMobs.yml", "Mobs");
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         List<File> mobFiles = IOHandler.getAllFiles(defaultMobs.getFile().getParent());
