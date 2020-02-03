@@ -3,7 +3,6 @@ package net.peacefulcraft.sco.swordskills.utilities;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -50,7 +49,7 @@ public class Generator {
 		ItemStack item = new ItemStack(Material.FIRE);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("The server");
-		meta.setLore((List) lore);
+		meta.setLore(lore);
 		item.setItemMeta(meta);
 		
 		return item;

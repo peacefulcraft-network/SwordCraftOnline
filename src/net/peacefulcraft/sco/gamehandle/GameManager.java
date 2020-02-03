@@ -1,6 +1,9 @@
 package net.peacefulcraft.sco.gamehandle;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -8,8 +11,11 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
+import net.peacefulcraft.sco.items.customitems.TeleportCrystal;
 import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
-import net.peacefulcraft.sco.items.utilities.TeleportCrystal;
+import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 
 public class GameManager {
 	
@@ -34,7 +40,7 @@ public class GameManager {
 		//Set to teleport player to floor.
 		p.teleport(Teleports.getWaystone(s.getFloor()));
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
-		p.getInventory().setItem(7, (new TeleportCrystal()).create());
+		p.getInventory().setItem(7, (new TeleportCrystal()).create(1));
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
 	}
 	
@@ -65,5 +71,19 @@ public class GameManager {
 			}
 		}
 		return null;
+	}
+
+	public Set<AbstractPlayer> getPlayersInRangeSq(AbstractLocation location, int rangeSq) {
+		Set<AbstractPlayer> inRange = new HashSet<>();
+		try {
+			for(SCOPlayer s : players.values()) {
+				if(s.getPlayer().getLocation().distanceSquared(BukkitAdapter.adapt(location)) <= rangeSq) {
+					inRange.add(BukkitAdapter.adapt(s.getPlayer()));
+				}
+			}
+			return inRange;
+		} catch(Exception ex) {
+			return Collections.emptySet();
+		}
 	}
 }

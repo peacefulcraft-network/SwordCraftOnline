@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -16,9 +17,14 @@ import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
 import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
+import net.peacefulcraft.sco.gamehandle.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
+import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
+import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
+import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
+import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 
 public class SwordCraftOnline extends JavaPlugin{
@@ -40,11 +46,24 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	public static DungeonManager dungeonManager;
 		public static DungeonManager getDungeonManager() { return dungeonManager; }
+
+	public static Random r;
+
+	private ServerInterface server;
+		public ServerInterface server() { return this.server; }
+
+	private DropManager dropManager;
+		public DropManager getDropManager() { return this.dropManager; }
 		
+	private MobManager mobManager;
+		public MobManager getMobManager() { return this.mobManager; }
+	
 	public SwordCraftOnline() {
 
 		sco = this;
 		cfg = new SCOConfig(getConfig());
+
+		r = new Random();
 		
 	}
 	
@@ -60,9 +79,12 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		hikari = new HikariManager(cfg);
 		dungeonManager = new DungeonManager();
+
+		this.server = (ServerInterface)new BukkitServer();
+		this.dropManager = new DropManager(this);
+		this.mobManager = new MobManager(this);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
-		
 	}
 	
 	public void onDisable() {
@@ -95,6 +117,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
+		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);

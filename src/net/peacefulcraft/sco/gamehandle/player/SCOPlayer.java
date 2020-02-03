@@ -52,21 +52,36 @@ public class SCOPlayer
 	 * TODO:Handle situation where chance is above 100
 	*/
 	private int criticalChance = 2;
-		public int getCriticalChance() { return criticalChance; }
-		public void setCriticalChance(int num) { criticalChance = num; }
-		public void addCritical(int num) { criticalChance+=num; }
+		public int getCriticalChance() { return this.criticalChance; }
+		public void setCriticalChance(int num) { this.criticalChance = num; }
+		public void addCritical(int num) { this.criticalChance+=num; }
 
 	private double criticalMultiplier = 1.2;
-		public double getCriticalMultiplier() { return criticalMultiplier; }
-		public void setCriticalMultiplier(double num) { criticalMultiplier = num; }
+		public double getCriticalMultiplier() { return this.criticalMultiplier; }
+		public void setCriticalMultiplier(double num) { this.criticalMultiplier = num; }
 
 	private boolean adminOverride = false;
-		public boolean hasOverride() { return adminOverride; }
-		public void setAdminOverride(boolean bool) { adminOverride = bool; }
+		public boolean hasOverride() { return this.adminOverride; }
+		public void setAdminOverride(boolean bool) { this.adminOverride = bool; }
 
 	private int parryChance = 0;
-		public int getParryChance() { return parryChance; }
-		public void setParryChance(int num) { parryChance = num; }
+		public int getParryChance() { return this.parryChance; }
+		public void setParryChance(int num) { this.parryChance = num; }
+
+	/**Additional chance to increase item level on drop */
+	private double bonusLevelMod = 0.0D;
+		public double getLevelMod() { return this.bonusLevelMod; }
+		public void setLevelMod(double d) { this.bonusLevelMod = d; }
+
+	/**Additional chance to get more items on drop */
+	private double bonusDropMod = 0.0D;
+		public double getDropMod() { return this.bonusDropMod; }
+		public void setDropMod(double d) { this.bonusDropMod = d; }
+
+	/**Players exp multiplier */
+	private double expMod = 1.0D;
+		public double getExpMod() { return this.expMod; }
+		public void  setExpMod(double d) { this.expMod = d; }
 
 	public SCOPlayer (Player user) {
 		this.user = user;

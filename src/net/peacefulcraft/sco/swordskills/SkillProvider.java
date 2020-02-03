@@ -59,7 +59,7 @@ public abstract class SkillProvider{
 	public void setLore(ArrayList<String> lore) {
 		this.lore = lore;
 	}
-	
+
 	/**
 	 * @return level of the skill
 	 */
@@ -82,6 +82,11 @@ public abstract class SkillProvider{
 		ItemStack item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("Critical Strike");
+		
+		if(lore != null && lore.size() > 0) {
+			meta.setLore(lore);
+		}
+		
 		item.setItemMeta(meta);
 		
 		NBTItem nbti = new NBTItem(item);
@@ -91,7 +96,7 @@ public abstract class SkillProvider{
 		nbti.setBoolean("dropable", false);
 		return nbti.getItem();
 	}
-	
+
 
 	/**
 	 * Equip the skill
@@ -122,7 +127,7 @@ public abstract class SkillProvider{
 		}
 		return desc;
 	}
-	
+
 	public static ChatColor getTierColor(String tier) {
 		return getTierColor(ItemTier.valueOf(tier));
 	}
