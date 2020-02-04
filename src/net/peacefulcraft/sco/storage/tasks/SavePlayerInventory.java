@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 
 public class SavePlayerInventory extends BukkitRunnable{
 	
@@ -46,7 +47,7 @@ public class SavePlayerInventory extends BukkitRunnable{
 			);
 			
 			for(SkillIdentifier identifier : identifiers) {
-				int swordSkillId = SwordCraftOnline.getSCOConfig().getSwordSkillRegistry().getGlobalIdentifier(identifier).getDatabaseId();;
+				int swordSkillId = SwordSkillRegistery.getGlobalIdentifier(identifier).getDatabaseId();;
 				
 				stmt_insert.setString(1, uuid.toString());
 				stmt_insert.setInt(2, swordSkillId);
@@ -65,7 +66,6 @@ public class SavePlayerInventory extends BukkitRunnable{
 			if(con != null) { 
 				try {
 					con.rollback();
-					con.setAutoCommit(true);
 					con.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block

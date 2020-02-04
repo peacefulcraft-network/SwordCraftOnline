@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 
 public class SyncSwordSkillRegistry extends BukkitRunnable{
 
@@ -23,7 +24,7 @@ public class SyncSwordSkillRegistry extends BukkitRunnable{
 			con = SwordCraftOnline.getHikariPool().getConnection();
 			con.setAutoCommit(false);
 			PreparedStatement stmt_select = con.prepareStatement("SELECT `id` FROM `swordskills` WHERE `name`=? AND `rarity`=? AND `level`=?");
-			HashMap<SkillIdentifier, Boolean> skills = SwordCraftOnline.getSCOConfig().getSwordSkillRegistry().getSwordSkills();
+			HashMap<SkillIdentifier, Boolean> skills = SwordSkillRegistery.getSwordSkills();
 			
 			for(SkillIdentifier skill : skills.keySet()) {
 				stmt_select.setString(1, skill.getSkillName());
@@ -35,7 +36,7 @@ public class SyncSwordSkillRegistry extends BukkitRunnable{
 					skill.setDatabaseId(res.getInt(1));
 				} else {
 					PreparedStatement stmt_insert = con.prepareStatement(
-						"INSERT INTO `swordskills` VALUES(,?,?,?)", 
+						"INSERT INTO `swordskills` (name, rarity, level) VALUES(?,?,?)", 
 					Statement.RETURN_GENERATED_KEYS);
 
 					stmt_insert.setString(1, skill.getSkillName());
@@ -58,7 +59,13 @@ public class SyncSwordSkillRegistry extends BukkitRunnable{
 			SwordCraftOnline.logInfo("Sychronized registry of " + skills.size() + " sword skills.");
 			
 		} catch(SQLException e) {
-
+			
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 
 		} finally {

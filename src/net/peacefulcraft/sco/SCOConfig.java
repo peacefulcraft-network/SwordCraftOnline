@@ -29,16 +29,10 @@ public class SCOConfig {
 	private String db_password;
 	
 	private boolean autoTarget = true;
-
-	private SwordSkillRegistery registeredSwordSkills;
-		public SwordSkillRegistery getSwordSkillRegistry() { return registeredSwordSkills; }
-		public ArrayList<String> getRegisteredSwordSkillNames(){ return registeredSwordSkills.getSwordSkillNames(); }
 	
 	public SCOConfig(FileConfiguration c) {
 		
 		this.c = c;
-		
-		registeredSwordSkills = new SwordSkillRegistery();
 		
 		db_ip = (String) c.getString("database.ip");
 		db_name = (String) c.getString("database.name");

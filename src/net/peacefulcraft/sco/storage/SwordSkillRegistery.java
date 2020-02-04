@@ -5,26 +5,33 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.CriticalStrikeItem;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.SkillIdentifier;
 import net.peacefulcraft.sco.storage.tasks.SyncSwordSkillRegistry;
 
 public class SwordSkillRegistery {
 
-	private ArrayList<String> swordSkillNames;
-		public ArrayList<String> getSwordSkillNames() { return swordSkillNames; }
+	private static ArrayList<String> swordSkillNames;
+		public static ArrayList<String> getSwordSkillNames() { return swordSkillNames; }
 	
-	private HashMap<SkillIdentifier, Boolean> swordSkills;
-		public HashMap<SkillIdentifier, Boolean> getSwordSkills(){ return swordSkills; }
-		public boolean isSkillActive(SkillIdentifier skill) { return swordSkills.get(skill); }
+	private static HashMap<SkillIdentifier, Boolean> swordSkills;
+		public static HashMap<SkillIdentifier, Boolean> getSwordSkills(){ return swordSkills; }
+		public static boolean isSkillActive(SkillIdentifier skill) { return swordSkills.get(skill); }
 		
 	public SwordSkillRegistery() {
 		swordSkills = new HashMap<SkillIdentifier, Boolean>();
 		swordSkillNames = new ArrayList<String>();
 		
-		// Register sword skills
+		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.COMMON).getId(), true);
+		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.UNCOMMON).getId(), true);
+		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.RARE).getId(), true);
+		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.LEGENDARY).getId(), true);
+		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.MASTERY).getId(), true);
+		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.ETHEREAL).getId(), true);
 		
 		// Will run blocking, but this data needs to be consistent before any players try to join
-		(new SyncSwordSkillRegistry()).runTask(SwordCraftOnline.getPluginInstance());
+		(new SyncSwordSkillRegistry()).run();
 	}
 	
 	public void regsiterNewSwordSkill(SkillIdentifier skill, Boolean active) {
@@ -32,7 +39,7 @@ public class SwordSkillRegistery {
 		swordSkillNames.add(skill.getSkillName());
 	}
 	
-	public SkillIdentifier getGlobalIdentifier(SkillIdentifier localIdentifier) {
+	public static SkillIdentifier getGlobalIdentifier(SkillIdentifier localIdentifier) {
 		for(Entry<SkillIdentifier, Boolean> i : swordSkills.entrySet()) {
 			if(i.getKey().compareTo(localIdentifier) == 0) {
 				return i.getKey();
