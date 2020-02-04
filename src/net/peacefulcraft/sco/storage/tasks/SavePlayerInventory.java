@@ -2,7 +2,6 @@ package net.peacefulcraft.sco.storage.tasks;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -42,38 +41,17 @@ public class SavePlayerInventory extends BukkitRunnable{
 			stmt_delete.setString(2, t.toString());
 			int numrows = stmt_delete.executeUpdate();
 			
-			PreparedStatement stmt_select = con.prepareStatement(
-				"SELECT `id` FROM `swordskills` WHERE `name`=? AND `rarity`=? AND `level`=?"
-			);
 			PreparedStatement stmt_insert = con.prepareStatement(
 				"INSERT INTO `player_swordskills` VALUES(?,?,?,?)"
-				+ "ON DUPLICATE KEY UPDATE"
-				+ "`uuid`=?, `swordskill`=?, `inventory`=?,`slot`=?"
 			);
 			
 			for(SkillIdentifier identifier : identifiers) {
-				stmt_select.setString(1, identifier.getSkillName());
-				stmt_select.setString(2, identifier.getRarity().toString());
-				stmt_select.setInt(3, identifier.getSkillLevel());
-				ResultSet res = stmt_select.executeQuery();
-				
-				// If results, moves cursor forward. Otherwise errors because the sword skill was not found.
-				if(!res.next()) { 
-					SwordCraftOnline.logSevere("[TASK][SavePlayerInventory] Generated error for " + name);
-					SwordCraftOnline.logSevere("Sword Skill " + identifier.getSkillName() + " was not found.");
-					continue;
-				}
-				
-				int swordSkillId = res.getInt(1);
+				int swordSkillId = SwordCraftOnline.getSCOConfig().getSwordSkillRegistry().getGlobalIdentifier(identifier).getDatabaseId();;
 				
 				stmt_insert.setString(1, uuid.toString());
-				stmt_insert.setString(5, uuid.toString());
 				stmt_insert.setInt(2, swordSkillId);
-				stmt_insert.setInt(6, swordSkillId);
 				stmt_insert.setString(3, t.toString());
-				stmt_insert.setString(7, t.toString());
 				stmt_insert.setInt(4, identifier.getInventoryLocation());
-				stmt_insert.setInt(8, identifier.getInventoryLocation());
 				numrows = stmt_insert.executeUpdate();
 				
 			}
