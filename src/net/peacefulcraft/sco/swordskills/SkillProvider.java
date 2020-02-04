@@ -81,7 +81,8 @@ public abstract class SkillProvider{
 	public ItemStack getItem() {
 		ItemStack item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("Critical Strike");
+		meta.setDisplayName(getTierColor(this.tier) + this.name);
+		meta.setLore(this.lore);
 		item.setItemMeta(meta);
 		
 		NBTItem nbti = new NBTItem(item);
@@ -99,6 +100,16 @@ public abstract class SkillProvider{
 	 * @param s: SCOPlayer to register skill listeners to
 	 */
 	public abstract void registerSkill(SCOPlayer s);
+
+	/**
+	 * Used to set lore by tier.
+	 */
+	public abstract void setLore();
+
+	/**
+	 * Used to set modifiers. I.e. damage and cooldown.
+	 */
+	public abstract void setModifiers();
 	
 	public static ArrayList<String> addDesc(String tier){
 		return addDesc(ItemTier.valueOf(tier));

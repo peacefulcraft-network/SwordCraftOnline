@@ -12,6 +12,8 @@ import net.peacefulcraft.sco.commands.setTeleport;
 import net.peacefulcraft.sco.commands.setWaystone;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
+import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
+import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
@@ -35,6 +37,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	public static PartyManager partyManager;
 		public static PartyManager getPartyManager() {return partyManager;}
+
+	public static DungeonManager dungeonManager;
+		public static DungeonManager getDungeonManager() { return dungeonManager; }
 		
 	public SwordCraftOnline() {
 
@@ -52,7 +57,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
 		
+
 		hikari = new HikariManager(cfg);
+		dungeonManager = new DungeonManager();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 		
@@ -87,6 +94,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
+		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);

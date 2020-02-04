@@ -17,6 +17,9 @@ public class SCOConfig {
 	
 	private Map<String, Object> spawn;
 	private Map<String, Object> quit;
+
+	private Map<String, Object> dungeon_floor_1_entrance;
+	private Map<String, Object> dungeon_floor_1_arena;
 	
 	private Map<String, Object> parties;
 	
@@ -47,6 +50,10 @@ public class SCOConfig {
 		waystone_floor_3 = c.getConfigurationSection("waystones.3").getValues(false);
 		spawn = c.getConfigurationSection("teleport.spawn").getValues(false);
 		quit = c.getConfigurationSection("teleport.quit").getValues(false);
+
+		dungeon_floor_1_entrance = c.getConfigurationSection("dungeon.1.entrance").getValues(false);
+		dungeon_floor_1_arena = c.getConfigurationSection("dungeon.1.arena").getValues(false);
+
 		parties = c.getConfigurationSection("parties").getValues(false);
 	}
 	
@@ -56,10 +63,10 @@ public class SCOConfig {
 		case 1:
 			this.waystone_floor_1 = waystone;
 			c.set("waystones.1", waystone);
-		case 2:
+		break;case 2:
 			this.waystone_floor_2 = waystone;
 			c.set("waystones.2", waystone);
-		case 3:
+		break;case 3:
 			this.waystone_floor_3 = waystone;
 			c.set("waystones.3", waystone);
 		}
@@ -79,6 +86,47 @@ public class SCOConfig {
 		}
 	}
 	
+	/**Updates dungeon entrance config to Map object with index */
+	public void setDungeonEntrance(Map<String, Object> entrance, int index) {
+		
+		switch(index) {
+			case 1:
+				this.dungeon_floor_1_entrance = entrance;
+				c.set("dungeon.1.entrance", entrance);
+			break;
+		}
+	}
+
+	/**Returns dungeon entrance map object from config */
+	public Map<String, Object> getDungeonEntrance(int index) {
+		switch(index) {
+		case 1:
+			return dungeon_floor_1_entrance;
+		default:
+			return dungeon_floor_1_entrance;
+		}
+	}
+
+	/**Updates dungeon arena config to Map object with index */
+	public void setDungeonArena(Map<String, Object> arena, int index) {
+		switch(index) {
+			case 1:
+				this.dungeon_floor_1_arena = arena;
+				c.set("dungeon.1.arena", arena);
+			break;
+		}
+	}
+
+	/**Returns dungeon arena map object from config */
+	public Map<String, Object> getDungeonArena(int index) {
+		switch(index) {
+		case 1:
+			return dungeon_floor_1_arena;
+		default:
+			return dungeon_floor_1_arena;
+		}
+	}
+
 	public void setSpawn(Map<String, Object> spawn) {
 		this.spawn = spawn;
 		c.set("teleport.spawn", spawn);
