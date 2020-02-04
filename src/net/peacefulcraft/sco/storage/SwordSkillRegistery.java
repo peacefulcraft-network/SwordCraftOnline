@@ -23,18 +23,18 @@ public class SwordSkillRegistery {
 		swordSkills = new HashMap<SkillIdentifier, Boolean>();
 		swordSkillNames = new ArrayList<String>();
 		
-		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.COMMON).getId(), true);
-		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.UNCOMMON).getId(), true);
-		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.RARE).getId(), true);
-		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.LEGENDARY).getId(), true);
-		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.MASTERY).getId(), true);
-		this.regsiterNewSwordSkill(new CriticalStrikeItem(1, ItemTier.ETHEREAL).getId(), true);
+		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.COMMON).getId(), true);
+		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.UNCOMMON).getId(), true);
+		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.RARE).getId(), true);
+		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.LEGENDARY).getId(), true);
+		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.MASTERY).getId(), true);
+		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.ETHEREAL).getId(), true);
 		
 		// Will run blocking, but this data needs to be consistent before any players try to join
 		(new SyncSwordSkillRegistry()).run();
 	}
 	
-	public void regsiterNewSwordSkill(SkillIdentifier skill, Boolean active) {
+	public void regsiterSwordSkill(SkillIdentifier skill, Boolean active) {
 		swordSkills.put(skill, active);
 		swordSkillNames.add(skill.getSkillName());
 	}
