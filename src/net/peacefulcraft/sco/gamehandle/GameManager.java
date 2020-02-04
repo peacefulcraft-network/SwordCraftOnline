@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
@@ -32,9 +33,13 @@ public class GameManager {
 		if(Teleports.getSpawn() != null) 
 		
 		//Set to teleport player to floor.
-		//p.teleport(Teleports.getWaystone(s.getFloor()));
+		try {
+			p.teleport(Teleports.getWaystone(s.getFloor()));
+		} catch(Exception e) {
+			SwordCraftOnline.logInfo("Failed to teleport player " + s.getName() + " to floor " + s.getFloor() + ". Sending to spawn.");
+			p.teleport(Teleports.getSpawn());
+		}
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
-		p.getInventory().setItem(7, (new TeleportCrystal()).create());
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
 	}
 	
