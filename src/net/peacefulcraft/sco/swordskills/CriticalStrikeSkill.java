@@ -39,4 +39,9 @@ public class CriticalStrikeSkill extends SwordSkill{
 	public void markSkillUsed() {
 		// No cleanup steps required		
 	}
+
+	@Override
+	public void unregisterSkill() {
+		// No player data changes. No unregister.
+	}
 }

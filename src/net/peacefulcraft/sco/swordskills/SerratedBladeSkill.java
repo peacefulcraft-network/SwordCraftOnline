@@ -38,7 +38,12 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void markSkillUsed() {
-        //No cleanup required.
+        //No need to mark, passive.
+    }
+
+    @Override
+    public void unregisterSkill() {
+        s.setCriticalChance(s.getCriticalChance() - increase);
     }
 
 
