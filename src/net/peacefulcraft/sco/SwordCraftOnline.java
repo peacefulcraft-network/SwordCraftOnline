@@ -20,6 +20,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.storage.HikariManager;
+import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -46,6 +47,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		sco = this;
 		cfg = new SCOConfig(getConfig());
 		
+		
 	}
 	
 	public void onEnable() {
@@ -54,11 +56,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.loadCommands();
 		this.loadEventListeners();
 		
+		hikari = new HikariManager(cfg);
+		new SwordSkillRegistery();
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
 		
 
-		hikari = new HikariManager(cfg);
 		dungeonManager = new DungeonManager();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
