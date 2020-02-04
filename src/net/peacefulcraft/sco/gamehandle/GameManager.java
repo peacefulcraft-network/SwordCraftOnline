@@ -32,7 +32,7 @@ public class GameManager {
 		if(Teleports.getSpawn() != null) 
 		
 		//Set to teleport player to floor.
-		p.teleport(Teleports.getWaystone(s.getFloor()));
+		//p.teleport(Teleports.getWaystone(s.getFloor()));
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
 		p.getInventory().setItem(7, (new TeleportCrystal()).create());
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
