@@ -45,11 +45,8 @@ public class LoadPlayerInventory extends BukkitRunnable{
 			stmt.setString(2, t.toString());
 			ResultSet res = stmt.executeQuery();
 			
-			// If results, moves cursor forward. Otherwise returns false - user has no inventories
-			if(!res.next()) { return; }
-			
 			ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
-			do {
+			while(res.next()) {
 				String itemName = res.getString(1);
 				int itemLevel = res.getInt(2);
 				ItemTier itemRarity = ItemTier.valueOf(res.getString(3));
@@ -59,7 +56,7 @@ public class LoadPlayerInventory extends BukkitRunnable{
 				SkillIdentifier identifier = new SkillIdentifier(itemName, itemLevel, itemRarity, invLoc);
 				identifiers.add(identifier);
 				
-			}while(res.next());
+			}
 			
 			// Get back on main thread to generate the inventory from identifier list
 			(new GeneratePlayerInventory(s, t, identifiers)).runTask(SwordCraftOnline.getPluginInstance());
