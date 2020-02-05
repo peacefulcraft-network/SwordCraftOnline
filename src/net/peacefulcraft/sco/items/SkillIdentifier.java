@@ -87,4 +87,19 @@ public class SkillIdentifier implements Comparable<SkillIdentifier>{
 		
 		return -1;
 	}
+
+	/**Checking if skill exists without creating instance */
+	public static boolean itemExists(String name) {
+		try {
+			String sName = name.replaceAll(" ", "") + "Item";
+			Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + sName);
+			if(classs == null) { 
+                return false;
+            }
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+    }
+
 }

@@ -59,7 +59,7 @@ public abstract class SkillProvider{
 	public void setLore(ArrayList<String> lore) {
 		this.lore = lore;
 	}
-	
+
 	/**
 	 * @return level of the skill
 	 */
@@ -92,7 +92,7 @@ public abstract class SkillProvider{
 		nbti.setBoolean("dropable", false);
 		return nbti.getItem();
 	}
-	
+
 
 	/**
 	 * Equip the skill
@@ -133,7 +133,7 @@ public abstract class SkillProvider{
 		}
 		return desc;
 	}
-	
+
 	public static ChatColor getTierColor(String tier) {
 		return getTierColor(ItemTier.valueOf(tier));
 	}

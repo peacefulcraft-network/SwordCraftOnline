@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.items.utilities;
+package net.peacefulcraft.sco.items.customitems;
 
 import java.util.ArrayList;
 
@@ -8,12 +8,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class TeleportCrystal
+public class TeleportCrystal implements ICustomItem
 {
-
-	public ItemStack create()
+	public ItemStack create(int amount)
 	{
-		ItemStack crystal = new ItemStack(Material.DIAMOND, 1);
+		ItemStack crystal = new ItemStack(Material.DIAMOND, amount);
 		ItemMeta meta = crystal.getItemMeta();
 		meta.setDisplayName(ChatColor.BLUE + "Teleport Crystal");
 		
@@ -25,5 +24,4 @@ public class TeleportCrystal
 		
 		return crystal;
 	}
-	
 }
