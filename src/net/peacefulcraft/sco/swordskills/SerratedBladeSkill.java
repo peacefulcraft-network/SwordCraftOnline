@@ -45,6 +45,4 @@ public class SerratedBladeSkill extends SwordSkill {
     public void unregisterSkill() {
         s.setCriticalChance(s.getCriticalChance() - increase);
     }
-
-
 }
