@@ -10,7 +10,7 @@ import net.peacefulcraft.sco.swordskills.SkillProvider;
  * Item that unique identifies a SwordSkill.
  * Can be used to instantiate a SwordSkillProvider in package net.peacefulcraft.sco.items
  */
-public class SkillIdentifier{
+public class SkillIdentifier implements Comparable<SkillIdentifier>{
 	
 	private String skillName;
 		public String getSkillName() { return skillName; }
@@ -18,6 +18,9 @@ public class SkillIdentifier{
 		public int getSkillLevel() { return skillLevel; }
 	private ItemTier rarity;
 		public ItemTier getRarity() { return rarity; }
+	private int database_id;
+		public int getDatabaseId() { return database_id; }
+		public void setDatabaseId(int database_id) { this.database_id = database_id; }
 	
 	/**
 	 * Optional value used when generating inventories from the database
@@ -72,6 +75,19 @@ public class SkillIdentifier{
 		throw new RuntimeException();
 	}
 
+	@Override
+	public int compareTo(SkillIdentifier o) {
+		if(this.skillName.equals(o.getSkillName())) {
+			if(this.skillLevel == o.getSkillLevel()) {
+				if(this.rarity == o.getRarity()) {
+					return 0;
+				}
+			}
+		}
+		
+		return -1;
+	}
+
 	/**Checking if skill exists without creating instance */
 	public static boolean itemExists(String name) {
 		try {
@@ -85,4 +101,5 @@ public class SkillIdentifier{
 			return false;
 		}
     }
+
 }
