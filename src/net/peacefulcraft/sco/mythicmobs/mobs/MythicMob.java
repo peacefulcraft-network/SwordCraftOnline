@@ -481,7 +481,7 @@ public class MythicMob implements Comparable<MythicMob> {
         this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
         this.aiGSelectors = mc.getStringList("AIGoalSelectors");
         this.aiTSelectors = mc.getStringList("AITargetSelectors");
-        
+
         //Drops, droptables, killmessages
         this.drops = mc.getStringList("Drops");
         /**Passing to drop table constructor.

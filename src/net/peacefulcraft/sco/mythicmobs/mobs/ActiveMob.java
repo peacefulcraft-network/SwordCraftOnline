@@ -19,6 +19,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.skills.SkillCaster;
 
 public class ActiveMob implements SkillCaster {
+    
     private long aliveTime = 0L;
     
     private UUID uuid;

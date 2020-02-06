@@ -8,6 +8,7 @@ import org.bukkit.entity.Horse;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
@@ -20,13 +21,10 @@ public class BukkitHorse extends MythicEntity {
     
     private String horseStyle;
     
-    private String horseType;
     
     private String horseColor;
     
     private String horseArmor;
-    
-    private boolean horseChest;
     
     private boolean horseSaddled;
     
@@ -35,9 +33,9 @@ public class BukkitHorse extends MythicEntity {
     public void instantiate(MythicConfig mc) {
       this.ageableProperty = new AgeableProperty(mc);
       this.horseArmor = mc.getString("Options.HorseArmor");
-      this.horseChest = mc.getBoolean("Options.HorseCarryingChest", false);
+      //this.horseChest = mc.getBoolean("Options.HorseCarryingChest", false);
       this.horseStyle = mc.getString("Options.HorseStyle");
-      this.horseType = mc.getString("Options.HorseType");
+      //this.horseType = mc.getString("Options.HorseType");
       this.horseColor = mc.getString("Options.HorseColor");
       this.horseColor = mc.getString("Options.Color", this.horseColor);
       this.horseSaddled = mc.getBoolean("Options.HorseSaddled", false);
@@ -67,7 +65,7 @@ public class BukkitHorse extends MythicEntity {
         try {
           e.setColor(Horse.Color.valueOf(this.horseColor.toUpperCase()));
         } catch (Exception ex) {
-          //TODO:Log error
+          SwordCraftOnline.logInfo("Attempted to load invalid horse color: " + this.horseColor);
         }  
       if (this.horseTamed)
         e.setTamed(true); 

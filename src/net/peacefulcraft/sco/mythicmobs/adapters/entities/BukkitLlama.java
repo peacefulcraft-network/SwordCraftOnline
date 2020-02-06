@@ -5,6 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Llama;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
@@ -18,8 +19,6 @@ public class BukkitLlama extends MythicEntity {
     private String horseColor;
     
     private boolean horseChest;
-    
-    private boolean horseSaddled;
     
     private boolean horseTamed;
     
@@ -47,7 +46,7 @@ public class BukkitLlama extends MythicEntity {
         try {
             e.setColor(Llama.Color.valueOf(this.horseColor));
         } catch (Exception ex) {
-            //MythicMobs.error("Invalid llama color specified" + this.horseColor);
+            SwordCraftOnline.logInfo("Invalid llama color specified" + this.horseColor);
         } 
         if (this.horseChest)
             e.setCarryingChest(true); 
