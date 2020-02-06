@@ -26,6 +26,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.storage.HikariManager;
+import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -65,6 +66,7 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		r = new Random();
 		
+		
 	}
 	
 	public void onEnable() {
@@ -73,11 +75,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.loadCommands();
 		this.loadEventListeners();
 		
+		hikari = new HikariManager(cfg);
+		new SwordSkillRegistery();
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
 		
 
-		hikari = new HikariManager(cfg);
 		dungeonManager = new DungeonManager();
 
 		this.server = (ServerInterface)new BukkitServer();
