@@ -44,6 +44,7 @@ public class PartyManager
 			ret = getListParties().get(name);
 			if(ret == null) {
 				//ret = //TODO: Get party from database
+				return null;
 			} 
 		}
 		return ret;
