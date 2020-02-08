@@ -957,6 +957,7 @@ public class MythicMob implements Comparable<MythicMob> {
         return (this.killMessages != null && this.killMessages.size() > 0);
     }
 
+    /**Returns randomly selected kill message. */
     public String getKillMessage() {
         if(!hasKillMessges()) { return null; }
         return this.killMessages.get(SwordCraftOnline.r.nextInt(this.killMessages.size()));
