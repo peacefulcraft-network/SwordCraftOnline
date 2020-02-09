@@ -11,12 +11,16 @@ import net.peacefulcraft.sco.gamehandle.player.Teleports;
 
 public class DungeonManager {
     
-    private static HashMap<Integer, Dungeon> players;
-        public static HashMap<Integer, Dungeon> getPlayers() { return players; }
-        public static boolean isActive(int index) { return players.get(index).getPlayers().size() > 0; }
+    private static HashMap<Integer, Dungeon> dungeons;
+        public static HashMap<Integer, Dungeon> getDungeons() { return dungeons; }
+        public static boolean isActive(int index) { return dungeons.get(index).getPlayers().size() > 0; }
+        public static Dungeon getDungeon(int index) {
+            if(dungeons.get(index) == null) { return null; }
+            return dungeons.get(index);
+        }
 
     public DungeonManager() {
-        players = new HashMap<Integer, Dungeon>();
+        dungeons = new HashMap<Integer, Dungeon>();
     }
 
     /**
@@ -36,12 +40,12 @@ public class DungeonManager {
         }
 
         //Adding player to dungeon. If dungeon doesn't exist we make it.
-        if(players.get(index) != null) {
-            players.get(index).getPlayers().add(s);
+        if(dungeons.get(index) != null) {
+            dungeons.get(index).getPlayers().add(s);
         } else {
             Dungeon d = new Dungeon();
             d.addPlayer(s);
-            players.put(index, d);
+            dungeons.put(index, d);
         }
 
         Player p = s.getPlayer();
@@ -76,7 +80,7 @@ public class DungeonManager {
         } else {
             p.teleport(Teleports.getDungeonEntrance(index));
         }
-        players.get(index).getPlayers().remove(s);
+        dungeons.get(index).getPlayers().remove(s);
 
         p.sendMessage("You have left " + ChatColor.BLUE + "Dungeon " + index);
     }
@@ -95,7 +99,7 @@ public class DungeonManager {
 
     /**Checking if SCOPlayer is in dungeon */
     public boolean isInDungeon(SCOPlayer s) {
-        for(Dungeon d : players.values()) {
+        for(Dungeon d : dungeons.values()) {
             if(d.getPlayers().contains(s)) { return true; }
         }
         return false;

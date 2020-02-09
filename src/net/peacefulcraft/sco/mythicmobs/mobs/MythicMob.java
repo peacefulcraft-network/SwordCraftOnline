@@ -29,103 +29,157 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 
+/**
+ * Holds custom mob data read from YML in mob mananger.
+ */
 public class MythicMob implements Comparable<MythicMob> {
+    /**File name */
     private String file;
 
+    /**Generic config for YML */
     private MythicConfig config;
 
+    /**Returns generic config of mob */
+    public MythicConfig getConfig() {
+        return this.config;
+    }
+
+    /**Internal name of mob provided from config */
     private String internalName;
         public String getInternalName() { return this.internalName; }
 
+    /**Display name of mob */
     protected String displayName;
 
+    /**Type of vanilla mob */
     protected MythicEntity mobType;
+
+    /**Type of vanilla mob in string form */
+    protected String strMobType;
 
     protected boolean optionDespawn;
 
     protected boolean optionPersistent;
 
+    /**Option: Shows health in chat. Defaulted to false */
     protected boolean optionShowHealthInChat = false;
 
-    protected String strMobType;
-
+    /**Determines what mob attacks */
     protected String faction = null;
+        /**Returns faction of MM */
         public String getFaction() { return this.faction; }
 
+    /**Set health of mob */
     protected double health;
 
+    /**Set damage of mob */
     protected double damage;
 
+    /**Set armor of mob */
     protected double armor;
 
+    /**Mobs attribute movement speed */
     protected double attrMovementSpeed;
 
+    /**Mobs attribute knockback resistance */
     protected double attrKnockbackResist;
 
+    /**Mobs attribute follow range */
     protected double attrFollowRange;
 
+    /**Mobs attribute attack speed */
     protected double attrAttackSpeed;
 
+    /**Damage scaling with level */
     protected double lvlModDamage;
 
+    /**Health scaling with level */
     protected double lvlModHealth;
 
+    /**Armor scaling with level */
     protected double lvlModArmor;
 
     protected double lvlModKBR;
 
+    /**Power scaling with level */
     protected double lvlModPower;
 
+    /**Speed scaling with level */
     protected double lvlModSpeed;
 
+    /**Attack speed scaling with level */
     protected double lvlModAttackSpeed;
 
+    /**Option: Makes mob silent. Default false */
     protected boolean optionSilent = false;
 
+    /**Option: Makes mob do nothing. Default false */
     protected boolean optionNoAI = false;
 
+    /**Option: Makes mob glow. Default false */
     protected boolean optionGlowing = false;
 
+    /**Option: Makes mob invincible. Default false */
     protected  boolean optionInvincible = false;
 
+    /**Option: Makes mob intangible. Default true */
     protected boolean optionCollidable = true;
 
+    /**Option: Makes mob hae gravity. Default true */
     protected boolean optionNoGravity = true;
 
+    /**Option: Makes mob interactable. Default true */
     protected boolean optionInteractable = true;
 
+    /**Uses boss bar provided in YML. Default false */
     protected boolean useBossBar = false;
 
+    /**Range of boss bar */
     protected int bossBarRange;
 
+    /**Range squared of boss bar */
     protected int bossBarRangeSq;
 
+    /**Title of boss bar */
     protected String bossBarTitle;
 
+    /**Color of boss bar */
     protected BarColor bossBarColor;
 
+    /**Style of boss bar */
     protected BarStyle bossBarStyle;
 
+    /**Create boss bar fog */
     protected boolean bossBarCreateFog;
 
+    /**Darkens sky with boss bar */
     protected boolean bossBarDarkenSky;
 
+    /**Play music with boss bar */
     protected boolean bossBarPlayMusic;
 
+    /**Optional: Mob is mount */
     protected Optional<String> mount = Optional.empty();
 
+    /**Optional: Mob is rider */
     protected Optional<String> rider = Optional.empty();
 
+    /**Drops of mob read from YML */
     private List<String> drops;
 
+    /**Drops of mob read from YML */
     private DropTable dropTable;
 
+    /**Mobs equipment. */
     private List<String> equipment;
 
+    /**Droptable for mob equipment */
     private DropTable equipmentTable;
 
+    /**Mob damage modifiers. I.e. fire */
     private List<String> damageModifiers;
 
+    /** Mob damage modifiers. I.e. Zombie*/
     private List<String> entityDamageModifiers;
 
     private List<String> levelmods;
@@ -134,18 +188,22 @@ public class MythicMob implements Comparable<MythicMob> {
 
     private List<String> aiTSelectors;
 
+    /**Returns mob drops */
     public List<String> getDrops() {
         return this.drops;
     }
 
+    /**Returns mob droptable */
     public DropTable getDropTable() {
         return this.dropTable;
     } 
 
+    /**Returns mob equipment */
     public List<String> getEquipment() {
         return this.equipment;
     }
 
+    /**Returns mob equipment droptable */
     public DropTable getEquipmentTable() {
         return this.equipmentTable;
     }
@@ -174,6 +232,7 @@ public class MythicMob implements Comparable<MythicMob> {
 
     public boolean usingTimers = false;
 
+    /**Size of mob. I.e. Large slimes */
     int size;
 
     private int noDamageTicks;
@@ -181,8 +240,6 @@ public class MythicMob implements Comparable<MythicMob> {
     private int maxAttackRange;
 
     private int maxAttackableRange;
-
-    private int maxThreatDistance;
 
     public int getNoDamageTicks() {
         return this.noDamageTicks;
@@ -196,72 +253,71 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.maxAttackableRange;
     }
 
-    public int getMaxThreatDistance() {
-        return this.maxThreatDistance;
-    }
-
+    /**Determines to show mob name. Default true */
     private boolean alwaysShowName = true;
 
+    /**Determines show name on damage. Default true */
     private boolean showNameOnDamage = true;
 
-    private boolean useThreatTable;
-
-    private boolean useImmunityTable;
-
-    private boolean useCustomNameplate;
-
-    public boolean isUseCustomNameplate() {
-        return this.useCustomNameplate;
-    }
-
-    private boolean optionTTFromDamage = true;
-
-    private boolean optionTTDecayUnreachable = true;
-
+    /*
     private Boolean repeatAllSkills = Boolean.valueOf(false);
 
     public boolean getRepeatAllSkills() {
         return this.repeatAllSkills;
-    }
+    }*/
 
+    /**Prevents vanilla drops. Default false */
     private Boolean preventOtherDrops = Boolean.valueOf(false);
 
+    /**Returns preventOtherDrops. Defaulted false */
     public boolean getPreventOtherDrops() {
         return this.preventOtherDrops;
     }
 
+    /**Prevents random equipment */
     private Boolean preventRandomEquipment = Boolean.valueOf(false);
 
+    /**Returns preventRandomEquipment. Default false */
     public boolean getPreventRandomEquipment() {
         return this.preventRandomEquipment;
     }
 
+    /**Prevents leashing of mob */
     private Boolean preventLeashing = Boolean.valueOf(false);
 
+    /**Returns preventleashing. Default false */
     public boolean getPreventLeashing() {
         return this.preventLeashing;
     }
 
+    /**Prevents rename of mob */
     private Boolean preventRename = Boolean.valueOf(true);
 
+    /**Returns preventRename. Default true */
     public boolean getPreventRename() {
         return this.preventRename;
     }
 
+    /**Prevents slimes splitting. Default true */
     private Boolean preventSlimeSplit = Boolean.valueOf(true);
 
+    /**Returns preventslimesplitting */
     public boolean getPreventSlimeSplit() {
         return this.preventSlimeSplit;
     }
 
+    /**Prevents enderman teleporting. Default true */
     private Boolean preventEndermanTeleport = Boolean.valueOf(true);
 
+    /**returns preventEndermanTeleport */
     public boolean getPreventEndermanTeleport() {
         return this.preventEndermanTeleport;
     }
 
+    /**Prevents item pickup of mob. Default true */
     private Boolean preventItemPickup = Boolean.valueOf(true);
 
+    /**Returns preventitempickup */
     public boolean getPreventItemPickup() {
         return this.preventItemPickup;
     }
@@ -272,14 +328,18 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.preventSilverfishInfection;
     }
 
+    /**Prevents sunburn of mob. Default false */
     private Boolean preventSunburn = Boolean.valueOf(false);
 
+    /**Returns preventsunburn */
     public boolean getPreventSunburn() {
         return this.preventSunburn;
     }
 
+    /**Prevents exploding of creeper. Default false */
     private Boolean preventExploding = Boolean.valueOf(false);
 
+    /**Returns preventExploding */
     public boolean getPreventExploding() {
         return this.preventExploding;
     }
@@ -468,14 +528,11 @@ public class MythicMob implements Comparable<MythicMob> {
 
         //Options
         this.factionTargets = mc.getStringList("Target");
-        this.useCustomNameplate = mc.getBoolean("Nameplate.Enabled", false);
         this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
         this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
         this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
-        this.maxThreatDistance = mc.getInteger("Options.MaxThreatDistance", 40);
         this.alwaysShowName = mc.getBoolean("Options.AlwaysShowName", false);
         this.showNameOnDamage = mc.getBoolean("Options.ShowNameOnDamaged", false);
-        this.repeatAllSkills = Boolean.valueOf(mc.getBoolean("Options.RepeatAllSkills", false));
         this.preventOtherDrops = Boolean.valueOf(mc.getBoolean("Options.PreventOtherDrops", true));
         this.preventRandomEquipment = Boolean.valueOf(mc.getBoolean("Options.PreventRandomEquipment", false));
         this.preventLeashing = Boolean.valueOf(mc.getBoolean("Options.PreventLeashing", true));
@@ -503,7 +560,7 @@ public class MythicMob implements Comparable<MythicMob> {
         this.equipment = mc.getStringList("Equipment");
         List<String> killMessages = mc.getStringList("KillMessages");
         if(killMessages != null && killMessages.size() > 0) {
-            //TODO: Log loading kill messages
+            SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Loading mob kill messages.");
             if(this.killMessages == null) {
                 this.killMessages = new ArrayList<>();
             }
@@ -610,14 +667,10 @@ public class MythicMob implements Comparable<MythicMob> {
 
         //Disguise handling
         this.disguise = mc.getString("Options.Disguise", this.disguise);
-        this.disguise = mc.getString("Disguide.Type", this.disguise);
-        if(this.disguise != null && this.disguise.toUpperCase().contains("PLAUER")) {
+        this.disguise = mc.getString("Disguise.Type", this.disguise);
+        if(this.disguise != null && this.disguise.toUpperCase().contains("PLAYER")) {
             this.fakePlayer = true;
         }
-    }
-
-    public MythicConfig getConfig() {
-        return this.config;
     }
 
     /**Applies mob options and returns ActiveMob */
@@ -630,12 +683,18 @@ public class MythicMob implements Comparable<MythicMob> {
         }
         ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level);
         SwordCraftOnline.getPluginInstance().getMobManager().registerActiveMob(am);
+        
+        //Applying all options.
         am = applyMobOptions(am, level);
         am = applyMobVolatileOptions(am);
         am = applySpawnModifiers(am);
         return am;
     }
 
+    /**
+     * Applies attribute modifiers and other options to mob
+     * @param level Determines modifiers of attributes.
+     */
     public ActiveMob applyMobOptions(ActiveMob am, int level) {
         Entity e = am.getEntity().getBukkitEntity();
         if(am.getEntity().isLiving()) {
@@ -682,7 +741,8 @@ public class MythicMob implements Comparable<MythicMob> {
                 }
             }
 
-            /**Handling equipment. ALL drop chances set to 0. 
+            /**
+             * Handling equipment. ALL drop chances set to 0. 
              * Drops handled by drop tables
              * Format: 0-Material, 1-Location
              */
@@ -721,6 +781,9 @@ public class MythicMob implements Comparable<MythicMob> {
 
             asLiving.setMaximumNoDamageTicks(this.noDamageTicks);
 
+            /**
+             * Prevents random equipment of mob.
+             */
             if(e instanceof Creature) {
                 if(this.preventRandomEquipment.booleanValue()) {
                     EntityEquipment ee = asLiving.getEquipment();
@@ -768,6 +831,7 @@ public class MythicMob implements Comparable<MythicMob> {
         return am;
     }
 
+    /**Applies volatile options. No AI and Faction */
     public ActiveMob applyMobVolatileOptions(ActiveMob am) {
         Entity e = am.getEntity().getBukkitEntity();
         if(hasFaction()) {
@@ -781,6 +845,7 @@ public class MythicMob implements Comparable<MythicMob> {
         return am;
     }
 
+    /**Spawn modifiers. Spawn velocity, etc. */
     public ActiveMob applySpawnModifiers(ActiveMob am) {
         Entity e = am.getEntity().getBukkitEntity();
         Vector v = e.getVelocity();
@@ -810,6 +875,7 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.useBossBar;
     }
 
+    /**Gets boss bar from config */
     public Optional<AbstractBossBar> getBossBar() {
         if(!this.useBossBar) {
             return Optional.empty();
@@ -924,22 +990,6 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.optionInvincible;
     }
       
-    public boolean usesThreatTable() {
-        return this.useThreatTable;
-    }
-      
-    public boolean usesImmunityTable() {
-        return this.useImmunityTable;
-    }
-      
-    public boolean getThreatTableUseDamageTaken() {
-        return this.optionTTFromDamage;
-    }
-      
-    public boolean getThreatTableDecaysUnreachable() {
-        return this.optionTTDecayUnreachable;
-    }
-      
     public List<String> getDamageModifiers() {
         return this.damageModifiers;
     }
@@ -964,6 +1014,7 @@ public class MythicMob implements Comparable<MythicMob> {
         return (this.killMessages != null && this.killMessages.size() > 0);
     }
 
+    /**Returns randomly selected kill message. */
     public String getKillMessage() {
         if(!hasKillMessges()) { return null; }
         return this.killMessages.get(SwordCraftOnline.r.nextInt(this.killMessages.size()));

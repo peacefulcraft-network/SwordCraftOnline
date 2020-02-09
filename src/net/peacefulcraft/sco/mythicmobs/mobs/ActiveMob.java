@@ -18,6 +18,9 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.skills.SkillCaster;
 
+/**
+ * Active instance of Mythicmob
+ */
 public class ActiveMob implements SkillCaster {
     
     private long aliveTime = 0L;
@@ -39,7 +42,7 @@ public class ActiveMob implements SkillCaster {
         public int getLevel() { return this.level; }
         public float getPower() { return (float)(1.0D + (getLevel()-1) * getType().getPerLevelPower()); }
 
-        /**ActiveMobs faction for AI */
+    /**ActiveMobs faction for AI stored in metadata */
     private Optional<String> faction = Optional.empty();
         public boolean hasFaction() {
             if(this.faction.isPresent()) {return true; }
@@ -55,6 +58,7 @@ public class ActiveMob implements SkillCaster {
             return this;
         }
 
+    /**Player kills of mob */
     private int playerKills = 0;
         public int getPlayerKills() { return this.playerKills; }
         public void incrementPlayerKills() { this.playerKills++; }
@@ -62,9 +66,11 @@ public class ActiveMob implements SkillCaster {
 
     public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
 
+    /**Stores the mobs owner */
     private Optional<UUID> owner = Optional.empty();
         public Optional<UUID> getOwner() { return this.owner; }
 
+    /**Stores mob boss bar if it has one */
     private Optional<AbstractBossBar> bossBar = Optional.empty();
 
     private boolean dead = false;
@@ -103,6 +109,11 @@ public class ActiveMob implements SkillCaster {
         public void setLastAggroCause(AbstractEntity aggro) { this.lastAggroCause = aggro; }
         public AbstractEntity getLastAggroCause() { return this.lastAggroCause; }
 
+    /**
+     * Initializes active mob instance.
+     * @param e Abstract entity
+     * @param type Mob type read from Mythic Mob
+     */
     public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int Level) {
         this.uuid = uuid;
         this.entity = e;
@@ -117,11 +128,6 @@ public class ActiveMob implements SkillCaster {
         if(type.usesBossBar()) {
             this.bossBar = type.getBossBar();
         }
-        /*
-        if(!getType().getDespawns()) {
-            remountSpawner();
-        }
-        */
     }
 
     public void tick(int c) {

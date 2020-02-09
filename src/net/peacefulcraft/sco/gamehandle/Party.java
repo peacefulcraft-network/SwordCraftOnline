@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.gamehandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -149,6 +150,16 @@ public class Party
 		inviteMap.remove(invitedPlayer);
 		
 		updateParty();
+	}
+
+	public List<SCOPlayer> getOnlinePlayers() {
+		ArrayList<SCOPlayer> l = new ArrayList<SCOPlayer>();
+		for(SCOPlayer s : getMembers()) {
+			if(s.getPlayer().isOnline()) {
+				l.add(s);
+			}
+		}
+		return l;
 	}
 	
 	public double onlineMemberPercent() {
