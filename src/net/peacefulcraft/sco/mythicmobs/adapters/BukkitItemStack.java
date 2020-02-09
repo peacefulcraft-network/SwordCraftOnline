@@ -123,16 +123,6 @@ public class BukkitItemStack implements AbstractItemStack, Cloneable {
       return this;
     }
     
-    public BukkitItemStack setOwner(String owner) {
-      checkItemMeta();
-      if (!(this.item.getItemMeta() instanceof SkullMeta))
-        return this; 
-      SkullMeta im = (SkullMeta)this.item.getItemMeta();
-      im.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
-      this.item.setItemMeta((ItemMeta)im);
-      return this;
-    }
-    
     /*
     public BukkitItemStack setSkullTexture(String texture) {
       UUID skinUUID;

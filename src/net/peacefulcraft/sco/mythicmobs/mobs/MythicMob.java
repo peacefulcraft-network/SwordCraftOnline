@@ -420,6 +420,17 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.fakePlayer;
     }
 
+    /**Stores factions to target */
+    protected List<String> factionTargets;
+    
+    public List<String> getFactionTargets() {
+        return this.factionTargets;
+    }
+
+    public boolean hasFactionTargets() {
+        return this.factionTargets.size() > 0;
+    }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -516,6 +527,7 @@ public class MythicMob implements Comparable<MythicMob> {
         //TODO: Load sword skills from naming convetion and apply to mob.
 
         //Options
+        this.factionTargets = mc.getStringList("Target");
         this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
         this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
         this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
@@ -533,7 +545,7 @@ public class MythicMob implements Comparable<MythicMob> {
         this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
         this.aiGSelectors = mc.getStringList("AIGoalSelectors");
         this.aiTSelectors = mc.getStringList("AITargetSelectors");
-        
+
         //Drops, droptables, killmessages
         this.drops = mc.getStringList("Drops");
         /**Passing to drop table constructor.

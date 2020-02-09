@@ -22,6 +22,7 @@ import net.peacefulcraft.sco.mythicmobs.skills.SkillCaster;
  * Active instance of Mythicmob
  */
 public class ActiveMob implements SkillCaster {
+    
     private long aliveTime = 0L;
     
     private UUID uuid;
