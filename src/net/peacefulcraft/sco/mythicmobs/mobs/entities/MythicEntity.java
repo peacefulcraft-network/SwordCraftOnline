@@ -102,7 +102,7 @@ public abstract class MythicEntity {
     }
 
     public static MythicEntity getMythicEntity(MythicMob mm) {
-        return getMythicEntity(mm.getEntityType());
+        return getMythicEntity(mm.getStrMobType());
     }
 
     public static MythicEntity getMythicEntity(String s) {

@@ -35,34 +35,48 @@ import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 public class MythicMob implements Comparable<MythicMob> {
     /**File name */
     private String file;
+        /**Returns String of mob file name */
+        public String getFile() { return this.file; }
 
     /**Generic config for YML */
     private MythicConfig config;
-
-    /**Returns generic config of mob */
-    public MythicConfig getConfig() {
-        return this.config;
-    }
+        /**Returns generic config of mob */
+        public MythicConfig getConfig() { return this.config; }
 
     /**Internal name of mob provided from config */
     private String internalName;
+        /**Returns internal mob name provided by config */
         public String getInternalName() { return this.internalName; }
 
     /**Display name of mob */
     protected String displayName;
+        /**Returns display name of mob */
+        public String getDisplayName() { return this.displayName; }
 
     /**Type of vanilla mob */
     protected MythicEntity mobType;
+        /**Returns mobtype of mob */
+        public MythicEntity getMobType() { return this.mobType; }
 
     /**Type of vanilla mob in string form */
     protected String strMobType;
+        /**Returns string representation of mobtype */
+        public String getStrMobType() { return this.strMobType; }
 
+    /**Option: Despawn mob at range */
     protected boolean optionDespawn;
+        /**Returns Option: Despawn */
+        public boolean despawns() { return this.optionDespawn; }
 
+    /**Option: Mob is persistant. I.e. no despawn */
     protected boolean optionPersistent;
+        /**Returns Option: Persistant */
+        public boolean isPersistent() { return this.optionPersistent; }
 
     /**Option: Shows health in chat. Defaulted to false */
     protected boolean optionShowHealthInChat = false;
+        /**Returns option showHealthInChat */
+        public boolean doesShowHealthInChat() { return this.optionShowHealthInChat; }
 
     /**Determines what mob attacks */
     protected String faction = null;
@@ -112,24 +126,38 @@ public class MythicMob implements Comparable<MythicMob> {
 
     /**Option: Makes mob silent. Default false */
     protected boolean optionSilent = false;
+        /**Returns mob silent */
+        public boolean isSilent() { return this.isSilent(); }
 
     /**Option: Makes mob do nothing. Default false */
     protected boolean optionNoAI = false;
+        /**Returns mob NoAI */
+        public boolean hasNoAI() { return this.optionNoAI; }
 
     /**Option: Makes mob glow. Default false */
     protected boolean optionGlowing = false;
+        /**Returns option glowing */
+        public boolean isGlowing() { return this.optionGlowing; }
 
     /**Option: Makes mob invincible. Default false */
     protected  boolean optionInvincible = false;
+        /**Returns option invincible */
+        public boolean isInvincible() { return this.optionInvincible; }
 
     /**Option: Makes mob intangible. Default true */
     protected boolean optionCollidable = true;
+        /**Returns option collidable */
+        public boolean isCollidable() { return this.optionCollidable; }
 
     /**Option: Makes mob hae gravity. Default true */
     protected boolean optionNoGravity = true;
+        /**Returns Option no gravity */
+        public boolean hasNoGravity() { return this.optionNoGravity; }
 
     /**Option: Makes mob interactable. Default true */
     protected boolean optionInteractable = true;
+        /**Returns option interactable */
+        public boolean isInteractable() { return this.optionInteractable; }
 
     /**Uses boss bar provided in YML. Default false */
     protected boolean useBossBar = false;
@@ -167,46 +195,39 @@ public class MythicMob implements Comparable<MythicMob> {
     /**Drops of mob read from YML */
     private List<String> drops;
 
+    /**Returns mob drops */
+    public List<String> getDrops() { return this.drops; }
+
     /**Drops of mob read from YML */
     private DropTable dropTable;
 
+    /**Returns mob drop table */
+    public DropTable getDropTable() { return this.dropTable; }
+
     /**Mobs equipment. */
     private List<String> equipment;
+        /**Returns mob equipment */
+        public List<String> getEquipment() { return this.equipment; }
 
     /**Droptable for mob equipment */
     private DropTable equipmentTable;
+            /**Returns mob equipment droptable */
+        public DropTable getEquipmentTable() { return this.equipmentTable; }
 
-    /**Mob damage modifiers. I.e. fire */
+    /**Mob damage weakness modifiers. I.e. fire */
     private List<String> damageModifiers;
 
-    /** Mob damage modifiers. I.e. Zombie*/
+    /** Mob damage modifiers. I.e. strong against zombies*/
     private List<String> entityDamageModifiers;
+
+    /**Mob damage weakness modifiers. I.e. weak to zombies */
+    private List<String> entityWeaknessModifiers;
 
     private List<String> levelmods;
 
     private List<String> aiGSelectors;
 
     private List<String> aiTSelectors;
-
-    /**Returns mob drops */
-    public List<String> getDrops() {
-        return this.drops;
-    }
-
-    /**Returns mob droptable */
-    public DropTable getDropTable() {
-        return this.dropTable;
-    } 
-
-    /**Returns mob equipment */
-    public List<String> getEquipment() {
-        return this.equipment;
-    }
-
-    /**Returns mob equipment droptable */
-    public DropTable getEquipmentTable() {
-        return this.equipmentTable;
-    }
 
     /*
     private Queue<SkillMechanic> mSkills = new LinkedList<>();
@@ -236,22 +257,13 @@ public class MythicMob implements Comparable<MythicMob> {
     int size;
 
     private int noDamageTicks;
+        public int getNoDamageTicks() { return this.noDamageTicks; }
 
     private int maxAttackRange;
+        public int getMaxAttackRange() { return this.maxAttackRange; }
 
     private int maxAttackableRange;
-
-    public int getNoDamageTicks() {
-        return this.noDamageTicks;
-    }
-
-    public int getMaxAttackRange() {
-        return this.maxAttackRange;
-    }
-
-    public int getMaxAttackableRange() {
-        return this.maxAttackableRange;
-    }
+        public int getMaxAttackableRange() { return this.maxAttackableRange; }
 
     /**Determines to show mob name. Default true */
     private boolean alwaysShowName = true;
@@ -268,168 +280,109 @@ public class MythicMob implements Comparable<MythicMob> {
 
     /**Prevents vanilla drops. Default false */
     private Boolean preventOtherDrops = Boolean.valueOf(false);
-
-    /**Returns preventOtherDrops. Defaulted false */
-    public boolean getPreventOtherDrops() {
-        return this.preventOtherDrops;
-    }
+        /**Returns preventOtherDrops. Defaulted false */
+        public boolean getPreventOtherDrops() { return this.preventOtherDrops; }
 
     /**Prevents random equipment */
     private Boolean preventRandomEquipment = Boolean.valueOf(false);
-
-    /**Returns preventRandomEquipment. Default false */
-    public boolean getPreventRandomEquipment() {
-        return this.preventRandomEquipment;
-    }
+        /**Returns preventRandomEquipment. Default false */
+        public boolean getPreventRandomEquipment() { return this.preventRandomEquipment; }
 
     /**Prevents leashing of mob */
     private Boolean preventLeashing = Boolean.valueOf(false);
-
-    /**Returns preventleashing. Default false */
-    public boolean getPreventLeashing() {
-        return this.preventLeashing;
-    }
+        /**Returns preventleashing. Default false */
+        public boolean getPreventLeashing() { return this.preventLeashing; }
 
     /**Prevents rename of mob */
     private Boolean preventRename = Boolean.valueOf(true);
-
-    /**Returns preventRename. Default true */
-    public boolean getPreventRename() {
-        return this.preventRename;
-    }
+        /**Returns preventRename. Default true */
+        public boolean getPreventRename() { return this.preventRename; }
 
     /**Prevents slimes splitting. Default true */
     private Boolean preventSlimeSplit = Boolean.valueOf(true);
-
-    /**Returns preventslimesplitting */
-    public boolean getPreventSlimeSplit() {
-        return this.preventSlimeSplit;
-    }
+        /**Returns preventslimesplitting */
+        public boolean getPreventSlimeSplit() { return this.preventSlimeSplit; }
 
     /**Prevents enderman teleporting. Default true */
     private Boolean preventEndermanTeleport = Boolean.valueOf(true);
-
-    /**returns preventEndermanTeleport */
-    public boolean getPreventEndermanTeleport() {
-        return this.preventEndermanTeleport;
-    }
+        /**returns preventEndermanTeleport */
+        public boolean getPreventEndermanTeleport() { return this.preventEndermanTeleport; }
 
     /**Prevents item pickup of mob. Default true */
     private Boolean preventItemPickup = Boolean.valueOf(true);
+        /**Returns preventitempickup */
+        public boolean getPreventItemPickup() { return this.preventItemPickup; }
 
-    /**Returns preventitempickup */
-    public boolean getPreventItemPickup() {
-        return this.preventItemPickup;
-    }
-
+    /**Prevents silverfish from spreading into blocks */
     private Boolean preventSilverfishInfection = Boolean.valueOf(true);
-
-    public boolean getPreventSilverfishInfection() {
-        return this.preventSilverfishInfection;
-    }
+        /**Returns preventSilverfishInfection */
+        public boolean getPreventSilverfishInfection() { return this.preventSilverfishInfection; }
 
     /**Prevents sunburn of mob. Default false */
     private Boolean preventSunburn = Boolean.valueOf(false);
-
-    /**Returns preventsunburn */
-    public boolean getPreventSunburn() {
-        return this.preventSunburn;
-    }
+        /**Returns preventsunburn */
+        public boolean getPreventSunburn() { return this.preventSunburn; }
 
     /**Prevents exploding of creeper. Default false */
     private Boolean preventExploding = Boolean.valueOf(false);
+        /**Returns preventExploding */
+        public boolean getPreventExploding() { return this.preventExploding; }
 
-    /**Returns preventExploding */
-    public boolean getPreventExploding() {
-        return this.preventExploding;
-    }
-
+    /**Prevents mobs from droping items on death */
     private Boolean preventMobKillDrops = Boolean.valueOf(false);
-
-    public boolean getPreventMobKillDrops() {
-        return this.preventMobKillDrops;
-    }
+        /**Returns PreventMobKillDrops */
+        public boolean getPreventMobKillDrops() { return this.preventMobKillDrops; }
 
     private Boolean passthroughDamage = Boolean.valueOf(false);
-
-    public boolean getPassthroughDamage() {
-        return this.passthroughDamage;
-    }
+        public boolean getPassthroughDamage() { return this.passthroughDamage; }
 
     private Boolean digOutOfGround = Boolean.valueOf(false);
+        public boolean getDigOutOfGround() { return this.digOutOfGround; }
 
-    public boolean getDigOutOfGround() {
-        return this.digOutOfGround;
-    }
-
+    /**Mob uses health bar */
     private Boolean usesHealthBar = Boolean.valueOf(false);
-
+        /**Returns usesHealthBar */
+        public boolean getUsesHealthBar() { return this.usesHealthBar; }
+    
     protected double spawnVelocityX;
 
-    public boolean getUsesHealthBar() {
-        return this.usesHealthBar;
-    }
-
     protected double spawnVelocityXMax = 0.0D;
+        public double getSpawnVelocityXMax() { return this.spawnVelocityXMax; }
 
     protected double spawnVelocityY;
 
-    public double getSpawnVelocityXMax() {
-        return this.spawnVelocityXMax;
-    }
-
     protected double spawnVelocityYMax = 0.0D;
+        public double getSpawnVelocityYMax() { return this.spawnVelocityYMax; }
 
     protected double spawnVelocityZ;
 
-    public double getSpawnVelocityYMax() {
-        return this.spawnVelocityYMax;
-    }
-
     protected double spawnVelocityZMax = 0.0D;
-
-    public double getSpawnVelocityZMax() {
-        return this.spawnVelocityZMax;
-    }
+        public double getSpawnVelocityZMax() { return this.spawnVelocityZMax; }
 
     protected boolean spawnVelocityXRange = false;
-
-    public boolean isSpawnVelocityXRange() {
-        return this.spawnVelocityXRange;
-    }
+        public boolean isSpawnVelocityXRange() { return this.spawnVelocityXRange; }
 
     protected boolean spawnVelocityYRange = false;
-
-    public boolean isSpawnVelocityYRange() {
-        return this.spawnVelocityYRange;
-    }
+        public boolean isSpawnVelocityYRange() { return this.spawnVelocityYRange; }
 
     protected boolean spawnVelocityZRange = false;
+        public boolean isSpawnVelocityZRange() { return this.spawnVelocityZRange; }
 
-    public boolean isSpawnVelocityZRange() {
-        return this.spawnVelocityZRange;
-    }
-
+    /**Is mob disguised as player */
     private boolean fakePlayer = false;
+        /**Returns if mob is fake player */
+        public boolean isFakePlayer() { return this.fakePlayer; }
 
     protected List<String> killMessages;
 
     public String disguise;
 
-    public boolean isFakePlayer() {
-        return this.fakePlayer;
-    }
-
     /**Stores factions to target */
     protected List<String> factionTargets;
-    
-    public List<String> getFactionTargets() {
-        return this.factionTargets;
-    }
-
-    public boolean hasFactionTargets() {
-        return this.factionTargets.size() > 0;
-    }
+        /**Returns list of faction targets */
+        public List<String> getFactionTargets() { return this.factionTargets; }
+        /**Returns if mob has faction targets */
+        public boolean hasFactionTargets() { return this.factionTargets.size() > 0; }
 
     /**
      * Constructor and decoder for MythicMobs
@@ -894,30 +847,6 @@ public class MythicMob implements Comparable<MythicMob> {
 
     public int getBossBarRangeSquared() {
         return this.bossBarRangeSq;
-    }
-
-    public String getFile() {
-        return this.file;
-    } 
-
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
-    public String getEntityType() {
-        return this.strMobType;
-    }
-
-    public MythicEntity getMythicEntity() {
-        return this.mobType;
-    }
-
-    public boolean getDespawns() {
-        return this.optionDespawn;
-    }
-
-    public boolean isPersistent() {
-        return this.optionPersistent;
     }
 
     public double getBaseHealth() {

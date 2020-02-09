@@ -231,7 +231,7 @@ public class ActiveMob implements SkillCaster {
 
     public void setUnloaded() {
         if(!this.dead) {
-            if(this.type.getDespawns() && !this.type.isPersistent()) {
+            if(this.type.despawns() && !this.type.isPersistent()) {
                 this.dead = true;
                 unregister();
             } else {
