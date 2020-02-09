@@ -360,6 +360,17 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.fakePlayer;
     }
 
+    /**Stores factions to target */
+    protected List<String> factionTargets;
+    
+    public List<String> getFactionTargets() {
+        return this.factionTargets;
+    }
+
+    public boolean hasFactionTargets() {
+        return this.factionTargets.size() > 0;
+    }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -456,12 +467,8 @@ public class MythicMob implements Comparable<MythicMob> {
         //TODO: Load sword skills from naming convetion and apply to mob.
 
         //Options
-        this.useThreatTable = mc.getBoolean("Modules.ThreatTable", false);
-        this.useImmunityTable = mc.getBoolean("Modules.ImmunityTable", false);
+        this.factionTargets = mc.getStringList("Target");
         this.useCustomNameplate = mc.getBoolean("Nameplate.Enabled", false);
-        this.useThreatTable = mc.getBoolean("Options.UseThreatTable", this.useThreatTable);
-        this.optionTTFromDamage = mc.getBoolean("ThreatTable.UseDamageTaken", true) ;
-        this.optionTTDecayUnreachable = mc.getBoolean("ThreatTable.DecayUnreachable");
         this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
         this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
         this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
