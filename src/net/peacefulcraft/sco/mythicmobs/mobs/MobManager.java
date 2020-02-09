@@ -39,8 +39,17 @@ public class MobManager {
     /**Stores by default entity type */
     private HashMap<MythicEntityType, MythicMob> mmDefault = new HashMap<>();
 
+    /**Offical registered mobs */
     private HashMap<UUID, ActiveMob> mobRegistry = new HashMap<>();
         public HashMap<UUID, ActiveMob> getMobRegistry() { return this.mobRegistry; }
+
+    /**Stores Pets: Key file name, Owners UUID */
+    private HashMap<String, MythicMob> petList = new HashMap<>();
+        public HashMap<String, MythicMob> getPetList() { return this.petList; }
+
+    /**Stores Pets: Displayname key */
+    private HashMap<String, MythicMob> petDisplay = new HashMap<>();
+        public HashMap<String, MythicMob> getPetDisplay() { return this.petDisplay; }
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
@@ -50,15 +59,12 @@ public class MobManager {
         this.mmList.clear();
         this.mmDisplay.clear();
         this.mmDefault.clear();
-        this.mobRegistry.clear();
+        //this.mobRegistry.clear();
 
-        IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "VanillaMobs.yml", "Mobs");
+        IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         List<File> mobFiles = IOHandler.getAllFiles(defaultMobs.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> mobLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), mobFiles, "Mobs");
-        
-        this.mmList.clear();
-        this.mmDefault.clear();
         
         SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Beginning loading...");
 
@@ -85,7 +91,7 @@ public class MobManager {
                     if(display != null) {
                         this.mmDisplay.put(display, mm);
                     }
-                    SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded " + name + " to list.");
+                    SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded mob " + name + " to list.");
 
                 } catch(Exception ex) {
                     ex.printStackTrace();
@@ -93,6 +99,44 @@ public class MobManager {
             }
         }
         SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loading complete!");
+
+        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Beginning pet loading...");
+        IOLoader<SwordCraftOnline> defaultPets = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "", "Pets");
+        defaultPets  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "", "Pets");
+        List<File> petFiles = IOHandler.getAllFiles(defaultPets.getFile().getParent());
+        List<IOLoader<SwordCraftOnline>> petLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), petFiles, "Pets");
+        
+        for(IOLoader<SwordCraftOnline> sl : petLoaders) {
+            for (String name : sl.getCustomConfig().getConfigurationSection("").getKeys(false)) {
+                try {
+                    MythicConfig mc = new MythicConfig(name, sl.getFile(), sl.getCustomConfig());
+                    String file = sl.getFile().getPath();
+
+                    if(MythicEntity.getMythicEntity(name) != null) {
+                        MythicEntityType met = MythicEntityType.get(name);
+                        MythicMob mm = new MythicMob(file, name, mc);
+                        this.mmDefault.put(met, mm);
+                        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded " + name + "to default.");
+                        continue;
+                    }
+                    
+                    String display = sl.getCustomConfig().getString(name + ".Display");
+                    display = sl.getCustomConfig().getString(name + ".DisplayName", display);
+                    
+                    MythicMob mm = new MythicMob(file, name, mc);
+                    this.petList.put(name, mm);
+                    
+                    if(display != null) {
+                        this.petDisplay.put(display, mm);
+                    }
+                    SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded pet " + name + " to list.");
+
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }  
+        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loading complete!"); 
     }
 
     public MythicMob getMythicMob(String s) {
