@@ -22,12 +22,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
 				<executions>
 					<execution>
 						<id>make-assembly</id>
@@ -35,6 +29,11 @@
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -71,9 +70,9 @@
 			<version>3.4.2</version>
 		</dependency>
 		<dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>2.1.2</version>
-        </dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.1.2</version>
+		</dependency>
 	</dependencies>
 </project>
