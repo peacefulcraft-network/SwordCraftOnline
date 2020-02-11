@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.inventories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
@@ -12,7 +13,10 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
 import net.peacefulcraft.sco.items.utilities.UnlockSlot;
+import net.peacefulcraft.sco.storage.tasks.SavePlayerInventory;
 
 public class SwordSkillInventory extends InventoryBase implements Listener{
 	
@@ -58,6 +62,18 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
  *
  ****************************************************/
 	
+	@Override
+	public void openInventory() {
+		SwordCraftOnline.getPluginInstance().getServer().getPluginManager().registerEvents(this, SwordCraftOnline.getPluginInstance());
+		super.openInventory();
+	}
+	
+	@Override
+	public void closeInventory() {
+		super.closeInventory();
+		InventoryClickEvent.getHandlerList().unregister(this);
+	}
+ 	
 	/**
 	 * Default loadout for the sword skill inventory
 	 */
@@ -82,15 +98,31 @@ public class SwordSkillInventory extends InventoryBase implements Listener{
 		
 	}
 	
-	@Override
-	public void openInventory() {
-		SwordCraftOnline.getPluginInstance().getServer().getPluginManager().registerEvents(this, SwordCraftOnline.getPluginInstance());
-		super.openInventory();
+	/**
+	 * Examines all items currently in the player's inventory and creates a list of
+	 * Sword Skill identifiers that indicate which sword skills the player has.
+	 * @return
+	 */
+	public ArrayList<SkillIdentifier> generateSkillIdentifiers(){
+		ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
+		for(int i=0; i<inventory.getSize(); i++) {
+			ItemStack item = inventory.getItem(i);
+			if(item == null) { continue; }
+			NBTItem nbtItem = new NBTItem(item);
+			
+			String skillName = item.getItemMeta().getDisplayName();
+			ItemTier tier = ItemTier.valueOf(nbtItem.getString("tier"));
+			int skilLevel = nbtItem.getInteger("skill_level");
+			
+			SkillIdentifier identifier = new SkillIdentifier(skillName, skilLevel, tier, i);
+			identifiers.add(identifier);
+		}
+		return identifiers;
 	}
 	
 	@Override
-	public void closeInventory() {
-		super.closeInventory();
-		InventoryClickEvent.getHandlerList().unregister(this);
+	public void saveInventory() {
+		SCOPlayer s = GameManager.findSCOPlayer(this.getObserver());
+		(new SavePlayerInventory(s, this.getType(), generateSkillIdentifiers())).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
 	}
 }
