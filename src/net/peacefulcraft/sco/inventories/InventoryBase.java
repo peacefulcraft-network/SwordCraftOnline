@@ -1,6 +1,5 @@
 package net.peacefulcraft.sco.inventories;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.bukkit.Material;
@@ -9,14 +8,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import de.tr7zw.nbtapi.NBTItem;
-import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.GameManager;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.SkillIdentifier;
-import net.peacefulcraft.sco.storage.tasks.SavePlayerInventory;
 
 public abstract class InventoryBase{
 	
@@ -48,35 +39,9 @@ public abstract class InventoryBase{
 	public abstract void resizeInventory(int size);
 	
 	/**
-	 * Examines all items currently in the player's inventory and creates a list of
-	 * Sword Skill identifiers that indicate which sword skills the player has.
-	 * @return
+	 * Save the inventory
 	 */
-	public ArrayList<SkillIdentifier> generateSkillIdentifiers(){
-		ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
-		for(int i=0; i<inventory.getSize(); i++) {
-			ItemStack item = inventory.getItem(i);
-			if(item == null) { continue; }
-			NBTItem nbtItem = new NBTItem(item);
-			
-			String skillName = item.getItemMeta().getDisplayName();
-			ItemTier tier = ItemTier.valueOf(nbtItem.getString("tier"));
-			int skilLevel = nbtItem.getInteger("skill_level");
-			
-			SkillIdentifier identifier = new SkillIdentifier(skillName, skilLevel, tier, i);
-			identifiers.add(identifier);
-		}
-		return identifiers;
-	}
-	
-	/**
-	 * Generates SkillIdentifiers based on what is in the player's inventory and
-	 * schedules a database task to save the inventory state
-	 */
-	public void saveInventory() {
-		SCOPlayer s = GameManager.findSCOPlayer(observer);
-		(new SavePlayerInventory(s, type, generateSkillIdentifiers())).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
-	}
+	public abstract void saveInventory();
 			
 	/**
 	 * Open inventory for player

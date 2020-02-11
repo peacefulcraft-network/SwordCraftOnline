@@ -92,6 +92,13 @@ public abstract class SwordSkill
 	 */
 	public abstract void markSkillUsed();
 
+
+	/**
+	 * Used in unregistering passive effects.
+	 * Applicable to player data changes, potion effects, etc.
+	 */
+	public abstract void unregisterSkill();
+
 	
 /**************************************************************************
  * 
