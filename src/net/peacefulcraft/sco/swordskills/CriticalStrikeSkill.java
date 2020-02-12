@@ -24,15 +24,15 @@ public class CriticalStrikeSkill extends SwordSkill{
 	}
 
 	@Override
-	public void triggerSkill(Event ev) {
-		EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
-		ede.setDamage( ede.getDamage() + damageToDeal);
-	}
-
-	@Override
 	public boolean canUseSkill() {
 		// No extra checks required
 		return true;
+	}
+	
+	@Override
+	public void triggerSkill(Event ev) {
+		EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
+		ede.setDamage( ede.getDamage() + damageToDeal);
 	}
 
 	@Override
