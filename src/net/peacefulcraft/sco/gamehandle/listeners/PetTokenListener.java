@@ -10,7 +10,9 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
-
+/**
+ * Handles pet spawning and sword skill effects on mob and player.
+ */
 public class PetTokenListener implements Listener {
     @EventHandler
     public void tokenUseEvent(PlayerInteractEvent ev) {
@@ -29,12 +31,14 @@ public class PetTokenListener implements Listener {
         String petName = SwordCraftOnline.getPluginInstance().getMobManager().getPetList().get(id).getInternalName();
 
         ActiveMob am = check(petName);
-        if(am != null) {
+        if(am != null && s.isPetActive()) {
             SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(am);
+            s.setPetActive(false);
             SwordCraftOnline.logInfo("Despawned " + p.getName());
-        } else {
+        } else if(am == null && !s.isPetActive()) {
             SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(petName, p.getLocation());
             SwordCraftOnline.logInfo("Spawned " + p.getName() + "'s mob on player location");
+            s.setPetActive(true);
         }    
         //TODO: Handle swordskill pet modifiers.
     }

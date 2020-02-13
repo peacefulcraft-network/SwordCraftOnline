@@ -83,6 +83,13 @@ public class SCOPlayer
 		public double getExpMod() { return this.expMod; }
 		public void  setExpMod(double d) { this.expMod = d; }
 
+	/**Marks if pet is active on player */
+	private boolean petActive = false;
+		/**Returns if pet is active */
+		public boolean isPetActive() { return this.petActive; }
+		/**Set pet active */
+		public void setPetActive(boolean b) { this.petActive = b; }
+
 	public SCOPlayer (Player user) {
 		this.user = user;
 		
