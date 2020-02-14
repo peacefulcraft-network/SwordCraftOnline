@@ -28,6 +28,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
+import net.peacefulcraft.sco.swordskills.utilities.Generator;
 
 /**
  * Holds custom mob data read from YML in mob mananger.
@@ -384,6 +385,11 @@ public class MythicMob implements Comparable<MythicMob> {
         /**Returns if mob has faction targets */
         public boolean hasFactionTargets() { return this.factionTargets.size() > 0; }
 
+    /**Stores skill information */
+    protected List<String> skills;
+        /**Returns list of mobs skills */
+        public List<String> getSkills() { return this.skills; }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -478,6 +484,7 @@ public class MythicMob implements Comparable<MythicMob> {
 
         //Mob Skill handling
         //TODO: Load sword skills from naming convetion and apply to mob.
+        this.skills = mc.getStringList("Skills");
 
         //Options
         this.factionTargets = mc.getStringList("Target");
@@ -638,9 +645,20 @@ public class MythicMob implements Comparable<MythicMob> {
         SwordCraftOnline.getPluginInstance().getMobManager().registerActiveMob(am);
         
         //Applying all options.
+        am = applySkills(am);
         am = applyMobOptions(am, level);
         am = applyMobVolatileOptions(am);
         am = applySpawnModifiers(am);
+        return am;
+    }
+
+    /**
+     * Applies swordskills and registers to mob.
+     */
+    public ActiveMob applySkills(ActiveMob am) {
+        for(String s : this.skills) {
+            Generator.readSkill(s, am);
+        }
         return am;
     }
 

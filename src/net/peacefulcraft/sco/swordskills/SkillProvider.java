@@ -99,7 +99,7 @@ public abstract class SkillProvider{
 	 * Register SwordSkills to S's SwordSkillManager
 	 * @param s: SCOPlayer to register skill listeners to
 	 */
-	public abstract void registerSkill(SCOPlayer s);
+	public abstract void registerSkill(SwordSkillCaster c);
 
 	/**
 	 * Used to set lore by tier.
