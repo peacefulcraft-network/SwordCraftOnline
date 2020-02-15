@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.cache.ForwardingCache.SimpleForwardingCache;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -143,7 +141,23 @@ public class SCOAdmin implements CommandExecutor {
 				return true;
 			}
 
+			final String helpMessage = "Mythic Mob Commands: \nLoadDropTables: Refreshes droptables from config. \n" +
+			"LoadMobs: Refreshes mobs from config. \nSpawn { Mob Internal }: Spawns mob on player location. \n" +
+			"KillAll: Kills all active MythicMobs on server. \n" +
+			"List { Mobs or DropTables }: Lists all loaded mobs or droptables. \n" +
+			"GenerateDropTable { DropTable Internal }: Drops lootbag on player or simulates in console. \n" +
+			"GetData { DropTable Internal or Mob Internal }: Retrieves data of loaded droptable or mob. \n";
+			
+			/**
+			 * Handling for MM commands
+			 */
 			if(args[0].equalsIgnoreCase("mm")) {
+				//Help command. Keep updated with options.
+				if(args.length == 1 || args[1].equalsIgnoreCase("help")) {
+					sender.sendMessage(helpMessage);
+					return true;
+				}
+
 				if(args[1].equalsIgnoreCase("loadDropTables")) {
 					SwordCraftOnline.getPluginInstance().getDropManager().loadDropTables();
 					return true;

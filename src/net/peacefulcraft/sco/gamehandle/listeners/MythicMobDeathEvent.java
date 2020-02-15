@@ -74,13 +74,13 @@ public class MythicMobDeathEvent implements Listener {
                 DropManager.drop(ent.getLocation(), bag);
 
                 SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(ent.getUniqueId());
-            } else {
+            } else if(!(ent.getLastDamageCause() instanceof Player)){
                 //If cause of death wasn't player. Check nearby for players.
                 List<Entity> l = ent.getNearbyEntities(range, range, range);
                 for(Entity temp : l) {
                     if(temp instanceof Player) {
                         SCOPlayer s = GameManager.findSCOPlayer((Player)temp);
-                        if(s == null) { return; }
+                        if(s == null) { continue; }
 
                         if(mm.getDropTable().hasConditions()) {
                             HashMap<String, String> conditions = mm.getDropTable().getConditions();
