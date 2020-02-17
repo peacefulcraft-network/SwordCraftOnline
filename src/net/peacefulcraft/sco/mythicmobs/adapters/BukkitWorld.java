@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractWorld;
 

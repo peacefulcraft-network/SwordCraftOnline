@@ -11,7 +11,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 
-public class SCOPlayerDataManager {
+public class PlayerDataManager {
 	
 	private SCOPlayer s;
 		public SCOPlayer getSCOPlayer() { return s; }
@@ -19,16 +19,12 @@ public class SCOPlayerDataManager {
 	File dataFile;
 	private FileConfiguration c;
 	
-	private InventoryManager inventories;
-		public InventoryManager getInventories() { return inventories; }
-	
-	public SCOPlayerDataManager(SCOPlayer s) {
+	public PlayerDataManager(SCOPlayer s) {
 		this.s = s;
 		dataFile = new File(
 			SwordCraftOnline.getPluginInstance().getDataFolder().getPath() + "/data/" + s.getUUID() + "/playerdata.yml"
 		);
 		
-		inventories = new InventoryManager(this);
 		c = new YamlConfiguration();
 		
 		initPlayerConfig();

@@ -1,12 +1,11 @@
 package net.peacefulcraft.sco.mythicmobs.adapters.entities;
 
 import org.bukkit.Location;
-
-import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 
 public class BukkitEnderCrystal extends MythicEntity {

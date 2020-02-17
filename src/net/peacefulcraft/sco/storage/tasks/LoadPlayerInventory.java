@@ -20,21 +20,21 @@ import net.peacefulcraft.sco.items.SkillIdentifier;
 public class LoadPlayerInventory extends BukkitRunnable{
 
 	private SCOPlayer s;
-	private String name;
 	private String uuid;
 	private InventoryType t;
 	
 	public LoadPlayerInventory(SCOPlayer s, InventoryType t) {
 		this.s = s;
 		this.t = t;
-		this.name = s.getName();
-		this.uuid = s.getPlayer().getUniqueId().toString();
+		this.uuid = s.getUUID().toString();
 	}
 	
 	@Override
 	public void run() {
 		Connection con = null;
 		try {
+			SwordCraftOnline.logDebug("Starting inventory load for " + this.uuid);
+			
 			con = SwordCraftOnline.getHikariPool().getConnection();
 			PreparedStatement stmt = con.prepareStatement(""
 				+ "SELECT `name`,`level`,`rarity`,`slot` FROM "
@@ -44,6 +44,8 @@ public class LoadPlayerInventory extends BukkitRunnable{
 			stmt.setString(1, uuid);
 			stmt.setString(2, t.toString());
 			ResultSet res = stmt.executeQuery();
+			
+			SwordCraftOnline.logDebug("Fetched inventory for player " + this.uuid);
 			
 			ArrayList<SkillIdentifier> identifiers = new ArrayList<SkillIdentifier>();
 			while(res.next()) {
@@ -58,11 +60,13 @@ public class LoadPlayerInventory extends BukkitRunnable{
 				
 			}
 			
+			SwordCraftOnline.logDebug("Finsihed processing result set for inventory load " + this.uuid);
+			
 			// Get back on main thread to generate the inventory from identifier list
 			(new GeneratePlayerInventory(s, t, identifiers)).runTask(SwordCraftOnline.getPluginInstance());
 			
 		} catch (SQLException e) {
-			SwordCraftOnline.logSevere("[TASK][LoadPlayerInventory] Failed for " + name);
+			SwordCraftOnline.logSevere("[TASK][LoadPlayerInventory] Failed for " + uuid);
 			SwordCraftOnline.logSevere(e.getMessage());
 			SwordCraftOnline.logSevere("---------------------------------------------------");
 		} finally {

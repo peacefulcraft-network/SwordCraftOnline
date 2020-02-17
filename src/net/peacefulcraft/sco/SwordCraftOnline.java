@@ -36,7 +36,8 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	public static SCOConfig cfg;
 		public static SCOConfig getSCOConfig() { return cfg; }
-	
+		public static Boolean showDebug() { return cfg.getDebug(); }
+		
 	public static HikariManager hikari;
 		public static HikariManager getHikariPool() { return hikari; }
 		
@@ -130,6 +131,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		/**
 		 * The Inventories manage their own event listeners
 		 */
+	}
+	
+	public static void logDebug(String debug) {
+		if(showDebug()) {
+			sco.getLogger().log(Level.INFO, debug);
+		}
 	}
 	
 	public static void logInfo(String info) {
