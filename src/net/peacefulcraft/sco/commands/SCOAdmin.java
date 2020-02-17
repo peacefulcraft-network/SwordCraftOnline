@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.cache.ForwardingCache.SimpleForwardingCache;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,8 +36,7 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("swordskillbook")) {
 				Player p = (Player) sender;
 				SwordCraftOnline.getGameManager();
-				SwordSkillInventory inv = (SwordSkillInventory) GameManager.findSCOPlayer(p).getData().getInventories()
-						.getInventory(InventoryType.SWORD_SKILL);
+				SwordSkillInventory inv = (SwordSkillInventory) GameManager.findSCOPlayer(p).getInventory(InventoryType.SWORD_SKILL);
 				
 				inv.openInventory();
 				
@@ -70,10 +67,29 @@ public class SCOAdmin implements CommandExecutor {
 				
 				SCOPlayer s = GameManager.findSCOPlayerByName(args[1]);
 				if(s == null) {
-					p.sendMessage(ChatColor.RED + "Could not find player");
+					p.sendMessage(ChatColor.RED + "Could not find player. Are they online?");
 					return true;
 				}
 
+				if(args.length > 2) {
+					if(args[2].equalsIgnoreCase("inventory")) {
+						
+						if(args.length > 3) {
+							if(args[3].equalsIgnoreCase("swordskill")) {
+								p.openInventory(s.getInventoryManager().getInventory(InventoryType.SWORD_SKILL).getInventory());
+								return true;
+							} else {
+								p.sendMessage(ChatColor.GOLD + "Valid agruments" + ChatColor.RED + " swordskill");
+								return true;
+							}
+						}
+						
+					} else {
+						p.sendMessage(ChatColor.GOLD + "Valid arguments:" + ChatColor.RED + " inventory");
+						return true;
+					}
+				}
+				
 				p.sendMessage(s.getPlayerData());
 				return true;
 			}

@@ -6,8 +6,10 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
-import net.peacefulcraft.sco.storage.SCOPlayerDataManager;
+import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 
@@ -22,13 +24,19 @@ public class SCOPlayer
 		public int getFloor() { return floor; }
 		public void setFloor(int num) { floor = num; }
 	
+	private UUID uuid;
+		public UUID getUUID() { return uuid; }
+		
 	private Player user;
-		public Player getPlayer() {return this.user;}
-		public UUID getUUID() {return this.user.getUniqueId();}
+		public Player getPlayer() { return this.user; }
+		public void linkPlayer(Player p) { this.user = p; }
 	
-	private SCOPlayerDataManager scopData;
-		public SCOPlayerDataManager getData() { return scopData; }
-		public InventoryManager getInventoryManager() { return scopData.getInventories(); }
+	private PlayerDataManager scopData;
+		public PlayerDataManager getData() { return scopData; }
+	
+	private InventoryManager inventoryManager;
+		public InventoryManager getInventoryManager() { return this.inventoryManager; }
+		public InventoryBase getInventory(InventoryType inventory) { return inventoryManager.getInventory(inventory); }
 		
 	/**Time remaining until another attack can be performed */
 	private int attackTime;
@@ -83,16 +91,17 @@ public class SCOPlayer
 		public double getExpMod() { return this.expMod; }
 		public void  setExpMod(double d) { this.expMod = d; }
 
-	public SCOPlayer (Player user) {
-		this.user = user;
-		
-		partyName = "";
-		lastInvite = "";
+	public SCOPlayer (UUID uuid) {
+		this.uuid = uuid;
 		playerKills = 0;
 		floor = 0; //TODO: Load this from scopData
 		
-		scopData = new SCOPlayerDataManager(this);
+		scopData = new PlayerDataManager(this);
+		
 		swordSkillManager = new SwordSkillManager(this);
+		
+		inventoryManager = new InventoryManager(this);
+		inventoryManager.fetchInventory(InventoryType.SWORD_SKILL);
 	}
 
 	/**True if player can perform left click */

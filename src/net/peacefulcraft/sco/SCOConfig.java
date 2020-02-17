@@ -1,15 +1,14 @@
 package net.peacefulcraft.sco;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import net.peacefulcraft.sco.storage.SwordSkillRegistery;
-
 public class SCOConfig {
 
 	private FileConfiguration c;
+	
+	private Boolean debug;
 	
 	private Map<String, Object> waystone_floor_1;
 	private Map<String, Object> waystone_floor_2;
@@ -34,6 +33,9 @@ public class SCOConfig {
 		
 		this.c = c;
 		
+		c.set("debug", true);
+		debug = c.getBoolean("debug");
+		
 		db_ip = (String) c.getString("database.ip");
 		db_name = (String) c.getString("database.name");
 		db_user = (String) c.getString("database.user");
@@ -49,6 +51,10 @@ public class SCOConfig {
 		dungeon_floor_1_arena = c.getConfigurationSection("dungeon.1.arena").getValues(false);
 
 		parties = c.getConfigurationSection("parties").getValues(false);
+	}
+	
+	public Boolean getDebug() {
+		return debug;
 	}
 	
 	public void setWaystone(Map<String, Object> waystone, int index) {

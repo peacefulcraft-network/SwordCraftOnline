@@ -12,31 +12,50 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
-import net.peacefulcraft.sco.items.customitems.TeleportCrystal;
 import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 
 public class GameManager {
+	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
 	
 	private static HashMap<UUID, SCOPlayer> players;
 		public static HashMap<UUID, SCOPlayer> getPlayers(){ return players; }
 		
 	public GameManager() {
+		preProcessedPlayers = new HashMap<UUID, SCOPlayer>();
 		players = new HashMap<UUID, SCOPlayer>();
 	}
 	
-	public void joinGame(Player p) {
-		
-		if(findSCOPlayer(p) != null)
+	public void preProcessPlayerJoin(UUID uuid) {
+		if(findSCOPlayerByUUID(uuid) != null)
 			throw new RuntimeException("Command executor is already in SCO");
+		
+		SCOPlayer s = new SCOPlayer(uuid);
+		preProcessedPlayers.put(uuid, s);
+	}
+	
+	public void processPlayerJoin(Player p) {
+		
 		if(Teleports.getSpawn() == null)
 			throw new RuntimeException("No teleport spawn set.");
 		
-		SCOPlayer s = new SCOPlayer(p);
+		SCOPlayer s = preProcessedPlayers.remove(p.getUniqueId());
+		if(s == null) { 
+			p.kickPlayer("[SCO] Database error. Unable to load profile from registry");
+			return;
+		}
 		players.put(p.getUniqueId(), s);
-		if(Teleports.getSpawn() != null) 
+		
+		s.linkPlayer(p);
+
+		p.getInventory().setItem(8, (new SwordSkillTome().create()));
+		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
+
+		if(Teleports.getSpawn() == null) {
+			return; 
+		}
 		
 		//Set to teleport player to floor.
 		try {
@@ -45,8 +64,6 @@ public class GameManager {
 			SwordCraftOnline.logInfo("Failed to teleport player " + s.getName() + " to floor " + s.getFloor() + ". Sending to spawn.");
 			p.teleport(Teleports.getSpawn());
 		}
-		p.getInventory().setItem(8, (new SwordSkillTome().create()));
-		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
 	}
 	
 	public void leaveGame(Player p) {
@@ -54,8 +71,6 @@ public class GameManager {
 		if(s == null) {
 			throw new RuntimeException("Command executor is not playing SCO");
 		}
-		
-		s.setLastInvite("");
 		
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
@@ -66,7 +81,11 @@ public class GameManager {
 	}
 	
 	public static SCOPlayer findSCOPlayer(Player p) {
-		return players.get(p.getUniqueId());
+		return findSCOPlayerByUUID(p.getUniqueId());
+	}
+	
+	public static SCOPlayer findSCOPlayerByUUID(UUID uuid) {
+		return players.get(uuid);
 	}
 	
 	public static SCOPlayer findSCOPlayerByName(String name) {

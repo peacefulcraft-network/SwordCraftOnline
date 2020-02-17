@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.mythicmobs.adapters.entities;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;

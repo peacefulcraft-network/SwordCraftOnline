@@ -18,7 +18,7 @@ public enum ItemTier
 			case MASTERY:
 			return "mastery";
 			case ETHEREAL:
-			return "etheral";
+			return "ethereal";
 			default:
 			return "common";
 		}
