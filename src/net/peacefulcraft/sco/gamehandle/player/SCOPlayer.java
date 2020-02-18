@@ -11,9 +11,10 @@ import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 
-public class SCOPlayer 
+public class SCOPlayer implements SwordSkillCaster
 {
 	private String partyName;
 	private String lastInvite;
@@ -43,9 +44,10 @@ public class SCOPlayer
 		public int getAttackTime() { return attackTime; }
 		public void setAttackTime(int ticks) { this.attackTime = ticks; }
 
+	/**Stores SwordSkills */
 	private SwordSkillManager swordSkillManager;
+		/**Returns instance SwordSkillManager from interface */
 		public SwordSkillManager getSwordSkillManager() { return swordSkillManager; }
-
 		
 	private double exhaustion = 0.0;
 		public double getExhaustion() { return exhaustion; }

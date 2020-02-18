@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.mythicmobs.drops;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 
@@ -10,6 +11,13 @@ public class LootBag {
     private ArrayList<Drop> drops;
         public ArrayList<Drop> getDrops() { return this.drops; }
         //public void addDrop(Drop d) { this.drops.add(d); }
+        public ArrayList<ItemStack> getItems() {
+            ArrayList<ItemStack> out = new ArrayList<>();
+            for(Drop d : this.drops) {
+                out.add(d.getItem());
+            }
+            return out;
+        }
 
     private int experience;
         public int getExp() { return this.experience; }

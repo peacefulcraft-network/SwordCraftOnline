@@ -15,6 +15,9 @@ public abstract class SwordSkill
 	 */
 	protected SCOPlayer s;
 		public SCOPlayer getSCOPlayer() { return s; }
+
+	protected SwordSkillCaster c;
+		public SwordSkillCaster getSwordSkillCaster() { return c; }
 		
 	protected SkillProvider provider;
 		public SkillProvider getProvider() { return provider; }
@@ -36,8 +39,8 @@ public abstract class SwordSkill
 	 * Set the cooldown time, in ms, between clicks
 	 * @param delay
 	 */
-	public SwordSkill(SCOPlayer s, long cooldownDelay, SkillProvider provider) {
-		this.s = s;
+	public SwordSkill(SwordSkillCaster c, long cooldownDelay, SkillProvider provider) {
+		this.c = c;
 		this.cooldownDelay = cooldownDelay;
 		this.provider = provider;
 	}

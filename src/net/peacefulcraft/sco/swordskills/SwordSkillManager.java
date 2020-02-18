@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.swordskills;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -10,15 +11,27 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
 public class SwordSkillManager
 {
-	private SCOPlayer s;
-		public SCOPlayer getPlayer() { return s; }
+	private SCOPlayer s = null;
+		public SCOPlayer getPlayer() { return this.s; }
+
+	private LivingEntity e = null;
+		public LivingEntity getLivingEntity() { return this.e; }
+		
 	private HashMap<SwordSkillType, ArrayList<SwordSkill>> skills = new HashMap<SwordSkillType, ArrayList<SwordSkill>>();
 
+	/**Stores instance of SCOPlayer */
 	public SwordSkillManager(SCOPlayer s) {
 		this.s = s;
+		this.e = (LivingEntity)s.getPlayer();
+	}
+
+	/**Converts ActiveMob into LivingEntity and stores. */
+	public SwordSkillManager(ActiveMob am) {
+		this.e = am.getLivingEntity();
 	}
 	
 	public void registerSkill(SwordSkillType type, SwordSkill skill) throws IllegalStateException {
