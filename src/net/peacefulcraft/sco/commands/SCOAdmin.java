@@ -167,6 +167,8 @@ public class SCOAdmin implements CommandExecutor {
 					SwordCraftOnline.getPluginInstance().getMobManager().loadMobs();
 					return true;
 				}
+
+				//Spawns instance of activemob on players location
 				if(args[1].equalsIgnoreCase("spawn")) {
 					if(!(sender instanceof Player)) {
 						sender.sendMessage(ChatColor.GREEN + "Cannot perform command from console.");
@@ -177,23 +179,29 @@ public class SCOAdmin implements CommandExecutor {
 						ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(args[2], p.getLocation());
 						if(am != null) {
 							sender.sendMessage(ChatColor.GREEN + "Spawned " + args[2]);
-							System.out.println("Spawned " + args[2]);
+							SwordCraftOnline.logInfo("Spawned " + args[2]);
 							return true;
 						}
 						sender.sendMessage(ChatColor.GREEN + "Error Loading " + args[2] + "Active Mob Instance Null.");
-						System.out.println("[MOB SPAWN DEBUG] Active Mob Instance Null");
+						SwordCraftOnline.logInfo("[MOB SPAWN] Active Mob Instance Null");
 						return true;
 					}
 					sender.sendMessage(ChatColor.GREEN + "File for " + args[2] + " Not Found.");
-					System.out.println("[MOB SPAWN DEBUG] Not found: " + args[2]);
+					SwordCraftOnline.logInfo("[MOB SPAWN] Not found: " + args[2]);
 					return true;
 				}
+
+				//Kills all active instances of mobs
 				if(args[1].equalsIgnoreCase("killall")) {
 					int amount = SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs();
-					sender.sendMessage(ChatColor.GREEN + "Removed " + amount + " Mythic Mobs!");
-					System.out.println("[MOB KILL] Removed " + amount + " Mythic Mobs.");
+					if(sender instanceof Player) {
+						sender.sendMessage(ChatColor.GREEN + "Removed " + amount + " Mythic Mobs!");
+					}
+					SwordCraftOnline.logInfo("[MOB KILL] Removed " + amount + " Mythic Mobs.");
 					return true;
 				}
+
+				//Lists all loaded mobs or droptables
 				if(args[1].equalsIgnoreCase("list")) {
 					if(args[2].equalsIgnoreCase("mobs")) {
 						List<ActiveMob> mobs = new ArrayList<ActiveMob>(SwordCraftOnline.getPluginInstance().getMobManager().getActiveMobs());
@@ -217,6 +225,8 @@ public class SCOAdmin implements CommandExecutor {
 						return true;
 					}
 				}
+
+				//Generates droptable in console or player location
 				if(args[1].equalsIgnoreCase("generatedroptable")) {
 					//Sender is console. Simulate lootbag in console.
 					if(!(sender instanceof Player)) {
@@ -263,6 +273,8 @@ public class SCOAdmin implements CommandExecutor {
 					SwordCraftOnline.logInfo("Attempted to load invalid droptable.");
 					return true;
 				}
+
+				//Gets data contained in yml file for mobs and droptables
 				if(args[1].equalsIgnoreCase("getdata")) {
 					if(args[2].equalsIgnoreCase("Droptable")) {
 						sender.sendMessage(SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(args[3]).getInfo());
