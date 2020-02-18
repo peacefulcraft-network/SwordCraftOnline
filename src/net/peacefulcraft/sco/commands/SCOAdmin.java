@@ -158,11 +158,12 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 				}
 
-				if(args[1].equalsIgnoreCase("loadDropTables")) {
+				//Reloads droptables then mobs.
+				//Prevents null pointer errors on reloading mobs before droptables.
+				if(args[1].equalsIgnoreCase("reload")) {
+					//Despawns all active mobs
+					SwordCraftOnline.getPluginInstance().getMobManager().despawnAllMobs();
 					SwordCraftOnline.getPluginInstance().getDropManager().loadDropTables();
-					return true;
-				}
-				if(args[1].equalsIgnoreCase("loadmobs")) {
 					SwordCraftOnline.getPluginInstance().getMobManager().loadMobs();
 					return true;
 				}
