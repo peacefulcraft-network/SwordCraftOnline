@@ -5,8 +5,12 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.slikey.effectlib.EffectLib;
+import de.slikey.effectlib.EffectManager;
 import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.setTeleport;
@@ -59,6 +63,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	private MobManager mobManager;
 		public MobManager getMobManager() { return this.mobManager; }
+
+	private EffectManager em;
+		public EffectManager getEffectManager() { return this.em; }
 	
 	public SwordCraftOnline() {
 
@@ -87,6 +94,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.server = (ServerInterface)new BukkitServer();
 		this.dropManager = new DropManager(this);
 		this.mobManager = new MobManager(this);
+
+		EffectLib lib = getEffectLib();
+		this.em = new EffectManager(lib);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
@@ -101,6 +111,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		hikari.close();
 		this.getLogger().info("Database connection closed.");
+
+		this.em.disposeOnTermination();
+		this.getLogger().info("EffectManager disposed.");
 		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
@@ -144,4 +157,11 @@ public class SwordCraftOnline extends JavaPlugin{
 		sco.getLogger().log(Level.SEVERE, severe);
 	}
 	
+	private EffectLib getEffectLib() {
+		Plugin effectLib = Bukkit.getPluginManager().getPlugin("EffectLib");
+		if(effectLib == null || !(effectLib instanceof EffectLib)) {
+			return null;
+		}
+		return (EffectLib)effectLib;
+	}
 }
