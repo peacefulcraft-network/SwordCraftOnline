@@ -435,7 +435,6 @@ public class MythicMob implements Comparable<MythicMob> {
         this.armor = mc.getDouble("Armour", this.armor);
         this.optionInvincible = mc.getBoolean("Options.Invincible", false);
         this.optionInvincible = mc.getBoolean("Options.Invulnerable", this.optionInvincible);
-        this.faction = mc.getString("Faction", null);
         String mount = mc.getString("Mount", null);
         this.mount = Optional.ofNullable(mount);
         String rider = mc.getString("Rider", null);
@@ -486,8 +485,11 @@ public class MythicMob implements Comparable<MythicMob> {
         //TODO: Load sword skills from naming convetion and apply to mob.
         this.skills = mc.getStringList("Skills");
 
-        //Options
+        //Loading mob faction details.
+        this.faction = mc.getString("Faction", null);
         this.factionTargets = mc.getStringList("Target");
+
+        //Options
         this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
         this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
         this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
