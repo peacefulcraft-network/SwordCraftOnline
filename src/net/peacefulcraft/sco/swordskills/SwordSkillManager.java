@@ -5,8 +5,6 @@ import java.util.HashMap;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
@@ -45,10 +43,11 @@ public class SwordSkillManager
 			if(s.getClass().toString().equals(s.getClass().toString())) {
 				throw new IllegalStateException("SwordSkill child " + s.getClass() + " is already registered with this executor");
 			}
-
-			skills.get(type).add(skill);
-			break;
 		}
+		skills.get(type).add(skill);
+
+		// Let the skill and its modules know they've been registered
+		skill.execSkillRegistration();
 	}
 
 	public void abilityExecuteLoop(SwordSkillType type, Event ev) {
@@ -59,78 +58,18 @@ public class SwordSkillManager
 
 		for(SwordSkill skill : skills.get(type)) {
 			// Check if this skill needs to know about this event
-			if(!skill.skillSignature(ev)) {
+			if(!skill.execSkillSignature(ev)) {
 				continue;
-			}
-			
-			// Don't process event if the skill is cooling down
-			if(skill.isCoolingDown()) {
-				continue;
-			}
-			
-			//Timer Logic
-			if(skill.isUsingTimer()) {
-				// If using timer and it's not running, we should start it
-				if(!skill.isCountingDown()) {
-					skill.startObjectiveTimer();
-				}
-				/*
-				 *	The timer resets the combo objective automatically 
-				 *	so if time has expired for the combo to trigger, 
-				 *	it will automatically be reset when we check the combo
-				 *	threshold next. 
-				 *
-				 */
-			}
-			
-			if(skill.isTrackingCombos()) {
-				// Player Hit / Damage Combos
-				if(ev instanceof EntityDamageByEntityEvent) {
-					
-					EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
-					// If our player was the one dealing damage
-					if(ede.getDamager() == s.getPlayer()){
-						if(
-							skill.getComboType() == SwordSkillComboType.CONSECUTIVE_HITS_IGNORE_TAKEN_DAMAGE
-							|| skill.getComboType() == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
-						) {
-							skill.comboAccumulate(1.0);
-
-						}else if(
-							skill.getComboType() == SwordSkillComboType.CUMULATIVE_DAMAGE_IGNORE_TAKEN_DAMAGE
-							|| skill.getComboType() == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
-						) {
-							skill.comboAccumulate(((EntityDamageEvent) ev).getDamage());
-						}
-					
-					// Else, we must have been the one receiving damage
-					} else {
-						// If the ability requires we don't take damage to activate the combo, reset the combo counter because we took damage
-						if(
-							skill.getComboType() == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
-							|| skill.getComboType() == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
-						) {
-							
-							// Reset tracking because the player took damage
-							if(skill.isUsingTimer()) { skill.resetObjectiveTimer(); }
-							if(skill.isTrackingCombos()) { skill.comboResetAccumulation(); }
-						}
-					
-					}
-				}
 			}
 			
 			// Final custom ability checks before we trigger the ability
-			if(!skill.canUseSkill()) {
+			if(!skill.execCanUseSkill(ev)) {
 				continue;
 			}
 			
-			skill.triggerSkill(ev);
+			skill.execTriggerSkill(ev);
 			
 			skill.markSkillUsed();
-			skill.triggerCooldown();
-			if(skill.isUsingTimer()) { skill.resetObjectiveTimer(); }
-			if(skill.isTrackingCombos()) { skill.comboResetAccumulation(); }
 		}
 	}
 	
@@ -166,9 +105,7 @@ public class SwordSkillManager
 		private void unregisterSkill(SwordSkill skill) {
 			for(SwordSkill registeredSkill : getSkills()) {
 				if(registeredSkill == skill) {
-					((SwordSkill) skill).destroy();
-					skill.unregisterSkill();
-					skill.destroy();
+					skill.execSkillUnregistration();
 					return;
 				}
 			}
