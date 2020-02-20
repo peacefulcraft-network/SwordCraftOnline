@@ -9,8 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.slikey.effectlib.EffectLib;
-import de.slikey.effectlib.EffectManager;
 import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.setTeleport;
@@ -30,6 +28,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
+import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 
@@ -64,8 +63,8 @@ public class SwordCraftOnline extends JavaPlugin{
 	private MobManager mobManager;
 		public MobManager getMobManager() { return this.mobManager; }
 
-	private EffectManager em;
-		public EffectManager getEffectManager() { return this.em; }
+	private static EffectManager effectManager;
+		public static EffectManager getEffectManager() { return effectManager; }
 	
 	public SwordCraftOnline() {
 
@@ -95,8 +94,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.dropManager = new DropManager(this);
 		this.mobManager = new MobManager(this);
 
-		EffectLib lib = getEffectLib();
-		this.em = new EffectManager(lib);
+		effectManager = new EffectManager(this);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
@@ -112,8 +110,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		hikari.close();
 		this.getLogger().info("Database connection closed.");
 
-		this.em.disposeOnTermination();
-		this.getLogger().info("EffectManager disposed.");
+		effectManager.dispose();
+		this.getLogger().info("Effect Manager disposed.");
 		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
@@ -157,11 +155,4 @@ public class SwordCraftOnline extends JavaPlugin{
 		sco.getLogger().log(Level.SEVERE, severe);
 	}
 	
-	private EffectLib getEffectLib() {
-		Plugin effectLib = Bukkit.getPluginManager().getPlugin("EffectLib");
-		if(effectLib == null || !(effectLib instanceof EffectLib)) {
-			return null;
-		}
-		return (EffectLib)effectLib;
-	}
 }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.cache.ForwardingCache.SimpleForwardingCache;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,6 +19,8 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.particles.Effect;
+import net.peacefulcraft.sco.particles.effect.BleedEffect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
@@ -255,7 +255,16 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					//TODO: Add support for mob
 				}
-				
+			}
+
+			if(args[0].equalsIgnoreCase("particletest")) {
+				Player p = (Player)sender;
+				Effect effect = new BleedEffect(SwordCraftOnline.getEffectManager());
+				effect.setEntity(p);
+				effect.iterations = 15 * 20;
+				effect.start();
+
+				return true;
 			}
 
 		}

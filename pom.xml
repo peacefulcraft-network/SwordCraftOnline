@@ -49,10 +49,6 @@
 			<url>https://repo.codemc.org/repository/maven-public/</url>
 			<layout>default</layout>
 		</repository>
-		<repository>
-			<id>elmakers-repo</id>
-			<url>http://maven.elmakers.com/repository/ </url>
-		</repository>
 	</repositories>
 
 	<dependencies>
@@ -79,10 +75,10 @@
 			<version>2.1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>de.slikey</groupId>
-			<artifactId>EffectLib</artifactId>
-			<version>1.4</version>
-			<scope>provided</scope>
-		</dependency>
+            <groupId>net.objecthunter</groupId>
+            <artifactId>exp4j</artifactId>
+            <version>0.4.5</version>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 </project>
