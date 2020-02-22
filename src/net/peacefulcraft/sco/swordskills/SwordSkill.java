@@ -5,10 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.event.Event;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 
@@ -36,6 +33,10 @@ public abstract class SwordSkill {
 	
 	public final void useModule(SwordSkillModule module) {
 		modules.add(module);
+	}
+
+	public final void unregisterModule(SwordSkillModule module) {
+		modules.remove(module);
 	}
 
 	/**

@@ -38,6 +38,7 @@ public class TimedCooldown implements SwordSkillModule {
      */
     @Override
     public boolean onSignatureMatch(SwordSkill ss, Event ev) {
+        ss.getSCOPlayer().getPlayer().sendMessage("Skill is " + isCoolingDown() + " cooling down");
         return isCoolingDown();
     }
 

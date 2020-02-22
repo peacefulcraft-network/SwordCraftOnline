@@ -29,19 +29,21 @@ public class BasicCombo implements SwordSkillModule {
 
     @Override
     public boolean onSignatureMatch(SwordSkill ss, Event ev) {
-        // No signature steps
-        return true;
+        executeComboLogic(ss, ev);
+        ss.getSCOPlayer().getPlayer().sendMessage("Combo was " + hasMetActivationThreshold() + " triggered");
+        return hasMetActivationThreshold();
     }
 
     @Override
     public boolean onCanUseSkill(SwordSkill ss, Event ev) {
-        executeComboLogic(ss, ev);
-        return hasMetActivationThreshold();
+        // No can use steps
+        return true;
     }
 
     @Override
     public void onTrigger(SwordSkill ss, Event ev) {
         resetComboAccumulation();
+        ss.getSCOPlayer().getPlayer().sendMessage("Combo triggered!");
     }
 
     @Override
