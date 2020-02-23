@@ -33,13 +33,13 @@ public class SerratedBladeSkill extends SwordSkill {
     }
 
     @Override
-    public boolean canUseSkill(Event ev) {
+    public boolean skillPreconditions(Event ev) {
         //No extra checks required
         return true;
     }
 
     @Override
-    public void markSkillUsed() {
+    public void skillUsed() {
         //No need to mark, passive.
     }
 

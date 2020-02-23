@@ -28,7 +28,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 	}
 
 	@Override
-	public boolean canUseSkill(Event ev) {
+	public boolean skillPreconditions(Event ev) {
 		// No extra checks required
 		return true;
 	}
@@ -41,7 +41,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 	}
 
 	@Override
-	public void markSkillUsed() {
+	public void skillUsed() {
 		// No cleanup steps required		
 	}
 

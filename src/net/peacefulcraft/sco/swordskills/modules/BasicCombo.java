@@ -1,10 +1,10 @@
 package net.peacefulcraft.sco.swordskills.modules;
 
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
  * BasicCombo
@@ -25,73 +25,69 @@ public class BasicCombo implements SwordSkillModule {
     }
 
     @Override
-    public void onSkillRegistered(SwordSkill ss) {/* No Equip Steps */}
+    public void onModuleRegistered(SwordSkill ss) {
+        // Register the combo to reset on damage receive events
+        if(
+            comboType == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
+            || comboType == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
+        ) {
+            ss.listenFor(SwordSkillType.ENTITY_DAMAGE_ENTITY_RECIEVE, this);
+        }
+    }
 
     @Override
-    public boolean onSignatureMatch(SwordSkill ss, Event ev) {
-        executeComboLogic(ss, ev);
-        ss.getSCOPlayer().getPlayer().sendMessage("Combo was " + hasMetActivationThreshold() + " triggered");
+    public boolean beforeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) { return true; }
+    /* No pre-support lifecycle hook */
+
+    @Override
+    public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
+        resetComboAccumulation();
+    }
+
+    @Override
+    public boolean beforeSkillSignature(SwordSkill ss, Event ev) { return true; }
+    /* No pre-signature hook */
+
+    @Override
+    public boolean beforeSkillPreconditions(SwordSkill ss, Event ev) {
+        executeComboAccumulation(ev);
         return hasMetActivationThreshold();
     }
 
     @Override
-    public boolean onCanUseSkill(SwordSkill ss, Event ev) {
-        // No can use steps
-        return true;
-    }
+    public boolean beforeTriggerSkill(SwordSkill ss, Event ev) { return true; }
+    /* No pre-trigger hook */
 
     @Override
-    public void onTrigger(SwordSkill ss, Event ev) {
+    public void afterTriggerSkill(SwordSkill ss, Event ev) {
         resetComboAccumulation();
-        ss.getSCOPlayer().getPlayer().sendMessage("Combo triggered!");
     }
 
     @Override
-    public void onUnregistration(SwordSkill ss) {/* No Unequip Steps*/}
+    public void onUnregistration(SwordSkill ss) {}
+    /* No Unequip Steps*/
+
+    @Override
+    public void afterSkillUsed(SwordSkill ss, Event ev) {}
+    /* No cleanup steps */
 
     /**
-     * Determines whether player progressed towards combo goal
-     * or if combo failed and the count should be reset
-     * @return True for progression, false for reset
+     * Accumulate combo progressed based on the combo type
+     * @param ev The triggering event
      */
-    protected boolean executeComboLogic(SwordSkill ss, Event ev) {
-        // Player Hit / Damage Combos
-        if(ev instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
-            // If our player was the one dealing damage
-            if(ede.getDamager() == ss.getSwordSkillCaster().getSwordSkillManager().getLivingEntity()){
-                if(
-                    comboType == SwordSkillComboType.CONSECUTIVE_HITS_IGNORE_TAKEN_DAMAGE
-                    || comboType == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
-                ) {
-                    comboAccumulate(1.0);
+    protected void executeComboAccumulation(Event ev) {
+        if(
+            comboType == SwordSkillComboType.CONSECUTIVE_HITS_IGNORE_TAKEN_DAMAGE
+            || comboType == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
+        ) {
+            comboAccumulate(1.0);
 
-                }else if(
-                    comboType == SwordSkillComboType.CUMULATIVE_DAMAGE_IGNORE_TAKEN_DAMAGE
-                    || comboType == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
-                ) {
-                    comboAccumulate(((EntityDamageEvent) ev).getDamage());
-                }
-            
-            }
-            return true;
-        
-        // If our player was the one receiving damage
-        } else if(ev instanceof EntityDamageEvent) {
-            EntityDamageEvent ede = (EntityDamageEvent) ev;
-            if(ede.getEntity() == ss.getSwordSkillCaster().getSwordSkillManager().getLivingEntity()) {
-                if( comboType == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
-                    || comboType == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
-                ) {
-                    resetComboAccumulation();
-                } else {
-                    // Don't care about received damage
-                    return true;
-                }
-            }
+        }else if(
+            comboType == SwordSkillComboType.CUMULATIVE_DAMAGE_IGNORE_TAKEN_DAMAGE
+            || comboType == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
+        ) {
+            comboAccumulate(((EntityDamageEvent) ev).getDamage());
         }
-
-        return false;
     }
 
     public enum SwordSkillComboType {

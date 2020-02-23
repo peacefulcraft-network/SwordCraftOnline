@@ -1,9 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.HashMap;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
@@ -22,9 +20,12 @@ public abstract class SwordSkill {
 		
 	protected SkillProvider provider;
 		public final SkillProvider getProvider() { return provider; }
-	
-	protected ArrayList<SwordSkillModule> modules;
-		public List<SwordSkillModule> getRegisteredModules() { return Collections.unmodifiableList(modules); }
+
+	// List of event loops which the SkillLogic is listening on
+	private ArrayList<SwordSkillType> primaryListeners;
+
+	// Map of event loops and the corisponding SwordSkillModules which need to run when those loops are triggered
+	private HashMap<SwordSkillType, ArrayList<SwordSkillModule>> supportListeners;
 
 	public SwordSkill(SwordSkillCaster c, SkillProvider provider) {
 		this.c = c;
@@ -32,42 +33,112 @@ public abstract class SwordSkill {
 	}
 	
 	public final void useModule(SwordSkillModule module) {
-		modules.add(module);
-	}
-
-	public final void unregisterModule(SwordSkillModule module) {
-		modules.remove(module);
+		module.onModuleRegistered(this);
 	}
 
 	/**
-	 * Method is called by SwordSkillManager to notify the SwordSkill's modules
-	 * that the SwordSkill has been registered with the entities SwordSkillManager.
+	 * Called by SwordSkill modules to inform the SwordSkill and its manager that a module
+	 * needs to be notified of actions on the given event domain (type).
+	 * @param type The event loop to listen on
+	 * @param module The module which needs to be notified
 	 */
-	public final void execSkillRegistration() {
-		for(SwordSkillModule module : modules) {
-			module.onSkillRegistered(this);
+	public final void listenFor(SwordSkillType type, SwordSkillModule module) {
+		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
+		if(listeners == null) {
+			listeners = new ArrayList<SwordSkillModule>();
+			supportListeners.put(type, listeners);
 		}
+
+		listeners.add(module);
 	}
 
-
-
 	/**
-	 * Method is called by SwordSkillManager to check skill signature match
-	 * and run any registered module hooks.
-	 * @param ev The triggering event
-	 * @return True/false can use ability
+	 * Unregisters a module and its listeners from the SwordSkill and the SwordSkillManager.
+	 * @param module The module to unregister
 	 */
-	public final boolean execSkillSignature(Event ev) {
-		if(!this.skillSignature(ev)) { return false; }
-		
-		for(SwordSkillModule module : modules) {
-			if(!module.onSignatureMatch(this, ev)) {
-				return false;
+	public final void unregisterModule(SwordSkillModule module) {
+		for(SwordSkillType type : supportListeners.keySet()) {
+			ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
+			listeners.remove(module);
+
+			// Cleanup this event loop if there are no more listeners on it
+			if(listeners.size() == 0) {
+				supportListeners.remove(type);
+				c.getSwordSkillManager().unregisterListener(type, this);
 			}
 		}
-
-		return true;
 	}
+
+	/**
+	 * Notify modules listening on event loop type of an applicable event which has occured
+	 * @param type The event loop on which the even has occured
+	 * @param ev The triggering event
+	 */
+	public final void execSkillSupportLifecycle(SwordSkillType type, Event ev) {
+		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
+		if(listeners == null) {
+			return;
+		}
+
+		for(SwordSkillModule module : listeners) {
+			if(module.beforeSupportLifecycle(type, this, ev)) {
+				module.executeSupportLifecycle(type, this, ev);
+			}
+		}
+	}
+
+	/**
+	 * Execute SwordSkill logic and interface with supporting modules through lifecycle hooks
+	 * @param type The event loop on which the event occured
+	 * @param ev The triggering event
+	 */
+	public final void execPrimaryLifecycle(SwordSkillType type, Event ev) {
+		if(primaryListeners.contains(type)) {
+			ArrayList<SwordSkillModule> hooks = supportListeners.get(type);
+
+			// Notify modules skill execution is about to begin
+			for(SwordSkillModule module : hooks) {
+				module.beforeSkillSignature(this, ev);
+			}
+
+			// Check if this skill needs to know about this event
+			if(!this.skillSignature(ev)) { return; }
+			
+			// Notify modules signature has matched and preconditions are about to be checked
+			for(SwordSkillModule module : hooks) {
+				if(!module.beforeSkillPreconditions(this, ev)) {
+					return;
+				}
+			}
+			
+			// Check all skill preconditions before triggering the skill
+			if(!this.skillPreconditions(ev)) { return;}
+
+			// Notify modules preconditions have passed and skill is about to be triggered
+			for(SwordSkillModule module : hooks) {
+				if(!module.beforeTriggerSkill(this, ev)) {
+					return;
+				}
+			}
+			
+			// Preconditions passed, trigger the skill and notify support modules
+			this.triggerSkill(ev);
+
+			// Notify modules of skill trigger
+			for(SwordSkillModule module : hooks) {
+				module.afterTriggerSkill(this, ev);
+			}
+			
+			// Skill execution complete, 
+			skillUsed();
+
+			// Notify modules skill execution has concluded
+			for(SwordSkillModule module : hooks) {
+				module.afterSkillUsed(this, ev);
+			}
+		}
+	}
+
 	/**
 	 * This should contain logic to check whether a Player is trying to activate one skill or another.
 	 * Things like check item names, player location, etc. Once it is known that the player is definently
@@ -77,73 +148,38 @@ public abstract class SwordSkill {
 	 */
 	public abstract boolean skillSignature(Event ev);
 	
-	
-
-	/**
-	 * Method is called by SwordSkillManager to check if player
-	 * can use the skill now that it has matched the signature
-	 * @param ev The triggering event
-	 * @return True/false can use ability
-	 */
-	public final boolean execCanUseSkill(Event ev) {
-		if(!this.canUseSkill(ev)) { return false;}
-
-		for(SwordSkillModule module : modules) {
-			if(!module.onCanUseSkill(this, ev)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
 	/**
 	 * Any conditions that must be met for the ability to activate.
 	 * @param ev The triggering event
 	 * @return True/false can use ability
 	 */
-	public abstract boolean canUseSkill(Event ev);
+	public abstract boolean skillPreconditions(Event ev);
 	
-
-
-	/**
-	 * Methid is called by SwordSkillManager to trigger
-	 * the SwordSkill's effect(s).
-	 * @param ev The triggering event
-	 */
-	public final void execTriggerSkill(Event ev) {
-		this.triggerSkill(ev);
-
-		for(SwordSkillModule module : modules) {
-			module.onTrigger(this, ev);
-		}
-	}
 	/**
 	 * Executes skill actions
 	 * @param ev The triggering event
 	 */
 	public abstract void triggerSkill(Event ev);
 	
-
-
 	/*
 	 * Any cleanup required once the skill is activated.
 	 * Any applicable cooldowns & timers are automatically handled by SwordSkillManager
 	 * Also a good place to handle things like adding exhaustion
 	 */
-	public abstract void markSkillUsed();
-
-
+	public abstract void skillUsed();
 
 	/**
 	 * Method is called by SwordSkillManager to notify the
 	 * SwordSkill and its modules that they've been unregistered
 	 */
 	public final void execSkillUnregistration() {
-		this.unregisterSkill();
-
-		for(SwordSkillModule module : modules) {
-			module.onUnregistration(this);
+		for(SwordSkillType type : supportListeners.keySet()) {
+			for(SwordSkillModule module : supportListeners.get(type)) {
+				module.onUnregistration(this);
+			}
 		}
+
+		this.unregisterSkill();
 	}
 	/**
 	 * Used in unregistering passive effects.

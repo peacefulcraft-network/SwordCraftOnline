@@ -6,9 +6,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
  * TimedCombo
+ * This class relys on many default behaviors from BasicCombo
  */
 public class TimedCombo extends BasicCombo {
 
@@ -23,29 +25,27 @@ public class TimedCombo extends BasicCombo {
     }
 
     @Override
-    public boolean onCanUseSkill(SwordSkill ss, Event ev) {
-        // Check for combo progression, will incriment accumulation as required
-        if(executeComboLogic(ss, ev)) {
-
-            // If progression happend and timer not running, start it
-            if(!isCountingDown) {
-               startObjectiveTimer();
-           }
-
-           // Check if activation threshold met and return t/f to trigger ability
-           return hasMetActivationThreshold();
-       }
-
-       // Combo accumulation was cancled / failed
-       resetObjectiveTimer();
-       resetComboAccumulation();
-       return false;
+    public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
+        resetComboAccumulation();
+        resetObjectiveTimer();
     }
 
     @Override
-    public void onTrigger(SwordSkill ss, Event ev) {
+    public boolean beforeSkillPreconditions(SwordSkill ss, Event ev) {
+        executeComboAccumulation(ev);
+
+        if(isCountingDown) {
+            return hasMetActivationThreshold();
+        }
+
+        startObjectiveTimer();
+        return false;
+    }
+
+    @Override
+    public void afterTriggerSkill(SwordSkill ss, Event ev) {
         // Reset progress when skill is triggered
-        super.onTrigger(ss, ev);
+        super.afterTriggerSkill(ss, ev);
         resetComboAccumulation();
         resetObjectiveTimer();
     }

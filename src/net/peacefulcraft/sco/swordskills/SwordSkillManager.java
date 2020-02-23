@@ -45,9 +45,44 @@ public class SwordSkillManager
 			}
 		}
 		skills.get(type).add(skill);
+	}
 
-		// Let the skill and its modules know they've been registered
-		skill.execSkillRegistration();
+	/**
+	 * Used by SwordSkill to dynamically register listeners for SwordSkillModules.
+	 * @param type The event loop type to register on
+	 * @param skill The SwordSkill instance which needs to be notified of the given event type
+	 */
+	public void registerListener(SwordSkillType type, SwordSkill skill) {
+		ArrayList<SwordSkill> listeners = skills.get(type);
+		
+		// Create the list for this loop type and add the skill if the list doesn't exist
+		if(listeners == null) {
+			listeners = new ArrayList<SwordSkill>();
+			listeners.add(skill);
+			skills.put(type, listeners);
+			return;
+		}
+
+		// Skill already listens here and doesn't need to be double registered
+		if(listeners.contains(skill)) {
+			return;
+		}
+
+		// List already existed and the skill was not on it. Add the skill to this listener loop
+		listeners.add(skill);
+	}
+
+	/**
+	 * Used by SwordSkill to dynamically unregister itself from listeners for SwordSkillModules
+	 * @param skill The SwordSkill instance which needs to be removed from the notifier list
+	 */
+	public void unregisterListener(SwordSkillType type, SwordSkill skill) {
+		ArrayList<SwordSkill> listeners = skills.get(type);
+		listeners.remove(skill);
+
+		if(listeners.size() == 0) {
+			skills.remove(type);
+		}
 	}
 
 	public void abilityExecuteLoop(SwordSkillType type, Event ev) {
@@ -57,19 +92,8 @@ public class SwordSkillManager
 		}
 
 		for(SwordSkill skill : skills.get(type)) {
-			// Check if this skill needs to know about this event
-			if(!skill.execSkillSignature(ev)) {
-				continue;
-			}
-			
-			// Final custom ability checks before we trigger the ability
-			if(!skill.execCanUseSkill(ev)) {
-				continue;
-			}
-			
-			skill.execTriggerSkill(ev);
-			
-			skill.markSkillUsed();
+			skill.execSkillSupportLifecycle(type, ev);
+			skill.execPrimaryLifecycle(type, ev);
 		}
 	}
 	
