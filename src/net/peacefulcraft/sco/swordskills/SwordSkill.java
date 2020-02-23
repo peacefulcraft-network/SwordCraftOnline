@@ -47,6 +47,9 @@ public abstract class SwordSkill {
 		if(listeners == null) {
 			listeners = new ArrayList<SwordSkillModule>();
 			supportListeners.put(type, listeners);
+
+			// Tell SwordSkillManager we need to know about these events
+			c.getSwordSkillManager().registerListener(type, this);
 		}
 
 		listeners.add(module);
@@ -61,7 +64,7 @@ public abstract class SwordSkill {
 			ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
 			listeners.remove(module);
 
-			// Cleanup this event loop if there are no more listeners on it
+			// Prune this event loop if there are no more listeners on it
 			if(listeners.size() == 0) {
 				supportListeners.remove(type);
 				c.getSwordSkillManager().unregisterListener(type, this);
