@@ -41,11 +41,11 @@ public class TimedCooldown implements SwordSkillModule {
     public boolean beforeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
         return isCoolingDown();
     }
-    /* No pre-support lifecycle hooks */
+    /* No pre-support life cycle hooks */
 
     @Override
     public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {}
-    /* No support lifecycle steps needed */
+    /* No support life cycle steps needed */
 
     @Override
     public boolean beforeSkillSignature(SwordSkill ss, Event ev) { return true; }

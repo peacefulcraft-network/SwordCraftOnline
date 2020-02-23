@@ -88,7 +88,7 @@ public abstract class SwordSkill {
 	}
 
 	/**
-	 * Execute SwordSkill logic and interface with supporting modules through lifecycle hooks
+	 * Execute SwordSkill logic and interface with supporting modules through life cycle hooks
 	 * @param type The event loop on which the event occured
 	 * @param ev The triggering event
 	 */

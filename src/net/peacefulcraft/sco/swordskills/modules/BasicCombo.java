@@ -37,7 +37,7 @@ public class BasicCombo implements SwordSkillModule {
 
     @Override
     public boolean beforeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) { return true; }
-    /* No pre-support lifecycle hook */
+    /* No pre-support life cycle hook */
 
     @Override
     public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {

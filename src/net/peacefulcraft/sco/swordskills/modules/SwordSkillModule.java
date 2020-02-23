@@ -19,7 +19,7 @@ public interface SwordSkillModule {
     public void onModuleRegistered(SwordSkill ss);
 
     /**
-     * Called by the SwordSkill before teh SwordSkill's support lifecycle is executed.
+     * Called by the SwordSkill before teh SwordSkill's support life cycle is executed.
      * Useful for canceling SwordSkill execution early to avoid unecessary work.
      * @param type The event type which triggered this execution cycle
      * @param ss The associated SwordSkill instance
@@ -28,8 +28,8 @@ public interface SwordSkillModule {
     public boolean beforeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev);
 
     /**
-     * Called by the sword skill for executing the module's support lifecycle.
-     * This lifecycle is intended for handling 'support' events that the module
+     * Called by the sword skill for executing the module's support life cycle.
+     * This life cycle is intended for handling 'support' events that the module
      * needs to know about in order to function, but that the mainline SwordSkill may
      * not need to listen for. These are usually reset events like recieving damge
      * resetting a combo
