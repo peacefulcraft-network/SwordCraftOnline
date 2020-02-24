@@ -1,166 +1,91 @@
 package net.peacefulcraft.sco.swordskills;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import org.bukkit.event.Event;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 
-public abstract class SwordSkill {
+public abstract class SwordSkill
+{
 	
 	/**
 	 * General ability properties
 	 */
 	protected SCOPlayer s;
-		public final SCOPlayer getSCOPlayer() { return s; }
+		public SCOPlayer getSCOPlayer() { return s; }
 
 	protected SwordSkillCaster c;
-		public final SwordSkillCaster getSwordSkillCaster() { return c; }
+		public SwordSkillCaster getSwordSkillCaster() { return c; }
 		
 	protected SkillProvider provider;
-		public final SkillProvider getProvider() { return provider; }
+		public SkillProvider getProvider() { return provider; }
+	
+		
+	/**
+	 * Ability cooldown properties
+	 */
+	/**Time allowed between activation */
+	private long cooldownDelay;
+	/**Next time ability can be used*/
+	private long cooldown = 0L;
+		public long getCooldown() { return cooldown; }
+		public long getCooldownSeconds() { return cooldown / 1000;}
+		public void setCooldown(Long delay) { cooldown = delay; }	
+		public void triggerCooldown() { this.cooldown = System.currentTimeMillis() + cooldownDelay; }
 
-	// List of event loops which the SkillLogic is listening on
-	private ArrayList<SwordSkillType> primaryListeners;
-
-	// Map of event loops and the corisponding SwordSkillModules which need to run when those loops are triggered
-	private HashMap<SwordSkillType, ArrayList<SwordSkillModule>> supportListeners;
-
-	public SwordSkill(SwordSkillCaster c, SkillProvider provider) {
+	/**
+	 * Set the cooldown time, in ms, between clicks
+	 * @param delay
+	 */
+	public SwordSkill(SwordSkillCaster c, long cooldownDelay, SkillProvider provider) {
 		this.c = c;
+		this.cooldownDelay = cooldownDelay;
 		this.provider = provider;
 	}
 	
-	public final void useModule(SwordSkillModule module) {
-		module.onModuleRegistered(this);
-	}
-
 	/**
-	 * Called by SwordSkill modules to inform the SwordSkill and its manager that a module
-	 * needs to be notified of actions on the given event domain (type).
-	 * @param type The event loop to listen on
-	 * @param module The module which needs to be notified
+	 * Called when the SwordSkill is being unregistered
 	 */
-	public final void listenFor(SwordSkillType type, SwordSkillModule module) {
-		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
-		if(listeners == null) {
-			listeners = new ArrayList<SwordSkillModule>();
-			supportListeners.put(type, listeners);
-
-			// Tell SwordSkillManager we need to know about these events
-			c.getSwordSkillManager().registerListener(type, this);
-		}
-
-		listeners.add(module);
+	public void destroy() {
+		if(isUsingTimer && isCountingDown) { resetObjectiveTimer(); }
 	}
-
+	
 	/**
-	 * Unregisters a module and its listeners from the SwordSkill and the SwordSkillManager.
-	 * @param module The module to unregister
+	 * @return True, cooldown in effect. False, not in effect.
 	 */
-	public final void unregisterModule(SwordSkillModule module) {
-		for(SwordSkillType type : supportListeners.keySet()) {
-			ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
-			listeners.remove(module);
-
-			// Prune this event loop if there are no more listeners on it
-			if(listeners.size() == 0) {
-				supportListeners.remove(type);
-				c.getSwordSkillManager().unregisterListener(type, this);
-			}
-		}
+	public boolean isCoolingDown() {
+		// Cooldown greater than now, we're still cooling down.
+		// Cooldown less than now, cooldown time has passed.
+		return cooldown > System.currentTimeMillis();
 	}
-
-	/**
-	 * Notify modules listening on event loop type of an applicable event which has occured
-	 * @param type The event loop on which the even has occured
-	 * @param ev The triggering event
-	 */
-	public final void execSkillSupportLifecycle(SwordSkillType type, Event ev) {
-		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
-		if(listeners == null) {
-			return;
-		}
-
-		for(SwordSkillModule module : listeners) {
-			if(module.beforeSupportLifecycle(type, this, ev)) {
-				module.executeSupportLifecycle(type, this, ev);
-			}
-		}
+	
+	public String skillCooldownMessage(long timeRemaining) {
+		return getClass() + " is on cooldown for " + timeRemaining;
 	}
-
-	/**
-	 * Execute SwordSkill logic and interface with supporting modules through life cycle hooks
-	 * @param type The event loop on which the event occured
-	 * @param ev The triggering event
-	 */
-	public final void execPrimaryLifecycle(SwordSkillType type, Event ev) {
-		if(primaryListeners.contains(type)) {
-			ArrayList<SwordSkillModule> hooks = supportListeners.get(type);
-
-			// Notify modules skill execution is about to begin
-			for(SwordSkillModule module : hooks) {
-				module.beforeSkillSignature(this, ev);
-			}
-
-			// Check if this skill needs to know about this event
-			if(!this.skillSignature(ev)) { return; }
-			
-			// Notify modules signature has matched and preconditions are about to be checked
-			for(SwordSkillModule module : hooks) {
-				if(!module.beforeSkillPreconditions(this, ev)) {
-					return;
-				}
-			}
-			
-			// Check all skill preconditions before triggering the skill
-			if(!this.skillPreconditions(ev)) { return;}
-
-			// Notify modules preconditions have passed and skill is about to be triggered
-			for(SwordSkillModule module : hooks) {
-				if(!module.beforeTriggerSkill(this, ev)) {
-					return;
-				}
-			}
-			
-			// Preconditions passed, trigger the skill and notify support modules
-			this.triggerSkill(ev);
-
-			// Notify modules of skill trigger
-			for(SwordSkillModule module : hooks) {
-				module.afterTriggerSkill(this, ev);
-			}
-			
-			// Skill execution complete, 
-			skillUsed();
-
-			// Notify modules skill execution has concluded
-			for(SwordSkillModule module : hooks) {
-				module.afterSkillUsed(this, ev);
-			}
-		}
-	}
-
+	
 	/**
 	 * This should contain logic to check whether a Player is trying to activate one skill or another.
 	 * Things like check item names, player location, etc. Once it is known that the player is definently
 	 * trying to use this skill, return true and handle combo / timer thresholds in canUseSkill().
-	 * @param Event The triggering event
-	 * @return true/false player is trying to trigger this skill
+	 * @param Event
+	 * @return boolean if can trigger
 	 */
 	public abstract boolean skillSignature(Event ev);
 	
 	/**
 	 * Any conditions that must be met for the ability to activate.
-	 * @param ev The triggering event
-	 * @return True/false can use ability
+	 * Cooldown and combo threshold / timer are checked automatically.
+	 * If this function is being called, that means the ability is not cooling down
+	 * and the player has reached any requisite combos to trigger the ability.
+	 * @return boolean can use
 	 */
-	public abstract boolean skillPreconditions(Event ev);
+	public abstract boolean canUseSkill();
 	
 	/**
 	 * Executes skill actions
-	 * @param ev The triggering event
+	 * @param ev
 	 */
 	public abstract void triggerSkill(Event ev);
 	
@@ -169,24 +94,155 @@ public abstract class SwordSkill {
 	 * Any applicable cooldowns & timers are automatically handled by SwordSkillManager
 	 * Also a good place to handle things like adding exhaustion
 	 */
-	public abstract void skillUsed();
+	public abstract void markSkillUsed();
 
-	/**
-	 * Method is called by SwordSkillManager to notify the
-	 * SwordSkill and its modules that they've been unregistered
-	 */
-	public final void execSkillUnregistration() {
-		for(SwordSkillType type : supportListeners.keySet()) {
-			for(SwordSkillModule module : supportListeners.get(type)) {
-				module.onUnregistration(this);
-			}
-		}
 
-		this.unregisterSkill();
-	}
 	/**
 	 * Used in unregistering passive effects.
 	 * Applicable to player data changes, potion effects, etc.
 	 */
 	public abstract void unregisterSkill();
+
+	
+/**************************************************************************
+ * 
+ * 
+ * Ability Combo
+ * 
+ * 
+ **************************************************************************/
+	
+	private double comboAccumulation = 0;
+	private double comboActivationThreshold;
+	private boolean isTrackingCombos;
+		public boolean isTrackingCombos() { return isTrackingCombos; }
+	private SwordSkillComboType comboType;	
+		public SwordSkillComboType getComboType() { return comboType; }
+	
+	/**
+	 * Method for setting up combo tracking if another SwordSkill constructor was used to instantiate
+	 * @param activationThreshold: Value that must be reached for the ability to trigger
+	 * @param thresholdType: What action(s) need to be tracked for this cobmo
+	 */
+	public void setupComboTracking(SwordSkillComboType comboType, double activationThreshold) {
+		this.comboType = comboType;
+		this.comboActivationThreshold = activationThreshold;
+		isTrackingCombos = true;
+	}
+	
+	/**
+	 * Accumulate progress towards activating the combo ability
+	 * @param value: Amount of (X) to add towards the combo (IE, 1 more hit scored)
+	 */
+	public void comboAccumulate(double value) {
+		comboAccumulation += value;
+	}
+	
+	/**
+	 * Reset progress towards activating the combo
+	 */
+	public void comboResetAccumulation() {
+		comboAccumulation = 0.0;
+	}
+	
+	/**
+	 * Check if the combo is ready to be activated ( necessary combo has been achieved )
+	 * @return
+	 */
+	public boolean isComboThresholdMet() {
+		return comboAccumulation > comboActivationThreshold;
+	}
+	
+	/**
+	 * Don't run combo logic during sword skill ability loop
+	 */
+	public void comboDisableTracking() {
+		this.isTrackingCombos = false;
+	}
+	
+	/**
+	 * Run combo logic ( do track ) during the sword skill loop
+	 */
+	public void comboEnableTracking() {
+		this.isTrackingCombos = true;
+	}
+	
+/**************************************************************************
+ * 
+ * 
+ * Combo Timer. Player must acheive combo before time expires and the combo resets
+ * 
+ * 
+ **************************************************************************/
+
+	/**
+	 * Ability threshold accumulation timer limit
+	 */
+	private boolean isUsingTimer = false;
+		public boolean isUsingTimer() { return isUsingTimer; }
+		public void enableTimer() { isUsingTimer = true; }
+		public void disableTimer() { isUsingTimer= false; }
+	private long timerTime = 0L;
+	private boolean isCountingDown = false;
+	private BukkitTask currentTimer;
+	
+	public void setupComboTimer(long timerTime) {
+		this.timerTime = timerTime;
+		isUsingTimer = true;
+	}
+	
+	/**
+	 * @return True / False the timer is currently running.
+	 */
+	public boolean isCountingDown() { return isCountingDown; }
+	
+	/**
+	 * Set the time the player has to complete the ability objective,
+	 * as defined in hasAcheivedTriggerObjective()
+	 * @param time
+	 */
+	public void setTimerTime(long timerTime) { this.timerTime = timerTime; }
+	
+	/**
+	 * Start the timer. Once the specified amount of time has passed, 
+	 * This will reset the combo counter for this ability.
+	 * @param overrideCooldown: True, starts time regardless of cooldown.
+	 * 							False, will do nothing if cooldown is in effect.
+	 */
+	@SuppressWarnings("static-access")
+	public void startObjectiveTimer() {
+		if(isCountingDown) {
+			throw new IllegalStateException("Attempted to start objective timer while objective timer was already running. "
+										  + "Call resetObjectiveTimer first.");
+		}
+		
+		isCountingDown = true;
+		currentTimer = new TimerBoundSkillTimer().runTaskLater(
+			SwordCraftOnline.getPluginInstance().getPluginInstance(),  
+			timerTime
+		);
+	}
+	
+	/**
+	 * Called to reset the objective timer. This will not reset objective progress.
+	 * Example; If a player needs to achieve 5 consecutive hits without taking damage,
+	 * 			but each hit must occur within 3 seconds of the previous hit, set the
+	 * 			Timer to 3 seconds and call resetObjectiveTimer() after each hit. 
+	 * resetObjectiveTimer() does not start the timer again. startObjectiveTimer() must
+	 * be called to start the timer again.
+	 */
+	public void resetObjectiveTimer() {
+		currentTimer.cancel();
+		isCountingDown = false;
+	}
+
+	private class TimerBoundSkillTimer extends BukkitRunnable{
+
+		@Override
+		public void run() {
+			comboResetAccumulation();
+			isCountingDown = false;
+		}
+		
+	}
 } 

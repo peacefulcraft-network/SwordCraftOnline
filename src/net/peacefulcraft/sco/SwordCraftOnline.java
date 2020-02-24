@@ -28,7 +28,6 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
-import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -118,7 +117,7 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	private void loadEventListeners() {
 
-		// Game Handle Listeners
+		//Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
@@ -126,11 +125,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
 		getServer().getPluginManager().registerEvents(new MobTarget(), this);
 		
-		// Register Menu Opener
+		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
 	
-		// Register ability listeners
-		getServer().getPluginManager().registerEvents(new AbilityEntityDamageEntityListener(), this);
+		/**
+		 * The Inventories manage their own event listeners
+		 */
 	}
 	
 	public static void logDebug(String debug) {
