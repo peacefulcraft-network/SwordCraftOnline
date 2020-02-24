@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
@@ -28,7 +29,7 @@ public class CriticalStrikeItem extends SkillProvider{
 	public void registerSkill(SwordSkillCaster c) {
 		setModifiers();
 		CriticalStrikeSkill cs = new CriticalStrikeSkill(c, this.cooldown, (SkillProvider) this, 3, this.damage);
-		c.getSwordSkillManager().registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE, cs);
+		c.getSwordSkillManager().registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY, cs);
 		
 		// add variance based on item tier and/or level
 	}

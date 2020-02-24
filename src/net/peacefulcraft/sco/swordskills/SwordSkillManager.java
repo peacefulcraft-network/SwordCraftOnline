@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
@@ -43,45 +45,9 @@ public class SwordSkillManager
 			if(s.getClass().toString().equals(s.getClass().toString())) {
 				throw new IllegalStateException("SwordSkill child " + s.getClass() + " is already registered with this executor");
 			}
-		}
-		skills.get(type).add(skill);
-	}
 
-	/**
-	 * Used by SwordSkill to dynamically register listeners for SwordSkillModules.
-	 * @param type The event loop type to register on
-	 * @param skill The SwordSkill instance which needs to be notified of the given event type
-	 */
-	public void registerListener(SwordSkillType type, SwordSkill skill) {
-		ArrayList<SwordSkill> listeners = skills.get(type);
-		
-		// Create the list for this loop type and add the skill if the list doesn't exist
-		if(listeners == null) {
-			listeners = new ArrayList<SwordSkill>();
-			listeners.add(skill);
-			skills.put(type, listeners);
-			return;
-		}
-
-		// Skill already listens here and doesn't need to be double registered
-		if(listeners.contains(skill)) {
-			return;
-		}
-
-		// List already existed and the skill was not on it. Add the skill to this listener loop
-		listeners.add(skill);
-	}
-
-	/**
-	 * Used by SwordSkill to dynamically unregister itself from listeners for SwordSkillModules
-	 * @param skill The SwordSkill instance which needs to be removed from the notifier list
-	 */
-	public void unregisterListener(SwordSkillType type, SwordSkill skill) {
-		ArrayList<SwordSkill> listeners = skills.get(type);
-		listeners.remove(skill);
-
-		if(listeners.size() == 0) {
-			skills.remove(type);
+			skills.get(type).add(skill);
+			break;
 		}
 	}
 
@@ -92,8 +58,79 @@ public class SwordSkillManager
 		}
 
 		for(SwordSkill skill : skills.get(type)) {
-			skill.execSkillSupportLifecycle(type, ev);
-			skill.execPrimaryLifecycle(type, ev);
+			// Check if this skill needs to know about this event
+			if(!skill.skillSignature(ev)) {
+				continue;
+			}
+			
+			// Don't process event if the skill is cooling down
+			if(skill.isCoolingDown()) {
+				continue;
+			}
+			
+			//Timer Logic
+			if(skill.isUsingTimer()) {
+				// If using timer and it's not running, we should start it
+				if(!skill.isCountingDown()) {
+					skill.startObjectiveTimer();
+				}
+				/*
+				 *	The timer resets the combo objective automatically 
+				 *	so if time has expired for the combo to trigger, 
+				 *	it will automatically be reset when we check the combo
+				 *	threshold next. 
+				 *
+				 */
+			}
+			
+			if(skill.isTrackingCombos()) {
+				// Player Hit / Damage Combos
+				if(ev instanceof EntityDamageByEntityEvent) {
+					
+					EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
+					// If our player was the one dealing damage
+					if(ede.getDamager() == s.getPlayer()){
+						if(
+							skill.getComboType() == SwordSkillComboType.CONSECUTIVE_HITS_IGNORE_TAKEN_DAMAGE
+							|| skill.getComboType() == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
+						) {
+							skill.comboAccumulate(1.0);
+
+						}else if(
+							skill.getComboType() == SwordSkillComboType.CUMULATIVE_DAMAGE_IGNORE_TAKEN_DAMAGE
+							|| skill.getComboType() == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
+						) {
+							skill.comboAccumulate(((EntityDamageEvent) ev).getDamage());
+						}
+					
+					// Else, we must have been the one receiving damage
+					} else {
+						// If the ability requires we don't take damage to activate the combo, reset the combo counter because we took damage
+						if(
+							skill.getComboType() == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
+							|| skill.getComboType() == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
+						) {
+							
+							// Reset tracking because the player took damage
+							if(skill.isUsingTimer()) { skill.resetObjectiveTimer(); }
+							if(skill.isTrackingCombos()) { skill.comboResetAccumulation(); }
+						}
+					
+					}
+				}
+			}
+			
+			// Final custom ability checks before we trigger the ability
+			if(!skill.canUseSkill()) {
+				continue;
+			}
+			
+			skill.triggerSkill(ev);
+			
+			skill.markSkillUsed();
+			skill.triggerCooldown();
+			if(skill.isUsingTimer()) { skill.resetObjectiveTimer(); }
+			if(skill.isTrackingCombos()) { skill.comboResetAccumulation(); }
 		}
 	}
 	
@@ -129,7 +166,9 @@ public class SwordSkillManager
 		private void unregisterSkill(SwordSkill skill) {
 			for(SwordSkill registeredSkill : getSkills()) {
 				if(registeredSkill == skill) {
-					skill.execSkillUnregistration();
+					((SwordSkill) skill).destroy();
+					skill.unregisterSkill();
+					skill.destroy();
 					return;
 				}
 			}
