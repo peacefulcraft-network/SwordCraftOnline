@@ -29,7 +29,7 @@ public class SCOAdmin implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (label.equalsIgnoreCase("scoadmin")) {
 			if (args.length == 0) {
-				sender.sendMessage("scoadmin [ swordskillbook | generateitem | playerdata | setplayerdata ]");
+				sender.sendMessage("scoadmin [ swordskillbook | generateitem | playerdata | setplayerdata | debug]");
 				return true;
 			}
 
@@ -301,6 +301,38 @@ public class SCOAdmin implements CommandExecutor {
 					//TODO: Add support for mob
 				}
 				
+			}
+
+			if(args[0].equalsIgnoreCase("debug")) {
+				if( !(sender instanceof Player)) {
+					sender.sendMessage(ChatColor.RED + "Command only executable by a player.");
+					return true;
+				}
+
+				if(args.length < 2) {
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[playername] [ swordskill ]");
+					return true;
+				}
+
+				SCOPlayer s = SwordCraftOnline.getGameManager().findSCOPlayer((Player) sender);
+				if(s == null) {
+					sender.sendMessage(ChatColor.RED + "No SCOPlayer with name " + args[1] + " found.");
+					return true;
+				}
+
+				if(args.length < 3) {
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
+					return true;
+				}
+
+				if(args[2].equalsIgnoreCase("hud")) {
+
+				} else if(args[2].equalsIgnoreCase("info")) {
+
+				} else {
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
+					return true;
+				}
 			}
 
 		}
