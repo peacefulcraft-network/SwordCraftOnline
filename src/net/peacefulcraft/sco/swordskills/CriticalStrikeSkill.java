@@ -49,4 +49,10 @@ public class CriticalStrikeSkill extends SwordSkill{
 	public void unregisterSkill() {
 		// No player data changes. No unregister.
 	}
+
+	@Override
+	public void registerSkill(SwordSkillManager manager) {
+		// TODO Auto-generated method stub
+
+	}
 }
