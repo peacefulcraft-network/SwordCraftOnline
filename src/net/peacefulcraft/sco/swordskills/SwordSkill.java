@@ -21,6 +21,9 @@ public abstract class SwordSkill {
 	protected SkillProvider provider;
 		public final SkillProvider getProvider() { return provider; }
 
+	protected SwordSkillManager manager;
+		public final SwordSkillManager getSwordSkillManager() { return manager; }
+
 	// List of event loops which the SkillLogic is listening on
 	private ArrayList<SwordSkillType> primaryListeners;
 
@@ -34,25 +37,6 @@ public abstract class SwordSkill {
 	
 	public final void useModule(SwordSkillModule module) {
 		module.onModuleRegistered(this);
-	}
-
-	/**
-	 * Called by SwordSkill modules to inform the SwordSkill and its manager that a module
-	 * needs to be notified of actions on the given event domain (type).
-	 * @param type The event loop to listen on
-	 * @param module The module which needs to be notified
-	 */
-	public final void listenFor(SwordSkillType type, SwordSkillModule module) {
-		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
-		if(listeners == null) {
-			listeners = new ArrayList<SwordSkillModule>();
-			supportListeners.put(type, listeners);
-
-			// Tell SwordSkillManager we need to know about these events
-			c.getSwordSkillManager().registerListener(type, this);
-		}
-
-		listeners.add(module);
 	}
 
 	/**
@@ -70,6 +54,25 @@ public abstract class SwordSkill {
 				c.getSwordSkillManager().unregisterListener(type, this);
 			}
 		}
+	}
+
+	/**
+	 * Called by SwordSkill modules to inform the SwordSkill and its manager that a module
+	 * needs to be notified of actions on the given event domain (type).
+	 * @param type The event loop to listen on
+	 * @param module The module which needs to be notified
+	 */
+	public final void listenFor(SwordSkillType type, SwordSkillModule module) {
+		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
+		if(listeners == null) {
+			listeners = new ArrayList<SwordSkillModule>();
+			supportListeners.put(type, listeners);
+
+			// Tell SwordSkillManager we need to know about these events
+			manager.registerListener(type, this);
+		}
+
+		listeners.add(module);
 	}
 
 	/**
@@ -141,6 +144,19 @@ public abstract class SwordSkill {
 			}
 		}
 	}
+
+	public void execSkillRegistration(SwordSkillManager manager) {
+		this.manager = manager;
+		this.registerSkill(manager);
+
+		for(SwordSkillType type : supportListeners.keySet()) {
+			for(SwordSkillModule module : supportListeners.get(type)) {
+				module.onModuleRegistered(this);
+			}
+		}
+	}
+
+	public abstract void registerSkill(SwordSkillManager manager);
 
 	/**
 	 * This should contain logic to check whether a Player is trying to activate one skill or another.

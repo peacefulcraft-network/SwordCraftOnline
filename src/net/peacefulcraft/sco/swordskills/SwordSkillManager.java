@@ -35,16 +35,16 @@ public class SwordSkillManager
 	public void registerSkill(SwordSkillType type, SwordSkill skill) throws IllegalStateException {
 		if(skills.get(type) == null) {
 			skills.put(type, new ArrayList<SwordSkill>());
-			skills.get(type).add(skill);
-			return;
-		}
-
-		for(SwordSkill s : skills.get(type)) {
-			if(s.getClass().toString().equals(s.getClass().toString())) {
-				throw new IllegalStateException("SwordSkill child " + s.getClass() + " is already registered with this executor");
+		} else {
+			for(SwordSkill s : skills.get(type)) {
+				if(s.getClass().toString().equals(s.getClass().toString())) {
+					throw new IllegalStateException("SwordSkill child " + s.getClass() + " is already registered with this executor");
+				}
 			}
 		}
+
 		skills.get(type).add(skill);
+		skill.execSkillRegistration(this);
 	}
 
 	/**
