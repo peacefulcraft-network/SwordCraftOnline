@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.exceptions.SCOSQLRuntimeException;
 
 /**
  * 
@@ -23,8 +24,12 @@ public class PlayerRegistryJoinGameSyncTask {
 		this.name = name;
 	}
 	
-	public void run() {
+	public void run() throws SCOSQLRuntimeException {
 		Connection con = null;
+		if(SwordCraftOnline.getHikariPool() == null) {
+			throw new SCOSQLRuntimeException(name, "Hikari pool failed to initialize before PlayerPreProcess.", PlayerRegistryJoinGameSyncTask.class);
+		}
+
 		try {
 			con = SwordCraftOnline.getHikariPool().getConnection();
 			
@@ -41,9 +46,12 @@ public class PlayerRegistryJoinGameSyncTask {
 			
 		} catch(SQLException ex) {
 			ex.printStackTrace();
+			throw new SCOSQLRuntimeException(name, "Login Pre-process failure.", PlayerRegistryJoinGameSyncTask.class);
 		} finally {
 			try {
-				con.close();
+				if(con != null){
+					con.close();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
