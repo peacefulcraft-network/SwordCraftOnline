@@ -13,6 +13,7 @@ import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 
 public class SCOPlayer implements SwordSkillCaster
 {
@@ -92,6 +93,11 @@ public class SCOPlayer implements SwordSkillCaster
 	private double expMod = 1.0D;
 		public double getExpMod() { return this.expMod; }
 		public void  setExpMod(double d) { this.expMod = d; }
+
+	/**Players current movement direction */
+	private DirectionalUtil.Movement movement;
+		public DirectionalUtil.Movement getMovement() { return this.movement; }
+		public void setMovement(DirectionalUtil.Movement m) { this.movement = m; }
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;

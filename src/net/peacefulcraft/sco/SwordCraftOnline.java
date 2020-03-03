@@ -28,6 +28,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
+import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -127,6 +128,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
+
+		//SwordSkill Util Listeners
+		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);
 	
 		/**
 		 * The Inventories manage their own event listeners
