@@ -1,7 +1,11 @@
 package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
@@ -73,6 +77,17 @@ public abstract class SwordSkill {
 		}
 
 		listeners.add(module);
+	}
+
+	public final List<SwordSkillModule> getModules() {
+		ArrayList<SwordSkillModule> modules = new ArrayList<SwordSkillModule>();
+		modules.addAll( (Collection) primaryListeners);
+
+		for(SwordSkillType type : supportListeners.keySet()) {
+			modules.addAll((Collection) supportListeners);
+		}
+
+		return Collections.unmodifiableList(modules);
 	}
 
 	/**

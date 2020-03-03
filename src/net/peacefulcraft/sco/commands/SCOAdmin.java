@@ -20,6 +20,8 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
@@ -326,8 +328,18 @@ public class SCOAdmin implements CommandExecutor {
 				}
 
 				if(args[2].equalsIgnoreCase("hud")) {
+					sender.sendMessage(ChatColor.RED + "Coming soon... " + ChatColor.GOLD + ":)");
+					return true;
 
 				} else if(args[2].equalsIgnoreCase("info")) {
+					SwordSkillManager sm = s.getSwordSkillManager();
+					for(SwordSkill ss : sm.getSkills()) {
+						sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + ss.getClass().toString() + ChatColor.GOLD + "--------");
+						for(SwordSkillModule ssm : ss.getModules()) {
+							sender.sendMessage(ChatColor.GOLD + "- " + ssm.getClass().toString());
+						}
+					}
+					return true;
 
 				} else {
 					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
