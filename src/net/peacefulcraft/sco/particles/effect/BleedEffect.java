@@ -23,7 +23,7 @@ public class BleedEffect extends net.peacefulcraft.sco.particles.Effect {
     /**
      * Color of blood. Default is red (152)
      */
-    public int color = 152;
+    public int color = 2100;
 
     public BleedEffect(EffectManager effectManager) {
         super(effectManager);

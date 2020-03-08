@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -261,7 +262,7 @@ public class SCOAdmin implements CommandExecutor {
 				Player p = (Player)sender;
 				Effect effect = new BleedEffect(SwordCraftOnline.getEffectManager());
 				effect.setEntity(p);
-				effect.iterations = 15 * 20;
+				effect.iterations = 20; 
 				effect.start();
 
 				return true;
