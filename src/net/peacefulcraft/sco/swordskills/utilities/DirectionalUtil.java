@@ -21,7 +21,7 @@ public class DirectionalUtil implements Listener{
         NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         SCOPlayer s = GameManager.findSCOPlayer(p);
