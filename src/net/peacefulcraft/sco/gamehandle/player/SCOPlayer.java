@@ -1,8 +1,10 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
@@ -14,8 +16,10 @@ import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.swordskills.utilities.IDamage;
+import net.peacefulcraft.sco.swordskills.utilities.IStrengthWeakness;
 
-public class SCOPlayer implements SwordSkillCaster
+public class SCOPlayer implements SwordSkillCaster, IDamage, IStrengthWeakness
 {
 	private String partyName;
 	private String lastInvite;
@@ -99,6 +103,16 @@ public class SCOPlayer implements SwordSkillCaster
 		public DirectionalUtil.Movement getMovement() { return this.movement; }
 		public void setMovement(DirectionalUtil.Movement m) { this.movement = m; }
 
+	/**Players incoming damage modifiers. Format ZOMBIE-1.25 */
+	private List<String> weaknessModifiers;
+		public List<String> getWeaknessModifiers() { return this.weaknessModifiers; }
+		public void setWeaknessModifiers(List<String> l) { this.weaknessModifiers = l; }
+
+	/**Players outgoing damage modifiers. Format ZOMBIE-1.25 */
+	private List<String> damageModifiers;
+		public List<String> getDamageModifiers() { return this.damageModifiers; }
+		public void setDamageModifiers(List<String> l) { this.damageModifiers = l; }
+
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
 		playerKills = 0;
@@ -161,6 +175,118 @@ public class SCOPlayer implements SwordSkillCaster
 		this.playerKills = red;
 	}
 
+	/**Returns players attack damage attribute. */
+	@Override
+	public double getAttackDamage() { return getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue(); }
+	/**
+	 * Sets players attack damage attribute.
+	 * @param multiply if True attack damage is multiplied by given value. If False damage is set to value.
+	 */
+	@Override
+	public void setAttackDamage(double mod, boolean multiply) { 
+		if(multiply) {
+			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod); 
+		}
+	}
+
+	/**Returns players movement speed attribute */
+	@Override
+	public double getMovementSpeed() { return getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue(); }
+	/**
+	 * Sets players movement speed attribute
+	 * @param multiply if True movement speed is multiplied by given value. If False movement speed is set to value.
+	 */
+	@Override
+	public void setMovementSpeed(double mod, boolean multiply) {
+		if(multiply) {
+			getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod * getMovementSpeed());
+		} else {
+			getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod);
+		}
+	}
+
+	/**Returns players max health attribute */
+	@Override
+	public double getMaxHealth() { return getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(); }
+	/**
+	 * Sets players max health attribute
+	 * @param multiply if True max health is multiplied by given value. If False max health is set to value.
+	 */
+	@Override
+	public void setMaxHealth(double mod, boolean multiply) {
+		if(multiply) {
+			getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod * getMaxHealth());
+		} else {
+			getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod);
+		}
+	}
+
+	/**Returns players attack speed attribute */
+	@Override
+	public double getAttackSpeed() { return getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).getBaseValue(); }
+	/**
+	 * Sets players attack speed attribute
+	 * @param multiply if True attack speed is multiplied by given value. If False attack speed is set to value.
+	 */
+	@Override
+	public void setAttackSpeed(double mod, boolean multiply) {
+		if(multiply) {
+			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod * getAttackSpeed());
+		} else {
+			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod);
+		}
+	}
+	
+	/**Returns players knockback resistance attribute */
+	@Override
+	public double getKnockResist() { return getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getBaseValue(); }
+	/**
+	 * Sets players Knockback resistance attribute
+	 * @param multiply if True knockback resist is multiplied by given value. If False knockback resist is set to value.
+	 */
+	@Override
+	public void setKnockResist(double mod, boolean multiply) {
+		if(multiply) {
+			getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod * getKnockResist());
+		} else {
+			getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod);
+		}
+	}
+
+	/**Returns players armor attribute */
+	@Override
+	public double getArmor() { return getPlayer().getAttribute(Attribute.GENERIC_ARMOR).getBaseValue(); }
+	/**
+	 * Sets players armor attribute
+	 * @param multiply if True armor is multiplied by given value. If False armor is set to value.
+	 */
+	@Override
+	public void setArmor(double mod, boolean multiply) {
+		if(multiply) {
+			getPlayer().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod * getKnockResist());
+		} else {
+			getPlayer().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod);
+		}
+	}
+
+	/**Returns players armor toughness attribute */
+	@Override
+	public double getArmorToughness() { return getPlayer().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).getBaseValue(); }
+	/**
+	 * Sets players armor toughness attribute
+	 * @param multiply if True armor toughness is multiplied by given value. If False armor toughness is set to value
+	 */
+	@Override
+	public void setArmorToughness(double mod, boolean multiply) {
+		if(multiply) {
+			getPlayer().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod * getKnockResist());
+		} else {
+			getPlayer().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod);
+		}
+	}
+
 	public String getPlayerData() {		
 		String header = repeat(5, " ") + ChatColor.GOLD + "[" + ChatColor.BLUE + "SCOPlayer" + ChatColor.GOLD + "]" + ChatColor.BLUE + getName() + "'s Data" + '\n' 
 		+ ChatColor.GOLD + repeat(40, "-") + '\n';
@@ -176,8 +302,8 @@ public class SCOPlayer implements SwordSkillCaster
 			skills.concat(s.getProvider().getName() + ", ");
 		}
 
-		return header + partyName + playerKills + critChance + critMult + pChance + override + skills;
-	}
+			return header + partyName + playerKills + critChance + critMult + pChance + override + skills;
+		}
 
 	private String repeat(int count, String with) {
 		return new String(new char[count]).replace("\0", with);
