@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,6 +20,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.particles.Effect;
+import net.peacefulcraft.sco.particles.effect.AnimatedBallEffect;
 import net.peacefulcraft.sco.particles.effect.BleedEffect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
@@ -260,10 +260,16 @@ public class SCOAdmin implements CommandExecutor {
 
 			if(args[0].equalsIgnoreCase("particletest")) {
 				Player p = (Player)sender;
-				Effect effect = new BleedEffect(SwordCraftOnline.getEffectManager());
+				if(args[1].isEmpty()) {
+					p.sendMessage("Please enter valid particle.");
+				}
+				SwordCraftOnline.logInfo("Loading " + args[1] + " particle...");
+				Effect effect = SwordCraftOnline.getEffectManager().getEffectByClassName(args[1]);
 				effect.setEntity(p);
-				effect.iterations = 20; 
+				//effect.iterations = 20;
+				//SwordCraftOnline.logInfo("Particle starting..."); 
 				effect.start();
+				SwordCraftOnline.logInfo("Particle started...");
 
 				return true;
 			}

@@ -175,7 +175,7 @@ public class EffectManager implements Disposable {
 
             // A shaded manager may provide a fully-qualified path.
             if (effectLibClass == null && !effectClass.contains(".")) {
-                effectClass = "de.slikey.effectlib.effect." + effectClass;
+                effectClass = "net.peacefulcraft.sco.particles.effect." + effectClass;
                 if (!effectClass.endsWith("Effect")) {
                     effectClass = effectClass + "Effect";
                 }
