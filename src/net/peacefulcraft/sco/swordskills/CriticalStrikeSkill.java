@@ -10,13 +10,14 @@ import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
 
 public class CriticalStrikeSkill extends SwordSkill{
 	
+	private long delay;
 	private double damageToDeal;
-	
+	private double hitsToTrigger;
+
 	public CriticalStrikeSkill(SwordSkillCaster c, long delay, SkillProvider provider, int hitsToTrigger, double damageToDeal) {
 		super(c, provider);
-		useModule(new TimedCooldown(delay));
-		useModule(new BasicCombo(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
-		
+		this.delay = delay;
+		this.hitsToTrigger = hitsToTrigger;
 		this.damageToDeal = damageToDeal;
 	}
 
@@ -52,7 +53,8 @@ public class CriticalStrikeSkill extends SwordSkill{
 
 	@Override
 	public void registerSkill(SwordSkillManager manager) {
-		// TODO Auto-generated method stub
-
+		manager.registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE, this);
+		useModule(new TimedCooldown(delay));
+		useModule(new BasicCombo(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
 	}
 }

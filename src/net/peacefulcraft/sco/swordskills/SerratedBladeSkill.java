@@ -11,13 +11,14 @@ import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 public class SerratedBladeSkill extends SwordSkill {
 
     private SCOPlayer s;
+    private long delay;
     private int increase;
 
     public SerratedBladeSkill(SCOPlayer s, long delay, SkillProvider provider, int increase) {
         super(s, provider);
-        useModule(new TimedCooldown(delay));
 
         this.s = s;
+        this.delay = delay;
         this.increase = increase;
     }
 
@@ -50,7 +51,7 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void registerSkill(SwordSkillManager manager) {
-        // TODO Auto-generated method stub
-
+        manager.registerSkill(SwordSkillType.PASSIVE, this);
+        useModule(new TimedCooldown(delay));
     }
 }
