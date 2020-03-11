@@ -21,6 +21,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
@@ -323,7 +324,7 @@ public class SCOAdmin implements CommandExecutor {
 				}
 
 				if(args.length < 3) {
-					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info | dummyskill]");
 					return true;
 				}
 
@@ -341,6 +342,8 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					return true;
 
+				} else if(args[2].equalsIgnoreCase("dummyskill")) {
+					(new SwordSkillTest(s, null)).registerSkill(s.getSwordSkillManager());
 				} else {
 					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
 					return true;
