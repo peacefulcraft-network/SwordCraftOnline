@@ -28,6 +28,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
 
 public class SwordCraftOnline extends JavaPlugin{
@@ -130,6 +131,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
 	
 		// Register ability listeners
+		getServer().getPluginManager().registerEvents(new AbilityClickListener(), this);
 		getServer().getPluginManager().registerEvents(new AbilityEntityDamageEntityListener(), this);
 	}
 	
