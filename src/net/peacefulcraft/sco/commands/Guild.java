@@ -25,7 +25,7 @@ public class Guild implements CommandExecutor{
 		if(args.length > 1) {
 			if(args[0].equalsIgnoreCase("create")) {
 				
-				SCOPlayer s = SwordCraftOnline.getGameManager().findSCOPlayer(p);
+				SCOPlayer s = SwordCraftOnline.getPluginInstance().getGameManager().findSCOPlayer(p);
 				if(s.isInGuild()) {
 					p.sendMessage(ChatColor.GOLD + "You must leave your current guild before you can found a new guild.");
 					return true;
@@ -75,7 +75,8 @@ public class Guild implements CommandExecutor{
 	}
 	
 	public enum GuildAuditAction {
-		JOIN, LEAVE, PROMOTE, DEMOTE, CREATE_GUILD, DISBAN_GUILD,
-		SET_TITLE, SET_PROPERTY, INVITE, INVITE_ACCEPT, INVITE_REJECT
+		JOIN, LEAVE, KICK, DISBAN_KICK, PROMOTE, DEMOTE, CREATE_GUILD,
+		DISBAN_GUILD, SET_TITLE, SET_PROPERTY, INVITE, INVITE_ACCEPT,
+		INVITE_REJECT
 	}
 }
