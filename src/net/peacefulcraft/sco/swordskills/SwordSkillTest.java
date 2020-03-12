@@ -15,15 +15,19 @@ public class SwordSkillTest extends SwordSkill {
     }
 
     @Override
-    public void registerSkill(SwordSkillManager manager) {
-        manager.registerListener(SwordSkillType.PLAYER_INTERACT, this);
+    public void registerSkill() {
+        this.manager.registerListener(SwordSkillType.PLAYER_INTERACT, this);
         useModule(new BasicCombo(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, 4));
+        s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Instantiated");
     }
 
     @Override
     public boolean skillSignature(Event ev) {
+        s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Signature:");
         if (this.s != null) {
-            s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Signature Match");
+            s.getPlayer().sendMessage("Match");
+        } else {
+            s.getPlayer().sendMessage("No match");
         }
         return true;
     }
@@ -52,6 +56,7 @@ public class SwordSkillTest extends SwordSkill {
 
     @Override
     public void unregisterSkill() {
+        this.manager.unregisterListener(SwordSkillType.PLAYER_INTERACT, this);
         if (this.s != null) {
             s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Skill Unregistered");
         }

@@ -343,7 +343,9 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 
 				} else if(args[2].equalsIgnoreCase("dummyskill")) {
-					(new SwordSkillTest(s, null)).registerSkill(s.getSwordSkillManager());
+					(new SwordSkillTest(s, null)).registerSkill();
+					sender.sendMessage("Registered Dummy Skill");
+					return true;
 				} else {
 					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
 					return true;
