@@ -35,15 +35,27 @@ public class BasicCombo implements SwordSkillModule {
         }
     }
 
+    /*
+    
+        Support Lifecycle Steps
+    
+    */
     @Override
     public boolean beforeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) { return true; }
     /* No pre-support life cycle hook */
 
     @Override
     public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
+        ss.getSCOPlayer().getPlayer().sendMessage("[DEBUG] Resetting Combo Accumulation");
         resetComboAccumulation();
     }
 
+
+    /*
+
+        Primary Lifecycle Steps
+
+    */
     @Override
     public boolean beforeSkillSignature(SwordSkill ss, Event ev) { return true; }
     /* No pre-signature hook */
@@ -51,6 +63,7 @@ public class BasicCombo implements SwordSkillModule {
     @Override
     public boolean beforeSkillPreconditions(SwordSkill ss, Event ev) {
         executeComboAccumulation(ev);
+        ss.getSCOPlayer().getPlayer().sendMessage("[DEBUG] " + comboAccumulation + "/" + activationThreshold);
         return hasMetActivationThreshold();
     }
 
@@ -71,6 +84,12 @@ public class BasicCombo implements SwordSkillModule {
     public void afterSkillUsed(SwordSkill ss, Event ev) {}
     /* No cleanup steps */
 
+
+    /*
+
+        Internal util functions
+
+    */
     /**
      * Accumulate combo progressed based on the combo type
      * @param ev The triggering event

@@ -6,8 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 
@@ -29,13 +32,18 @@ public abstract class SwordSkill {
 		public final SwordSkillManager getSwordSkillManager() { return manager; }
 
 	// List of event loops which the SkillLogic is listening on
-	private ArrayList<SwordSkillType> primaryListeners;
+	private final ArrayList<SwordSkillType> primaryListeners = new ArrayList<SwordSkillType>();
 
 	// Map of event loops and the corisponding SwordSkillModules which need to run when those loops are triggered
-	private HashMap<SwordSkillType, ArrayList<SwordSkillModule>> supportListeners;
+	private final HashMap<SwordSkillType, ArrayList<SwordSkillModule>> supportListeners = new HashMap<SwordSkillType, ArrayList<SwordSkillModule>>();
 
 	public SwordSkill(SwordSkillCaster c, SkillProvider provider) {
 		this.c = c;
+		LivingEntity caster = c.getSwordSkillManager().getSCOPlayer().getPlayer();
+		if (caster instanceof Player) {
+			this.s = SwordCraftOnline.getPluginInstance().getGameManager().findSCOPlayer((Player) caster);
+		}
+		this.manager = c.getSwordSkillManager();
 		this.provider = provider;
 	}
 	
@@ -55,7 +63,7 @@ public abstract class SwordSkill {
 			// Prune this event loop if there are no more listeners on it
 			if(listeners.size() == 0) {
 				supportListeners.remove(type);
-				c.getSwordSkillManager().unregisterListener(type, this);
+				manager.unregisterListener(type, this);
 			}
 		}
 	}
@@ -160,9 +168,8 @@ public abstract class SwordSkill {
 		}
 	}
 
-	public void execSkillRegistration(SwordSkillManager manager) {
-		this.manager = manager;
-		this.registerSkill(manager);
+	public void execSkillRegistration() {
+		this.registerSkill();
 
 		for(SwordSkillType type : supportListeners.keySet()) {
 			for(SwordSkillModule module : supportListeners.get(type)) {
@@ -171,7 +178,7 @@ public abstract class SwordSkill {
 		}
 	}
 
-	public abstract void registerSkill(SwordSkillManager manager);
+	public abstract void registerSkill();
 
 	/**
 	 * This should contain logic to check whether a Player is trying to activate one skill or another.

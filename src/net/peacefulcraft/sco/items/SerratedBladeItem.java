@@ -23,14 +23,14 @@ public class SerratedBladeItem extends SkillProvider {
 
     @Override
     public void registerSkill(SwordSkillCaster s) {
-        SCOPlayer sp = s.getSwordSkillManager().getPlayer();
+        SCOPlayer sp = s.getSwordSkillManager().getSCOPlayer();
         
         setModifiers();
 
         sp.setCriticalChance(sp.getCriticalChance() + this.increase);
 
         SerratedBladeSkill sb = new SerratedBladeSkill(sp, -1, (SkillProvider) this, this.increase);
-        sb.registerSkill(s.getSwordSkillManager());
+        sb.registerSkill();
     }
 
     @Override

@@ -50,8 +50,8 @@ public class SerratedBladeSkill extends SwordSkill {
     }
 
     @Override
-    public void registerSkill(SwordSkillManager manager) {
-        manager.registerSkill(SwordSkillType.PASSIVE, this);
+    public void registerSkill() {
+        this.manager.registerSkill(SwordSkillType.PASSIVE, this);
         useModule(new TimedCooldown(delay));
     }
 }

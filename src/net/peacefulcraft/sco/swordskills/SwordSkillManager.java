@@ -13,10 +13,10 @@ import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
 public class SwordSkillManager
 {
-	private SCOPlayer s = null;
-		public SCOPlayer getPlayer() { return this.s; }
+	private SCOPlayer s;
+		public SCOPlayer getSCOPlayer() { return this.s; }
 
-	private LivingEntity e = null;
+	private LivingEntity e;
 		public LivingEntity getLivingEntity() { return this.e; }
 		
 	private HashMap<SwordSkillType, ArrayList<SwordSkill>> skills = new HashMap<SwordSkillType, ArrayList<SwordSkill>>();
@@ -24,7 +24,7 @@ public class SwordSkillManager
 	/**Stores instance of SCOPlayer */
 	public SwordSkillManager(SCOPlayer s) {
 		this.s = s;
-		this.e = (LivingEntity)s.getPlayer();
+		this.e = (LivingEntity) s.getPlayer();
 	}
 
 	/**Converts ActiveMob into LivingEntity and stores. */
@@ -44,7 +44,7 @@ public class SwordSkillManager
 		}
 
 		skills.get(type).add(skill);
-		skill.execSkillRegistration(this);
+		skill.execSkillRegistration();
 	}
 
 	/**
@@ -86,7 +86,6 @@ public class SwordSkillManager
 	}
 
 	public void abilityExecuteLoop(SwordSkillType type, Event ev) {
-		
 		if(skills.get(type) == null) {
 			return;
 		}

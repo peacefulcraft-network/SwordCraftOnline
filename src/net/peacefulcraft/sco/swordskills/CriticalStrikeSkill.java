@@ -52,8 +52,8 @@ public class CriticalStrikeSkill extends SwordSkill{
 	}
 
 	@Override
-	public void registerSkill(SwordSkillManager manager) {
-		manager.registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE, this);
+	public void registerSkill() {
+		this.manager.registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE, this);
 		useModule(new TimedCooldown(delay));
 		useModule(new BasicCombo(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
 	}
