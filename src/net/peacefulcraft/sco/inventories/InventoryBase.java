@@ -23,9 +23,8 @@ public abstract class InventoryBase{
 		
 	public InventoryBase(Player observer, InventoryType inventoryType){
 		this.observer = observer;
-		this.type = inventoryType;
-		
-	}		
+		this.type = inventoryType;	
+	}
 	
 	/**
 	 * Default configuration for inventory

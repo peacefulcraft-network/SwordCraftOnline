@@ -29,6 +29,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
+import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -37,7 +38,8 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	public static SCOConfig cfg;
 		public static SCOConfig getSCOConfig() { return cfg; }
-	
+		public static Boolean showDebug() { return cfg.getDebug(); }
+		
 	public static HikariManager hikari;
 		public static HikariManager getHikariPool() { return hikari; }
 		
@@ -128,10 +130,19 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
+
+		//SwordSkill Util Listeners
+		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);
 	
 		/**
 		 * The Inventories manage their own event listeners
 		 */
+	}
+	
+	public static void logDebug(String debug) {
+		if(showDebug()) {
+			sco.getLogger().log(Level.INFO, debug);
+		}
 	}
 	
 	public static void logInfo(String info) {

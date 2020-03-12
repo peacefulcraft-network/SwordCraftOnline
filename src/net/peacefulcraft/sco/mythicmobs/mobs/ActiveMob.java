@@ -16,12 +16,13 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
-import net.peacefulcraft.sco.mythicmobs.skills.SkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 
 /**
  * Active instance of Mythicmob
  */
-public class ActiveMob implements SkillCaster {
+public class ActiveMob implements SwordSkillCaster {
     
     private long aliveTime = 0L;
     
@@ -109,6 +110,9 @@ public class ActiveMob implements SkillCaster {
         public void setLastAggroCause(AbstractEntity aggro) { this.lastAggroCause = aggro; }
         public AbstractEntity getLastAggroCause() { return this.lastAggroCause; }
 
+    private SwordSkillManager swordSkillManager;
+        public SwordSkillManager getSwordSkillManager() { return this.swordSkillManager; }
+
     /**
      * Initializes active mob instance.
      * @param e Abstract entity
@@ -128,6 +132,8 @@ public class ActiveMob implements SkillCaster {
         if(type.usesBossBar()) {
             this.bossBar = type.getBossBar();
         }
+
+        this.swordSkillManager = new SwordSkillManager(this);
     }
 
     public void tick(int c) {
@@ -231,7 +237,7 @@ public class ActiveMob implements SkillCaster {
 
     public void setUnloaded() {
         if(!this.dead) {
-            if(this.type.getDespawns() && !this.type.isPersistent()) {
+            if(this.type.despawns() && !this.type.isPersistent()) {
                 this.dead = true;
                 unregister();
             } else {
@@ -254,18 +260,6 @@ public class ActiveMob implements SkillCaster {
             //TODO: Handling death events and skills.
         }
         unregister();
-    }
-
-    @Override
-    public void setUsingSkill(boolean paramBoolean) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean isUsingSkill() {
-        // TODO Auto-generated method stub
-        return false;
     }
 }
 

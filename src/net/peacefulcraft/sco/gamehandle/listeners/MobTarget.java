@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.gamehandle.listeners;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -26,11 +27,21 @@ public class MobTarget implements Listener {
                 MythicMob mmTarget = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(target.getCustomName()); 
                 //Checking if factions align
                 if(mm.hasFactionTargets() && mmTarget.hasFaction()) {
+                    //If target list does not contain faction cancel.
                     if(!mm.getFactionTargets().contains(mmTarget.getFaction())) {
                         ev.setCancelled(true);
                     }
                 }
-            }            
+            }  
+            
+            //Checking if mob targets players
+            if(mm.getFactionTargets().contains("Player")) {
+                if(!(target instanceof Player)) {
+                    ev.setCancelled(true);
+                } else {
+                    ev.setCancelled(false);
+                }
+            }
         }
     }
 }

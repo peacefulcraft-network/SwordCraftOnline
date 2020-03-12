@@ -88,7 +88,8 @@ public class DropTable {
         }
     }
 
-    /**Generating lootbag without amount modifiers 
+    /**
+     * Generating lootbag without amount modifiers 
      * For in console testing. DO NOT CALL ON PLAYER.
      */
     public LootBag generate() {        
@@ -178,6 +179,9 @@ public class DropTable {
             }
             Collection<Drop> d = getRandomDrop(amount);
             for(Drop drop : d) {
+                if(bag.getItems().contains(drop.getItem())) {
+                    continue;
+                }
                 bag.addDrop(drop);
             }
             return bag;

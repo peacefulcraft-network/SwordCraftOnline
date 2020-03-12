@@ -7,12 +7,16 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.commands.Guild;
+import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
-import net.peacefulcraft.sco.storage.SCOPlayerDataManager;
+import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 
-public class SCOPlayer 
+public class SCOPlayer implements SwordSkillCaster
 {
 	private String partyName;
 	private String lastInvite;
@@ -23,20 +27,28 @@ public class SCOPlayer
 		public int getFloor() { return floor; }
 		public void setFloor(int num) { floor = num; }
 	
+	private UUID uuid;
+		public UUID getUUID() { return uuid; }
+		
 	private Player user;
-		public Player getPlayer() {return this.user;}
-		public UUID getUUID() {return this.user.getUniqueId();}
+		public Player getPlayer() { return this.user; }
+		public void linkPlayer(Player p) { this.user = p; }
 	
-	private SCOPlayerDataManager scopData;
-		public SCOPlayerDataManager getData() { return scopData; }
-		public InventoryManager getInventoryManager() { return scopData.getInventories(); }
+	private PlayerDataManager scopData;
+		public PlayerDataManager getData() { return scopData; }
+	
+	private InventoryManager inventoryManager;
+		public InventoryManager getInventoryManager() { return this.inventoryManager; }
+		public InventoryBase getInventory(InventoryType inventory) { return inventoryManager.getInventory(inventory); }
 		
 	/**Time remaining until another attack can be performed */
 	private int attackTime;
 		public int getAttackTime() { return attackTime; }
 		public void setAttackTime(int ticks) { this.attackTime = ticks; }
 
+	/**Stores SwordSkills */
 	private SwordSkillManager swordSkillManager;
+		/**Returns instance SwordSkillManager from interface */
 		public SwordSkillManager getSwordSkillManager() { return swordSkillManager; }
 		
 	private long guildId = -1;
@@ -46,7 +58,7 @@ public class SCOPlayer
 		
 	private Guild.GuildRank guildRank;
 		public Guild.GuildRank getGuildRank() { return this.guildRank; }
-		public void setGuildRank(Guild.GuildRank rank) { this.guildRank = guildRank; } 
+		public void setGuildRank(Guild.GuildRank rank) { this.guildRank = rank; } 
 	
 		
 	private double exhaustion = 0.0;
@@ -93,16 +105,22 @@ public class SCOPlayer
 		public double getExpMod() { return this.expMod; }
 		public void  setExpMod(double d) { this.expMod = d; }
 
-	public SCOPlayer (Player user) {
-		this.user = user;
-		
-		partyName = "";
-		lastInvite = "";
+	/**Players current movement direction */
+	private DirectionalUtil.Movement movement;
+		public DirectionalUtil.Movement getMovement() { return this.movement; }
+		public void setMovement(DirectionalUtil.Movement m) { this.movement = m; }
+
+	public SCOPlayer (UUID uuid) {
+		this.uuid = uuid;
 		playerKills = 0;
 		floor = 0; //TODO: Load this from scopData
 		
-		scopData = new SCOPlayerDataManager(this);
+		scopData = new PlayerDataManager(this);
+		
 		swordSkillManager = new SwordSkillManager(this);
+		
+		inventoryManager = new InventoryManager(this);
+		inventoryManager.fetchInventory(InventoryType.SWORD_SKILL);
 	}
 
 	/**True if player can perform left click */
