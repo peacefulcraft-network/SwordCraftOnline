@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.mythicmobs.mobs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,11 +21,13 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
+import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Active instance of Mythicmob
  */
-public class ActiveMob implements SwordSkillCaster, IDamage {
+public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
     
     private long aliveTime = 0L;
     
@@ -116,6 +119,15 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         public SwordSkillManager getSwordSkillManager() { return this.swordSkillManager; }
 
     /**
+     * Initially copied from MythicMob file. 
+     * Stored again here for dynamic Modifiers based on sword skills as to
+     * not directly edit the Mythic Mob instance.
+     */
+    private List<Modifier> damageModifiers;
+        public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
+        public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
+
+    /**
      * Initializes active mob instance.
      * @param e Abstract entity
      * @param type Mob type read from Mythic Mob
@@ -136,6 +148,8 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         }
 
         this.swordSkillManager = new SwordSkillManager(this);
+
+        this.damageModifiers = type.getDamageModifiers();
     }
 
     public void tick(int c) {

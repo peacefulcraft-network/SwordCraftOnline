@@ -17,9 +17,10 @@ import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.IStrengthWeakness;
+import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
-public class SCOPlayer implements SwordSkillCaster, IDamage, IStrengthWeakness
+public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 {
 	private String partyName;
 	private String lastInvite;
@@ -103,15 +104,10 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IStrengthWeakness
 		public DirectionalUtil.Movement getMovement() { return this.movement; }
 		public void setMovement(DirectionalUtil.Movement m) { this.movement = m; }
 
-	/**Players incoming damage modifiers. Format ZOMBIE-1.25 */
-	private List<String> weaknessModifiers;
-		public List<String> getWeaknessModifiers() { return this.weaknessModifiers; }
-		public void setWeaknessModifiers(List<String> l) { this.weaknessModifiers = l; }
-
-	/**Players outgoing damage modifiers. Format ZOMBIE-1.25 */
-	private List<String> damageModifiers;
-		public List<String> getDamageModifiers() { return this.damageModifiers; }
-		public void setDamageModifiers(List<String> l) { this.damageModifiers = l; }
+	/**Players damage modifiers*/
+	private List<Modifier> damageModifiers;
+		public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
+		public void setDamageModifiers(List<Modifier> l) { this.damageModifiers = l; }
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;

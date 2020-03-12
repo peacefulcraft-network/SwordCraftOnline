@@ -6,8 +6,6 @@ import java.util.List;
  * Interface for players and mobs that implement
  * outgoing and incoming damage modifiers.
  */
-public interface IStrengthWeakness {
-    List<String> getDamageModifiers();
-
-    List<String> getWeaknessModifiers();
+public interface IDamageModifier {
+    List<Modifier> getDamageModifiers();
 }
