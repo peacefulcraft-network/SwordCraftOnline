@@ -31,6 +31,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.particles.math.Transforms;
 import net.peacefulcraft.sco.particles.util.ConfigUtils;
 import net.peacefulcraft.sco.particles.util.Disposable;
@@ -186,7 +187,7 @@ public class EffectManager implements Disposable {
                 effectClasses.put(effectClass, effectLibClass);
             }
         } catch (Throwable ex) {
-            onError("Error loading EffectLib class: " + effectClass, ex);
+            SwordCraftOnline.logSevere("Attempted to load effect class: " + effectClass);
             return null;
         }
 
@@ -195,7 +196,7 @@ public class EffectManager implements Disposable {
             Constructor constructor = effectLibClass.getConstructor(EffectManager.class);
             effect = (Effect) constructor.newInstance(this);
         } catch (Exception ex) {
-            onError("Error loading EffectLib class: " + effectClass, ex);
+            SwordCraftOnline.logSevere("Attempted to load effect class: " + effectClass);
         }
 
         return effect;
