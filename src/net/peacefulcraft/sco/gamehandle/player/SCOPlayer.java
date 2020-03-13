@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -108,6 +109,7 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 	private List<Modifier> damageModifiers;
 		public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
 		public void setDamageModifiers(List<Modifier> l) { this.damageModifiers = l; }
+		public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
@@ -115,11 +117,14 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		floor = 0; //TODO: Load this from scopData
 		
 		scopData = new PlayerDataManager(this);
+
+		this.damageModifiers = new ArrayList<Modifier>();
 		
 		swordSkillManager = new SwordSkillManager(this);
 		
 		inventoryManager = new InventoryManager(this);
 		inventoryManager.fetchInventory(InventoryType.SWORD_SKILL);
+
 	}
 
 	/**True if player can perform left click */

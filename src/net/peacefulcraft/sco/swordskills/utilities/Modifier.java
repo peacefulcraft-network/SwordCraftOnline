@@ -5,17 +5,15 @@ import java.util.List;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
-import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
-import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 
 /**
  * Class for damage modifiers. Used in calculations of damage in an
@@ -94,6 +92,7 @@ public class Modifier {
         this.type = ModifierType.get(split[0]);
         this.multiplier = Double.valueOf(split[1]);
         this.mType = MultiplierType.get(split[2]);
+        this.strength = strength;
     }
 
     /**
@@ -105,6 +104,11 @@ public class Modifier {
     public double calculate(EntityDamageEvent e) {
         double d = e.getDamage();
         Entity ent = e.getEntity();
+
+        //Event is caused by entity
+        if(e.getCause().equals(DamageCause.ENTITY_ATTACK) && e instanceof EntityDamageByEntityEvent) {
+            d = calculateByEntity((EntityDamageByEntityEvent)e);
+        }
         //Victim is mythic mob
         if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
             //Checking if modifier type matches damage type
@@ -124,25 +128,34 @@ public class Modifier {
     /**
      * Calculations done specifically for EntityDamageEntity only
      */
-    public double calculate(EntityDamageByEntityEvent e) {
+    private double calculateByEntity(EntityDamageByEntityEvent e) {
         Entity ent;
         double d = e.getDamage();
-        if(strength) {
+        if(this.strength) {
             //Outgoing damage
             ent = e.getEntity();    
         } else {
             //Incoming damage
             ent = e.getDamager();
         }
+
+        if(ent == null) {
+            SwordCraftOnline.logSevere("Attempted to calculate damage for invalid modifier.");
+        }
+
         //Victim is mythic mob
         if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
+
             MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMobInstance(ent);
+            Entity amBukkit = am.getEntity().getBukkitEntity();
+
             //Mob is boss
             if(mm.usesBossBar() && this.type == ModifierType.BOSS) {
                 d = internalCalc(e);
             }
             //Mob matches modifier.type
-            if(mm.getMobType() == (MythicEntity.getMythicEntity(MythicEntityType.get(this.type.toString())))) {
+            if(amBukkit.getType().equals(EntityType.valueOf(this.type.toString()))) {
                 d = internalCalc(e);
             }
         }
@@ -158,15 +171,13 @@ public class Modifier {
     /**
      * Holds internal calculation of modifier and multiplier type.
      */
-    private double internalCalc(EntityDamageByEntityEvent e) {
-        if(this.mType == MultiplierType.MULTIPLY) { return e.getDamage() * this.multiplier; }
-        return e.getDamage() + this.multiplier;
-    }
-
-    /**
-     * Holds internal calculation of modifier and multiplier type.
-     */
     private double internalCalc(EntityDamageEvent e) {
+        //TODO: Check if redudant cast.
+        if(e instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent ev = (EntityDamageByEntityEvent)e;
+            if(this.mType == MultiplierType.MULTIPLY) { return ev.getDamage() * this.multiplier; }
+            return ev.getDamage() + this.multiplier;
+        }
         if(this.mType == MultiplierType.MULTIPLY) { return e.getDamage() * this.multiplier; }
         return e.getDamage() + this.multiplier;
     }
@@ -174,27 +185,12 @@ public class Modifier {
     /**
      * Static method. Checks list for matching modifier and returns damage.
      */
-    public static double calculateList(List<Modifier> l, Event e) {
-        double d = 0;
-        try{
-            EntityDamageByEntityEvent ev = (EntityDamageByEntityEvent)e;
-            for(Modifier m : l) {
-                d = m.calculate(ev);
-                if(d != 0) { break; }
-            }
-        } catch(Exception ex) {
-            SwordCraftOnline.logSevere("Attempted to load modifier from illegal event argument.");
-            return 0;
-        }
-        try{
-            EntityDamageEvent ev = (EntityDamageEvent)e;
-            for(Modifier m : l) {
-                d = m.calculate(ev);
-                if(d != 0) { break; }
-            }
-        } catch(Exception ex) {
-            SwordCraftOnline.logSevere("Attempted to load modifier from illegal event argument.");
-            return 0;
+    public static double calculateList(List<Modifier> l, EntityDamageEvent e) {
+        double d = e.getDamage();
+        for(Modifier m : l) {
+            SwordCraftOnline.logDebug(m.getInfo());
+            d = m.calculate(e);
+            if(d != e.getDamage()) { break; }
         }
         return d;
     }
@@ -202,14 +198,23 @@ public class Modifier {
     /**
      * Static method. Checks players damage modifiers directly.
      */
-    public static double calculateList(SCOPlayer s, Event e) {
+    public static double calculateList(SCOPlayer s, EntityDamageEvent e) {
         return calculateList(s.getDamageModifiers(), e);
     }
 
     /**
      * Static method. Checks active mobs damage modifiers directly
      */
-    public static double calculateList(ActiveMob am, Event e) {
+    public static double calculateList(ActiveMob am, EntityDamageEvent e) {
         return calculateList(am.getDamageModifiers(), e);
+    }
+
+    private String getInfo() {
+        String s = "[Modifier Info]: ";
+        s += "[Modifier Type] " + this.type.toString() + " ";
+        s += "[Modification Type] " + this.mType.toString() + " ";
+        s += "[Multiplier] " + String.valueOf(this.multiplier) + " ";
+        s += "[Strength] " + String.valueOf(this.strength);
+        return s;
     }
 }
