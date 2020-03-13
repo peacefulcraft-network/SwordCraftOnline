@@ -92,7 +92,7 @@ public abstract class SwordSkill {
 		modules.addAll( (Collection) primaryListeners);
 
 		for(SwordSkillType type : supportListeners.keySet()) {
-			modules.addAll((Collection) supportListeners);
+			modules.addAll((Collection) supportListeners.get(type));
 		}
 
 		return Collections.unmodifiableList(modules);
