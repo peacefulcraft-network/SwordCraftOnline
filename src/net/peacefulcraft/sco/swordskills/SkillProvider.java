@@ -86,7 +86,7 @@ public abstract class SkillProvider{
 		item.setItemMeta(meta);
 		
 		NBTItem nbti = new NBTItem(item);
-		nbti.setString("tier", tier.toString());
+		nbti.setString("tier", tier.toString().toUpperCase());
 		nbti.setInteger("skill_level", level);
 		nbti.setBoolean("movable", true);
 		nbti.setBoolean("dropable", false);
@@ -99,7 +99,7 @@ public abstract class SkillProvider{
 	 * Register SwordSkills to S's SwordSkillManager
 	 * @param s: SCOPlayer to register skill listeners to
 	 */
-	public abstract void registerSkill(SCOPlayer s);
+	public abstract void registerSkill(SwordSkillCaster c);
 
 	/**
 	 * Used to set lore by tier.

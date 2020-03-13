@@ -9,8 +9,8 @@ public class CriticalStrikeSkill extends SwordSkill{
 	
 	private double damageToDeal;
 	
-	public CriticalStrikeSkill(SCOPlayer s, long delay, SkillProvider provider, int hitsToTrigger, double damageToDeal) {
-		super(s, delay, provider);
+	public CriticalStrikeSkill(SwordSkillCaster c, long delay, SkillProvider provider, int hitsToTrigger, double damageToDeal) {
+		super(c, delay, provider);
 		setupComboTracking(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger);
 		
 		this.damageToDeal = damageToDeal;

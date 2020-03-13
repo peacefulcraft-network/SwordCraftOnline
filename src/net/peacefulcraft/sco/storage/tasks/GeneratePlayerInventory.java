@@ -31,7 +31,7 @@ public class GeneratePlayerInventory extends BukkitRunnable{
 	
 	@Override
 	public void run() {
-		
+		SwordCraftOnline.logDebug("Generating player " + t + " for " + this.s.getUUID());
 		/*
 		 * Task can be queued my an async task and it is possible the player disconnected while the
 		 * async task was executing so we need to make sure the player is still connected.
@@ -48,7 +48,7 @@ public class GeneratePlayerInventory extends BukkitRunnable{
 			// Generate & add the item to list for the inventory
 			items.put(identifier.getInventoryLocation(), provider.getItem());
 		}
-		
+
 		switch(t) {
 		case SWORD_SKILL:
 			SwordSkillInventory inv = new SwordSkillInventory(s, items, 9);

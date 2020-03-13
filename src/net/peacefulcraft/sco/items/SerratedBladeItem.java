@@ -7,11 +7,11 @@ import org.bukkit.Material;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.SerratedBladeSkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
+import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
- * Common Serrated Blade - Quartz
- * Increases players critical hit chance.
+ * Common Serrated Blade - Quartz Increases players critical hit chance.
  */
 public class SerratedBladeItem extends SkillProvider {
     
@@ -23,13 +23,14 @@ public class SerratedBladeItem extends SkillProvider {
     }
 
     @Override
-    public void registerSkill(SCOPlayer s) 
-    {
+    public void registerSkill(SwordSkillCaster s) {
+        SCOPlayer sp = s.getSwordSkillManager().getPlayer();
+        
         setModifiers();
 
-        s.setCriticalChance(s.getCriticalChance() + this.increase);
+        sp.setCriticalChance(sp.getCriticalChance() + this.increase);
 
-        SerratedBladeSkill sb = new SerratedBladeSkill(s, -1, (SkillProvider) this, this.increase);
+        SerratedBladeSkill sb = new SerratedBladeSkill(sp, -1, (SkillProvider) this, this.increase);
         s.getSwordSkillManager().registerSkill(SwordSkillType.PASSIVE, sb);
     }
 
