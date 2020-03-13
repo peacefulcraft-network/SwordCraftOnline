@@ -19,6 +19,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
@@ -301,6 +302,25 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					//TODO: Add support for mob
 				}
+			}
+
+			if(args[0].equalsIgnoreCase("particletest")) {
+				Player p = (Player)sender;
+				if(args[1].isEmpty()) {
+					p.sendMessage("Please enter valid particle.");
+				}
+				SwordCraftOnline.logInfo("Loading " + args[1] + " particle...");
+				Effect effect = SwordCraftOnline.getEffectManager().getEffectByClassName(args[1]);
+				if(effect == null) { 
+					SwordCraftOnline.logSevere("Attempted to load invalid particle.");
+					return true;
+				}
+				effect.setTargetPlayer(p);
+				effect.setLocation(p.getLocation());
+				effect.start();
+				SwordCraftOnline.logInfo("Particle started...");
+
+				return true;
 			}
 		}
 		return false;

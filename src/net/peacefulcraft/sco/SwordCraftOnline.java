@@ -5,6 +5,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.peacefulcraft.sco.commands.SCOAdmin;
@@ -26,6 +28,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
+import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
@@ -61,6 +64,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	private MobManager mobManager;
 		public MobManager getMobManager() { return this.mobManager; }
+
+	private static EffectManager effectManager;
+		public static EffectManager getEffectManager() { return effectManager; }
 	
 	public SwordCraftOnline() {
 
@@ -89,6 +95,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.server = (ServerInterface)new BukkitServer();
 		this.dropManager = new DropManager(this);
 		this.mobManager = new MobManager(this);
+
+		effectManager = new EffectManager(this);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
@@ -103,6 +111,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		hikari.close();
 		this.getLogger().info("Database connection closed.");
+
+		effectManager.dispose();
+		this.getLogger().info("Effect Manager disposed.");
 		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
