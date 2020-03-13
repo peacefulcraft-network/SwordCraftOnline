@@ -315,7 +315,7 @@ public class SCOAdmin implements CommandExecutor {
 					SwordCraftOnline.logSevere("Attempted to load invalid particle.");
 					return true;
 				}
-				effect.setTargetPlayer(p);
+				//effect.setTargetPlayer(p);
 				effect.setLocation(p.getLocation());
 				effect.start();
 				SwordCraftOnline.logInfo("Particle started...");
