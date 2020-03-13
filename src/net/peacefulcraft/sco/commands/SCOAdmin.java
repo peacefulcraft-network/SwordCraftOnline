@@ -21,6 +21,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
@@ -300,9 +301,7 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					//TODO: Add support for mob
 				}
-				
 			}
-
 		}
 		return false;
 	}

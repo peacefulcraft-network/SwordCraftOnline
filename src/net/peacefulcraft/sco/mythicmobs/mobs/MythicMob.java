@@ -29,11 +29,13 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
+import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Holds custom mob data read from YML in mob mananger.
  */
-public class MythicMob implements Comparable<MythicMob> {
+public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     /**File name */
     private String file;
         /**Returns String of mob file name */
@@ -215,14 +217,12 @@ public class MythicMob implements Comparable<MythicMob> {
             /**Returns mob equipment droptable */
         public DropTable getEquipmentTable() { return this.equipmentTable; }
 
-    /**Mob damage weakness modifiers. I.e. fire */
-    private List<String> damageModifiers;
-
-    /** Mob damage modifiers. I.e. strong against zombies*/
-    private List<String> entityDamageModifiers;
-
-    /**Mob damage weakness modifiers. I.e. weak to zombies */
-    private List<String> entityWeaknessModifiers;
+    /**
+     * Mob damage modifiers.
+     */
+    private List<Modifier> damageModifiers;
+        /**Returns mobs damage modifiers */
+        public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
 
     private List<String> levelmods;
 
@@ -844,6 +844,10 @@ public class MythicMob implements Comparable<MythicMob> {
         return am;
     }
 
+    /**
+     * Returns if mob uses boss bar.
+     * Use this to determine if mob is boss or not.
+     */
     public boolean usesBossBar() {
         return this.useBossBar;
     }
@@ -939,12 +943,8 @@ public class MythicMob implements Comparable<MythicMob> {
         return this.optionInvincible;
     }
       
-    public List<String> getDamageModifiers() {
+    public List<Modifier> getEntityDamageModifiers() {
         return this.damageModifiers;
-    }
-      
-    public List<String> getEntityDamageModifiers() {
-        return this.entityDamageModifiers;
     }
       
     public List<String> getLevelModifiers() {

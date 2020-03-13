@@ -131,7 +131,7 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);
-	
+
 		/**
 		 * The Inventories manage their own event listeners
 		 */
