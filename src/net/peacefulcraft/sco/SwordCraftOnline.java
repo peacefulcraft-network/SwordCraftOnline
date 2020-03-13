@@ -20,7 +20,6 @@ import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.MobTarget;
 import net.peacefulcraft.sco.gamehandle.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
-import net.peacefulcraft.sco.gamehandle.listeners.TestDamageEvent;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
