@@ -14,6 +14,11 @@ import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates a globe
+ * Modifiers: Particle types, precision, particles to form world, radius,
+ * mountain height
+ */
 public class EarthEffect extends Effect {
     public Particle particle1 = Particle.VILLAGER_HAPPY;
     public Particle particle2 = Particle.DRIP_WATER;

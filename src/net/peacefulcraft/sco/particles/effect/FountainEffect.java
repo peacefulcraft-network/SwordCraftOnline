@@ -9,6 +9,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates a water fountain
+ * Modifieres: Particle type, strand #, particles per strand, particles in spout,
+ * radius, height, height of spout
+ */
 public class FountainEffect extends Effect {
 
     /**

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,8 @@ import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.effect.AnimatedBallEffect;
+import net.peacefulcraft.sco.particles.effect.ArcEffect;
+import net.peacefulcraft.sco.particles.effect.AtomEffect;
 import net.peacefulcraft.sco.particles.effect.BleedEffect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
@@ -265,9 +268,24 @@ public class SCOAdmin implements CommandExecutor {
 				}
 				SwordCraftOnline.logInfo("Loading " + args[1] + " particle...");
 				Effect effect = SwordCraftOnline.getEffectManager().getEffectByClassName(args[1]);
-				effect.setEntity(p);
-				//effect.iterations = 20;
-				//SwordCraftOnline.logInfo("Particle starting..."); 
+				/*
+				if(effect instanceof ArcEffect) {
+					SwordCraftOnline.logInfo("Particle is Arc Effect instance");
+					ArcEffect arc = (ArcEffect)effect;
+					arc.setLocation(p.getLocation());
+					arc.setTargetLocation(p.getLocation().add(10,0,5));
+					arc.height = 3;
+					arc.setTargetPlayer(p);
+					arc.start();
+				} else if(effect instanceof AtomEffect) {
+					SwordCraftOnline.logInfo("Particle is Atom Effect instance");
+					AtomEffect atom = (AtomEffect)effect;
+					atom.setTargetPlayer(p);
+					atom.setLocation(p.getLocation());
+					atom.start();
+				}*/
+				effect.setTargetPlayer(p);
+				effect.setLocation(p.getLocation());
 				effect.start();
 				SwordCraftOnline.logInfo("Particle started...");
 

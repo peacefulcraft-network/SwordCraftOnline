@@ -11,6 +11,11 @@ import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates DNA helix. Default is player looking direction.
+ * Modifiers: Helix/base1/base2 particle types, radius, particles per helix,
+ * particles per base, length of helix, growth
+ */
 public class DnaEffect extends Effect {
 
     /**

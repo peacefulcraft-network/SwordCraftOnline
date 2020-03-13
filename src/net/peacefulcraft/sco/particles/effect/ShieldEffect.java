@@ -9,6 +9,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates dome around location.
+ * Modifiers: particle type, radius, particles to displau,
+ * sphere.
+ */
 public class ShieldEffect extends Effect {
 
     /**

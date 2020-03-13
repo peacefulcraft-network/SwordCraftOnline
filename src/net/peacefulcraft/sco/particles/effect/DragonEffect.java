@@ -14,6 +14,11 @@ import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates "dragon fire breath"
+ * Modifiers: Particle type, pitch, arcs to build breathe, particles per arc,
+ * length
+ */
 public class DragonEffect extends Effect {
 
     protected final List<Float> rndF;

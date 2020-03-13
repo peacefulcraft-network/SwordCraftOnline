@@ -8,6 +8,9 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Spawns smoke on location
+ */
 public class SmokeEffect extends Effect {
 
     /**

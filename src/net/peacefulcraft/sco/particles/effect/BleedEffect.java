@@ -8,6 +8,9 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Modifiers: effect.setPlayer()
+ */
 public class BleedEffect extends net.peacefulcraft.sco.particles.Effect {
 
     /**

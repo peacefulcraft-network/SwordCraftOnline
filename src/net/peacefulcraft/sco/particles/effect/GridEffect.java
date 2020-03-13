@@ -9,6 +9,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates grid of particles
+ * Modifiers: particle type, rows, columns, width, height,
+ * particle width, particle height, rotation on Y
+ */
 public class GridEffect extends Effect {
 
     /**

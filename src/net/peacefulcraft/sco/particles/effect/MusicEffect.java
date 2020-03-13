@@ -7,6 +7,9 @@ import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 
+/**
+ * Creates music effect over location.
+ */
 public class MusicEffect extends Effect {
     public Particle particle = Particle.NOTE;
 

@@ -7,6 +7,11 @@ import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 
+/**
+ * Creates cylinder that encases location
+ * Modifiers: radius, particles per circle, particle type,
+ * interval of cricles, ring #
+ */
 public class WarpEffect extends Effect {
 
     /**

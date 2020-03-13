@@ -9,6 +9,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates sphere on location
+ * Modifiers: Particle type, radius, yoffset, particle count
+ * radius increase per tick
+ */
 public class SphereEffect extends Effect {
 
     /**

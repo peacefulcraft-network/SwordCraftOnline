@@ -11,6 +11,11 @@ import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates atom effect with orbitals.
+ * Modifiers: Nucleus/orbital particles, nucleus/orbital radius, 
+ * # of particles in nucleus/orbitals, Rotate around y-axis, velocity of orbitals
+ */
 public class AtomEffect extends Effect {
 
     /**

@@ -15,6 +15,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 
+/**
+ * Creates given string in particles
+ * Modifiers: particle type, Text, invert, 
+ */
 public class TextEffect extends Effect {
 
     /**

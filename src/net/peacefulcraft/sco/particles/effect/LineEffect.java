@@ -8,6 +8,11 @@ import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 
+/**
+ * Creates line connecting two points. Can zig zag
+ * Modifiers: particle type, isZigZag, # of zags, particles per arc,
+ * length, 
+ */
 public class LineEffect extends Effect {
 
     /**

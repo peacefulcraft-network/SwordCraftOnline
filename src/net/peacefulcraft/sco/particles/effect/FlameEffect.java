@@ -9,6 +9,10 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates body of flames
+ * Modifiers: iterations
+ */
 public class FlameEffect extends Effect {
 
     public Particle particle = Particle.FLAME;

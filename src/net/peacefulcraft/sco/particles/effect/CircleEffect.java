@@ -9,6 +9,10 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates a circle
+ * Modifiers: Particle type, radius, xyz rotation.
+ */
 public class CircleEffect extends Effect {
 
 

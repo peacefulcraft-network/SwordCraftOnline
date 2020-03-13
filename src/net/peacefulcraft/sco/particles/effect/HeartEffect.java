@@ -10,9 +10,9 @@ import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
 /**
- * Creates a 2D Heart in 3D space. Thanks to the author for sharing it!
- *
- * @author <a href="http://forums.bukkit.org/members/qukie.90952701/">Qukie</a>
+ * Creates a 2D Heart in 3D space. 
+ * Modifiers: particle type, particles per iteration, xyz rotation,
+ * stretch/compress on x/y, size of inner string (\/), 
  */
 public class HeartEffect extends Effect {
 

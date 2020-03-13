@@ -8,6 +8,9 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates love hearts above location
+ */
 public class LoveEffect extends Effect {
 
     /**

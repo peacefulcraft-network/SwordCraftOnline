@@ -13,6 +13,11 @@ import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates cylinder
+ * Modifiers: particle type, radius, height, particles per row, 
+ * enable rotation, solid.
+ */
 public class CylinderEffect extends Effect {
 
     /**

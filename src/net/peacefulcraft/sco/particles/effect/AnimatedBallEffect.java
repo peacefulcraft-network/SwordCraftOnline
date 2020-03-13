@@ -11,10 +11,7 @@ import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
 /**
- * Creates an animated Sphere.. Thanks to the author for sharing it!
- * https://www.youtube.com/watch?feature=player_embedded&v=RUjIw_RprRw
- *
- * @author <a href="http://forums.bukkit.org/members/qukie.90952701/">Qukie</a>
+ * Creates an animated sphere that spirals around set location.
  */
 public class AnimatedBallEffect extends Effect {
 

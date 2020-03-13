@@ -10,6 +10,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates smoke cloud that drips water.
+ * Cloud rises into air each step.
+ * Modifiers: cloud size, y offset
+ */
 public class CloudEffect extends Effect {
 
     /*

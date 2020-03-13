@@ -9,6 +9,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates rotating cube
+ * Modifiers: Particletype, edgelength, particles per row, enable rotation,
+ * outlineonly, 
+ */
 public class CubeEffect extends Effect {
 
     /**

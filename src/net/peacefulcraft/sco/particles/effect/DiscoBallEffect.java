@@ -10,6 +10,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates discoball with trailing lasers downward.
+ * Modifiers: Radius, max line size, sphere particle, line particle
+ * max line number, direction of lines.
+ */
 public class DiscoBallEffect extends Effect {
 
     /**

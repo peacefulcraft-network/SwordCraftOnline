@@ -10,6 +10,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.particles.EffectManager;
 
 public abstract class ParticleDisplay {
@@ -37,6 +38,7 @@ public abstract class ParticleDisplay {
             if (manager != null) {
                 manager.onError(ex);
             }
+            SwordCraftOnline.logSevere("Attempted to display invalid particle.");
         }
     }
 
@@ -73,17 +75,6 @@ public abstract class ParticleDisplay {
     }
 
     public static ParticleDisplay newInstance() {
-        ParticleDisplay display = new ParticleDisplay(){
-        
-                @Override
-                public void display(Particle particle, Location center, float offsetX, float offsetY, float offsetZ,
-                        float speed, int amount, float size, Color color, Material material, byte materialData, double range,
-                        List<Player> targetPlayers) {
-                    // TODO Auto-generated method stub
-                    
-                }
-        };
-        
-        return display;
+        return new ParticleDisplay13();
     }
 }

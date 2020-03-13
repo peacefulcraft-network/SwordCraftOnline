@@ -12,6 +12,12 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates tornado
+ * Modifiers: tornado/cloud particle types, cloud size, y offset,
+ * tornado height, max radius of tornado, showcloud, show tornado,
+ * distance between rows, particles per circle, circle height
+ */
 public class TornadoEffect extends Effect {
 
     /*

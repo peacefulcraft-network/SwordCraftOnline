@@ -7,6 +7,10 @@ import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 
+/**
+ * Puts icon effect over player.
+ * Modifiers: particle type, y offset
+ */
 public class IconEffect extends Effect {
 
     /**

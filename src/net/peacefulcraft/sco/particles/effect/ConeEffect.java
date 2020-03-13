@@ -11,6 +11,10 @@ import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates conical spiral from location. Default is player looking direction.
+ * Modifiers: particle type, grow length, particles per iteration, 
+ */
 public class ConeEffect extends Effect {
 
     /**

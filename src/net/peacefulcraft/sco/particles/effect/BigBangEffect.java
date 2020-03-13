@@ -15,6 +15,10 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 
+/**
+ * Creates cluster of firework explosions of varying colors with sound.
+ * Modifiers: Colors1-3, radius, intensity, volume, sound interval
+ */
 public class BigBangEffect extends Effect {
 
     public FireworkEffect.Type fireworkType = FireworkEffect.Type.BURST;

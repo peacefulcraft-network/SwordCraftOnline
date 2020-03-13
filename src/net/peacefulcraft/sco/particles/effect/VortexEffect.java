@@ -10,6 +10,11 @@ import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates vortex of particles moving in location direction
+ * Modifiers: particle type, radius, growth, circles per iteration,
+ * helixes
+ */
 public class VortexEffect extends Effect {
 
     /**

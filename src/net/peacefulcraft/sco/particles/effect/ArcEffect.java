@@ -4,10 +4,15 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 
+/**
+ * Creates parabolic arc between two locations.
+ * Modifiers: Start/End Location, Height, Particle count, Target Player.
+ */
 public class ArcEffect extends Effect {
 
     /**
@@ -48,6 +53,7 @@ public class ArcEffect extends Effect {
         Location target = getTarget();
         if (target == null) {
             cancel();
+            SwordCraftOnline.logInfo("Attempted to spawn Arc Effect with invalid target location. Null.");
             return;
         }
         Vector link = target.toVector().subtract(location.toVector());
@@ -59,6 +65,7 @@ public class ArcEffect extends Effect {
             float y = (float) (-pitch * Math.pow(x, 2) + height);
             location.add(v).add(0, y, 0);
             display(particle, location);
+            //getTargetPlayer().spawnParticle(this.particle, location, 1);
             location.subtract(0, y, 0).subtract(v);
 
             step++;

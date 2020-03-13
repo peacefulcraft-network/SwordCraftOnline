@@ -10,9 +10,9 @@ import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
 /**
- * Taken from http://en.wikipedia.org/wiki/Torus
- *
- * @author Kevin
+ * Creates 3d hill ontop of 2d square base.
+ * Modifiers: particle type, height, particles per row,
+ * edge length
  */
 public class HillEffect extends Effect {
 

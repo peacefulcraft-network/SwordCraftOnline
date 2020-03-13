@@ -11,6 +11,11 @@ import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.RandomUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates 3d star effect
+ * Modifiers: particle type, particles per spike, spike height
+ * spike half #, inner radius
+ */
 public class StarEffect extends Effect {
 
     /**

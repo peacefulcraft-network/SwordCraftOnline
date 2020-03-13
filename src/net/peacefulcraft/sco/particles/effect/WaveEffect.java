@@ -14,6 +14,12 @@ import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.MathUtils;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates water wave
+ * Modifiers: wave/cloud particle type, particles forming tube
+ * particles forming back, rows of wave, legnth front/back of wave,
+ * depth of parabola tube, height, width
+ */
 public class WaveEffect extends Effect {
 
     public Particle particle = Particle.DRIP_WATER;

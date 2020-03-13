@@ -9,6 +9,11 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 import net.peacefulcraft.sco.particles.util.VectorUtils;
 
+/**
+ * Creates donut effect.
+ * Modifiers: particle type, # of particles inside of a circle,
+ * # of circles to build the torus, radius of donut, radius of hole
+ */
 public class DonutEffect extends Effect {
 
     /**

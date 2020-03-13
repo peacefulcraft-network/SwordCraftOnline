@@ -12,6 +12,10 @@ import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 
+/**
+ * Places single particle on location.
+ * Modifiers: particle type, 
+ */
 public class TraceEffect extends Effect {
 
     /**

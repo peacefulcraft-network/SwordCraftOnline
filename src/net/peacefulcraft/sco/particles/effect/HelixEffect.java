@@ -7,6 +7,11 @@ import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.particles.EffectType;
 
+/**
+ * Creates spiraling 2d helix
+ * Modifiers: particle type, strands, particles per strand,
+ * radius, curve
+ */
 public class HelixEffect extends Effect {
 
     /**
