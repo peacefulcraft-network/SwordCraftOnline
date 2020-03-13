@@ -172,14 +172,8 @@ public class Modifier {
      * Holds internal calculation of modifier and multiplier type.
      */
     private double internalCalc(EntityDamageEvent e) {
-        //TODO: Check if redudant cast.
-        if(e instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent ev = (EntityDamageByEntityEvent)e;
-            if(this.mType == MultiplierType.MULTIPLY) { return ev.getDamage() * this.multiplier; }
-            return ev.getDamage() + this.multiplier;
-        }
-        if(this.mType == MultiplierType.MULTIPLY) { return e.getDamage() * this.multiplier; }
-        return e.getDamage() + this.multiplier;
+        if(this.mType == MultiplierType.MULTIPLY) { return e.getFinalDamage() * this.multiplier; }
+        return e.getFinalDamage() + this.multiplier;
     }
 
     /**

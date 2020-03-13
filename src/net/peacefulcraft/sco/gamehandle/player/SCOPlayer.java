@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -107,9 +108,10 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 
 	/**Players damage modifiers*/
 	private List<Modifier> damageModifiers;
-		public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
+		public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
 		public void setDamageModifiers(List<Modifier> l) { this.damageModifiers = l; }
 		public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
+		public void removeDamageModifier(Modifier m) { this.damageModifiers.remove(m); }
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
