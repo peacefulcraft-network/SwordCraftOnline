@@ -3,9 +3,11 @@ package net.peacefulcraft.sco.mythicmobs.mobs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -18,11 +20,14 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.utilities.IDamage;
+import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Active instance of Mythicmob
  */
-public class ActiveMob implements SwordSkillCaster {
+public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
     
     private long aliveTime = 0L;
     
@@ -114,6 +119,15 @@ public class ActiveMob implements SwordSkillCaster {
         public SwordSkillManager getSwordSkillManager() { return this.swordSkillManager; }
 
     /**
+     * Initially copied from MythicMob file. 
+     * Stored again here for dynamic Modifiers based on sword skills as to
+     * not directly edit the Mythic Mob instance.
+     */
+    private List<Modifier> damageModifiers;
+        public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
+        public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
+
+    /**
      * Initializes active mob instance.
      * @param e Abstract entity
      * @param type Mob type read from Mythic Mob
@@ -134,6 +148,8 @@ public class ActiveMob implements SwordSkillCaster {
         }
 
         this.swordSkillManager = new SwordSkillManager(this);
+
+        this.damageModifiers = type.getDamageModifiers();
     }
 
     public void tick(int c) {
@@ -260,6 +276,133 @@ public class ActiveMob implements SwordSkillCaster {
             //TODO: Handling death events and skills.
         }
         unregister();
+    }
+
+    @Override
+    /**Returns active mobs attack damage attribute */
+    public double getAttackDamage() {
+        return getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue();
+    }
+
+    @Override
+    /**
+     * Sets active mobs attack damage attribute.
+     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     */
+    public void setAttackDamage(double mod, boolean multiply) {
+        if(multiply) {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod); 
+		}
+    }
+
+    @Override
+    /**Returns active mobs movement speed attribute */
+    public double getMovementSpeed() {
+        return getLivingEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
+    }
+
+    @Override
+    /**
+     * Sets active mobs movement speed attribute.
+     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     */
+    public void setMovementSpeed(double mod, boolean multiply) {
+        if(multiply) {
+			getLivingEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getLivingEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod); 
+		}
+    }
+
+    @Override
+    /**Returns active mobs max health attribute */
+    public double getMaxHealth() {
+        return getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+    }
+
+    @Override
+    /**
+     * Sets active mobs max helth attribute.
+     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     */
+    public void setMaxHealth(double mod, boolean multiply) {
+        if(multiply) {
+			getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod); 
+		}
+    }
+
+    @Override
+    /**Returns active mobs attack speed */
+    public double getAttackSpeed() {
+        return getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_SPEED).getBaseValue();
+    }
+
+    @Override
+    /**
+     * Sets active mobs attack speed attribute.
+     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     */
+    public void setAttackSpeed(double mod, boolean multiply) {
+        if(multiply) {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod); 
+		}
+    }
+
+    @Override
+    /**Returns active mobs knockback resistance */
+    public double getKnockResist() {
+        return getLivingEntity().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getBaseValue();
+    }
+
+    @Override
+    /**
+     * Sets active mobs knockback resistance attribute.
+     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     */
+    public void setKnockResist(double mod, boolean multiply) {
+        if(multiply) {
+			getLivingEntity().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getLivingEntity().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod); 
+		}
+    }
+
+    @Override
+    /**
+     * Sets active mobs armor attribute.
+     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     */
+    public void setArmor(double mod, boolean multiply) {
+        if(multiply) {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod); 
+		}
+    }
+
+    @Override
+    /**Returns active mobs armor toughness attribute */
+    public double getArmorToughness() {
+        return getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).getBaseValue();
+    }
+
+    @Override
+    /**
+     * Sets active mobs armor toughness attribute.
+     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     */
+    public void setArmorToughness(double mod, boolean multiply) {
+        if(multiply) {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod * getAttackDamage()); 
+		} else {
+			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod); 
+		}
     }
 }
 

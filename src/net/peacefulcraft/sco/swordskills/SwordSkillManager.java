@@ -167,6 +167,7 @@ public class SwordSkillManager
 			for(SwordSkill registeredSkill : getSkills()) {
 				if(registeredSkill == skill) {
 					((SwordSkill) skill).destroy();
+					skill.unregisterSkill();
 					skill.destroy();
 					return;
 				}

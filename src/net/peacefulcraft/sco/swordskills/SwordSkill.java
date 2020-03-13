@@ -66,8 +66,9 @@ public abstract class SwordSkill
 	}
 	
 	/**
-	 * Physical conditions required for skill to activate.
-	 * IE: Items being held, player location. NOT combo logic or timers
+	 * This should contain logic to check whether a Player is trying to activate one skill or another.
+	 * Things like check item names, player location, etc. Once it is known that the player is definently
+	 * trying to use this skill, return true and handle combo / timer thresholds in canUseSkill().
 	 * @param Event
 	 * @return boolean if can trigger
 	 */
@@ -94,6 +95,13 @@ public abstract class SwordSkill
 	 * Also a good place to handle things like adding exhaustion
 	 */
 	public abstract void markSkillUsed();
+
+
+	/**
+	 * Used in unregistering passive effects.
+	 * Applicable to player data changes, potion effects, etc.
+	 */
+	public abstract void unregisterSkill();
 
 	
 /**************************************************************************

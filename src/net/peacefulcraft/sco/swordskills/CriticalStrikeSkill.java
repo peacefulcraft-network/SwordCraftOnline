@@ -24,19 +24,24 @@ public class CriticalStrikeSkill extends SwordSkill{
 	}
 
 	@Override
+	public boolean canUseSkill() {
+		// No extra checks required
+		return true;
+	}
+	
+	@Override
 	public void triggerSkill(Event ev) {
 		EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
 		ede.setDamage( ede.getDamage() + damageToDeal);
 	}
 
 	@Override
-	public boolean canUseSkill() {
-		// No extra checks required
-		return true;
+	public void markSkillUsed() {
+		// No cleanup steps required		
 	}
 
 	@Override
-	public void markSkillUsed() {
-		// No cleanup steps required		
+	public void unregisterSkill() {
+		// No player data changes. No unregister.
 	}
 }

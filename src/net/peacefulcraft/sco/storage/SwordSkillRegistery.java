@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.CriticalStrikeItem;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.SkillIdentifier;

@@ -86,7 +86,7 @@ public abstract class SkillProvider{
 		item.setItemMeta(meta);
 		
 		NBTItem nbti = new NBTItem(item);
-		nbti.setString("tier", tier.toString());
+		nbti.setString("tier", tier.toString().toUpperCase());
 		nbti.setInteger("skill_level", level);
 		nbti.setBoolean("movable", true);
 		nbti.setBoolean("dropable", false);

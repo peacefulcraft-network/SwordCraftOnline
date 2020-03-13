@@ -2,14 +2,11 @@ package net.peacefulcraft.sco.mythicmobs.adapters;
 
 import org.bukkit.GameMode;
 import org.bukkit.WeatherType;
-
 import org.bukkit.entity.Entity;
-
 import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractGameMode;
-
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 
 
