@@ -202,7 +202,7 @@ public class SCOAdmin implements CommandExecutor {
 							SwordCraftOnline.logInfo("Spawned " + args[2]);
 							return true;
 						}
-						sender.sendMessage(ChatColor.GREEN + "Error Loading " + args[2] + "Active Mob Instance Null.");
+						sender.sendMessage(ChatColor.GREEN + "Error Loading " + args[2] + " Active Mob Instance Null.");
 						SwordCraftOnline.logInfo("[MOB SPAWN] Active Mob Instance Null");
 						return true;
 					}

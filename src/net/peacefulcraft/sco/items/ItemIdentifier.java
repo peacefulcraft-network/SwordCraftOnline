@@ -26,17 +26,16 @@ public class ItemIdentifier {
     }
 
     public static ItemStack generate(String name) {
-        return generate(name, 1);
+        return generate(name, 1, false);
     }
 
-    public static ItemStack generate(String name, int amount) {
+    public static ItemStack generate(String name, Integer amount, Boolean shop) {
         try {
             name = name.replaceAll(" ", "");
             Class<?> clazz = Class.forName("net.peacefulcraft.sco.items.customitems." + name);
-            Method method = clazz.getMethod("create", int.class);
-            Object[] args = { amount };
+            Method method = clazz.getMethod("create", Integer.class, Boolean.class);
 
-            return (ItemStack) method.invoke(clazz, args);
+            return (ItemStack) method.invoke(clazz, amount, shop);
         } catch (ClassNotFoundException e) {
             SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no corresponding class was found in net.peacefulcraft.sco.items.customitems");
         } catch (NoSuchMethodException e) {
@@ -44,7 +43,12 @@ public class ItemIdentifier {
         } catch (IllegalAccessException e) {
             SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems" + name + " is an abstract class and cannot be instantiated.");
         } catch (InvocationTargetException e) {
-
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " generated exception during reflective instantiation:");
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " received an invalid argument type during insantiation. Arguements must be of type (Integer, Boolean).");
+        } catch (ClassCastException e) {
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " must implement ICustomItem.");
         }
 
         ItemStack item = new ItemStack(Material.FIRE, 1);

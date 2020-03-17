@@ -113,6 +113,39 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
 		public void removeDamageModifier(Modifier m) { this.damageModifiers.remove(m); }
 
+	/**Players private bank */
+	private int bank;
+		public void depositBank(int i) { this.bank += i; }
+		public boolean withdrawBank(int i) { 
+			if(this.bank - i < 0) { return false; }
+			this.bank -= i;
+			return true;
+		}
+		/**
+		 * Transfer money from wallet to bank.
+		 * @param into true if moving money from wallet to bank. False is reverse.
+		 * @return false if transfer failed.
+		 */
+		public boolean transfer(int i, boolean into) {
+			if(into && withdrawBank(i)) { 
+				depositBank(i);
+				return true;
+			} else if(!(into) && withdrawBank(i)) {
+				depositBank(i);
+				return true;
+			}
+			return false;
+		}
+	
+	/**Players wallet. Can be stolen. */
+	private int wallet;
+		public void depositWallet(int i) { this.wallet += i; }
+		public boolean withdrawWallet(int i) {
+			if(this.wallet - i < 0) { return false; }
+			this.wallet -= i;
+			return true;
+		}
+
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
 		playerKills = 0;
@@ -127,6 +160,8 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		inventoryManager = new InventoryManager(this);
 		inventoryManager.fetchInventory(InventoryType.SWORD_SKILL);
 
+		//TODO: Remove this and replace with loading the wallet/bank from data
+		this.wallet = 1000;
 	}
 
 	/**True if player can perform left click */

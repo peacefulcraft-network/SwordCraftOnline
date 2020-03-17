@@ -11,6 +11,9 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.NPC;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -369,6 +372,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     protected boolean spawnVelocityZRange = false;
         public boolean isSpawnVelocityZRange() { return this.spawnVelocityZRange; }
 
+    protected String villagerType;
+        public String getVillagerType() { return this.villagerType; }
+
     /**Is mob disguised as player */
     private boolean fakePlayer = false;
         /**Returns if mob is fake player */
@@ -508,16 +514,25 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.aiGSelectors = mc.getStringList("AIGoalSelectors");
         this.aiTSelectors = mc.getStringList("AITargetSelectors");
 
+        if(this.strMobType.equalsIgnoreCase("Villager")) {
+            this.villagerType = mc.getString("VillagerType");
+        }
+
         //Drops, droptables, killmessages
         this.drops = mc.getStringList("Drops");
-        /**Passing to drop table constructor.
+        /**
+         * Passing to drop table constructor.
          * FILE NAMES SHOULD MATCH.
          */
-        if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(this.drops.get(0))) {
-            //Check if Custom drop table loaded from file.
-            this.dropTable = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(this.drops.get(0));
-        } else {
-            this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+        try {
+            if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(this.drops.get(0))) {
+                //Check if Custom drop table loaded from file.
+                this.dropTable = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(this.drops.get(0));
+            } else {
+                this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+            }
+        } catch(IndexOutOfBoundsException ex) {
+            this.dropTable = null;
         }
         this.equipment = mc.getStringList("Equipment");
         List<String> killMessages = mc.getStringList("KillMessages");
@@ -769,6 +784,17 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             }
             if(getDisplayName() != null) {
                 asLiving.setCustomName(am.getDisplayName());
+            }
+
+            //If villager has profession set it. If not nitwit
+            if(e instanceof Villager) {
+                if((!this.villagerType.isEmpty())) {
+                    try {
+                        ((Villager)e).setProfession(Profession.valueOf(this.villagerType));
+                    } catch(IllegalArgumentException ex) {
+                        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Attempted to load invalid villager modifier.");
+                    }
+                }
             }
         }
 
