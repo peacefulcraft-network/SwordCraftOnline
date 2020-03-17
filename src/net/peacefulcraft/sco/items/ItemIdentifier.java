@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.items.customitems.GoldCoin;
 
 public class ItemIdentifier {
     /**Checking if skill exists without creating instance */
