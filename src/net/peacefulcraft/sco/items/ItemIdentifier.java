@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.customitems.GoldCoin;
 
 public class ItemIdentifier {
     /**Checking if skill exists without creating instance */
@@ -34,17 +35,16 @@ public class ItemIdentifier {
             name = name.replaceAll(" ", "");
             Class<?> clazz = Class.forName("net.peacefulcraft.sco.items.customitems." + name);
             Method method = clazz.getMethod("create", Integer.class, Boolean.class);
-
-            return (ItemStack) method.invoke(clazz, amount, shop);
+            
+            return (ItemStack) method.invoke(clazz.cast(clazz.newInstance()), amount, shop);
         } catch (ClassNotFoundException e) {
             SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no corresponding class was found in net.peacefulcraft.sco.items.customitems");
         } catch (NoSuchMethodException e) {
             SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " must have create method.");
         } catch (IllegalAccessException e) {
             SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems" + name + " is an abstract class and cannot be instantiated.");
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | InvocationTargetException e) {
             SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " generated exception during reflective instantiation:");
-            e.printStackTrace();
         } catch (IllegalArgumentException e) {
             SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " received an invalid argument type during insantiation. Arguements must be of type (Integer, Boolean).");
         } catch (ClassCastException e) {
