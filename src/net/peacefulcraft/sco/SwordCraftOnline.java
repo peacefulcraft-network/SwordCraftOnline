@@ -5,8 +5,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.peacefulcraft.sco.commands.SCOAdmin;
@@ -26,6 +24,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
 import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
@@ -140,6 +139,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
 		getServer().getPluginManager().registerEvents(new MobTarget(), this);
 		getServer().getPluginManager().registerEvents(new MobOptions(), this);
+		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
