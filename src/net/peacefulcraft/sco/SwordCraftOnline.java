@@ -25,6 +25,7 @@ import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
 import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
@@ -134,8 +135,11 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
+		
+		//Mythicmob listeners
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
 		getServer().getPluginManager().registerEvents(new MobTarget(), this);
+		getServer().getPluginManager().registerEvents(new MobOptions(), this);
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
