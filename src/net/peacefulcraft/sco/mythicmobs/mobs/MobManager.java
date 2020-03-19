@@ -25,6 +25,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 
@@ -55,14 +56,12 @@ public class MobManager {
         this.mmDisplay.clear();
         this.mmDefault.clear();
         this.mobRegistry.clear();
+        MobSpawnHandler.clearVanillaMobs();
 
         IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         List<File> mobFiles = IOHandler.getAllFiles(defaultMobs.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> mobLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), mobFiles, "Mobs");
-        
-        this.mmList.clear();
-        this.mmDefault.clear();
         
         SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Beginning loading...");
 
@@ -71,6 +70,12 @@ public class MobManager {
                 try {
                     MythicConfig mc = new MythicConfig(name, sl.getFile(), sl.getCustomConfig());
                     String file = sl.getFile().getPath();
+
+                    //Is mob a Vanilla replacement or removal?
+                    if(file.contains("VanillaMobs.yml")) {
+                        MobSpawnHandler.addVanillaMobs(name, mc);
+                        continue;
+                    }
 
                     if(MythicEntity.getMythicEntity(name) != null) {
                         MythicEntityType met = MythicEntityType.get(name);
@@ -224,24 +229,28 @@ public class MobManager {
     
     public int removeAllMobs() {
         int amount = 0;
-        for(Iterator<ActiveMob> itr = getMobRegistry().values().iterator(); itr.hasNext();) {
-            ActiveMob am = itr.next();
+        Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
+        while(iterator.hasNext()) {
+            ActiveMob am = iterator.next();
             if(am.getType().isPersistent()) { continue; }
             am.setDespawned();
-            itr.remove();
             am.getEntity().remove();
+            iterator.remove();
             amount++;
         }
+
         return amount;
     }
 
     public int despawnAllMobs() {
         int amount = 0;
-        for(ActiveMob am : getMobRegistry().values()) {
+        Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
+        while(iterator.hasNext()) {
+            ActiveMob am = iterator.next();
             if((am.getType()).optionDespawn && !am.getType().isPersistent()) {
                 am.setDespawnedSync();
-                SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(am);
                 am.getEntity().remove();
+                iterator.remove();
                 amount++;
             }
         }

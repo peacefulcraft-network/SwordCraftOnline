@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.gamehandle.listeners;
+package net.peacefulcraft.sco.mythicmobs.listeners;
 
 import java.util.HashMap;
 import java.util.Iterator;

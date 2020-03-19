@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.gamehandle.listeners;
+package net.peacefulcraft.sco.mythicmobs.listeners;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
