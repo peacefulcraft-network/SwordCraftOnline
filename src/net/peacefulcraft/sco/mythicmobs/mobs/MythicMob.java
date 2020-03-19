@@ -33,6 +33,8 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.log.Banners;
@@ -489,6 +491,10 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     private int slimeSize;
         public int getSlimeSize() { return this.slimeSize; }
 
+    /**Determines what potion effects are equipped to mob. */
+    private List<String> potionEffects;
+        public List<String> getPotionEffects() { return this.potionEffects; }
+
     protected List<String> killMessages;
 
     public String disguise;
@@ -608,7 +614,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.color = mc.getString("Options.Color", "black");
         //Anger options
         this.angry = mc.getBoolean("Options.Angry", false);
-
+        //PotionEffect handling
+        this.potionEffects = mc.getStringList("PotionEffects");
         
         //Boss Bar Handling
         this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
@@ -899,6 +906,21 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                         }
                     } catch(Exception ex) {
                         SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Could not load items. Invalid material name.");
+                    }
+                }
+
+                /**
+                 * Equipping potion effects
+                 */
+                if(!(this.potionEffects.isEmpty())) {
+                    //Strings are format: Effect-level
+                    for(String s : this.potionEffects) {
+                        try{
+                            String[] split = s.split("-");
+                            asLiving.addPotionEffect(new PotionEffect(PotionEffectType.getByName(split[0].toUpperCase()), 99999, Integer.valueOf(split[1])));
+                        } catch(Exception ex) {
+                            SwordCraftOnline.logInfo("Attempted to load invalid potion effect on " + this.internalName);
+                        }
                     }
                 }
             }
