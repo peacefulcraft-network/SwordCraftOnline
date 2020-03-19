@@ -5,8 +5,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.peacefulcraft.sco.commands.SCOAdmin;
@@ -19,14 +17,16 @@ import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
 import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
-import net.peacefulcraft.sco.gamehandle.listeners.MobTarget;
-import net.peacefulcraft.sco.gamehandle.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
+import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
@@ -134,8 +134,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
+		
+		//Mythicmob listeners
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
 		getServer().getPluginManager().registerEvents(new MobTarget(), this);
+		getServer().getPluginManager().registerEvents(new MobOptions(), this);
+		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
