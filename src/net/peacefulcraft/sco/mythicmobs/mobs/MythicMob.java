@@ -566,7 +566,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.rider = Optional.ofNullable(rider);
 
         //Options handling
-        this.optionDespawn = mc.getBoolean("Despawn");
+        this.optionDespawn = mc.getBoolean("Despawn", true);
         this.optionDespawn = mc.getBoolean("Options.Despawn", this.optionDespawn);
         this.optionPersistent = mc.getBoolean("Persistent", false);
         this.optionPersistent = mc.getBoolean("Options.Persistent", this.optionPersistent);
@@ -574,7 +574,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.attrMovementSpeed = mc.getDouble("Options.MovementSpeed", 0.0D);
         this.attrKnockbackResist = mc.getDouble("Options.KnockbackResistance", 0.0D);
         this.attrFollowRange = mc.getDouble("Options.FollowRange", 0.0D);
-        this.attrAttackSpeed = mc.getDouble("Options.AttackSpeed", 0.0D);
         this.optionGlowing = mc.getBoolean("Options.Glowing", false);
         this.optionCollidable = mc.getBoolean("Options.Collidable", true);
         this.optionNoGravity = mc.getBoolean("Options.NoGravity", false);
@@ -610,6 +609,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.tropicalFishPatternColor = mc.getString("Options.PatternColor", "yellow");
         //Slime options
         this.slimeSize = mc.getInteger("Options.SlimeSize", 8);
+        this.preventSlimeSplit = mc.getBoolean("Options.PreventSlimeSplit", true);
         //Ageable option
         this.isAdult = mc.getBoolean("Options.Adult", true);
         this.ageLock = mc.getBoolean("Options.AgeLock", false);
@@ -618,7 +618,28 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         //Anger options
         this.angry = mc.getBoolean("Options.Angry", false);
         //PotionEffect handling
-        this.potionEffects = mc.getStringList("PotionEffects");
+        this.potionEffects = mc.getStringList("Options.PotionEffects");
+        //Villager options
+        if(this.strMobType.equalsIgnoreCase("Villager")) {
+            this.villagerType = mc.getString("Options.VillagerType");
+        }
+
+        //More Options
+        this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
+        this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
+        this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
+        this.alwaysShowName = mc.getBoolean("Options.AlwaysShowName", false);
+        this.showNameOnDamage = mc.getBoolean("Options.ShowNameOnDamaged", false);
+        this.preventOtherDrops = Boolean.valueOf(mc.getBoolean("Options.PreventOtherDrops", true));
+        this.preventRandomEquipment = Boolean.valueOf(mc.getBoolean("Options.PreventRandomEquipment", false));
+        this.preventLeashing = Boolean.valueOf(mc.getBoolean("Options.PreventLeashing", true));
+        this.preventRename = Boolean.valueOf(mc.getBoolean("Options.PreventRenaming", true));
+        this.preventSunburn = Boolean.valueOf(mc.getBoolean("Options.PreventSunburn", false));
+        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleport", false));
+        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleporting", this.preventEndermanTeleport.booleanValue()));
+        this.preventItemPickup = Boolean.valueOf(mc.getBoolean("Options.PreventItemPickup", false));
+        this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
+        this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
         
         //Boss Bar Handling
         this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
@@ -649,29 +670,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         //Loading mob faction details.
         this.faction = mc.getString("Faction", null);
         this.factionTargets = mc.getStringList("Target");
-
-        //Options
-        this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
-        this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
-        this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
-        this.alwaysShowName = mc.getBoolean("Options.AlwaysShowName", false);
-        this.showNameOnDamage = mc.getBoolean("Options.ShowNameOnDamaged", false);
-        this.preventOtherDrops = Boolean.valueOf(mc.getBoolean("Options.PreventOtherDrops", true));
-        this.preventRandomEquipment = Boolean.valueOf(mc.getBoolean("Options.PreventRandomEquipment", false));
-        this.preventLeashing = Boolean.valueOf(mc.getBoolean("Options.PreventLeashing", true));
-        this.preventRename = Boolean.valueOf(mc.getBoolean("Options.PreventRenaming", true));
-        this.preventSunburn = Boolean.valueOf(mc.getBoolean("Options.PreventSunburn", false));
-        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleport", false));
-        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleporting", this.preventEndermanTeleport.booleanValue()));
-        this.preventItemPickup = Boolean.valueOf(mc.getBoolean("Options.PreventItemPickup", false));
-        this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
-        this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
+        
         this.aiGSelectors = mc.getStringList("AIGoalSelectors");
         this.aiTSelectors = mc.getStringList("AITargetSelectors");
-
-        if(this.strMobType.equalsIgnoreCase("Villager")) {
-            this.villagerType = mc.getString("VillagerType");
-        }
 
         //Drops, droptables, killmessages
         this.drops = mc.getStringList("Drops");
@@ -689,6 +690,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         } catch(IndexOutOfBoundsException ex) {
             this.dropTable = null;
         }
+
         this.equipment = mc.getStringList("Equipment");
         List<String> killMessages = mc.getStringList("KillMessages");
         if(killMessages != null && killMessages.size() > 0) {
@@ -742,8 +744,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         String strSpawnVelocityX = mc.getString("SpawnModifiers.VelocityX", "0");
         String strSpawnVelocityY = mc.getString("SpawnModifiers.VelocityY", "0");
         String strSpawnVelocityZ = mc.getString("SpawnModifiers.VelocityZ", "0");
-        if(strSpawnVelocityX.contains("to")) {
-            String[] split = strSpawnVelocityX.split("to");
+        if(strSpawnVelocityX.contains("-")) {
+            String[] split = strSpawnVelocityX.split("-");
             try {
                 this.spawnVelocityX = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityXMax = Double.valueOf(split[1]).doubleValue();
@@ -760,8 +762,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                 SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid X Velocity Modifier.");
             }
         }
-        if(strSpawnVelocityY.contains("to")) {
-            String[] split = strSpawnVelocityY.split("to");
+        if(strSpawnVelocityY.contains("-")) {
+            String[] split = strSpawnVelocityY.split("-");
             try {
                 this.spawnVelocityY = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityYMax = Double.valueOf(split[1]).doubleValue();
@@ -778,8 +780,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                 SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid Y Velocity Modifier.");
             }
         }
-        if(strSpawnVelocityZ.contains("to")) {
-            String[] split = strSpawnVelocityZ.split("to");
+        if(strSpawnVelocityZ.contains("-")) {
+            String[] split = strSpawnVelocityZ.split("-");
             try {
                 this.spawnVelocityZ = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityZMax = Double.valueOf(split[1]).doubleValue();
