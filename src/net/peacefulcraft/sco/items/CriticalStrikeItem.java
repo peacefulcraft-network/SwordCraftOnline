@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
  * Common Critical Strike - Flint
@@ -27,9 +26,8 @@ public class CriticalStrikeItem extends SkillProvider{
 	@Override
 	public void registerSkill(SwordSkillCaster c) {
 		setModifiers();
-		CriticalStrikeSkill cs = new CriticalStrikeSkill(c, this.cooldown, (SkillProvider) this, 3, this.damage);
-		c.getSwordSkillManager().registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE, cs);
-		
+		new CriticalStrikeSkill(c, this.cooldown, (SkillProvider) this, 3, this.damage);
+
 		// add variance based on item tier and/or level
 	}
 

@@ -32,6 +32,7 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
 
 public class SwordCraftOnline extends JavaPlugin{
@@ -153,6 +154,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		 */
 	
 		// Register ability listeners
+		getServer().getPluginManager().registerEvents(new AbilityClickListener(), this);
 		getServer().getPluginManager().registerEvents(new AbilityEntityDamageEntityListener(), this);
 	}
 	
