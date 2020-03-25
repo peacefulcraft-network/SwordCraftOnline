@@ -10,7 +10,6 @@ import net.peacefulcraft.sco.swordskills.SwordSkillType;
  * BasicCombo
  */
 public class BasicCombo implements SwordSkillModule {
-
     private SwordSkillComboType comboType;
     private double activationThreshold;
         public boolean hasMetActivationThreshold() { return comboAccumulation > activationThreshold; }
@@ -19,13 +18,10 @@ public class BasicCombo implements SwordSkillModule {
         public void resetComboAccumulation() { this.comboAccumulation = 0.0; }
         public void comboAccumulate(double value) { comboAccumulation += value; }
 
-    public BasicCombo(SwordSkillComboType comboType, double activationThreshold) {
+    public BasicCombo(SwordSkill ss, SwordSkillComboType comboType, double activationThreshold) {
         this.comboType = comboType;
         this.activationThreshold = activationThreshold;
-    }
 
-    @Override
-    public void onModuleRegistered(SwordSkill ss) {
         // Register the combo to reset on damage receive events
         if(
             comboType == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
@@ -41,15 +37,9 @@ public class BasicCombo implements SwordSkillModule {
     
     */
     @Override
-    public boolean beforeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) { return true; }
-    /* No pre-support life cycle hook */
-
-    @Override
     public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
-        ss.getSCOPlayer().getPlayer().sendMessage("[DEBUG] Resetting Combo Accumulation");
         resetComboAccumulation();
     }
-
 
     /*
 
@@ -57,13 +47,8 @@ public class BasicCombo implements SwordSkillModule {
 
     */
     @Override
-    public boolean beforeSkillSignature(SwordSkill ss, Event ev) { return true; }
-    /* No pre-signature hook */
-
-    @Override
     public boolean beforeSkillPreconditions(SwordSkill ss, Event ev) {
         executeComboAccumulation(ev);
-        ss.getSCOPlayer().getPlayer().sendMessage("[DEBUG] " + comboAccumulation + "/" + activationThreshold);
         return hasMetActivationThreshold();
     }
 
@@ -79,11 +64,6 @@ public class BasicCombo implements SwordSkillModule {
     @Override
     public void onUnregistration(SwordSkill ss) {}
     /* No Unequip Steps*/
-
-    @Override
-    public void afterSkillUsed(SwordSkill ss, Event ev) {}
-    /* No cleanup steps */
-
 
     /*
 

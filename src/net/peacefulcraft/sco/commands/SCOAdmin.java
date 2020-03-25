@@ -343,7 +343,7 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 
 				} else if(args[2].equalsIgnoreCase("dummyskill")) {
-					(new SwordSkillTest(s, null)).registerSkill();
+					new SwordSkillTest(s, null);
 					sender.sendMessage("Registered Dummy Skill");
 					return true;
 				} else {

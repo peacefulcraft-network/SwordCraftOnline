@@ -29,8 +29,7 @@ public class SerratedBladeItem extends SkillProvider {
 
         sp.setCriticalChance(sp.getCriticalChance() + this.increase);
 
-        SerratedBladeSkill sb = new SerratedBladeSkill(sp, -1, (SkillProvider) this, this.increase);
-        sb.registerSkill();
+        new SerratedBladeSkill(sp, -1, (SkillProvider) this, this.increase);
     }
 
     @Override

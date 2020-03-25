@@ -34,6 +34,9 @@ public abstract class SwordSkill {
 	// List of event loops which the SkillLogic is listening on
 	private final ArrayList<SwordSkillType> primaryListeners = new ArrayList<SwordSkillType>();
 
+	// List of modules on which lifecycle hooks need triggered
+	private final ArrayList<SwordSkillModule> modules = new ArrayList<SwordSkillModule>();
+
 	// Map of event loops and the corisponding SwordSkillModules which need to run when those loops are triggered
 	private final HashMap<SwordSkillType, ArrayList<SwordSkillModule>> supportListeners = new HashMap<SwordSkillType, ArrayList<SwordSkillModule>>();
 
@@ -46,9 +49,18 @@ public abstract class SwordSkill {
 		this.manager = c.getSwordSkillManager();
 		this.provider = provider;
 	}
-	
+
+	/**
+	 * Register a module seeking to be notified of SwordSkill lifecyle events
+	 * @param module The module to notify
+	 */
 	public final void useModule(SwordSkillModule module) {
-		module.onModuleRegistered(this);
+		if(modules.contains(module)) {
+			SwordCraftOnline.logWarning("Attempted to register module " + module.getClass().getSimpleName() + " more than once.");
+			return;
+		}
+
+		modules.add(module);
 	}
 
 	/**
@@ -56,16 +68,16 @@ public abstract class SwordSkill {
 	 * @param module The module to unregister
 	 */
 	public final void unregisterModule(SwordSkillModule module) {
-		for(SwordSkillType type : supportListeners.keySet()) {
-			ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
-			listeners.remove(module);
+		// TODO: Implement
+	}
 
-			// Prune this event loop if there are no more listeners on it
-			if(listeners.size() == 0) {
-				supportListeners.remove(type);
-				manager.unregisterListener(type, this);
-			}
-		}
+	/**
+	 * Used by SwordSkills to register their primary listeners
+	 * @param type The event loop to listen on
+	 */
+	protected final void listenFor(SwordSkillType type) {
+		primaryListeners.add(type);
+		this.manager.registerListener(type, this);
 	}
 
 	/**
@@ -75,6 +87,17 @@ public abstract class SwordSkill {
 	 * @param module The module which needs to be notified
 	 */
 	public final void listenFor(SwordSkillType type, SwordSkillModule module) {
+		if (primaryListeners.contains(type)) {
+			/*
+			 * A warning to indicate a module has registered itself to receive events for the same 
+			 * event type that the primary sword skill logic listens on.
+			 * This is not bad, but can lead to strange behavior as a 
+			 * result of execution order. The SwordSkill support 
+			 * lifecycle (modules) execute before primary skill logic.
+			 */
+			SwordCraftOnline.logWarning("Registered module " + module.getClass().getSimpleName() + " onto loop " + type + " for support lifecycle which primary loop. Can module hooks be used instead?");
+		}
+
 		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
 		if(listeners == null) {
 			listeners = new ArrayList<SwordSkillModule>();
@@ -89,8 +112,6 @@ public abstract class SwordSkill {
 
 	public final List<SwordSkillModule> getModules() {
 		ArrayList<SwordSkillModule> modules = new ArrayList<SwordSkillModule>();
-		modules.addAll( (Collection) primaryListeners);
-
 		for(SwordSkillType type : supportListeners.keySet()) {
 			modules.addAll((Collection) supportListeners.get(type));
 		}
@@ -110,9 +131,7 @@ public abstract class SwordSkill {
 		}
 
 		for(SwordSkillModule module : listeners) {
-			if(module.beforeSupportLifecycle(type, this, ev)) {
-				module.executeSupportLifecycle(type, this, ev);
-			}
+			module.executeSupportLifecycle(type, this, ev);
 		}
 	}
 
@@ -123,28 +142,22 @@ public abstract class SwordSkill {
 	 */
 	public final void execPrimaryLifecycle(SwordSkillType type, Event ev) {
 		if(primaryListeners.contains(type)) {
-			ArrayList<SwordSkillModule> hooks = supportListeners.get(type);
-
-			// Notify modules skill execution is about to begin
-			for(SwordSkillModule module : hooks) {
-				module.beforeSkillSignature(this, ev);
-			}
 
 			// Check if this skill needs to know about this event
 			if(!this.skillSignature(ev)) { return; }
 			
 			// Notify modules signature has matched and preconditions are about to be checked
-			for(SwordSkillModule module : hooks) {
+			for(SwordSkillModule module : modules) {
 				if(!module.beforeSkillPreconditions(this, ev)) {
 					return;
 				}
 			}
-			
+
 			// Check all skill preconditions before triggering the skill
 			if(!this.skillPreconditions(ev)) { return;}
 
 			// Notify modules preconditions have passed and skill is about to be triggered
-			for(SwordSkillModule module : hooks) {
+			for(SwordSkillModule module : modules) {
 				if(!module.beforeTriggerSkill(this, ev)) {
 					return;
 				}
@@ -154,31 +167,14 @@ public abstract class SwordSkill {
 			this.triggerSkill(ev);
 
 			// Notify modules of skill trigger
-			for(SwordSkillModule module : hooks) {
+			for(SwordSkillModule module : modules) {
 				module.afterTriggerSkill(this, ev);
 			}
 			
 			// Skill execution complete, 
 			skillUsed();
-
-			// Notify modules skill execution has concluded
-			for(SwordSkillModule module : hooks) {
-				module.afterSkillUsed(this, ev);
-			}
 		}
 	}
-
-	public void execSkillRegistration() {
-		this.registerSkill();
-
-		for(SwordSkillType type : supportListeners.keySet()) {
-			for(SwordSkillModule module : supportListeners.get(type)) {
-				module.onModuleRegistered(this);
-			}
-		}
-	}
-
-	public abstract void registerSkill();
 
 	/**
 	 * This should contain logic to check whether a Player is trying to activate one skill or another.
@@ -222,6 +218,7 @@ public abstract class SwordSkill {
 
 		this.unregisterSkill();
 	}
+
 	/**
 	 * Used in unregistering passive effects.
 	 * Applicable to player data changes, potion effects, etc.

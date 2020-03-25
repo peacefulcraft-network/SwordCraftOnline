@@ -20,6 +20,9 @@ public class SerratedBladeSkill extends SwordSkill {
         this.s = s;
         this.delay = delay;
         this.increase = increase;
+
+        this.listenFor(SwordSkillType.PASSIVE);
+        this.useModule(new TimedCooldown(delay));
     }
 
     @Override
@@ -47,11 +50,5 @@ public class SerratedBladeSkill extends SwordSkill {
     @Override
     public void unregisterSkill() {
         s.setCriticalChance(s.getCriticalChance() - increase);
-    }
-
-    @Override
-    public void registerSkill() {
-        this.manager.registerSkill(SwordSkillType.PASSIVE, this);
-        useModule(new TimedCooldown(delay));
     }
 }

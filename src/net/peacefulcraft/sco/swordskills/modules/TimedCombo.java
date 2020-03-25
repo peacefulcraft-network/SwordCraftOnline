@@ -19,8 +19,8 @@ public class TimedCombo extends BasicCombo {
 
     private BukkitTask currentTimer;
 
-    public TimedCombo(SwordSkillComboType comboType, double activationThreshold, long timeLimit) {
-        super(comboType, activationThreshold);
+    public TimedCombo(SwordSkill ss, SwordSkillComboType comboType, double activationThreshold, long timeLimit) {
+        super(ss, comboType, activationThreshold);
         this.timeLimit = timeLimit;
     }
 

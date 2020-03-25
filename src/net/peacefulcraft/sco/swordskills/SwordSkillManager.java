@@ -44,7 +44,6 @@ public class SwordSkillManager
 		}
 
 		skills.get(type).add(skill);
-		skill.execSkillRegistration();
 	}
 
 	/**

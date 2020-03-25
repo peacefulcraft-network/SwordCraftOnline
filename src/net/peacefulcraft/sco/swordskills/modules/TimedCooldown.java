@@ -31,28 +31,11 @@ public class TimedCooldown implements SwordSkillModule {
     }
 
     @Override
-    public void onModuleRegistered(SwordSkill ss) {}
-    /* No extra event listeners needed */
-
-    /**
-     * If skill is cooling down, don't bother doing any work
-     */
-    @Override
-    public boolean beforeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
-        return isCoolingDown();
-    }
-    /* No pre-support life cycle hooks */
-
-    @Override
     public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {}
     /* No support life cycle steps needed */
 
     @Override
-    public boolean beforeSkillSignature(SwordSkill ss, Event ev) { return true; }
-    /* No pre-signature hook */
-
-    @Override
-    public boolean beforeSkillPreconditions(SwordSkill ss, Event ev) { return true; }
+    public boolean beforeSkillPreconditions(SwordSkill ss, Event ev) { return !isCoolingDown(); }
     /* No preconditions hook */
 
     @Override
@@ -66,12 +49,8 @@ public class TimedCooldown implements SwordSkillModule {
      */
     @Override
     public void afterTriggerSkill(SwordSkill ss, Event ev) {
-        this.cooldownEnd += this.cooldownDelay;
+        this.cooldownEnd = System.currentTimeMillis() + cooldownDelay;
     }
-
-    @Override
-    public void afterSkillUsed(SwordSkill ss, Event ev) {}
-    /* No post-execution hook */
 
     @Override
     public void onUnregistration(SwordSkill ss) {}

@@ -26,9 +26,8 @@ public class CriticalStrikeItem extends SkillProvider{
 	@Override
 	public void registerSkill(SwordSkillCaster c) {
 		setModifiers();
-		CriticalStrikeSkill cs = new CriticalStrikeSkill(c, this.cooldown, (SkillProvider) this, 3, this.damage);
-		cs.registerSkill();
-		
+		new CriticalStrikeSkill(c, this.cooldown, (SkillProvider) this, 3, this.damage);
+
 		// add variance based on item tier and/or level
 	}
 

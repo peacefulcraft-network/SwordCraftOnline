@@ -2,7 +2,8 @@ package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.swordskills.modules.BasicCombo;
+import net.peacefulcraft.sco.swordskills.modules.TimedCombo;
+import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
 
 /**
@@ -12,23 +13,15 @@ public class SwordSkillTest extends SwordSkill {
 
     public SwordSkillTest(SwordSkillCaster c, SkillProvider provider) {
         super(c, provider);
-    }
-
-    @Override
-    public void registerSkill() {
-        this.manager.registerListener(SwordSkillType.PLAYER_INTERACT, this);
-        useModule(new BasicCombo(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, 4));
+        this.listenFor(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE);
+        this.useModule(new TimedCooldown(5000L));
+        this.useModule(new TimedCombo(this, SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE, 10, 200L));
         s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Instantiated");
     }
 
     @Override
     public boolean skillSignature(Event ev) {
         s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Signature:");
-        if (this.s != null) {
-            s.getPlayer().sendMessage("Match");
-        } else {
-            s.getPlayer().sendMessage("No match");
-        }
         return true;
     }
 

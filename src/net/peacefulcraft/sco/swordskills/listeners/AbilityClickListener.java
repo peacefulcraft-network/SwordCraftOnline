@@ -19,7 +19,7 @@ public class AbilityClickListener implements Listener
 		if(ev.getAction().equals(Action.LEFT_CLICK_AIR) || ev.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 			executor.abilityExecuteLoop(SwordSkillType.PLAYER_INTERACT_LEFT_CLICK, ev);
 		} else {
-			executor.abilityExecuteLoop(SwordSkillType.PLAYER_INTERACT_RIGHT_CLIC, ev);
+			executor.abilityExecuteLoop(SwordSkillType.PLAYER_INTERACT_RIGHT_CLICK, ev);
 		}
 
 		executor.abilityExecuteLoop(SwordSkillType.PLAYER_INTERACT, ev);

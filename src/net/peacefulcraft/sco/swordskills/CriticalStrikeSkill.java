@@ -19,6 +19,10 @@ public class CriticalStrikeSkill extends SwordSkill{
 		this.delay = delay;
 		this.hitsToTrigger = hitsToTrigger;
 		this.damageToDeal = damageToDeal;
+
+		this.listenFor(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE);
+		this.useModule(new TimedCooldown(delay));
+		this.useModule(new BasicCombo(this, SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
 	}
 
 	@Override
@@ -49,12 +53,5 @@ public class CriticalStrikeSkill extends SwordSkill{
 	@Override
 	public void unregisterSkill() {
 		// No player data changes. No unregister.
-	}
-
-	@Override
-	public void registerSkill() {
-		this.manager.registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE, this);
-		useModule(new TimedCooldown(delay));
-		useModule(new BasicCombo(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
 	}
 }
