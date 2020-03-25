@@ -223,4 +223,4 @@ public abstract class SwordSkill {
 	 * Applicable to player data changes, potion effects, etc.
 	 */
 	public abstract void unregisterSkill();
-} 
+}
