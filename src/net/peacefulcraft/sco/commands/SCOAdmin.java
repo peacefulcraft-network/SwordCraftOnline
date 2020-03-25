@@ -19,13 +19,11 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
-import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
@@ -34,7 +32,7 @@ public class SCOAdmin implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (label.equalsIgnoreCase("scoadmin")) {
 			if (args.length == 0) {
-				sender.sendMessage("scoadmin [ swordskillbook | generateitem | playerdata | setplayerdata ]");
+				sender.sendMessage("scoadmin [ swordskillbook | generateitem | playerdata | setplayerdata | debug]");
 				return true;
 			}
 
@@ -185,7 +183,7 @@ public class SCOAdmin implements CommandExecutor {
 				//Prevents null pointer errors on reloading mobs before droptables.
 				if(args[1].equalsIgnoreCase("reload")) {
 					//Despawns all active mobs
-					SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs();
+					SwordCraftOnline.getPluginInstance().getMobManager().despawnAllMobs();
 					SwordCraftOnline.getPluginInstance().getDropManager().loadDropTables();
 					SwordCraftOnline.getPluginInstance().getMobManager().loadMobs();
 					return true;
@@ -305,23 +303,19 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					//TODO: Add support for mob
 				}
+				
 			}
 
-			if(args[0].equalsIgnoreCase("particletest")) {
-				Player p = (Player)sender;
-				if(args[1].isEmpty()) {
-					p.sendMessage("Please enter valid particle.");
-				}
-				SwordCraftOnline.logInfo("Loading " + args[1] + " particle...");
-				Effect effect = SwordCraftOnline.getEffectManager().getEffectByClassName(args[1]);
-				if(effect == null) { 
-					SwordCraftOnline.logSevere("Attempted to load invalid particle.");
+			if(args[0].equalsIgnoreCase("debug")) {
+				if( !(sender instanceof Player)) {
+					sender.sendMessage(ChatColor.RED + "Command only executable by a player.");
 					return true;
 				}
-				//effect.setTargetPlayer(p);
-				effect.setLocation(p.getLocation());
-				effect.start();
-				SwordCraftOnline.logInfo("Particle started...");
+
+				if(args.length < 2) {
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[playername] [ swordskill ]");
+					return true;
+				}
 
 				SCOPlayer s = SwordCraftOnline.getGameManager().findSCOPlayer((Player) sender);
 				if(s == null) {
@@ -357,6 +351,7 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 				}
 			}
+
 		}
 		return false;
 	}

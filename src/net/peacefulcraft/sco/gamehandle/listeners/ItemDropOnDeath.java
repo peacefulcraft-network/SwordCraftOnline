@@ -13,7 +13,7 @@ public class ItemDropOnDeath implements Listener {
     public void ItemDrop(PlayerDeathEvent e) {
         for(ItemStack item : e.getDrops()) {
             if(item == (new SwordSkillTome()).create()) {
-                //TODO:
+                
             }
         }
     }

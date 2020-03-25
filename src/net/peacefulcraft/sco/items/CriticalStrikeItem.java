@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;

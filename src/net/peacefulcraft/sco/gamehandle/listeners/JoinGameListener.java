@@ -6,7 +6,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.exceptions.SCOSQLRuntimeException;
@@ -24,8 +23,6 @@ public class JoinGameListener implements Listener
 			SwordCraftOnline.getGameManager().preProcessPlayerJoin(e.getUniqueId());
 		} catch(SCOSQLRuntimeException ex) {
 			ex.printStackTrace();
-			e.setLoginResult(Result.KICK_OTHER);
-			e.setKickMessage("A database error occured while loading your user profile. Please try again. If the issue persists, contact an administrator.");
 		}
 	}
 	

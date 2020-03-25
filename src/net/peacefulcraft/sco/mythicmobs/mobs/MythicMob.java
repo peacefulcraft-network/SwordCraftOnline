@@ -4,37 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.entity.Cat;
 import org.bukkit.entity.Creature;
-import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Ocelot;
-import org.bukkit.entity.Pig;
-import org.bukkit.entity.PigZombie;
-import org.bukkit.entity.Rabbit;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Snowman;
-import org.bukkit.entity.TropicalFish;
-import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Horse.Color;
-import org.bukkit.entity.Horse.Style;
-import org.bukkit.entity.TropicalFish.Pattern;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.log.Banners;
@@ -49,13 +29,11 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
-import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Holds custom mob data read from YML in mob mananger.
  */
-public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
+public class MythicMob implements Comparable<MythicMob> {
     /**File name */
     private String file;
         /**Returns String of mob file name */
@@ -237,12 +215,14 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             /**Returns mob equipment droptable */
         public DropTable getEquipmentTable() { return this.equipmentTable; }
 
-    /**
-     * Mob damage modifiers.
-     */
-    private List<Modifier> damageModifiers;
-        /**Returns mobs damage modifiers */
-        public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
+    /**Mob damage weakness modifiers. I.e. fire */
+    private List<String> damageModifiers;
+
+    /** Mob damage modifiers. I.e. strong against zombies*/
+    private List<String> entityDamageModifiers;
+
+    /**Mob damage weakness modifiers. I.e. weak to zombies */
+    private List<String> entityWeaknessModifiers;
 
     private List<String> levelmods;
 
@@ -394,107 +374,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         /**Returns if mob is fake player */
         public boolean isFakePlayer() { return this.fakePlayer; }
 
-    /**Creeper explosion radius */
-    private int explosionRadius;
-        /**Returns mobs explosion radius */
-        public int getExplosionRadius() { return this.explosionRadius; }
-
-    /**Is creeper charged creeper */
-    private boolean isPowered = Boolean.valueOf(false);
-        public boolean isPowered() { return this.isPowered; }
-
-    /**
-     * Creepers fuse ticks. The maximum amount of time in which
-     * a creeper is allowed to be in primed state before exploding
-     */
-    private int maxFuseTicks;
-        public int getMaxFuseTicks() { return this.maxFuseTicks; }
-
-    /**Horses equipped armor */
-    private String horseArmor;
-        /**Returns the horses armor */
-        public String getHorseArmor() { return this.horseArmor; }
-
-    /**If true equips chest */
-    private boolean carryingChest;
-        public boolean isCarryingChest() { return this.carryingChest; }
-
-    /**Determines horse color */
-    private String horseColor;
-        public String getHorseColor() { return this.horseColor; }
-
-    /**If true mob is adult. False mob is baby */
-    private boolean isAdult;
-        public boolean isAdult() { return this.isAdult; }
-
-    /**Determines horse style */
-    private String horseStyle;
-        public String getHorseStyle() { return this.horseStyle; }
-
-    /**Determines if horse is tamed */
-    private boolean isTamed;
-        public boolean isTamed() { return this.isTamed; }
-
-    /**Determins is horse is saddled */
-    private boolean isSaddled;
-        public boolean isSaddled() { return this.isSaddled; }
-
-    /**Determines if iron golem is player created. */
-    private boolean playerCreated;
-        public boolean isPlayerCreated() { return this.playerCreated; }
-
-    /**Determines ocelot type */
-    private String cat;
-        public String getCatType() { return this.cat; }
-
-    /**Determines rabbit type */
-    private String rabbit;
-        public String getRabbitType() { return this.rabbit; }
-
-    /**Determines if sheep is sheared or not */
-    private boolean isSheared;
-        public boolean isSheared() { return this.isSheared; }
-
-    /**Determines if snowman has pumpkin */
-    private boolean isDerp;
-        public boolean isDerp() { return this.isDerp; }
-
-    /**Determines if snowman leaves snow trail */
-    private boolean preventSnowFormation;
-        public boolean getPreventSnowFormation() { return this.preventSnowFormation; }
-
-    /**Determin fish pattern design */
-    private String tropicalFishPattern;
-        public String getFishPattern() { return this.tropicalFishPattern; }
-
-    /**Determin fish body color */
-    private String tropicalFishBodyColor;
-        public String getFishBodyColor() { return this.tropicalFishBodyColor; }
-
-    /**Determin fish pattern color */
-    private String tropicalFishPatternColor;
-        public String getFishPatternColor() { return this.tropicalFishPatternColor; }
-
-    /**Locks age of ageable mob */
-    private boolean ageLock;
-        public boolean getAgeLock() { return this.ageLock; }
-
-    /**Determines sheep or wolf color */
-    private String color;
-        public String getColor() { return this.color; }
-
-    /**Determines if wolf or zombie pigman is angry */
-    private boolean angry;
-        public boolean isAngry() { return this.angry; }
-
-    /**Determines slime size */
-    private int slimeSize;
-        public int getSlimeSize() { return this.slimeSize; }
-
-    /**Determines what potion effects are equipped to mob. */
-    private List<String> potionEffects;
-        public List<String> getPotionEffects() { return this.potionEffects; }
-
     protected List<String> killMessages;
 
     public String disguise;
@@ -579,43 +458,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.optionSilent = mc.getBoolean("Options.Silent", this.optionSilent);
         this.optionNoAI = mc.getBoolean("Options.NoAI", this.optionNoAI);
         this.noDamageTicks = mc.getInteger("Options.NoDamageTicks", 10) * 2;
-        //Creeper options
-        this.explosionRadius = mc.getInteger("Options.ExplosionRadius", 3);
-        this.isPowered = mc.getBoolean("Options.Powered", false);
-        this.maxFuseTicks = mc.getInteger("Options.MaxFuseTicks", 30);
-        //Horse Options
-        this.horseArmor = mc.getString("Options.HorseArmor", null);
-        this.carryingChest = mc.getBoolean("Options.CarryingChest", false);
-        this.horseColor = mc.getString("Options.HorseColor", "creamy");
-        this.horseStyle = mc.getString("Options.HorseStyle", "white");
-        this.isTamed = mc.getBoolean("Options.Tamed", false);
-        this.isSaddled = mc.getBoolean("Options.Saddled", false);
-        //IronGolem options
-        this.playerCreated = mc.getBoolean("Options.PlayerCreated", false);
-        //Cat options
-        this.cat = mc.getString("Options.Cat", "black");
-        //Rabbit options
-        this.rabbit = mc.getString("Options.Rabbit", "black");
-        //Sheep options
-        this.isSheared = mc.getBoolean("Options.Sheared", false);
-        //Snowman options
-        this.isDerp = mc.getBoolean("Options.Derp", false);
-        this.preventSnowFormation = mc.getBoolean("Options.PreventSnowmanTrail", false);
-        //Tropical fish options
-        this.tropicalFishPattern = mc.getString("Options.Pattern", "betty");
-        this.tropicalFishBodyColor = mc.getString("Options.BodyColor", "blue");
-        this.tropicalFishPatternColor = mc.getString("Options.PatternColor", "yellow");
-        //Slime options
-        this.slimeSize = mc.getInteger("Options.SlimeSize", 8);
-        //Ageable option
-        this.isAdult = mc.getBoolean("Options.Adult", true);
-        this.ageLock = mc.getBoolean("Options.AgeLock", false);
-        //Colorable options
-        this.color = mc.getString("Options.Color", "black");
-        //Anger options
-        this.angry = mc.getBoolean("Options.Angry", false);
-        //PotionEffect handling
-        this.potionEffects = mc.getStringList("PotionEffects");
         
         //Boss Bar Handling
         this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
@@ -908,21 +750,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                         SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Could not load items. Invalid material name.");
                     }
                 }
-
-                /**
-                 * Equipping potion effects
-                 */
-                if(!(this.potionEffects.isEmpty())) {
-                    //Strings are format: Effect-level
-                    for(String s : this.potionEffects) {
-                        try{
-                            String[] split = s.split("-");
-                            asLiving.addPotionEffect(new PotionEffect(PotionEffectType.getByName(split[0].toUpperCase()), 99999, Integer.valueOf(split[1])));
-                        } catch(Exception ex) {
-                            SwordCraftOnline.logInfo("Attempted to load invalid potion effect on " + this.internalName);
-                        }
-                    }
-                }
             }
 
             asLiving.setMaximumNoDamageTicks(this.noDamageTicks);
@@ -939,137 +766,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                     ee.setBoots(new ItemStack(Material.AIR));
                     ee.setItemInMainHand(new ItemStack(Material.AIR));
                 }
-            }
-            /**
-             * Applying creeper options
-             */
-            if(e instanceof Creeper) {
-                Creeper creeper = (Creeper)e;
-                creeper.setPowered(true);
-                creeper.setMaxFuseTicks(this.maxFuseTicks);
-                creeper.setExplosionRadius(this.explosionRadius);
-            }
-            /**
-             * Applying horse options
-             */
-            if(e instanceof Horse) {
-                Horse horse = (Horse)e;
-                horse.setAdult();
-                if(!(isAdult())) { horse.setBaby(); }
-                try {
-                    if(this.horseArmor != null) {
-                        String armor = (this.horseArmor + "_horse_armor").toUpperCase();
-                        horse.getInventory().setArmor(new ItemStack(Material.valueOf(armor)));
-                    }
-                    horse.setColor(Color.valueOf(this.horseColor));
-                    horse.setStyle(Style.valueOf(this.horseStyle));
-                } catch(IllegalArgumentException ex) {
-                    SwordCraftOnline.logInfo("Attempted to load invalid horse optional in " + this.internalName);
-                }
-                horse.setTamed(this.isTamed);
-                if(this.isTamed && this.isSaddled) {
-                    horse.getInventory().setSaddle(new ItemStack(Material.SADDLE));
-                }
-                horse.setAgeLock(this.ageLock);
-            }
-            /**
-             * Applying iron golem options
-             */
-            if(e instanceof IronGolem) {
-                ((IronGolem)e).setPlayerCreated(this.playerCreated);
-            }
-            /**
-             * Applying ocelot options
-             */
-            if(e instanceof Cat) {
-                try{
-                    ((Cat)e).setCatType(Cat.Type.valueOf(this.cat.toUpperCase()));
-                } catch (IllegalArgumentException ex) {
-                    SwordCraftOnline.logInfo("Attempted to load invalid cat optional in " + this.internalName);
-                }
-            }
-            /**
-             * Pig options
-             */
-            if(e instanceof Pig) {
-                Pig pig = (Pig)e;
-                pig.setSaddle(this.isSaddled);
-                pig.setAdult();
-                if(!(this.isAdult)) { pig.setBaby(); }
-                pig.setAgeLock(this.ageLock);
-            }
-            /**
-             * Rabbit options
-             */
-            if(e instanceof Rabbit) {
-                Rabbit rabbit = (Rabbit)e;
-                try{
-                    rabbit.setRabbitType(Rabbit.Type.valueOf(this.rabbit.toUpperCase()));
-                } catch(IllegalArgumentException ex) {
-                    SwordCraftOnline.logInfo("Attempted to load invalid rabbit optional in " + this.internalName);
-                }
-                rabbit.setAdult();
-                if(!(this.isAdult)) { rabbit.setBaby(); }
-                rabbit.setAgeLock(this.ageLock);
-            }
-            /**
-             * Sheep options
-             */
-            if(e instanceof Sheep) {
-                Sheep sheep = (Sheep)e;
-                sheep.setSheared(this.isSheared);
-                sheep.setAdult();
-                if(!(this.isAdult)) { sheep.setBaby(); }
-                sheep.setAgeLock(this.ageLock);
-                try {
-                    sheep.setColor(DyeColor.valueOf(this.color.toUpperCase()));
-                } catch(IllegalArgumentException ex) {
-                    SwordCraftOnline.logInfo("Attempted to load invalid dye color in " + this.internalName);
-                }
-            }
-            /**
-             * Snowman options
-             */
-            if(e instanceof Snowman) {
-                ((Snowman)e).setDerp(this.isDerp);
-            }
-            /**
-             * Tropical fish options
-             */
-            if(e instanceof TropicalFish) {
-                try{
-                    TropicalFish fish = (TropicalFish)e;
-                    fish.setPattern(Pattern.valueOf(this.tropicalFishPattern.toUpperCase()));
-                    fish.setBodyColor(DyeColor.valueOf(this.tropicalFishBodyColor.toUpperCase()));
-                    fish.setPatternColor(DyeColor.valueOf(this.tropicalFishPatternColor.toUpperCase()));
-                } catch(IllegalArgumentException ex) {
-                    SwordCraftOnline.logInfo("Attempted to load invalid tropical fish optional in " + this.internalName);
-                }
-            }
-            /**
-             * Wolf options
-             */
-            if(e instanceof Wolf) {
-                Wolf wolf = (Wolf)e;
-                try {
-                    wolf.setCollarColor(DyeColor.valueOf(this.color.toUpperCase()));
-                } catch(IllegalArgumentException ex) {
-                    SwordCraftOnline.logInfo("Attempted to load invalid dye color in " + this.internalName);
-                }
-                wolf.setAngry(this.angry);
-            }
-            /**
-             * pig zombie options
-             */
-            if(e instanceof PigZombie) {
-                PigZombie pz = (PigZombie)e;
-                pz.setAngry(this.angry);
-            }
-            /**
-             * Slime or magma cube options
-             */
-            if(e instanceof Slime) {
-                ((Slime)e).setSize(this.slimeSize);
             }
             if(getDisplayName() != null) {
                 asLiving.setCustomName(am.getDisplayName());
@@ -1148,10 +844,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         return am;
     }
 
-    /**
-     * Returns if mob uses boss bar.
-     * Use this to determine if mob is boss or not.
-     */
     public boolean usesBossBar() {
         return this.useBossBar;
     }
@@ -1247,8 +939,12 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         return this.optionInvincible;
     }
       
-    public List<Modifier> getEntityDamageModifiers() {
+    public List<String> getDamageModifiers() {
         return this.damageModifiers;
+    }
+      
+    public List<String> getEntityDamageModifiers() {
+        return this.entityDamageModifiers;
     }
       
     public List<String> getLevelModifiers() {

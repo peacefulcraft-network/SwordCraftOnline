@@ -3,11 +3,8 @@ package net.peacefulcraft.sco.mythicmobs.mobs;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -25,7 +22,6 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
-import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 
@@ -34,17 +30,17 @@ public class MobManager {
 
     /**Stores MM: Key file name */
     private HashMap<String, MythicMob> mmList = new HashMap<>();
-        public Map<String, MythicMob> getMMList() { return Collections.unmodifiableMap(this.mmList); }
+        public HashMap<String, MythicMob> getMMList() { return this.mmList; }
 
     /**Stores MM by display name */
     private HashMap<String, MythicMob> mmDisplay = new HashMap<>();
-        public Map<String, MythicMob> getMMDisplay() { return Collections.unmodifiableMap(this.mmDisplay); }
+        public HashMap<String, MythicMob> getMMDisplay() { return this.mmDisplay; }
 
     /**Stores by default entity type */
     private HashMap<MythicEntityType, MythicMob> mmDefault = new HashMap<>();
 
     private HashMap<UUID, ActiveMob> mobRegistry = new HashMap<>();
-        public Map<UUID, ActiveMob> getMobRegistry() { return Collections.unmodifiableMap(this.mobRegistry); }
+        public HashMap<UUID, ActiveMob> getMobRegistry() { return this.mobRegistry; }
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
@@ -56,12 +52,14 @@ public class MobManager {
         this.mmDisplay.clear();
         this.mmDefault.clear();
         this.mobRegistry.clear();
-        MobSpawnHandler.clearVanillaMobs();
 
         IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         List<File> mobFiles = IOHandler.getAllFiles(defaultMobs.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> mobLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), mobFiles, "Mobs");
+        
+        this.mmList.clear();
+        this.mmDefault.clear();
         
         SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Beginning loading...");
 
@@ -70,12 +68,6 @@ public class MobManager {
                 try {
                     MythicConfig mc = new MythicConfig(name, sl.getFile(), sl.getCustomConfig());
                     String file = sl.getFile().getPath();
-
-                    //Is mob a Vanilla replacement or removal?
-                    if(file.contains("VanillaMobs.yml")) {
-                        MobSpawnHandler.addVanillaMobs(name, mc);
-                        continue;
-                    }
 
                     if(MythicEntity.getMythicEntity(name) != null) {
                         MythicEntityType met = MythicEntityType.get(name);
@@ -231,28 +223,23 @@ public class MobManager {
     
     public int removeAllMobs() {
         int amount = 0;
-        Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
-        while(iterator.hasNext()) {
-            ActiveMob am = iterator.next();
+        for(ActiveMob am : this.mobRegistry.values()) {
             if(am.getType().isPersistent()) { continue; }
             am.setDespawned();
+            unregisterActiveMob(am);
             am.getEntity().remove();
-            iterator.remove();
             amount++;
         }
-
         return amount;
     }
 
     public int despawnAllMobs() {
         int amount = 0;
-        Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
-        while(iterator.hasNext()) {
-            ActiveMob am = iterator.next();
+        for(ActiveMob am : this.mobRegistry.values()) {
             if((am.getType()).optionDespawn && !am.getType().isPersistent()) {
                 am.setDespawnedSync();
+                SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(am);
                 am.getEntity().remove();
-                iterator.remove();
                 amount++;
             }
         }
