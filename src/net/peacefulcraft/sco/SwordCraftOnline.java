@@ -17,19 +17,23 @@ import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
 import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
-import net.peacefulcraft.sco.gamehandle.listeners.MobTarget;
-import net.peacefulcraft.sco.gamehandle.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
+import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
+import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
+import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
+import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -62,6 +66,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	private MobManager mobManager;
 		public MobManager getMobManager() { return this.mobManager; }
+
+	private static EffectManager effectManager;
+		public static EffectManager getEffectManager() { return effectManager; }
 	
 	public SwordCraftOnline() {
 
@@ -90,6 +97,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.server = (ServerInterface)new BukkitServer();
 		this.dropManager = new DropManager(this);
 		this.mobManager = new MobManager(this);
+
+		effectManager = new EffectManager(this);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
@@ -104,6 +113,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		hikari.close();
 		this.getLogger().info("Database connection closed.");
+
+		effectManager.dispose();
+		this.getLogger().info("Effect Manager disposed.");
 		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
@@ -119,20 +131,31 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	private void loadEventListeners() {
 
-		// Game Handle Listeners
+		//Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
+		
+		//Mythicmob listeners
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
 		getServer().getPluginManager().registerEvents(new MobTarget(), this);
+		getServer().getPluginManager().registerEvents(new MobOptions(), this);
+		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		
-		// Register Menu Opener
+		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
 	
 		// Register ability listeners
 		getServer().getPluginManager().registerEvents(new AbilityClickListener(), this);
 		getServer().getPluginManager().registerEvents(new AbilityEntityDamageEntityListener(), this);
+
+		//SwordSkill Util Listeners
+		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);
+
+		/**
+		 * The Inventories manage their own event listeners
+		 */
 	}
 	
 	public static void logDebug(String debug) {
