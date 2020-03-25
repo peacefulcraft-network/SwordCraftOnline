@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import java.util.HashMap;
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 
@@ -152,7 +152,6 @@ public abstract class SwordSkill {
 					return;
 				}
 			}
-
 			// Check all skill preconditions before triggering the skill
 			if(!this.skillPreconditions(ev)) { return;}
 
