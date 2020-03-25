@@ -1,17 +1,21 @@
 package net.peacefulcraft.sco.swordskills;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.swordskills.modules.BasicCombo;
+import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
 
 public class CriticalStrikeSkill extends SwordSkill{
 	
 	private double damageToDeal;
 	
 	public CriticalStrikeSkill(SwordSkillCaster c, long delay, SkillProvider provider, int hitsToTrigger, double damageToDeal) {
-		super(c, delay, provider);
-		setupComboTracking(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger);
+		super(c, provider);
+		useModule(new TimedCooldown(delay));
+		useModule(new BasicCombo(SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
 		
 		this.damageToDeal = damageToDeal;
 	}
@@ -24,7 +28,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 	}
 
 	@Override
-	public boolean canUseSkill() {
+	public boolean skillPreconditions(Event ev) {
 		// No extra checks required
 		return true;
 	}
@@ -32,11 +36,12 @@ public class CriticalStrikeSkill extends SwordSkill{
 	@Override
 	public void triggerSkill(Event ev) {
 		EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
-		ede.setDamage( ede.getDamage() + damageToDeal);
+		ede.setDamage( ede.getFinalDamage() + damageToDeal);
+		((Player) ede.getDamager()).sendMessage("Critial Hit!");
 	}
 
 	@Override
-	public void markSkillUsed() {
+	public void skillUsed() {
 		// No cleanup steps required		
 	}
 
