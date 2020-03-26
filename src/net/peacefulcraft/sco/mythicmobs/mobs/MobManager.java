@@ -46,6 +46,10 @@ public class MobManager {
     private HashMap<UUID, ActiveMob> mobRegistry = new HashMap<>();
         public Map<UUID, ActiveMob> getMobRegistry() { return Collections.unmodifiableMap(this.mobRegistry); }
 
+    private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
+        public void addCenti(String name, Centipede c) { this.centipedeList.put(name, c); }
+        public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
+
     public MobManager(SwordCraftOnline s) {
         this.s = s;
     }

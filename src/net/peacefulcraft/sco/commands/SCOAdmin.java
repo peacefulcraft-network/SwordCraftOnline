@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
@@ -19,10 +20,10 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.Centipede;
 import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
@@ -321,6 +322,16 @@ public class SCOAdmin implements CommandExecutor {
 				SwordCraftOnline.logInfo("Particle started...");
 
 				return true;
+			}
+
+			if(args[0].equalsIgnoreCase("centipedetest")){
+				Player p = (Player)sender;
+				Centipede test = new Centipede("Test", EntityType.ZOMBIE, 3);
+				test.spawn(p.getLocation());
+				if(!(test.setTarget(p))) {
+					p.sendMessage("Failed to set target.");
+				}
+				return true;				
 			}
 		}
 		return false;
