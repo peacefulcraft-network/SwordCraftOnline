@@ -3,7 +3,7 @@ package net.peacefulcraft.sco.items;
 public enum ItemTier
 {
 	COMMON, UNCOMMON, RARE, LEGENDARY,
-	MASTERY, ETHEREAL;
+	ETHEREAL, GODLIKE;
 
 	public String toString() {
 		switch(this) {
@@ -15,7 +15,7 @@ public enum ItemTier
 			return "rare";
 			case LEGENDARY:
 			return "legendary";
-			case MASTERY:
+			case GODLIKE:
 			return "mastery";
 			case ETHEREAL:
 			return "ethereal";
