@@ -26,8 +26,8 @@ public class SwordSkillRegistery {
 		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.UNCOMMON).getId(), true);
 		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.RARE).getId(), true);
 		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.LEGENDARY).getId(), true);
-		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.MASTERY).getId(), true);
 		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.ETHEREAL).getId(), true);
+		this.regsiterSwordSkill(new CriticalStrikeItem(1, ItemTier.GODLIKE).getId(), true);
 		
 		// Will run blocking, but this data needs to be consistent before any players try to join
 		(new SyncSwordSkillRegistry()).run();

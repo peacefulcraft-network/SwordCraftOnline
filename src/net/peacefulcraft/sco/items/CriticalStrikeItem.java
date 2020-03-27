@@ -48,12 +48,12 @@ public class CriticalStrikeItem extends SkillProvider{
 		break;case LEGENDARY:
 			lore.add(getTierColor(this.tier) + "Combo Damage: 7");
 			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
-		break;case MASTERY:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 10");
-			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
 		break;case ETHEREAL:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 12");
+			lore.add(getTierColor(this.tier) + "Combo Damage: 10");
 			lore.add(getTierColor(this.tier) + "Cooldown: 4 seconds");
+		break;case GODLIKE:
+			lore.add(getTierColor(this.tier) + "Combo Damage: 12");
+			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
 		}
 		this.setLore(lore);
 	}
@@ -73,11 +73,11 @@ public class CriticalStrikeItem extends SkillProvider{
 			break;case LEGENDARY:
 				this.cooldown = 5000;
 				this.damage = 7;
-			break;case MASTERY:
-				this.cooldown = 5000;
-				this.damage = 10;
 			break;case ETHEREAL:
 				this.cooldown = 4000;
+				this.damage = 10;
+			break;case GODLIKE:
+				this.cooldown = 5000;
 				this.damage = 12;
 		}
 	}

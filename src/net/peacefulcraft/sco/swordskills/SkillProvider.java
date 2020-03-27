@@ -126,10 +126,10 @@ public abstract class SkillProvider{
 			desc.add(getTierColor(tier) + "Rare Sword Skill");
 		break;case LEGENDARY:
 			desc.add(getTierColor(tier) + "Legendary Sword Skill");
-		break;case MASTERY:
-			desc.add(getTierColor(tier) + "Mastery Sword Skill");
 		break;case ETHEREAL:
-			desc.add(getTierColor(tier) + "Etheral Sword Skill");
+			desc.add(getTierColor(tier) + "Mastery Sword Skill");
+		break;case GODLIKE:
+			desc.add(getTierColor(tier) + "Godlike Sword Skill");
 		}
 		return desc;
 	}
@@ -148,9 +148,9 @@ public abstract class SkillProvider{
 			return ChatColor.BLUE;
 		case LEGENDARY:
 			return ChatColor.LIGHT_PURPLE;
-		case MASTERY:
-			return ChatColor.AQUA;
 		case ETHEREAL:
+			return ChatColor.AQUA;
+		case GODLIKE:
 			return ChatColor.GOLD;
 		default:
 			return ChatColor.WHITE;

@@ -45,9 +45,9 @@ public class SerratedBladeItem extends SkillProvider {
 			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +3%");
 		break;case LEGENDARY:
 			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +5%");
-		break;case MASTERY:
-			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +7%");
 		break;case ETHEREAL:
+            lore.add(getTierColor(this.tier) + "Critical Hit Chance: +7%");
+        break;case GODLIKE:
 			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +10%");
 		}
 		this.setLore(lore);
@@ -64,9 +64,9 @@ public class SerratedBladeItem extends SkillProvider {
                 this.increase = 3;
 			break;case LEGENDARY:
                 this.increase = 5;
-			break;case MASTERY:
-                this.increase = 7;
 			break;case ETHEREAL:
+                this.increase = 7;
+			break;case GODLIKE:
                 this.increase = 10;
 		}
     }
