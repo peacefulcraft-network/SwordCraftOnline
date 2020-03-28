@@ -8,7 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 public class AbilityEntityDamageEntityListener implements Listener {
 
@@ -33,12 +33,12 @@ public class AbilityEntityDamageEntityListener implements Listener {
         
         // Execute attacker's ability event loop
         if(attacker != null) {
-            attacker.getSwordSkillManager().abilityExecuteLoop(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE, ev);
+            attacker.getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE, ev);
         }
 
         // Execute the victims ability event loop
         if(victim != null) {
-            victim.getSwordSkillManager().abilityExecuteLoop(SwordSkillType.ENTITY_DAMAGE_ENTITY_RECIEVE, ev);
+            victim.getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_RECIEVE, ev);
         }
 		
 	}

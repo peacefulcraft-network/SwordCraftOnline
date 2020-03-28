@@ -21,7 +21,7 @@ public class SerratedBladeSkill extends SwordSkill {
         this.delay = delay;
         this.increase = increase;
 
-        this.listenFor(SwordSkillType.PASSIVE);
+        this.listenFor(SwordSkillTrigger.PASSIVE);
         this.useModule(new TimedCooldown(delay));
     }
 

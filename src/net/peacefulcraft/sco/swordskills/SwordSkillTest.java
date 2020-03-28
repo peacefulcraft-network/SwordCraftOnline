@@ -13,7 +13,7 @@ public class SwordSkillTest extends SwordSkill {
 
     public SwordSkillTest(SwordSkillCaster c, SkillProvider provider) {
         super(c, provider);
-        this.listenFor(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE);
+        this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.useModule(new TimedCooldown(5000L));
         this.useModule(new TimedCombo(this, SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE, 10, 200L));
         s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Instantiated");
@@ -49,7 +49,7 @@ public class SwordSkillTest extends SwordSkill {
 
     @Override
     public void unregisterSkill() {
-        this.manager.unregisterListener(SwordSkillType.PLAYER_INTERACT, this);
+        this.manager.unregisterListener(SwordSkillTrigger.PLAYER_INTERACT, this);
         if (this.s != null) {
             s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Skill Unregistered");
         }

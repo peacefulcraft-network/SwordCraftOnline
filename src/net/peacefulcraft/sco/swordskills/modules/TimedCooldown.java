@@ -3,7 +3,7 @@ package net.peacefulcraft.sco.swordskills.modules;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 /**
  * TimedCooldown
@@ -31,7 +31,7 @@ public class TimedCooldown implements SwordSkillModule {
     }
 
     @Override
-    public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {}
+    public void executeSupportLifecycle(SwordSkillTrigger type, SwordSkill ss, Event ev) {}
     /* No support life cycle steps needed */
 
     @Override

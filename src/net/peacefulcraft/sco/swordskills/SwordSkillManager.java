@@ -19,7 +19,7 @@ public class SwordSkillManager
 	private LivingEntity e;
 		public LivingEntity getLivingEntity() { return this.e; }
 		
-	private HashMap<SwordSkillType, ArrayList<SwordSkill>> skills = new HashMap<SwordSkillType, ArrayList<SwordSkill>>();
+	private HashMap<SwordSkillTrigger, ArrayList<SwordSkill>> skills = new HashMap<SwordSkillTrigger, ArrayList<SwordSkill>>();
 
 	/**Stores instance of SCOPlayer */
 	public SwordSkillManager(SCOPlayer s) {
@@ -32,7 +32,7 @@ public class SwordSkillManager
 		this.e = am.getLivingEntity();
 	}
 	
-	public void registerSkill(SwordSkillType type, SwordSkill skill) throws IllegalStateException {
+	public void registerSkill(SwordSkillTrigger type, SwordSkill skill) throws IllegalStateException {
 		if(skills.get(type) == null) {
 			skills.put(type, new ArrayList<SwordSkill>());
 		} else {
@@ -51,7 +51,7 @@ public class SwordSkillManager
 	 * @param type The event loop type to register on
 	 * @param skill The SwordSkill instance which needs to be notified of the given event type
 	 */
-	public void registerListener(SwordSkillType type, SwordSkill skill) {
+	public void registerListener(SwordSkillTrigger type, SwordSkill skill) {
 		ArrayList<SwordSkill> listeners = skills.get(type);
 		
 		// Create the list for this loop type and add the skill if the list doesn't exist
@@ -75,7 +75,7 @@ public class SwordSkillManager
 	 * Used by SwordSkill to dynamically unregister itself from listeners for SwordSkillModules
 	 * @param skill The SwordSkill instance which needs to be removed from the notifier list
 	 */
-	public void unregisterListener(SwordSkillType type, SwordSkill skill) {
+	public void unregisterListener(SwordSkillTrigger type, SwordSkill skill) {
 		ArrayList<SwordSkill> listeners = skills.get(type);
 		listeners.remove(skill);
 
@@ -84,7 +84,7 @@ public class SwordSkillManager
 		}
 	}
 
-	public void abilityExecuteLoop(SwordSkillType type, Event ev) {
+	public void abilityExecuteLoop(SwordSkillTrigger type, Event ev) {
 		if(skills.get(type) == null) {
 			return;
 		}
@@ -97,7 +97,7 @@ public class SwordSkillManager
 	
 	/**Returns true if skill exists in map */
 	public boolean isSkillRegistered(SwordSkill skill) {
-		for(SwordSkillType type : skills.keySet()) {
+		for(SwordSkillTrigger type : skills.keySet()) {
 			if(skills.get(type).contains(skill)) {
 				return true;
 			}
@@ -117,7 +117,7 @@ public class SwordSkillManager
 		for(SwordSkill skill : getSkills()) {
 			unregisterSkill(skill);
 		}
-		skills = new HashMap<SwordSkillType, ArrayList<SwordSkill>>();
+		skills = new HashMap<SwordSkillTrigger, ArrayList<SwordSkill>>();
 	}
 	
 		/**

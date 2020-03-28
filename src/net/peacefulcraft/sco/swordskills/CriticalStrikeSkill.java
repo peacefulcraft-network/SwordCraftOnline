@@ -20,7 +20,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 		this.hitsToTrigger = hitsToTrigger;
 		this.damageToDeal = damageToDeal;
 
-		this.listenFor(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE);
+		this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 		this.useModule(new TimedCooldown(delay));
 		this.useModule(new BasicCombo(this, SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
 	}
