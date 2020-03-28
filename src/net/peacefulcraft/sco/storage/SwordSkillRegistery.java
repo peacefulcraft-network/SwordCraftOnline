@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import net.peacefulcraft.sco.items.CriticalStrikeItem;
 import net.peacefulcraft.sco.items.ForwardLungeItem;
+import net.peacefulcraft.sco.items.HeavyImpactItem;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.ParryItem;
 import net.peacefulcraft.sco.items.SkillIdentifier;
@@ -44,6 +45,13 @@ public class SwordSkillRegistery {
 		this.regsiterSwordSkill(new ForwardLungeItem(1, ItemTier.LEGENDARY).getId(), true);
 		this.regsiterSwordSkill(new ForwardLungeItem(1, ItemTier.ETHEREAL).getId(), true);
 		this.regsiterSwordSkill(new ForwardLungeItem(1, ItemTier.GODLIKE).getId(), true);
+
+		this.regsiterSwordSkill(new HeavyImpactItem(1, ItemTier.COMMON).getId(), true);
+		this.regsiterSwordSkill(new HeavyImpactItem(1, ItemTier.UNCOMMON).getId(), true);
+		this.regsiterSwordSkill(new HeavyImpactItem(1, ItemTier.RARE).getId(), true);
+		this.regsiterSwordSkill(new HeavyImpactItem(1, ItemTier.LEGENDARY).getId(), true);
+		this.regsiterSwordSkill(new HeavyImpactItem(1, ItemTier.ETHEREAL).getId(), true);
+		this.regsiterSwordSkill(new HeavyImpactItem(1, ItemTier.GODLIKE).getId(), true);
 		
 		// Will run blocking, but this data needs to be consistent before any players try to join
 		(new SyncSwordSkillRegistry()).run();

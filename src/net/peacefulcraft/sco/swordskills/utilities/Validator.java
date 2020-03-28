@@ -7,7 +7,7 @@ public class Validator {
 		String up = str.toUpperCase();
 
         for (ItemTier t : ItemTier.values()) {
-            if(up.equals(t.toString())) {
+            if(up.equalsIgnoreCase(t.toString())) {
                 return true;
             }
         }
