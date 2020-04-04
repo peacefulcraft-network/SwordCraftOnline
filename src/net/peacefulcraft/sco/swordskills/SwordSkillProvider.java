@@ -53,7 +53,7 @@ public interface SwordSkillProvider {
    *         False if no such skill exists.
    */
   public static boolean SkillExists(String shortName, int level, ItemTier tier) {
-    return SwordSkillProvider.SkillExists(SwordSkillProvider.getProviderName(shortName, level, tier))
+    return SwordSkillProvider.SkillExists(SwordSkillProvider.getProviderName(shortName, level, tier));
   }
 
   /**
@@ -119,7 +119,7 @@ public interface SwordSkillProvider {
    * @return An instance of the requested SwordSkillprovider
    */
   public static SwordSkillProvider generateProvider(String shortName, int level, ItemTier tier) throws RuntimeException {
-    return SwordSkillProvider.generateProvider(SwordSkillProvider.getProviderName(shortName, level, tier))
+    return SwordSkillProvider.generateProvider(SwordSkillProvider.getProviderName(shortName, level, tier));
   }
 
   /**
