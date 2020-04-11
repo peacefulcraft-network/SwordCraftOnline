@@ -1,41 +1,40 @@
 package net.peacefulcraft.sco.mythicmobs.listeners;
 
+import java.util.List;
+
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.metadata.MetadataValue;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.mobs.Centipede;
 
 public class CentipedeDamage implements Listener {
     @EventHandler
-    public void damageInternal(EntityDamageByEntityEvent e) {
-        Entity damager = e.getDamager();
-        Entity victim = e.getEntity();
+    public void centipedeDeath(EntityDeathEvent e) {
+        Entity ent = e.getEntity();
+        List<MetadataValue> meta = ent.getMetadata("centipede");
+        if(meta.isEmpty()) { return; }
 
-        if(damager.hasMetadata("centipede") && victim.hasMetadata("centipede")) {
-            e.setCancelled(true);
-            return;
-        }
-    }
+        
+    }   
 
     @EventHandler
-    public void target(EntityTargetEvent e) {
-        if(!(e.getEntity().hasMetadata("centipede"))) { return; }
-        
-        Centipede c = null;
-        for(Centipede temp : SwordCraftOnline.getPluginInstance().getMobManager().getCentipedeList().values()) {
-            if(temp.contains(e.getEntity())) {
-                c = temp;
-                break;
-            }
-        }
-        if(c == null) { return; }
+    public void centipedeDamage(EntityDamageByEntityEvent e) {
+        Entity victim = e.getEntity();
 
-        c.update();
+        //If victim is not centipede quit.
+        List<MetadataValue> meta = victim.getMetadata("centipede");
+        if(meta.isEmpty()) { return; }
+        //If victim is body segment quit
+        if(meta.get(0).value().equals("0")) { return; }
+        //If centipede is not registered quit
+        Centipede c = SwordCraftOnline.getPluginInstance().getMobManager().searchCentipede(victim);
+        if(c == null) { return; }
+        
+        c.segmentDamage(e.getDamage());
     }
 }

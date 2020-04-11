@@ -326,12 +326,27 @@ public class SCOAdmin implements CommandExecutor {
 
 			if(args[0].equalsIgnoreCase("centipedetest")){
 				Player p = (Player)sender;
-				Centipede test = new Centipede("Test", EntityType.ZOMBIE, 3);
-				test.spawn(p.getLocation());
-				if(!(test.setTarget(p))) {
-					p.sendMessage("Failed to set target.");
-				}
-				return true;				
+				if(args[1].equalsIgnoreCase("spawn")) {
+					int size = 3;
+					int repeat = 20;
+					try{ 
+						size = Integer.valueOf(args[2]);
+					} catch(Exception ex) { SwordCraftOnline.logDebug("No size value set."); }
+					try{
+						repeat = Integer.valueOf(args[3]);
+					} catch(Exception exx) { SwordCraftOnline.logDebug("No repeatition value set."); }
+
+					Centipede test = new Centipede("Test", size, repeat);
+					test.spawn(p.getLocation());
+					if(!(test.setTarget(p))) {
+						p.sendMessage("Failed to set target.");
+					}
+					return true;		
+				}	
+				if(args[1].equalsIgnoreCase("remove")) {
+					SwordCraftOnline.getPluginInstance().getMobManager().removeAllCentipede();
+					return true;
+				}	
 			}
 		}
 		return false;

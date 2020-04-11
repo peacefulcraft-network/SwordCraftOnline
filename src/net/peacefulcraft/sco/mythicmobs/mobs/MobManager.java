@@ -47,7 +47,6 @@ public class MobManager {
         public Map<UUID, ActiveMob> getMobRegistry() { return Collections.unmodifiableMap(this.mobRegistry); }
 
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
-        public void addCenti(String name, Centipede c) { this.centipedeList.put(name, c); }
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
 
     public MobManager(SwordCraftOnline s) {
@@ -265,5 +264,36 @@ public class MobManager {
 
     public Collection<ActiveMob> getActiveMobs() {
         return this.mobRegistry.values();
+    }
+
+    public void removeCentiede(String name) {
+        this.centipedeList.remove(name);
+        SwordCraftOnline.logInfo("Removed " + name + " from Centipede Registry.");
+    }
+
+    public void removeAllCentipede() {
+        Iterator<Centipede> iterator = this.centipedeList.values().iterator();
+        while(iterator.hasNext()) {
+            Centipede c = iterator.next();
+            c.kill();
+            SwordCraftOnline.logInfo("Removed " + c.getName() + " from Centipede Registry.");
+            iterator.remove();
+        }
+    }
+
+    public void addCentipede(String name, Centipede c) { 
+        this.centipedeList.put(name, c);
+        SwordCraftOnline.logInfo("Registered " + name + " to Centipede Registry.");
+    }
+
+    public Centipede searchCentipede(Entity e) {
+        for(Centipede c : getCentipedeList().values()) {
+            for(Entity internal : c.getList()) {
+                if(internal.equals(e)) {
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 }
