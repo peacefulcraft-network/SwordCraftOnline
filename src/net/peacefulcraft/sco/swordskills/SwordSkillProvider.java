@@ -52,7 +52,7 @@ public interface SwordSkillProvider {
 
   /**
    * Takes skill attributes and generates the ItemIdentifier and SwordSKillProvider's class names.
-   * IE: Critical Strike level 1, tier Rare -> CriticalStrikeIItemRare.
+   * IE: Critical Strike tier Rare -> CriticalStrikeItemRare.
    * @param shortName The base name of the skill, IE: Critical Strike.
    * @param tier The desired skill tier.
    * @return The name of the ItemIdentifier and SwordSkillProvider classes.

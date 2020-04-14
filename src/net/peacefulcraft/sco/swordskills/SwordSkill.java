@@ -25,8 +25,8 @@ public abstract class SwordSkill {
 	protected SwordSkillCaster c;
 		public final SwordSkillCaster getSwordSkillCaster() { return c; }
 		
-	protected SkillProvider provider;
-		public final SkillProvider getProvider() { return provider; }
+	protected SwordSkillProvider provider;
+		public final SwordSkillProvider getProvider() { return provider; }
 
 	protected SwordSkillManager manager;
 		public final SwordSkillManager getSwordSkillManager() { return manager; }
@@ -40,7 +40,7 @@ public abstract class SwordSkill {
 	// Map of event loops and the corisponding SwordSkillModules which need to run when those loops are triggered
 	private final HashMap<SwordSkillTrigger, ArrayList<SwordSkillModule>> supportListeners = new HashMap<SwordSkillTrigger, ArrayList<SwordSkillModule>>();
 
-	public SwordSkill(SwordSkillCaster c, SkillProvider provider) {
+	public SwordSkill(SwordSkillCaster c, SwordSkillProvider provider) {
 		this.c = c;
 		LivingEntity caster = c.getSwordSkillManager().getSCOPlayer().getPlayer();
 		if (caster instanceof Player) {

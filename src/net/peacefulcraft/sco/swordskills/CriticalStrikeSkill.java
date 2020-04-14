@@ -14,7 +14,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 	private double damageToDeal;
 	private double hitsToTrigger;
 
-	public CriticalStrikeSkill(SwordSkillCaster c, long delay, SkillProvider provider, int hitsToTrigger, double damageToDeal) {
+	public CriticalStrikeSkill(SwordSkillCaster c, long delay, SwordSkillProvider provider, int hitsToTrigger, double damageToDeal) {
 		super(c, provider);
 		this.delay = delay;
 		this.hitsToTrigger = hitsToTrigger;

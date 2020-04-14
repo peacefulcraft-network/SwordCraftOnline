@@ -87,11 +87,11 @@ public interface ItemIdentifier {
    * @param amount ItemStack quantity.
    * @param dynamic True for a dynamic item, false for a static item (see above).
    */
-  public static ItemStack generateItem(String name, int amount, boolean dynamic) throws RuntimeException {
+  public static ItemStack generateItem(String name, ItemTier tier, int amount, boolean dynamic) throws RuntimeException {
     try {
       name = name.replaceAll(" ", "");
-      Class<?> classs = Class.forName("net.peacefulcraft.sco.items." + name);
-      Constructor<?> constructor = classs.getConstructor();
+      Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
+      Constructor<?> constructor = clas.getConstructor(tier);
       
       ItemIdentifier itemIdentifier = ((ItemIdentifier) constructor.newInstance());
  
@@ -100,6 +100,7 @@ public interface ItemIdentifier {
       NBTItem nbti = new NBTItem(item);
       nbti = itemIdentifier.applyNBT(nbti);
       nbti.setBoolean("dynamic", dynamic);
+      nbti.setString("identifier", clas.getSimpleName());
 
       return nbti.getItem();
 			

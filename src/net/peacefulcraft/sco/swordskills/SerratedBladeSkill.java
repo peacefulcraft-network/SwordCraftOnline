@@ -2,27 +2,21 @@ package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
-
 /**
  * Skill increases player critical hit chance by level.
  */
 public class SerratedBladeSkill extends SwordSkill {
 
-    private SCOPlayer s;
-    private long delay;
+    private SwordSkillCaster c;
     private int increase;
 
-    public SerratedBladeSkill(SCOPlayer s, long delay, SkillProvider provider, int increase) {
-        super(s, provider);
+    public SerratedBladeSkill(SwordSkillCaster c, SwordSkillProvider provider, int increase) {
+        super(c, provider);
 
-        this.s = s;
-        this.delay = delay;
+        this.c = c;
         this.increase = increase;
 
         this.listenFor(SwordSkillTrigger.PASSIVE);
-        this.useModule(new TimedCooldown(delay));
     }
 
     @Override

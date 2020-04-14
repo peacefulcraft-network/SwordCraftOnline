@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.items;
 
+import net.md_5.bungee.api.ChatColor;
+
 public enum ItemTier
 {
 	COMMON, UNCOMMON, RARE, LEGENDARY,
@@ -8,19 +10,46 @@ public enum ItemTier
 	public String toString() {
 		switch(this) {
 			case COMMON:
-			return "common";
+			return "Common";
 			case UNCOMMON:
-			return "uncommon";
+			return "Uncommon";
 			case RARE:
-			return "rare";
+			return "Rare";
 			case LEGENDARY:
-			return "legendary";
+			return "Legendary";
 			case GODLIKE:
-			return "mastery";
+			return "Mastery";
 			case ETHEREAL:
-			return "ethereal";
+			return "Ethereal";
 			default:
-			return "common";
+			return "Common";
+		}
+	}
+
+	public ChatColor getTierColor() {
+		return getTierColor(this);
+	}
+
+	public static ChatColor getTierColor(String tier) {
+		return getTierColor(ItemTier.valueOf(tier));
+	}
+	
+	public static ChatColor getTierColor(ItemTier tier) {
+		switch(tier) {
+		case COMMON:
+			return ChatColor.WHITE;
+		case UNCOMMON:
+			return ChatColor.GREEN;
+		case RARE:
+			return ChatColor.BLUE;
+		case LEGENDARY:
+			return ChatColor.LIGHT_PURPLE;
+		case ETHEREAL:
+			return ChatColor.AQUA;
+		case GODLIKE:
+			return ChatColor.GOLD;
+		default:
+			return ChatColor.WHITE;
 		}
 	}
 }
