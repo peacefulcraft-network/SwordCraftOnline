@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
@@ -78,8 +79,8 @@ public interface ItemIdentifier {
     }
   }
 
-  /**
-   * Generates the requested item as an ItemStack
+    /**
+   * Generates the requested item as an ItemStack with default tier COMMON
    * Static items are normal items in the player's inventory. These items will be saved to the database
    * on inventory saves.
    * Dynamic items are items that are representative of or derivative of something within the game. Thes
@@ -87,19 +88,34 @@ public interface ItemIdentifier {
    * @param amount ItemStack quantity.
    * @param dynamic True for a dynamic item, false for a static item (see above).
    */
-  public static ItemStack generateItem(String name, ItemTier tier, int amount, boolean dynamic) throws RuntimeException {
+  public static ItemStack generateItem(String name, int amount) throws RuntimeException {
+    return ItemIdentifier.generateItem(name, ItemTier.COMMON, amount);
+  }
+
+  /**
+   * Generates the requested item as an ItemStack
+   * Static items are normal items in the player's inventory. These items will be saved to the database
+   * on inventory saves.
+   * Dynamic items are items that are representative of or derivative of something within the game. Thes
+   * @param name The name/class of the item.
+   * @param tier The tier of the desired item
+   * @param amount ItemStack quantity.
+   */
+  public static ItemStack generateItem(String name, ItemTier tier, int amount) throws RuntimeException {
     try {
       name = name.replaceAll(" ", "");
       Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
-      Constructor<?> constructor = clas.getConstructor(tier);
+      Constructor<?> constructor = clas.getConstructor();
       
-      ItemIdentifier itemIdentifier = ((ItemIdentifier) constructor.newInstance());
+      ItemIdentifier itemIdentifier = ((ItemIdentifier) constructor.newInstance(tier));
  
       ItemStack item = new ItemStack(itemIdentifier.getMaterial(), amount);
  
       NBTItem nbti = new NBTItem(item);
       nbti = itemIdentifier.applyNBT(nbti);
-      nbti.setBoolean("dynamic", dynamic);
+      nbti.setBoolean("dynamic", itemIdentifier.isDynamic());
+      nbti.setBoolean("movable", itemIdentifier.isMovable());
+      nbti.setBoolean("droppable", itemIdentifier.isDroppable());
       nbti.setString("identifier", clas.getSimpleName());
 
       return nbti.getItem();
