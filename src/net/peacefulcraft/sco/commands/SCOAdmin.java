@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
@@ -19,13 +20,13 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.Centipede;
 import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
@@ -372,6 +373,30 @@ public class SCOAdmin implements CommandExecutor {
 				}
 			}
 
+			if(args[0].equalsIgnoreCase("centipedetest")){
+				Player p = (Player)sender;
+				if(args[1].equalsIgnoreCase("spawn")) {
+					int size = 3;
+					int repeat = 20;
+					try{ 
+						size = Integer.valueOf(args[2]);
+					} catch(Exception ex) { SwordCraftOnline.logDebug("No size value set."); }
+					try{
+						repeat = Integer.valueOf(args[3]);
+					} catch(Exception exx) { SwordCraftOnline.logDebug("No repeatition value set."); }
+
+					Centipede test = new Centipede("Test", size, repeat);
+					test.spawn(p.getLocation());
+					if(!(test.setTarget(p))) {
+						p.sendMessage("Failed to set target.");
+					}
+					return true;		
+				}	
+				if(args[1].equalsIgnoreCase("remove")) {
+					SwordCraftOnline.getPluginInstance().getMobManager().removeAllCentipede();
+					return true;
+				}	
+			}
 		}
 		return false;
 	}
