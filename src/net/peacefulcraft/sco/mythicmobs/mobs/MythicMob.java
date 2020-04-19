@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Cat;
@@ -15,9 +14,10 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Color;
+import org.bukkit.entity.Horse.Style;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Rabbit;
@@ -25,10 +25,10 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.TropicalFish;
-import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Horse.Color;
-import org.bukkit.entity.Horse.Style;
 import org.bukkit.entity.TropicalFish.Pattern;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
+import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -389,6 +389,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     protected boolean spawnVelocityZRange = false;
         public boolean isSpawnVelocityZRange() { return this.spawnVelocityZRange; }
 
+    protected String villagerType;
+        public String getVillagerType() { return this.villagerType; }
+
     /**Is mob disguised as player */
     private boolean fakePlayer = false;
         /**Returns if mob is fake player */
@@ -563,7 +566,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.rider = Optional.ofNullable(rider);
 
         //Options handling
-        this.optionDespawn = mc.getBoolean("Despawn");
+        this.optionDespawn = mc.getBoolean("Despawn", true);
         this.optionDespawn = mc.getBoolean("Options.Despawn", this.optionDespawn);
         this.optionPersistent = mc.getBoolean("Persistent", false);
         this.optionPersistent = mc.getBoolean("Options.Persistent", this.optionPersistent);
@@ -571,7 +574,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.attrMovementSpeed = mc.getDouble("Options.MovementSpeed", 0.0D);
         this.attrKnockbackResist = mc.getDouble("Options.KnockbackResistance", 0.0D);
         this.attrFollowRange = mc.getDouble("Options.FollowRange", 0.0D);
-        this.attrAttackSpeed = mc.getDouble("Options.AttackSpeed", 0.0D);
         this.optionGlowing = mc.getBoolean("Options.Glowing", false);
         this.optionCollidable = mc.getBoolean("Options.Collidable", true);
         this.optionNoGravity = mc.getBoolean("Options.NoGravity", false);
@@ -607,6 +609,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.tropicalFishPatternColor = mc.getString("Options.PatternColor", "yellow");
         //Slime options
         this.slimeSize = mc.getInteger("Options.SlimeSize", 8);
+        this.preventSlimeSplit = mc.getBoolean("Options.PreventSlimeSplit", true);
         //Ageable option
         this.isAdult = mc.getBoolean("Options.Adult", true);
         this.ageLock = mc.getBoolean("Options.AgeLock", false);
@@ -615,7 +618,28 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         //Anger options
         this.angry = mc.getBoolean("Options.Angry", false);
         //PotionEffect handling
-        this.potionEffects = mc.getStringList("PotionEffects");
+        this.potionEffects = mc.getStringList("Options.PotionEffects");
+        //Villager options
+        if(this.strMobType.equalsIgnoreCase("Villager")) {
+            this.villagerType = mc.getString("Options.VillagerType");
+        }
+
+        //More Options
+        this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
+        this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
+        this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
+        this.alwaysShowName = mc.getBoolean("Options.AlwaysShowName", false);
+        this.showNameOnDamage = mc.getBoolean("Options.ShowNameOnDamaged", false);
+        this.preventOtherDrops = Boolean.valueOf(mc.getBoolean("Options.PreventOtherDrops", true));
+        this.preventRandomEquipment = Boolean.valueOf(mc.getBoolean("Options.PreventRandomEquipment", false));
+        this.preventLeashing = Boolean.valueOf(mc.getBoolean("Options.PreventLeashing", true));
+        this.preventRename = Boolean.valueOf(mc.getBoolean("Options.PreventRenaming", true));
+        this.preventSunburn = Boolean.valueOf(mc.getBoolean("Options.PreventSunburn", false));
+        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleport", false));
+        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleporting", this.preventEndermanTeleport.booleanValue()));
+        this.preventItemPickup = Boolean.valueOf(mc.getBoolean("Options.PreventItemPickup", false));
+        this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
+        this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
         
         //Boss Bar Handling
         this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
@@ -646,37 +670,27 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         //Loading mob faction details.
         this.faction = mc.getString("Faction", null);
         this.factionTargets = mc.getStringList("Target");
-
-        //Options
-        this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
-        this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
-        this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
-        this.alwaysShowName = mc.getBoolean("Options.AlwaysShowName", false);
-        this.showNameOnDamage = mc.getBoolean("Options.ShowNameOnDamaged", false);
-        this.preventOtherDrops = Boolean.valueOf(mc.getBoolean("Options.PreventOtherDrops", true));
-        this.preventRandomEquipment = Boolean.valueOf(mc.getBoolean("Options.PreventRandomEquipment", false));
-        this.preventLeashing = Boolean.valueOf(mc.getBoolean("Options.PreventLeashing", true));
-        this.preventRename = Boolean.valueOf(mc.getBoolean("Options.PreventRenaming", true));
-        this.preventSunburn = Boolean.valueOf(mc.getBoolean("Options.PreventSunburn", false));
-        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleport", false));
-        this.preventEndermanTeleport = Boolean.valueOf(mc.getBoolean("Options.PreventTeleporting", this.preventEndermanTeleport.booleanValue()));
-        this.preventItemPickup = Boolean.valueOf(mc.getBoolean("Options.PreventItemPickup", false));
-        this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
-        this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
+        
         this.aiGSelectors = mc.getStringList("AIGoalSelectors");
         this.aiTSelectors = mc.getStringList("AITargetSelectors");
 
         //Drops, droptables, killmessages
         this.drops = mc.getStringList("Drops");
-        /**Passing to drop table constructor.
+        /**
+         * Passing to drop table constructor.
          * FILE NAMES SHOULD MATCH.
          */
-        if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(this.drops.get(0))) {
-            //Check if Custom drop table loaded from file.
-            this.dropTable = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(this.drops.get(0));
-        } else {
-            this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+        try {
+            if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(this.drops.get(0))) {
+                //Check if Custom drop table loaded from file.
+                this.dropTable = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(this.drops.get(0));
+            } else {
+                this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+            }
+        } catch(IndexOutOfBoundsException ex) {
+            this.dropTable = null;
         }
+
         this.equipment = mc.getStringList("Equipment");
         List<String> killMessages = mc.getStringList("KillMessages");
         if(killMessages != null && killMessages.size() > 0) {
@@ -730,8 +744,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         String strSpawnVelocityX = mc.getString("SpawnModifiers.VelocityX", "0");
         String strSpawnVelocityY = mc.getString("SpawnModifiers.VelocityY", "0");
         String strSpawnVelocityZ = mc.getString("SpawnModifiers.VelocityZ", "0");
-        if(strSpawnVelocityX.contains("to")) {
-            String[] split = strSpawnVelocityX.split("to");
+        if(strSpawnVelocityX.contains("-")) {
+            String[] split = strSpawnVelocityX.split("-");
             try {
                 this.spawnVelocityX = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityXMax = Double.valueOf(split[1]).doubleValue();
@@ -748,8 +762,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                 SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid X Velocity Modifier.");
             }
         }
-        if(strSpawnVelocityY.contains("to")) {
-            String[] split = strSpawnVelocityY.split("to");
+        if(strSpawnVelocityY.contains("-")) {
+            String[] split = strSpawnVelocityY.split("-");
             try {
                 this.spawnVelocityY = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityYMax = Double.valueOf(split[1]).doubleValue();
@@ -766,8 +780,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                 SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid Y Velocity Modifier.");
             }
         }
-        if(strSpawnVelocityZ.contains("to")) {
-            String[] split = strSpawnVelocityZ.split("to");
+        if(strSpawnVelocityZ.contains("-")) {
+            String[] split = strSpawnVelocityZ.split("-");
             try {
                 this.spawnVelocityZ = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityZMax = Double.valueOf(split[1]).doubleValue();
@@ -1073,6 +1087,17 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             }
             if(getDisplayName() != null) {
                 asLiving.setCustomName(am.getDisplayName());
+            }
+
+            //If villager has profession set it. If not nitwit
+            if(e instanceof Villager) {
+                if((!this.villagerType.isEmpty())) {
+                    try {
+                        ((Villager)e).setProfession(Profession.valueOf(this.villagerType));
+                    } catch(IllegalArgumentException ex) {
+                        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Attempted to load invalid villager modifier.");
+                    }
+                }
             }
         }
 

@@ -20,6 +20,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
+import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
@@ -150,6 +151,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		// Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
+		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);
@@ -166,6 +168,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new AbilityPlayerDeathListener(), this);
 		getServer().getPluginManager().registerEvents(new AbilityPlayerMoveListener(),this);
 		getServer().getPluginManager().registerEvents(new AbilityPlayerRespawnListener(), this);
+
 	}
 	
 	public static void logDebug(String debug) {
