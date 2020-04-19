@@ -5,21 +5,18 @@ import org.bukkit.event.Event;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 
-/**
- * Skill increases player critical hit chance by level.
- */
-public class SerratedBladeSkill extends SwordSkill {
+public class ParrySkill extends SwordSkill {
 
     private SCOPlayer s;
-    private long delay;
     private int increase;
+    private long delay;
 
-    public SerratedBladeSkill(SCOPlayer s, long delay, SkillProvider provider, int increase) {
-        super(s, provider);
+    public ParrySkill(SCOPlayer s, long delay, SkillProvider p, int increase) {
+        super(s, p);
 
         this.s = s;
-        this.delay = delay;
         this.increase = increase;
+        this.delay = delay;
 
         this.listenFor(SwordSkillType.PASSIVE);
         this.useModule(new TimedCooldown(delay));
@@ -27,13 +24,8 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public boolean skillSignature(Event ev) {
-        //Skill only requires being equipped.
-        return true;
-    }
-
-    @Override
-    public void triggerSkill(Event ev) {
-        s.setCriticalChance(s.getCriticalChance() + increase);
+        //Skill only requires being equipped
+        return true;        
     }
 
     @Override
@@ -43,12 +35,24 @@ public class SerratedBladeSkill extends SwordSkill {
     }
 
     @Override
+    public void triggerSkill(Event ev) {
+        if(this.c instanceof SCOPlayer) {
+            SCOPlayer s = (SCOPlayer)c;
+            s.setParryChance(s.getCriticalChance() + this.increase);
+        }
+    }
+
+    @Override
     public void skillUsed() {
-        //No need to mark, passive.
+        //No need to mark
     }
 
     @Override
     public void unregisterSkill() {
-        s.setCriticalChance(s.getCriticalChance() - increase);
+        if(this.c instanceof SCOPlayer) {
+            SCOPlayer s = (SCOPlayer)c;
+            s.setParryChance(s.getParryChance() - this.increase);
+        }
     }
+    
 }
