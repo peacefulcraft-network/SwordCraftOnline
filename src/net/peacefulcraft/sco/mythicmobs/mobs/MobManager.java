@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -295,5 +296,15 @@ public class MobManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Searches MMDisplay for names. Consistent method to remove lvl name modifiers.
+     * @param name Unmodified name of mob. Including Lvl modifiers.
+     * @return MythicMob instance
+     */
+    public MythicMob searchMMDisplay(String name) {
+        String s = StringUtils.substringBefore(name, " [");
+        return getMMDisplay().get(s);
     }
 }

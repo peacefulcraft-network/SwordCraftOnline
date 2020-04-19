@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar.HealthBarType;
+
 public class SCOConfig {
 
 	private FileConfiguration c;
@@ -28,6 +30,8 @@ public class SCOConfig {
 	private String db_password;
 	
 	private boolean autoTarget = true;
+
+	private HealthBarType healthBarConfig = HealthBarType.BAR;
 	
 	public SCOConfig(FileConfiguration c) {
 		
@@ -188,5 +192,26 @@ public class SCOConfig {
 
 	public boolean autoTargetEnabled() {
 		return autoTarget;
+	}
+
+	public void setHealthBarConfig(HealthBarType h) {
+		healthBarConfig = h;
+	}
+
+	public void setHealthBarConfig(String s) {
+		try{
+			healthBarConfig = HealthBarType.valueOf(s);
+		} catch(Exception e) {
+			SwordCraftOnline.logInfo("Invalid Health Bar Config.");
+			healthBarConfig = HealthBarType.DISABLED;
+		}
+	}
+
+	public HealthBarType getHealthBarConfig() {
+		return healthBarConfig;
+	}
+
+	public boolean healthBarEnabled() {
+		return !(healthBarConfig.equals(HealthBarType.DISABLED));
 	}
 }

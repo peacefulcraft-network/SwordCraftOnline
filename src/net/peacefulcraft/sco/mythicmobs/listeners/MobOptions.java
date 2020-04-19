@@ -21,7 +21,7 @@ public class MobOptions implements Listener {
         Entity ent = e.getEntity();
 
         if(!(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().keySet().contains(ent.getUniqueId()))) { return; }
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getName());
 
         if(mm.getPreventSunburn()) {
             e.setCancelled(true);
@@ -34,7 +34,7 @@ public class MobOptions implements Listener {
 
         if(!(ent instanceof Enderman)) { return; }
         if(!(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().keySet().contains(ent.getUniqueId()))) { return; }
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getName());
 
         if(mm.getPreventEndermanTeleport()) {
             e.setCancelled(true);
@@ -47,7 +47,7 @@ public class MobOptions implements Listener {
         
         if(!(ent instanceof Silverfish)) { return; }
         if(!(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().keySet().contains(ent.getUniqueId()))) { return; }
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getName());
 
         if(mm.getPreventSilverfishInfection()) {
             e.setCancelled(true);
@@ -60,7 +60,7 @@ public class MobOptions implements Listener {
 
         if(!(ent instanceof Snowman)) { return; }
         if(!(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().keySet().contains(ent.getUniqueId()))) { return; }
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getName());
 
         if(mm.getPreventSnowFormation()) {
             e.setCancelled(true);
@@ -72,7 +72,7 @@ public class MobOptions implements Listener {
         Entity ent = e.getEntity();
 
         if(!(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().keySet().contains(ent.getUniqueId()))) { return; }
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getName());
 
         if(mm.getPreventSlimeSplit()) {
             e.setCancelled(true);

@@ -24,6 +24,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.listeners.CentipedeDamage;
+import net.peacefulcraft.sco.mythicmobs.listeners.HealthBarUpdate;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
@@ -142,6 +143,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MobOptions(), this);
 		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		getServer().getPluginManager().registerEvents(new CentipedeDamage(), this);
+		getServer().getPluginManager().registerEvents(new HealthBarUpdate(), this);
 		
 		//Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);

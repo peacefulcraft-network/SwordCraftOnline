@@ -18,6 +18,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
@@ -128,6 +129,13 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
 
     /**
+     * Active Mobs instance of Health Bar. 
+     */
+    private HealthBar healthBar;
+        public HealthBar getHealthBar() { return this.healthBar; }
+        public void setHealthBar(HealthBar b) { this.healthBar = b; }
+
+    /**
      * Initializes active mob instance.
      * @param e Abstract entity
      * @param type Mob type read from Mythic Mob
@@ -231,6 +239,15 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
             ((AbstractBossBar)this.bossBar.get()).removeAll();
             this.bossBar = Optional.empty();
         }
+    }
+
+    public double getHealth() {
+        return getEntity().getHealth();
+    }
+
+    public void updateHealthBar() {
+        this.healthBar.updateBar(getHealth());
+        getLivingEntity().setCustomName(getDisplayName() + " " + this.healthBar.getHealthBar());
     }
 
     public void updateBossBar() {

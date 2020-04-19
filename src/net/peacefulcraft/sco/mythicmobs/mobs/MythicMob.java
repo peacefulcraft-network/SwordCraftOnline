@@ -38,6 +38,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.log.Banners;
+import net.peacefulcraft.sco.SCOConfig;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
@@ -46,6 +47,8 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarColor
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarStyle;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar.HealthBarType;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
@@ -809,6 +812,24 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         am = applyMobOptions(am, level);
         am = applyMobVolatileOptions(am);
         am = applySpawnModifiers(am);
+        am = applyHealthBar(am);
+        return am;
+    }
+
+    public ActiveMob applyHealthBar(ActiveMob am) {
+        if(!SwordCraftOnline.getSCOConfig().healthBarEnabled()) { return am; }
+
+        Entity e = am.getEntity().getBukkitEntity();
+        if(am.getEntity().isLiving()) {
+            am.setHealthBar(new HealthBar(am));
+            LivingEntity asLiving = (LivingEntity)e;
+            
+            String name = "";
+            if(getDisplayName() != null) {
+                name = getDisplayName();
+            }
+            asLiving.setCustomName(name + " " + am.getHealthBar().getHealthBar());
+        }
         return am;
     }
 

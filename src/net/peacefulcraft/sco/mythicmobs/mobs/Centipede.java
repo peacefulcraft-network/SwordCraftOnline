@@ -67,10 +67,11 @@ public class Centipede implements Runnable {
             Zombie z = (Zombie)temp;
             z.setHealth(1);
             z.setBaby(true);
+            z.setSilent(true);
             z.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1));
 
             EntityEquipment ee = z.getEquipment();
-            ee.setHelmet(new ItemStack(Material.OBSIDIAN));
+            ee.setHelmet(new ItemStack(Material.BLACK_BED));
             
             this.list.add(temp);
             if(i != 0) { 
