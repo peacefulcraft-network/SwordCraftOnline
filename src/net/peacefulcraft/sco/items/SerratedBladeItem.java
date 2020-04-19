@@ -8,7 +8,6 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.SerratedBladeSkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
  * Common Serrated Blade - Quartz Increases players critical hit chance.
@@ -24,14 +23,13 @@ public class SerratedBladeItem extends SkillProvider {
 
     @Override
     public void registerSkill(SwordSkillCaster s) {
-        SCOPlayer sp = s.getSwordSkillManager().getPlayer();
+        SCOPlayer sp = s.getSwordSkillManager().getSCOPlayer();
         
         setModifiers();
 
         sp.setCriticalChance(sp.getCriticalChance() + this.increase);
 
-        SerratedBladeSkill sb = new SerratedBladeSkill(sp, -1, (SkillProvider) this, this.increase);
-        s.getSwordSkillManager().registerSkill(SwordSkillType.PASSIVE, sb);
+        new SerratedBladeSkill(sp, -1, (SkillProvider) this, this.increase);
     }
 
     @Override
@@ -47,9 +45,9 @@ public class SerratedBladeItem extends SkillProvider {
 			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +3%");
 		break;case LEGENDARY:
 			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +5%");
-		break;case MASTERY:
-			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +7%");
 		break;case ETHEREAL:
+            lore.add(getTierColor(this.tier) + "Critical Hit Chance: +7%");
+        break;case GODLIKE:
 			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +10%");
 		}
 		this.setLore(lore);
@@ -66,9 +64,9 @@ public class SerratedBladeItem extends SkillProvider {
                 this.increase = 3;
 			break;case LEGENDARY:
                 this.increase = 5;
-			break;case MASTERY:
-                this.increase = 7;
 			break;case ETHEREAL:
+                this.increase = 7;
+			break;case GODLIKE:
                 this.increase = 10;
 		}
     }

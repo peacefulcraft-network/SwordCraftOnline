@@ -23,6 +23,9 @@ import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.Centipede;
 import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.SwordSkillTest;
+import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
@@ -32,7 +35,7 @@ public class SCOAdmin implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (label.equalsIgnoreCase("scoadmin")) {
 			if (args.length == 0) {
-				sender.sendMessage("scoadmin [ swordskillbook | generateitem | playerdata | setplayerdata ]");
+				sender.sendMessage("scoadmin [ swordskillbook | generateitem | playerdata | setplayerdata | debug]");
 				return true;
 			}
 
@@ -203,7 +206,7 @@ public class SCOAdmin implements CommandExecutor {
 							SwordCraftOnline.logInfo("Spawned " + args[2]);
 							return true;
 						}
-						sender.sendMessage(ChatColor.GREEN + "Error Loading " + args[2] + "Active Mob Instance Null.");
+						sender.sendMessage(ChatColor.GREEN + "Error Loading " + args[2] + " Active Mob Instance Null.");
 						SwordCraftOnline.logInfo("[MOB SPAWN] Active Mob Instance Null");
 						return true;
 					}
@@ -322,6 +325,52 @@ public class SCOAdmin implements CommandExecutor {
 				SwordCraftOnline.logInfo("Particle started...");
 
 				return true;
+			}
+
+			if(args[0].equalsIgnoreCase("debug")) {
+				if( !(sender instanceof Player)) {
+					sender.sendMessage(ChatColor.RED + "Command only executable by a player.");
+					return true;
+				}
+
+				if(args.length < 2) {
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[playername] [ swordskill ]");
+					return true;
+				}
+
+				SCOPlayer s = SwordCraftOnline.getGameManager().findSCOPlayer((Player) sender);
+				if(s == null) {
+					sender.sendMessage(ChatColor.RED + "No SCOPlayer with name " + args[1] + " found.");
+					return true;
+				}
+
+				if(args.length < 3) {
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info | dummyskill]");
+					return true;
+				}
+
+				if(args[2].equalsIgnoreCase("hud")) {
+					sender.sendMessage(ChatColor.RED + "Coming soon... " + ChatColor.GOLD + ":)");
+					return true;
+
+				} else if(args[2].equalsIgnoreCase("info")) {
+					SwordSkillManager sm = s.getSwordSkillManager();
+					for(SwordSkill ss : sm.getSkills()) {
+						sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + ss.getClass().toString() + ChatColor.GOLD + "--------");
+						for(SwordSkillModule ssm : ss.getModules()) {
+							sender.sendMessage(ChatColor.GOLD + "- " + ssm.getClass().toString());
+						}
+					}
+					return true;
+
+				} else if(args[2].equalsIgnoreCase("dummyskill")) {
+					new SwordSkillTest(s, null);
+					sender.sendMessage("Registered Dummy Skill");
+					return true;
+				} else {
+					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
+					return true;
+				}
 			}
 
 			if(args[0].equalsIgnoreCase("centipedetest")){

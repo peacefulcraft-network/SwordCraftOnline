@@ -40,12 +40,11 @@ public class MythicMobDeathEvent implements Listener {
         }
 
         if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
-            
+        
             MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
-            if(mm.getDropTable() == null || mm.getDrops() == null) {
+            if(mm.getDropTable() == null) { 
                 SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(ent.getUniqueId());
-                SwordCraftOnline.logInfo("Mythic Mob " + ent.getCustomName() + " unregistered on death.");
-                return;
+                return; 
             }
 
             if(ent.getLastDamageCause() instanceof Player) {

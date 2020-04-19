@@ -10,11 +10,15 @@ import net.md_5.bungee.api.ChatColor;
 
 public class TeleportCrystal implements ICustomItem
 {
-	public ItemStack create(int amount)
+	public ItemStack create(Integer amount, Boolean shop)
 	{
 		ItemStack crystal = new ItemStack(Material.DIAMOND, amount);
 		ItemMeta meta = crystal.getItemMeta();
-		meta.setDisplayName(ChatColor.BLUE + "Teleport Crystal");
+		if(shop) {
+			meta.setDisplayName(ChatColor.BLUE + "Teleport Crystal - 2,000");
+		} else {
+			meta.setDisplayName(ChatColor.BLUE + "Teleport Crystal");
+		}
 		
 		ArrayList<String> desc = new ArrayList<String>();
 		desc.add(ChatColor.DARK_PURPLE + "Right click to teleport to last visited city.");

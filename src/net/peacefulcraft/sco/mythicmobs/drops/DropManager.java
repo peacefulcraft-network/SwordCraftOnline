@@ -34,7 +34,6 @@ public class DropManager {
         List<IOLoader<SwordCraftOnline>> droptableLoader = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), droptableFiles, "DropTables");
         this.dropTables.clear();
 
-        SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Beginning loading...");
         for(IOLoader<SwordCraftOnline> sl : droptableLoader) {
             //sl is name of file. I.e. Dungeon1.yml
             for(String s : sl.getCustomConfig().getConfigurationSection("").getKeys(false)) {
@@ -60,7 +59,6 @@ public class DropManager {
             SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Succesfully Loaded: " + file);
             */
         }
-        SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Loading complete!");
         runSecondPass();
     }
 
