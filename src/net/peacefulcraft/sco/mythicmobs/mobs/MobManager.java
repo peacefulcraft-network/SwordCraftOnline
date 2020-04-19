@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.MetadataValue;
 
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
@@ -302,7 +303,8 @@ public class MobManager {
      * @return MythicMob instance
      */
     public MythicMob searchMMDisplay(String name) {
-        String s = StringUtils.substringBefore(name, " [");
-        return getMMDisplay().get(s);
+        name = ChatColor.stripColor(name);
+        name = StringUtils.substringBefore(name, " [");
+        return getMMDisplay().get(name);
     }
 }

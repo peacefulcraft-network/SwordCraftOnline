@@ -227,25 +227,30 @@ public class SCOAdmin implements CommandExecutor {
 
 				//Lists all loaded mobs or droptables
 				if(args[1].equalsIgnoreCase("list")) {
-					if(args[2].equalsIgnoreCase("mobs")) {
-						List<ActiveMob> mobs = new ArrayList<ActiveMob>(SwordCraftOnline.getPluginInstance().getMobManager().getActiveMobs());
-						sender.sendMessage(ChatColor.GREEN + "There are: " + mobs.size() + " Active Mobs.");
-						if(mobs.size() > 0) {
-							String l = ChatColor.GREEN + "Mobs: \n";
-							for(int i = 1; i < mobs.size(); i++) {
-								l += ChatColor.GREEN + "" + i + ". " + mobs.get(i).getDisplayName() + "\n";
+					try{
+						if(args[2].equalsIgnoreCase("mobs")) {
+							List<ActiveMob> mobs = new ArrayList<ActiveMob>(SwordCraftOnline.getPluginInstance().getMobManager().getActiveMobs());
+							sender.sendMessage(ChatColor.GREEN + "There are: " + mobs.size() + " Active Mobs.");
+							if(mobs.size() > 0) {
+								String l = ChatColor.GREEN + "Mobs: \n";
+								for(int i = 1; i < mobs.size(); i++) {
+									l += ChatColor.GREEN + "" + i + ". " + mobs.get(i).getDisplayName() + "\n";
+								}
+								sender.sendMessage(ChatColor.GREEN + l);
+								return true;
 							}
-							sender.sendMessage(ChatColor.GREEN + l);
+							return true;
+						} else if (args[2].equalsIgnoreCase("droptables")) {
+							Set<String> tables = SwordCraftOnline.getPluginInstance().getDropManager().getDroptableMap().keySet();
+							String s = ChatColor.GREEN + "DropTables: \n";
+							for(String ss : tables) {
+								s += ChatColor.GREEN + ss + "\n";
+							}
+							sender.sendMessage(s);
 							return true;
 						}
-						return true;
-					} else if (args[2].equalsIgnoreCase("droptables")) {
-						Set<String> tables = SwordCraftOnline.getPluginInstance().getDropManager().getDroptableMap().keySet();
-						String s = ChatColor.GREEN + "DropTables: \n";
-						for(String ss : tables) {
-							s += ChatColor.GREEN + ss + "\n";
-						}
-						sender.sendMessage(s);
+					} catch(IndexOutOfBoundsException ex) {
+						sender.sendMessage("Command usage: /scoadmin mm list [type]");
 						return true;
 					}
 				}
