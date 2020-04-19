@@ -41,7 +41,7 @@ public class MobManager {
         public Map<String, MythicMob> getMMDisplay() { return Collections.unmodifiableMap(this.mmDisplay); }
 
     /**Stores by default entity type */
-    private HashMap<MythicEntityType, MythicMob> mmDefault = new HashMap<>();
+    private Map<MythicEntityType, MythicMob> mmDefault = new HashMap<>();
 
     private HashMap<UUID, ActiveMob> mobRegistry = new HashMap<>();
         public Map<UUID, ActiveMob> getMobRegistry() { return Collections.unmodifiableMap(this.mobRegistry); }
@@ -84,7 +84,6 @@ public class MobManager {
                         MythicEntityType met = MythicEntityType.get(name);
                         MythicMob mm = new MythicMob(file, name, mc);
                         this.mmDefault.put(met, mm);
-                        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded " + name + "to default.");
                         continue;
                     }
                     
@@ -97,7 +96,6 @@ public class MobManager {
                     if(display != null) {
                         this.mmDisplay.put(display, mm);
                     }
-                    SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loaded " + name + " to list.");
 
                 } catch(Exception ex) {
                     ex.printStackTrace();

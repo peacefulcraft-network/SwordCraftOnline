@@ -20,6 +20,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
+import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
@@ -33,6 +34,13 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityAsyncPlayerChatListener;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityTeleportListener;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerDeathListener;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerMoveListener;
+import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerRespawnListener;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -130,7 +138,7 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	private void loadEventListeners() {
 
-		//Game Handle Listeners
+		// Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
@@ -143,8 +151,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		getServer().getPluginManager().registerEvents(new CentipedeDamage(), this);
 		
-		//Register Menu Opener
+		// Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
+		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);
@@ -152,6 +161,16 @@ public class SwordCraftOnline extends JavaPlugin{
 		/**
 		 * The Inventories manage their own event listeners
 		 */
+	
+		// Register ability listeners
+		getServer().getPluginManager().registerEvents(new AbilityAsyncPlayerChatListener(), this);
+		getServer().getPluginManager().registerEvents(new AbilityClickListener(), this);
+		getServer().getPluginManager().registerEvents(new AbilityEntityDamageEntityListener(), this);
+		getServer().getPluginManager().registerEvents(new AbilityEntityTeleportListener() ,this);
+		getServer().getPluginManager().registerEvents(new AbilityPlayerDeathListener(), this);
+		getServer().getPluginManager().registerEvents(new AbilityPlayerMoveListener(),this);
+		getServer().getPluginManager().registerEvents(new AbilityPlayerRespawnListener(), this);
+
 	}
 	
 	public static void logDebug(String debug) {

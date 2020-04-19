@@ -46,9 +46,8 @@ public class GameManager {
 			p.kickPlayer("[SCO] Database error. Unable to load profile from registry");
 			return;
 		}
-		players.put(p.getUniqueId(), s);
-		
 		s.linkPlayer(p);
+		players.put(p.getUniqueId(), s);
 
 		p.getInventory().setItem(8, (new SwordSkillTome().create()));
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");

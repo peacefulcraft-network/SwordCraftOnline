@@ -4,11 +4,9 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
  * Common Critical Strike - Flint
@@ -28,9 +26,8 @@ public class CriticalStrikeItem extends SkillProvider{
 	@Override
 	public void registerSkill(SwordSkillCaster c) {
 		setModifiers();
-		CriticalStrikeSkill cs = new CriticalStrikeSkill(c, this.cooldown, (SkillProvider) this, 3, this.damage);
-		c.getSwordSkillManager().registerSkill(SwordSkillType.ENTITY_DAMAGE_ENTITY, cs);
-		
+		new CriticalStrikeSkill(c, this.cooldown, (SkillProvider) this, 3, this.damage);
+
 		// add variance based on item tier and/or level
 	}
 
@@ -51,12 +48,12 @@ public class CriticalStrikeItem extends SkillProvider{
 		break;case LEGENDARY:
 			lore.add(getTierColor(this.tier) + "Combo Damage: 7");
 			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
-		break;case MASTERY:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 10");
-			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
 		break;case ETHEREAL:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 12");
+			lore.add(getTierColor(this.tier) + "Combo Damage: 10");
 			lore.add(getTierColor(this.tier) + "Cooldown: 4 seconds");
+		break;case GODLIKE:
+			lore.add(getTierColor(this.tier) + "Combo Damage: 12");
+			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
 		}
 		this.setLore(lore);
 	}
@@ -76,11 +73,11 @@ public class CriticalStrikeItem extends SkillProvider{
 			break;case LEGENDARY:
 				this.cooldown = 5000;
 				this.damage = 7;
-			break;case MASTERY:
-				this.cooldown = 5000;
-				this.damage = 10;
 			break;case ETHEREAL:
 				this.cooldown = 4000;
+				this.damage = 10;
+			break;case GODLIKE:
+				this.cooldown = 5000;
 				this.damage = 12;
 		}
 	}
