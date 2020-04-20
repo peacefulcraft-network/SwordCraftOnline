@@ -246,8 +246,9 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
     }
 
     public void updateHealthBar() {
+        if(!this.type.usesHealthBar()) { return; }
         this.healthBar.updateBar(getHealth());
-        getLivingEntity().setCustomName(getDisplayName() + " " + this.healthBar.getHealthBar());
+        getLivingEntity().setCustomName(getDisplayName() + this.healthBar.getHealthBar());
     }
 
     public void updateBossBar() {

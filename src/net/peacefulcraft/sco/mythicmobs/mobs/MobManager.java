@@ -307,4 +307,14 @@ public class MobManager {
         name = StringUtils.substringBefore(name, " [");
         return getMMDisplay().get(name);
     }
+
+    /**Actively refreshes all activemobs health bar displays */
+    public void updateHealthBars() {
+        Iterator<ActiveMob> itr = this.mobRegistry.values().iterator();
+        while(itr.hasNext()) {
+            ActiveMob am = itr.next();
+            SwordCraftOnline.logDebug("Updating health bar of: " + am.getDisplayName() + " with health: " + String.valueOf(am.getHealth()));
+            am.updateHealthBar();
+        }
+    }
 }

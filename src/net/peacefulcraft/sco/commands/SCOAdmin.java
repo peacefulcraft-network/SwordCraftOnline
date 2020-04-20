@@ -305,11 +305,28 @@ public class SCOAdmin implements CommandExecutor {
 
 				//Gets data contained in yml file for mobs and droptables
 				if(args[1].equalsIgnoreCase("getdata")) {
-					if(args[2].equalsIgnoreCase("Droptable")) {
-						sender.sendMessage(SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(args[3]).getInfo());
+					try {
+						if(args[2].equalsIgnoreCase("Droptable")) {
+							sender.sendMessage(SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(args[3]).getInfo());
+							return true;
+						}
+					}catch(IndexOutOfBoundsException ex) {
+						sender.sendMessage("Command usage: /scoadmin mm getdata [type]");
 						return true;
 					}
 					//TODO: Add support for mob
+				}
+
+				//Changing mob health bar displays
+				if(args[1].equalsIgnoreCase("sethealthbar")) {
+					try {
+						SwordCraftOnline.getSCOConfig().setHealthBarConfig(args[2]);
+						SwordCraftOnline.getPluginInstance().getMobManager().updateHealthBars();
+						return true;
+					}catch(IndexOutOfBoundsException ex) {
+						sender.sendMessage("Command usge: /scoadmin mm sethealthbar [healthBarType]");
+						return true;
+					}
 				}
 			}
 

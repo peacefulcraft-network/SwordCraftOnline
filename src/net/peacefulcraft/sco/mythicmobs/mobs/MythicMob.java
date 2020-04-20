@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -362,11 +363,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
 
     private Boolean digOutOfGround = Boolean.valueOf(false);
         public boolean getDigOutOfGround() { return this.digOutOfGround; }
-
-    /**Mob uses health bar */
-    private Boolean usesHealthBar = Boolean.valueOf(false);
-        /**Returns usesHealthBar */
-        public boolean getUsesHealthBar() { return this.usesHealthBar; }
     
     protected double spawnVelocityX;
 
@@ -517,6 +513,10 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         /**Returns list of mobs skills */
         public List<String> getSkills() { return this.skills; }
 
+    /**Determines if mob has displayed health bar */
+    private Boolean usesHealthBar;
+        public Boolean usesHealthBar() { return this.usesHealthBar; }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -643,6 +643,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.preventItemPickup = Boolean.valueOf(mc.getBoolean("Options.PreventItemPickup", false));
         this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
         this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
+        this.usesHealthBar = Boolean.valueOf(mc.getBoolean("Options.HealthBar", true));
         
         //Boss Bar Handling
         this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
@@ -664,7 +665,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.bossBarCreateFog = mc.getBoolean("BossBar.CreateFog", false);
         this.bossBarDarkenSky = mc.getBoolean("BossBar.DarkenSky", false);
         this.bossBarPlayMusic = mc.getBoolean("BossBar.PlayMusic", false);
-        this.usesHealthBar = Boolean.valueOf(mc.getBoolean("HealthBar.Enabled", false));
 
         //Mob Skill handling
         //TODO: Load sword skills from naming convetion and apply to mob.
@@ -826,12 +826,14 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         am = applyMobOptions(am, level);
         am = applyMobVolatileOptions(am);
         am = applySpawnModifiers(am);
-        am = applyHealthBar(am);
+        am = applyDisplayName(am, level);
         return am;
     }
 
-    public ActiveMob applyHealthBar(ActiveMob am) {
+    /**Applies any name modifiers. Color, healthbar, etc. */
+    public ActiveMob applyDisplayName(ActiveMob am, int level) {
         if(!SwordCraftOnline.getSCOConfig().healthBarEnabled()) { return am; }
+        if(!this.usesHealthBar) { return am; }
 
         Entity e = am.getEntity().getBukkitEntity();
         if(am.getEntity().isLiving()) {
@@ -842,7 +844,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             if(getDisplayName() != null) {
                 name = getDisplayName();
             }
-            asLiving.setCustomName(name + " " + am.getHealthBar().getHealthBar());
+            asLiving.setCustomName(getDisplayColor(level) + name + am.getHealthBar().getHealthBar());
         }
         return am;
     }
@@ -1356,5 +1358,24 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
 
     public boolean getShowNameOnDamaged() {
         return this.showNameOnDamage;
+    }
+
+    /**Converts level to chat color */
+    public ChatColor getDisplayColor(int level) {
+        if(level > 0 && level <= 24) {
+            return ChatColor.WHITE; 
+        } else if(level > 25  && level <= 49) {
+            return ChatColor.GREEN;
+        } else if(level > 50 && level <= 74) {
+            return ChatColor.BLUE;
+        } else if(level > 75 && level <= 99) {
+            return ChatColor.LIGHT_PURPLE;
+        } else if(level > 100 && level <= 149) {
+            return ChatColor.AQUA;
+        } else if(level > 150) {
+            return ChatColor.GOLD;
+        } else {
+            return ChatColor.WHITE;
+        }
     }
 }

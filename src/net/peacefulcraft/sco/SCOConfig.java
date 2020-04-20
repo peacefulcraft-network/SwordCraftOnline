@@ -200,9 +200,11 @@ public class SCOConfig {
 
 	public void setHealthBarConfig(String s) {
 		try{
+			s = s.toUpperCase();
 			healthBarConfig = HealthBarType.valueOf(s);
+			SwordCraftOnline.logInfo("Health Bar Config set to: " + this.healthBarConfig.toString());
 		} catch(Exception e) {
-			SwordCraftOnline.logInfo("Invalid Health Bar Config.");
+			SwordCraftOnline.logInfo("Invalid Health Bar Config. Set disabled.");
 			healthBarConfig = HealthBarType.DISABLED;
 		}
 	}
