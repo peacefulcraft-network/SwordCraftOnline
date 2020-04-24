@@ -266,11 +266,13 @@ public class MobManager {
         return this.mobRegistry.values();
     }
 
+    /**Removes centipede from active centipede registry */
     public void removeCentiede(String name) {
         this.centipedeList.remove(name);
         SwordCraftOnline.logInfo("Removed " + name + " from Centipede Registry.");
     }
 
+    /**Clears all centipede from centipede registry */
     public void removeAllCentipede() {
         Iterator<Centipede> iterator = this.centipedeList.values().iterator();
         while(iterator.hasNext()) {
@@ -281,11 +283,13 @@ public class MobManager {
         }
     }
 
+    /**Registers centipede */
     public void addCentipede(String name, Centipede c) { 
         this.centipedeList.put(name, c);
         SwordCraftOnline.logInfo("Registered " + name + " to Centipede Registry.");
     }
 
+    /**Searches centipede registry for mob instance */
     public Centipede searchCentipede(Entity e) {
         for(Centipede c : getCentipedeList().values()) {
             for(Entity internal : c.getList()) {

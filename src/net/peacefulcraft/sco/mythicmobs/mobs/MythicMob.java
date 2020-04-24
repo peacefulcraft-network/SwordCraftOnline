@@ -844,7 +844,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             if(getDisplayName() != null) {
                 name = getDisplayName();
             }
-            asLiving.setCustomName(getDisplayColor(level) + name + am.getHealthBar().getHealthBar());
+            asLiving.setCustomName(getDisplayColor(level) + "" + name + am.getHealthBar().getHealthBar());
         }
         return am;
     }
@@ -1364,15 +1364,15 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     public ChatColor getDisplayColor(int level) {
         if(level > 0 && level <= 24) {
             return ChatColor.WHITE; 
-        } else if(level > 25  && level <= 49) {
+        } else if(level >= 25  && level <= 49) {
             return ChatColor.GREEN;
-        } else if(level > 50 && level <= 74) {
+        } else if(level >= 50 && level <= 74) {
             return ChatColor.BLUE;
-        } else if(level > 75 && level <= 99) {
+        } else if(level >= 75 && level <= 99) {
             return ChatColor.LIGHT_PURPLE;
-        } else if(level > 100 && level <= 149) {
+        } else if(level >= 100 && level <= 149) {
             return ChatColor.AQUA;
-        } else if(level > 150) {
+        } else if(level >= 150) {
             return ChatColor.GOLD;
         } else {
             return ChatColor.WHITE;

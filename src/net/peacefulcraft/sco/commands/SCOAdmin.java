@@ -200,11 +200,20 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					Player p = (Player)sender;
 					if(SwordCraftOnline.getPluginInstance().getMobManager().getMMList().keySet().contains(args[2])) {
-						ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(args[2], p.getLocation());
-						if(am != null) {
-							sender.sendMessage(ChatColor.GREEN + "Spawned " + args[2]);
-							SwordCraftOnline.logInfo("Spawned " + args[2]);
-							return true;
+						try{
+							ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(args[2], p.getLocation(), Integer.valueOf(args[3]));
+							if(am != null) {
+								sender.sendMessage(ChatColor.GREEN + "Spawned " + args[2]);
+								SwordCraftOnline.logInfo("Spawned " + args[2]);
+								return true;
+							}
+						} catch(IndexOutOfBoundsException ex) {
+							ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(args[2], p.getLocation());
+							if(am != null) {
+								sender.sendMessage(ChatColor.GREEN + "Spawned " + args[2]);
+								SwordCraftOnline.logInfo("Spawned " + args[2]);
+								return true;
+							}
 						}
 						sender.sendMessage(ChatColor.GREEN + "Error Loading " + args[2] + " Active Mob Instance Null.");
 						SwordCraftOnline.logInfo("[MOB SPAWN] Active Mob Instance Null");
