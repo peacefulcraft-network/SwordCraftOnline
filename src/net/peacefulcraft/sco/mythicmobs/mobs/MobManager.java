@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -51,8 +52,11 @@ public class MobManager {
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
 
+    
+
     public MobManager(SwordCraftOnline s) {
         this.s = s;
+        loadMobs();
     }
 
     public void loadMobs() {
@@ -67,8 +71,6 @@ public class MobManager {
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         List<File> mobFiles = IOHandler.getAllFiles(defaultMobs.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> mobLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), mobFiles, "Mobs");
-        
-        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Beginning loading...");
 
         for(IOLoader<SwordCraftOnline> sl : mobLoaders) {
             for(String name : sl.getCustomConfig().getConfigurationSection("").getKeys(false)) {
@@ -94,6 +96,7 @@ public class MobManager {
                     
                     MythicMob mm = new MythicMob(file, name, mc);
                     this.mmList.put(name, mm);
+                    SwordCraftOnline.logDebug("[Mob Manager DEBUG] Loaded: " + name);
                     
                     if(display != null) {
                         this.mmDisplay.put(display, mm);
@@ -104,7 +107,7 @@ public class MobManager {
                 }
             }
         }
-        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loading complete!");
+        SwordCraftOnline.logInfo("[Mob Manager] Loading complete!");
     }
 
     public MythicMob getMythicMob(String s) {
@@ -194,6 +197,10 @@ public class MobManager {
     }
 
     public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level) {
+        if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL)) {
+            SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abdandoned.");
+            return null;
+        }
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
             return mm.spawn(loc, level);

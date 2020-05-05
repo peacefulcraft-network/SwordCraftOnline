@@ -20,11 +20,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.utilities.MathUtil;
-import net.peacefulcraft.sco.utilities.TeleportUtil;
 
 public class Centipede implements Runnable {
 

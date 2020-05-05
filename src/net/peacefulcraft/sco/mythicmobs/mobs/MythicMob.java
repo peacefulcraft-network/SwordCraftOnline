@@ -527,8 +527,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.file = file;
         this.internalName = internalName;
 
-        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Loading Mythic Mob: " + this.internalName);
-
         this.strMobType = mc.getString("Type", this.strMobType);
         this.strMobType = mc.getString("MobType", this.strMobType);
         this.strMobType = mc.getString("MobType", this.strMobType);
@@ -665,6 +663,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.bossBarCreateFog = mc.getBoolean("BossBar.CreateFog", false);
         this.bossBarDarkenSky = mc.getBoolean("BossBar.DarkenSky", false);
         this.bossBarPlayMusic = mc.getBoolean("BossBar.PlayMusic", false);
+
+        //Boss Mob Handling
+        
 
         //Mob Skill handling
         //TODO: Load sword skills from naming convetion and apply to mob.

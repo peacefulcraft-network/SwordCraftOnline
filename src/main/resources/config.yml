@@ -16,3 +16,5 @@ dungeon:
     entrance: {}
     arena: {}
 parties: {}
+healthbar: "BAR"
+spawners: {}
