@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.mythicmobs.spawners;
 
 import java.util.Hashtable;
 
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -36,10 +38,30 @@ public class ActiveSpawner {
     }
 
     /**Called when spawner is placed into world. */
-    public void activate() {
-        //TODO: Remove replacement of blocks
-        getLocation().getBlock().setType(Material.OBSIDIAN);
-        SwordCraftOnline.logDebug("Spawner activated at: " + String.valueOf(getLocation()));
+    public void activate(boolean silent) {
+        if(!silent) {
+            Material old = getLocation().getBlock().getType();
+            getLocation().getBlock().setType(Material.OBSIDIAN);
+            
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
+                @Override
+                public void run() {
+                    getLocation().getBlock().setType(old);              
+                }
+            }, 100);
+        }
+    }
+
+    /**Highlights block with glowstone temporarily */
+    public void highlight() {
+        Material old = getLocation().getBlock().getType();
+        getLocation().getBlock().setType(Material.GLOWSTONE);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
+            @Override
+            public void run() {
+                getLocation().getBlock().setType(old);              
+            }
+        }, 200);
     }
 
     /**Called when spawner is triggered to spawn */
@@ -54,14 +76,17 @@ public class ActiveSpawner {
         int similarCount = 0;
         /**Checking nearby entities for players. If none we dont spawn anything */
         for(Entity e : getLocation().getWorld().getNearbyEntities(getLocation(), this.s.getRange(), this.s.getRange(), this.s.getRange())) {
-            if(e instanceof Player && GameManager.findSCOPlayer((Player)e) != null) {
+            /**If is player and player is in SCO and player is in adventure mode */
+            if(e instanceof Player && GameManager.findSCOPlayer((Player)e) != null && ((Player)e).getGameMode().equals(GameMode.ADVENTURE)) {
                 check = true;
                 continue;
             }
+            /**Comparing mob types of spawner and surrounding mobs */
             if(e.getType().toString().equalsIgnoreCase(s.getMythicMob().getStrMobType())) {
                 similarCount += 1;
             }
         }
+        /**If there is not a player or number of similar mobs nearby is too high */
         if(!check) { return; }
         if(similarCount > s.getNearbyBounds()) { return; }
 
@@ -91,17 +116,15 @@ public class ActiveSpawner {
         }
     }
 
+    /**Creates a config map to be stored in ./SpawnerConfig.yml */
     public Object getConfig() {
         Hashtable<String, Object> spawnerTable = new Hashtable<String, Object>();
-        Hashtable<String, Object> loc = new Hashtable<String, Object>();
-        loc.put("world", this.loc.getWorld().getName());
-        loc.put("x", "" + this.loc.getBlockX());
-        loc.put("y", "" + this.loc.getBlockY());
-        loc.put("z", "" + this.loc.getBlockZ());
+        spawnerTable.put("world", this.loc.getWorld().getName());
+        spawnerTable.put("x", "" + this.loc.getBlockX());
+        spawnerTable.put("y", "" + this.loc.getBlockY());
+        spawnerTable.put("z", "" + this.loc.getBlockZ());
 
         spawnerTable.put("level", this.level);
-        spawnerTable.put("location", loc);
-        //spawnerTable.put("mythicmob", this.s.getMythicMobFile());
 
         return spawnerTable;
     }

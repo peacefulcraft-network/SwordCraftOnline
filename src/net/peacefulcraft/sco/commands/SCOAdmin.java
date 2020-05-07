@@ -202,7 +202,9 @@ public class SCOAdmin implements CommandExecutor {
 					SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs();
 					SwordCraftOnline.getPluginInstance().getDropManager().loadDropTables();
 					SwordCraftOnline.getPluginInstance().getMobManager().loadMobs();
-					SwordCraftOnline.getPluginInstance().getSpawnerManager().reloadSequence();
+
+					SwordCraftOnline.getPluginInstance().getSpawnerManager().save();
+					SwordCraftOnline.getPluginInstance().getSpawnerManager().loadSequence();
 					return true;
 				}
 
@@ -366,6 +368,22 @@ public class SCOAdmin implements CommandExecutor {
 					try{
 						if(args[2].equalsIgnoreCase("toggle")) {
 							SwordCraftOnline.getPluginInstance().getSpawnerManager().toggleSpawnerTask();
+							return true;
+						}
+						if(args[2].equalsIgnoreCase("set")) {
+							ActiveSpawner as = SwordCraftOnline.getPluginInstance().getSpawnerManager().setSpawner(args[3], ((Player)sender).getTargetBlock(null, 5).getLocation());
+							if(as == null) {
+								sender.sendMessage("Null Error on set command");
+							}
+							return true; 
+						}
+						if(args[2].equalsIgnoreCase("remove")) {
+							Player p = (Player)sender;
+							SwordCraftOnline.getPluginInstance().getSpawnerManager().unregisterSpawner(p.getTargetBlock(null, 5).getLocation());
+							return true;
+						}
+						if(args[2].equalsIgnoreCase("highlight")) {
+							SwordCraftOnline.getPluginInstance().getSpawnerManager().highlight();
 							return true;
 						}
 					}catch(IndexOutOfBoundsException ex) {

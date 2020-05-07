@@ -96,7 +96,6 @@ public class MobManager {
                     
                     MythicMob mm = new MythicMob(file, name, mc);
                     this.mmList.put(name, mm);
-                    SwordCraftOnline.logDebug("[Mob Manager DEBUG] Loaded: " + name);
                     
                     if(display != null) {
                         this.mmDisplay.put(display, mm);

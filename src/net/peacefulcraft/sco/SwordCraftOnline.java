@@ -129,6 +129,8 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		effectManager.dispose();
 		this.getLogger().info("Effect Manager disposed.");
+
+		this.spawnerManager.save();
 		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");
