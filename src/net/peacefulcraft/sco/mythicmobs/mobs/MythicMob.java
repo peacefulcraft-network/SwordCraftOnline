@@ -13,6 +13,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Horse.Color;
@@ -497,6 +498,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     private List<String> potionEffects;
         public List<String> getPotionEffects() { return this.potionEffects; }
 
+    private boolean isShowingBottom;
+        public boolean isShowingBottom() { return this.isShowingBottom; }
+
     protected List<String> killMessages;
 
     public String disguise;
@@ -624,6 +628,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         if(this.strMobType.equalsIgnoreCase("Villager")) {
             this.villagerType = mc.getString("Options.VillagerType");
         }
+        //Ender crystal options
+        this.isShowingBottom = mc.getBoolean("Options.ShowingBottom", false);
 
         //More Options
         this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
@@ -1111,6 +1117,12 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             }
             if(getDisplayName() != null) {
                 asLiving.setCustomName(am.getDisplayName());
+            }
+            /**
+             * Ender crystal options
+             */
+            if(e instanceof EnderCrystal) {
+                ((EnderCrystal)e).setShowingBottom(this.isShowingBottom);
             }
 
             //If villager has profession set it. If not nitwit
