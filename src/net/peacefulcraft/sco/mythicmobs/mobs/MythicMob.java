@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -12,6 +13,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Horse.Color;
@@ -38,6 +40,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.log.Banners;
+import net.peacefulcraft.sco.SCOConfig;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
@@ -46,6 +49,8 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarColor
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarStyle;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar.HealthBarType;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
@@ -359,11 +364,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
 
     private Boolean digOutOfGround = Boolean.valueOf(false);
         public boolean getDigOutOfGround() { return this.digOutOfGround; }
-
-    /**Mob uses health bar */
-    private Boolean usesHealthBar = Boolean.valueOf(false);
-        /**Returns usesHealthBar */
-        public boolean getUsesHealthBar() { return this.usesHealthBar; }
     
     protected double spawnVelocityX;
 
@@ -498,6 +498,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     private List<String> potionEffects;
         public List<String> getPotionEffects() { return this.potionEffects; }
 
+    private boolean isShowingBottom;
+        public boolean isShowingBottom() { return this.isShowingBottom; }
+
     protected List<String> killMessages;
 
     public String disguise;
@@ -514,6 +517,10 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         /**Returns list of mobs skills */
         public List<String> getSkills() { return this.skills; }
 
+    /**Determines if mob has displayed health bar */
+    private Boolean usesHealthBar;
+        public Boolean usesHealthBar() { return this.usesHealthBar; }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -523,8 +530,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.config = mc;
         this.file = file;
         this.internalName = internalName;
-
-        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Loading Mythic Mob: " + this.internalName);
 
         this.strMobType = mc.getString("Type", this.strMobType);
         this.strMobType = mc.getString("MobType", this.strMobType);
@@ -623,6 +628,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         if(this.strMobType.equalsIgnoreCase("Villager")) {
             this.villagerType = mc.getString("Options.VillagerType");
         }
+        //Ender crystal options
+        this.isShowingBottom = mc.getBoolean("Options.ShowingBottom", false);
 
         //More Options
         this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
@@ -640,6 +647,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.preventItemPickup = Boolean.valueOf(mc.getBoolean("Options.PreventItemPickup", false));
         this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
         this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
+        this.usesHealthBar = Boolean.valueOf(mc.getBoolean("Options.HealthBar", true));
         
         //Boss Bar Handling
         this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
@@ -661,7 +669,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.bossBarCreateFog = mc.getBoolean("BossBar.CreateFog", false);
         this.bossBarDarkenSky = mc.getBoolean("BossBar.DarkenSky", false);
         this.bossBarPlayMusic = mc.getBoolean("BossBar.PlayMusic", false);
-        this.usesHealthBar = Boolean.valueOf(mc.getBoolean("HealthBar.Enabled", false));
+
+        //Boss Mob Handling
+        
 
         //Mob Skill handling
         //TODO: Load sword skills from naming convetion and apply to mob.
@@ -823,6 +833,26 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         am = applyMobOptions(am, level);
         am = applyMobVolatileOptions(am);
         am = applySpawnModifiers(am);
+        am = applyDisplayName(am, level);
+        return am;
+    }
+
+    /**Applies any name modifiers. Color, healthbar, etc. */
+    public ActiveMob applyDisplayName(ActiveMob am, int level) {
+        if(!SwordCraftOnline.getSCOConfig().healthBarEnabled()) { return am; }
+        if(!this.usesHealthBar) { return am; }
+
+        Entity e = am.getEntity().getBukkitEntity();
+        if(am.getEntity().isLiving()) {
+            am.setHealthBar(new HealthBar(am));
+            LivingEntity asLiving = (LivingEntity)e;
+            
+            String name = "";
+            if(getDisplayName() != null) {
+                name = getDisplayName();
+            }
+            asLiving.setCustomName(getDisplayColor(level) + "" + name + am.getHealthBar().getHealthBar());
+        }
         return am;
     }
 
@@ -1088,6 +1118,12 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             if(getDisplayName() != null) {
                 asLiving.setCustomName(am.getDisplayName());
             }
+            /**
+             * Ender crystal options
+             */
+            if(e instanceof EnderCrystal) {
+                ((EnderCrystal)e).setShowingBottom(this.isShowingBottom);
+            }
 
             //If villager has profession set it. If not nitwit
             if(e instanceof Villager) {
@@ -1335,5 +1371,24 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
 
     public boolean getShowNameOnDamaged() {
         return this.showNameOnDamage;
+    }
+
+    /**Converts level to chat color */
+    public ChatColor getDisplayColor(int level) {
+        if(level > 0 && level <= 24) {
+            return ChatColor.WHITE; 
+        } else if(level >= 25  && level <= 49) {
+            return ChatColor.GREEN;
+        } else if(level >= 50 && level <= 74) {
+            return ChatColor.BLUE;
+        } else if(level >= 75 && level <= 99) {
+            return ChatColor.LIGHT_PURPLE;
+        } else if(level >= 100 && level <= 149) {
+            return ChatColor.AQUA;
+        } else if(level >= 150) {
+            return ChatColor.GOLD;
+        } else {
+            return ChatColor.WHITE;
+        }
     }
 }

@@ -43,8 +43,6 @@ public class DropManager {
                     MythicConfig mc = new MythicConfig(s, sl.getCustomConfig());
                     DropTable dt = new DropTable(file, s, mc);
                     this.dropTables.put(s, dt);
-                    SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Succesfully Loaded: " + s);
-
                     //readTable(sl.getFile());
                 }
             }
@@ -59,12 +57,14 @@ public class DropManager {
             SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Succesfully Loaded: " + file);
             */
         }
+        SwordCraftOnline.logInfo("[Drop Manager] Loading complete!");
         runSecondPass();
     }
 
     public DropManager(SwordCraftOnline inst) {
         this.secondPass = new ArrayList<>();
         this.inst = inst;
+        loadDropTables();
     }
 
     public void runSecondPass() {

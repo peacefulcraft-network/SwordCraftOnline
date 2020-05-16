@@ -40,8 +40,8 @@ public class MythicMobDeathEvent implements Listener {
         }
 
         if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
-            
-            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+        
+            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getName());
             if(mm.getDropTable() == null) { 
                 SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(ent.getUniqueId());
                 return; 

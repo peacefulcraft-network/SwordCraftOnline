@@ -20,11 +20,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.utilities.MathUtil;
-import net.peacefulcraft.sco.utilities.TeleportUtil;
 
 public class Centipede implements Runnable {
 
@@ -67,10 +64,11 @@ public class Centipede implements Runnable {
             Zombie z = (Zombie)temp;
             z.setHealth(1);
             z.setBaby(true);
+            z.setSilent(true);
             z.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1));
 
             EntityEquipment ee = z.getEquipment();
-            ee.setHelmet(new ItemStack(Material.OBSIDIAN));
+            ee.setHelmet(new ItemStack(Material.BLACK_BED));
             
             this.list.add(temp);
             if(i != 0) { 

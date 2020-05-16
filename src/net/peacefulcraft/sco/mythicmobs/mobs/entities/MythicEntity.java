@@ -25,6 +25,7 @@ import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitDolphin;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitDonkey;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitDrowned;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitElderGuardian;
+import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitEnderCrystal;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitEnderDragon;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitEnderman;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitEndermite;
@@ -228,5 +229,7 @@ public abstract class MythicEntity {
         entities.put(MythicEntityType.ZOMBIE, BukkitZombie.class);
         entities.put(MythicEntityType.ZOMBIE_HORSE, BukkitZombieHorse.class);
         entities.put(MythicEntityType.ZOMBIE_VILLAGER, BukkitZombieVillager.class);
+
+        entities.put(MythicEntityType.ENDER_CRYSTAL, BukkitEnderCrystal.class);
     };
 }

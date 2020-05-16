@@ -1,8 +1,13 @@
 package net.peacefulcraft.sco;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.file.FileConfiguration;
+
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar.HealthBarType;
 
 public class SCOConfig {
 
@@ -28,6 +33,8 @@ public class SCOConfig {
 	private String db_password;
 	
 	private boolean autoTarget = true;
+
+	private HealthBarType healthBarConfig;
 	
 	public SCOConfig(FileConfiguration c) {
 		
@@ -51,6 +58,8 @@ public class SCOConfig {
 		dungeon_floor_1_arena = c.getConfigurationSection("dungeon.1.arena").getValues(false);
 
 		parties = c.getConfigurationSection("parties").getValues(false);
+
+		healthBarConfig = HealthBarType.valueOf(c.getString("healthbar").toUpperCase());
 	}
 	
 	public Boolean getDebug() {
@@ -189,4 +198,31 @@ public class SCOConfig {
 	public boolean autoTargetEnabled() {
 		return autoTarget;
 	}
+
+	public void setHealthBarConfig(HealthBarType h) {
+		healthBarConfig = h;
+	}
+
+	public void setHealthBarConfig(String s) {
+		try{
+			s = s.toUpperCase();
+			healthBarConfig = HealthBarType.valueOf(s);
+			c.set("healthbar", s);
+			SwordCraftOnline.logInfo("Health Bar Config set to: " + this.healthBarConfig.toString());
+		} catch(Exception e) {
+			SwordCraftOnline.logInfo("Invalid Health Bar Config. Set disabled.");
+			healthBarConfig = HealthBarType.DISABLED;
+			c.set("healthbar", "DISABLED");
+		}
+	}
+
+	public HealthBarType getHealthBarConfig() {
+		return healthBarConfig;
+	}
+
+	public boolean healthBarEnabled() {
+		return !(healthBarConfig.equals(HealthBarType.DISABLED));
+	}
+
+
 }

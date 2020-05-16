@@ -10,13 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.MetadataValue;
 
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
@@ -49,8 +52,11 @@ public class MobManager {
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
 
+    
+
     public MobManager(SwordCraftOnline s) {
         this.s = s;
+        loadMobs();
     }
 
     public void loadMobs() {
@@ -65,8 +71,6 @@ public class MobManager {
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         List<File> mobFiles = IOHandler.getAllFiles(defaultMobs.getFile().getParent());
         List<IOLoader<SwordCraftOnline>> mobLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), mobFiles, "Mobs");
-        
-        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Beginning loading...");
 
         for(IOLoader<SwordCraftOnline> sl : mobLoaders) {
             for(String name : sl.getCustomConfig().getConfigurationSection("").getKeys(false)) {
@@ -102,7 +106,7 @@ public class MobManager {
                 }
             }
         }
-        SwordCraftOnline.logInfo(Banners.get(Banners.MOB_MANAGER) + "Loading complete!");
+        SwordCraftOnline.logInfo("[Mob Manager] Loading complete!");
     }
 
     public MythicMob getMythicMob(String s) {
@@ -192,6 +196,10 @@ public class MobManager {
     }
 
     public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level) {
+        if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL)) {
+            SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abdandoned.");
+            return null;
+        }
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
             return mm.spawn(loc, level);
@@ -264,11 +272,13 @@ public class MobManager {
         return this.mobRegistry.values();
     }
 
+    /**Removes centipede from active centipede registry */
     public void removeCentiede(String name) {
         this.centipedeList.remove(name);
         SwordCraftOnline.logInfo("Removed " + name + " from Centipede Registry.");
     }
 
+    /**Clears all centipede from centipede registry */
     public void removeAllCentipede() {
         Iterator<Centipede> iterator = this.centipedeList.values().iterator();
         while(iterator.hasNext()) {
@@ -279,11 +289,13 @@ public class MobManager {
         }
     }
 
+    /**Registers centipede */
     public void addCentipede(String name, Centipede c) { 
         this.centipedeList.put(name, c);
         SwordCraftOnline.logInfo("Registered " + name + " to Centipede Registry.");
     }
 
+    /**Searches centipede registry for mob instance */
     public Centipede searchCentipede(Entity e) {
         for(Centipede c : getCentipedeList().values()) {
             for(Entity internal : c.getList()) {
@@ -293,5 +305,26 @@ public class MobManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Searches MMDisplay for names. Consistent method to remove lvl name modifiers.
+     * @param name Unmodified name of mob. Including Lvl modifiers.
+     * @return MythicMob instance
+     */
+    public MythicMob searchMMDisplay(String name) {
+        name = ChatColor.stripColor(name);
+        name = StringUtils.substringBefore(name, " [");
+        return getMMDisplay().get(name);
+    }
+
+    /**Actively refreshes all activemobs health bar displays */
+    public void updateHealthBars() {
+        Iterator<ActiveMob> itr = this.mobRegistry.values().iterator();
+        while(itr.hasNext()) {
+            ActiveMob am = itr.next();
+            SwordCraftOnline.logDebug("Updating health bar of: " + am.getDisplayName() + " with health: " + String.valueOf(am.getHealth()));
+            am.updateHealthBar();
+        }
     }
 }
