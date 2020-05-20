@@ -43,19 +43,8 @@ public class DropManager {
                     MythicConfig mc = new MythicConfig(s, sl.getCustomConfig());
                     DropTable dt = new DropTable(file, s, mc);
                     this.dropTables.put(s, dt);
-                    //readTable(sl.getFile());
                 }
             }
-            /**Passing "SkeletonKing.yml" as DropTable file.
-             * Contains one drop table per file
-             */
-            /*
-            String file = sl.getFile().getName();
-            MythicConfig mc = new MythicConfig(file, sl.getCustomConfig());
-            DropTable dt = new DropTable(file, file, mc);
-            this.dropTables.put(file, dt);
-            SwordCraftOnline.logInfo(Banners.get(Banners.DROP_MANAGER) + "Succesfully Loaded: " + file);
-            */
         }
         SwordCraftOnline.logInfo("[Drop Manager] Loading complete!");
         runSecondPass();
