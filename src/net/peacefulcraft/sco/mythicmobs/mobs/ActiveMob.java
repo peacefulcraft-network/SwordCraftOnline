@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
@@ -78,7 +81,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         public Optional<UUID> getOwner() { return this.owner; }
 
     /**Stores mob boss bar if it has one */
-    private Optional<AbstractBossBar> bossBar = Optional.empty();
+    private Optional<BossBar> bossBar = Optional.empty();
 
     private boolean dead = false;
         public void setDead() { this.dead = true; }
@@ -213,6 +216,10 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         return this.entity.getLocation();
     }
 
+    public Location getBukkitLocation() {
+        return this.entity.getBukkitEntity().getLocation();
+    }
+
     public double getDamage() {
         double damage = getType().getBaseDamage();
         if(this.level > 1 && getType().getPerLevelDamage() > 0.0D) {
@@ -236,7 +243,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
     
     public void unregister() {
         if(this.bossBar.isPresent()) {
-            ((AbstractBossBar)this.bossBar.get()).removeAll();
+            this.bossBar.get().removeAll();
             this.bossBar = Optional.empty();
         }
     }
@@ -245,28 +252,32 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         return getEntity().getHealth();
     }
 
+    /**Call to update health on in display name health bar */
     public void updateHealthBar() {
         if(!this.type.usesHealthBar()) { return; }
+        if(this.type.usesBossBar()) { return;}
         this.healthBar.updateBar(getHealth());
         getLivingEntity().setCustomName(getType().getDisplayColor(this.level) + "" + getDisplayName() + this.healthBar.getHealthBar());
     }
 
+    /**Call to update players and damage on boss bar */
     public void updateBossBar() {
         if(!this.bossBar.isPresent()) { return; }
-        AbstractBossBar bar = this.bossBar.get();
-        Collection<AbstractPlayer> inRange = SwordCraftOnline.getGameManager().getPlayersInRangeSq(getLocation(), getType().getBossBarRangeSquared());
-        Collection<AbstractPlayer> current = bar.getPlayers();
+        BossBar bar = this.bossBar.get();
+        Collection<Player> inRange = SwordCraftOnline.getGameManager().getPlayersInRangeSq(getBukkitLocation(), getType().getBossBarRangeSquared());
+        Collection<Player> current = bar.getPlayers();
         double progress = getEntity().getHealth() / getEntity().getMaxHealth();
         String title = this.type.getBossBarTitle();
 
         bar.setTitle(title);
         bar.setProgress(progress);
-        current.stream().forEach(player -> {
-            if(!current.contains(player)) { bar.addPlayer(player); }
-        });
-        inRange.stream().forEach(player -> {
-            if(!inRange.contains(player)) { bar.addPlayer(player); }
-        });
+        
+        for(Player p : inRange) {
+            bar.addPlayer(p);
+        }
+        for(Player p : current) {
+            if(!inRange.contains(p)) { bar.removePlayer(p); }
+        }
     }
 
     public void setUnloaded() {

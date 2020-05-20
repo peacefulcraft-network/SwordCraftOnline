@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
@@ -40,17 +43,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.log.Banners;
-import net.peacefulcraft.sco.SCOConfig;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarColor;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarStyle;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
 import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
-import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar.HealthBarType;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
@@ -558,7 +556,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         }
         
         //Handling extra mob effects
-        this.health = mc.getDouble("Health");
+        this.health = mc.getDouble("Health", 0.0D);
         this.damage = mc.getDouble("Damage", -1.0D);
         this.armor = mc.getDouble("Armor");
         this.armor = mc.getDouble("Armour", this.armor);
@@ -657,14 +655,14 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         String bossBarColor = mc.getString("BossBar.Color", "WHITE");
         String bossBarStyle = mc.getString("BossBar.Style", "SOLID");
         try {
-            this.bossBarColor = AbstractBarColor.getBarColor(bossBarColor);
+            this.bossBarColor = BarColor.valueOf(bossBarColor);
         } catch (Exception ex) {
-            this.bossBarColor = AbstractBarColor.getBarColor("WHITE");
+            this.bossBarColor = BarColor.WHITE;
         }
         try {
-            this.bossBarStyle = AbstractBarStyle.getBarStyle(bossBarStyle);
+            this.bossBarStyle = BarStyle.valueOf(bossBarStyle);
         } catch (Exception ex) {
-            this.bossBarStyle = AbstractBarStyle.getBarStyle("SOLID");
+            this.bossBarStyle = BarStyle.SOLID;
         }
         this.bossBarCreateFog = mc.getBoolean("BossBar.CreateFog", false);
         this.bossBarDarkenSky = mc.getBoolean("BossBar.DarkenSky", false);
@@ -721,29 +719,28 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.lvlModAttackSpeed = mc.getDouble("LevelModifiers.AttackSpeed", -1.0D);
         try {
             if(this.lvlModDamage < 0.0D) {
-                //TODO: Adjust to be edited from main config?
-                this.lvlModDamage = this.damage * 2.0D;
+                this.lvlModDamage = this.damage / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
         try {
             if(this.lvlModHealth < 0.0D) {
-                this.lvlModHealth = this.health * 2.0D;
+                this.lvlModHealth = this.health / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
         try {
             if(this.lvlModArmor < 0.0D) {
-                this.lvlModArmor = this.armor * 2.0D;
+                this.lvlModArmor = this.armor / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
         try {
             if(this.lvlModKBR < 0.0D) {
-                this.lvlModKBR = 1.0D;
+                this.lvlModKBR = this.attrKnockbackResist / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
@@ -908,11 +905,13 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                     health += this.lvlModHealth * (level - 1);
                 }
                 try {
-                    double fhealth = Math.ceil(health);
+                    double fhealth = Math.floor(health);
                     asLiving.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(fhealth);
                     asLiving.setHealth(fhealth);
                 } catch(IllegalArgumentException ex) {
-                    ex.printStackTrace();
+                    SwordCraftOnline.logWarning("Illegal health argument in: " + this.internalName);
+                    asLiving.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2048);
+                    asLiving.setHealth(2048);
                 }
             }
 
@@ -1218,16 +1217,21 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     }
 
     /**Gets boss bar from config */
-    public Optional<AbstractBossBar> getBossBar() {
+    public Optional<BossBar> getBossBar() {
         if(!this.useBossBar) {
             return Optional.empty();
         }
-        AbstractBossBar bar = SwordCraftOnline.getPluginInstance().server().createBossBar(" ", this.bossBarColor, this.bossBarStyle);
-        bar.setProgress(1.0D);
-        if(this.bossBarCreateFog) { bar.setCreateFog(true); }
-        if(this.bossBarDarkenSky) { bar.setDarkenSky(true); }
-        if(this.bossBarPlayMusic) { bar.setPlayBossMusic(true); }
-        return Optional.of(bar);
+        try{
+            BossBar bar = Bukkit.getServer().createBossBar(" ", this.bossBarColor, this.bossBarStyle);
+            bar.setProgress(1.0D);
+            if(this.bossBarCreateFog) { bar.addFlag(BarFlag.CREATE_FOG); }
+            if(this.bossBarDarkenSky) { bar.addFlag(BarFlag.DARKEN_SKY); }
+            if(this.bossBarPlayMusic) { bar.addFlag(BarFlag.PLAY_BOSS_MUSIC); }
+            return Optional.of(bar);
+        } catch(NullPointerException ex) {
+            SwordCraftOnline.logWarning("Attempted to load invalid boss bar on " + this.internalName);
+        }
+        return Optional.empty();
     }
 
     public String getBossBarTitle() {

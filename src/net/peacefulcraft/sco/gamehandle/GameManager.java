@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
@@ -96,12 +97,12 @@ public class GameManager {
 		return null;
 	}
 
-	public Set<AbstractPlayer> getPlayersInRangeSq(AbstractLocation location, int rangeSq) {
-		Set<AbstractPlayer> inRange = new HashSet<>();
+	public Set<Player> getPlayersInRangeSq(Location location, int rangeSq) {
+		Set<Player> inRange = new HashSet<>();
 		try {
 			for(SCOPlayer s : players.values()) {
-				if(s.getPlayer().getLocation().distanceSquared(BukkitAdapter.adapt(location)) <= rangeSq) {
-					inRange.add(BukkitAdapter.adapt(s.getPlayer()));
+				if(s.getPlayer().getLocation().distanceSquared(location) <= rangeSq) {
+					inRange.add(s.getPlayer());
 				}
 			}
 			return inRange;

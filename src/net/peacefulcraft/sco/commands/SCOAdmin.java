@@ -24,6 +24,8 @@ import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.Centipede;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.bosses.BossIdentifier;
+import net.peacefulcraft.sco.mythicmobs.mobs.bosses.MythicBoss;
 import net.peacefulcraft.sco.mythicmobs.spawners.ActiveSpawner;
 import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
@@ -260,11 +262,22 @@ public class SCOAdmin implements CommandExecutor {
 							sender.sendMessage(ChatColor.GREEN + "There are: " + mobs.size() + " Active Mobs.");
 							if (mobs.size() > 0) {
 								String l = ChatColor.GREEN + "Mobs: \n";
-								for (int i = 1; i < mobs.size(); i++) {
-									l += ChatColor.GREEN + "" + i + ". " + mobs.get(i).getDisplayName() + "\n";
+								for (int i = 0; i < mobs.size(); i++) {
+									l += ChatColor.GREEN + "" + (i+1) + ". " + mobs.get(i).getDisplayName() + "\n";
 								}
 								sender.sendMessage(ChatColor.GREEN + l);
 								return true;
+							}
+							return true;
+						} else if (args[2].equalsIgnoreCase("mythicmobs")) {
+							ArrayList<String> mobs = new ArrayList<String>(SwordCraftOnline.getPluginInstance().getMobManager().getMMList().keySet());
+							sender.sendMessage(ChatColor.GREEN + "There are: " + mobs.size() + " Mythic Mobs.");
+							if(mobs.size() > 0) {
+								String l = ChatColor.GREEN + "Mobs: \n";
+								for(int i = 0; i < mobs.size(); i++) {
+									l += ChatColor.GREEN + "" + (i+1) + ". " + mobs.get(i) + "\n";
+								}
+								sender.sendMessage(ChatColor.GREEN + l);
 							}
 							return true;
 						} else if (args[2].equalsIgnoreCase("droptables")) {
@@ -388,6 +401,23 @@ public class SCOAdmin implements CommandExecutor {
 						}
 					}catch(IndexOutOfBoundsException ex) {
 						sender.sendMessage("Invalid arguments for spawner command.");
+						return true;
+					}
+				}
+
+				//Testing boss mob capabilites
+				if(args[1].equalsIgnoreCase("boss") || args[1].equalsIgnoreCase("b")) {
+					try{
+						if(args[2].equalsIgnoreCase("spawn")) {
+							MythicBoss mb = BossIdentifier.getBoss(args[3], 20);
+							mb = mb.spawn(((Player)sender).getLocation());
+							if(mb == null) {
+								SwordCraftOnline.logInfo("Error spawning Boss " + args[3]);
+							}
+							return true;
+						}
+					}catch(IndexOutOfBoundsException ex) {
+						sender.sendMessage("Invalid arguments for boss command.");
 						return true;
 					}
 				}
