@@ -95,8 +95,8 @@ public class DropTable {
     public LootBag generate() {        
         LootBag bag = new LootBag();
 
-        //Set bag experience to be multiple of exp bonus
-        bag.setExp(this.experience);
+        //Set bag experience to be multiple of exp bonus - Random of 1/4th amount
+        bag.setExp(this.experience - SwordCraftOnline.r.nextInt(this.experience/4));
         //No Player. Amount set to 0.
         int amountModifiers = 0;
 
@@ -113,6 +113,9 @@ public class DropTable {
 
             Collection<Drop> d = getRandomDrop(amount);
             for(Drop drop : d) {
+                if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
+                    continue;
+                }
                 bag.addDrop(drop);
             }
             return bag;
@@ -124,6 +127,9 @@ public class DropTable {
                 amount = this.minItems + amountModifiers;
             }
             for(Drop drop : getRandomDrop(amount)) {
+                if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
+                    continue;
+                }
                 bag.addDrop(drop);
             }
             return bag;
@@ -132,6 +138,9 @@ public class DropTable {
             for(Drop drop : this.drops) {
                 if(drop.rollChance()) {
                     items++;
+                    if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
+                        continue;
+                    }
                     bag.addDrop(drop);
                     return bag;
                 }
@@ -142,6 +151,9 @@ public class DropTable {
         } else {
             for(Drop drop : this.drops) {
                 if(drop.rollChance()) {
+                    if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
+                        continue;
+                    }
                     bag.addDrop(drop);
                     return bag;
                 }
@@ -179,7 +191,7 @@ public class DropTable {
             }
             Collection<Drop> d = getRandomDrop(amount);
             for(Drop drop : d) {
-                if(bag.getItems().contains(drop.getItem())) {
+                if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
                     continue;
                 }
                 bag.addDrop(drop);
@@ -193,6 +205,9 @@ public class DropTable {
                 amount = this.minItems + amountModifiers;
             }
             for(Drop drop : getRandomDrop(amount)) {
+                if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
+                    continue;
+                }
                 bag.addDrop(drop);
             }
             return bag;
@@ -201,6 +216,9 @@ public class DropTable {
             for(Drop drop : this.drops) {
                 if(drop.rollChance()) {
                     items++;
+                    if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
+                        continue;
+                    }
                     bag.addDrop(drop);
                     return bag;
                 }
@@ -211,6 +229,9 @@ public class DropTable {
         } else {
             for(Drop drop : this.drops) {
                 if(drop.rollChance()) {
+                    if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
+                        continue;
+                    }
                     bag.addDrop(drop);
                     return bag;
                 }
