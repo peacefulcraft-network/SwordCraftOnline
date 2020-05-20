@@ -19,10 +19,9 @@ import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
-public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
+public class SCOPlayer implements SwordSkillCaster, IDamage
 {
 	private String partyName;
 	private String lastInvite;

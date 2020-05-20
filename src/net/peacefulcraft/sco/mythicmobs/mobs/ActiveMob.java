@@ -19,19 +19,16 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Active instance of Mythicmob
  */
-public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
+public class ActiveMob implements SwordSkillCaster, IDamage {
     
     private long aliveTime = 0L;
     

@@ -52,13 +52,12 @@ import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
-import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Holds custom mob data read from YML in mob mananger.
  */
-public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
+public class MythicMob implements Comparable<MythicMob> {
     /**File name */
     private String file;
         /**Returns String of mob file name */
