@@ -15,7 +15,10 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
@@ -46,6 +49,10 @@ public class SpawnerManager implements Runnable {
     /**Stores values for active spawners registry in one list */
     private List<ActiveSpawner> registryList = new ArrayList<>();
         public List<ActiveSpawner> getRegistryList() { return Collections.unmodifiableList(this.registryList); }
+    
+    /**Determines if nightwave event is active */
+    private boolean isNightwave;
+        public boolean isNightwave() { return this.isNightwave; }
 
     /**
      * Constructs spawner manager and calls reload sequence.
@@ -57,6 +64,7 @@ public class SpawnerManager implements Runnable {
 
         /**Setting to run spawner task once a second */
         this.spawnerTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 30);
+        this.isNightwave = false;
     }
 
     /**Called on plugin reload or individual reload. */
@@ -165,6 +173,12 @@ public class SpawnerManager implements Runnable {
      */
     @Override
     public void run() {
+        if(!GameManager.isDay() && SwordCraftOnline.r.nextInt(79) == 1) {
+            this.isNightwave = true; 
+            Announcer.messageServer(ChatColor.BLACK + "[" + ChatColor.RED + "Nightwave" + ChatColor.BLACK + "]" + ChatColor.RED + " is approaching...");
+        } else if(GameManager.isDay() && this.isNightwave) {
+            this.isNightwave = false;
+        }
         /**Triggers a third of active spawners in the map. */
         for(int i = 0; i < this.registryList.size()/3; i++) {
             ActiveSpawner as = this.registryList.get(SwordCraftOnline.r.nextInt(this.registryList.size()));

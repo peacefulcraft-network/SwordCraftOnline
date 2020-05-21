@@ -69,6 +69,8 @@ public class ActiveSpawner {
         /**Checking spawners cooldown */
         int offset = 0;
         if(this.level > 1) { offset = this.level * 10; }
+        /**If world is in nightwave we reduce cooldown by 1 second*/
+        if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave()) { offset += 20; }
         if(this.cooldownTimer != 0 && getLocation().getWorld().getTime() - this.cooldownTimer < (s.getCooldown() * 20) - offset) { return; }
         this.cooldownTimer = getLocation().getWorld().getTime();
 
@@ -90,6 +92,7 @@ public class ActiveSpawner {
         if(!check) { return; }
         if(similarCount > s.getNearbyBounds()) { return; }
 
+        /**Determining how many spawn attempts we make */
         int iter = this.s.getSize() - SwordCraftOnline.r.nextInt(this.s.getSizeLower());
         if(s.getSizeUpper() != 0) { iter += SwordCraftOnline.r.nextInt(this.s.getSizeUpper()); }
         if(this.level > 1) { iter += this.level; }
@@ -105,9 +108,14 @@ public class ActiveSpawner {
             Location loc = getLocation().add(x, 0, z);
             if(!TeleportUtil.safeTeleport(loc)) { continue; }
 
-            int level = this.s.getMobLevel() - SwordCraftOnline.r.nextInt(this.s.getMobLevelLower());
-            if(this.s.getMobLevelUpper() != 0) { level += SwordCraftOnline.r.nextInt(this.s.getMobLevelUpper()); }
-            if(this.level > 1) { level += this.level; }
+            int level = this.s.getMobLevel();
+            if(!SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave()) {
+                level -= SwordCraftOnline.r.nextInt(this.s.getMobLevelLower());
+                if(this.s.getMobLevelUpper() != 0) { level += SwordCraftOnline.r.nextInt(this.s.getMobLevelUpper()); }
+                if(this.level > 1) { level += this.level; }
+            } else {
+                level *= 2;
+            }
 
             ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicInternal(), loc, level);
             if(am == null) {

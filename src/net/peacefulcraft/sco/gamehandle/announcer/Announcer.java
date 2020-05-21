@@ -43,6 +43,11 @@ public abstract class Announcer {
         }
     }
 
+    /**Messages all players in gamemanager */
+    public static void messageServer(String message) {
+        messageGroup(GameManager.getPlayers().values(), message);
+    }
+
     /**Messages player action bar */
     public static void messagePlayerActionBar(Player p, String message) {
 		(new ActionBarMessage(1, p, message)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 0L, 20L);

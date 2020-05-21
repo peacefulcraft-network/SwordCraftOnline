@@ -110,4 +110,9 @@ public class GameManager {
 			return Collections.emptySet();
 		}
 	}
+
+	public static boolean isDay() {
+		long time = SwordCraftOnline.getPluginInstance().getServer().getWorld("SwordCraftOnline").getTime();
+		return time < 12300 || time > 23850;
+	}
 }
