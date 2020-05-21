@@ -421,6 +421,11 @@ public class SCOAdmin implements CommandExecutor {
 						return true;
 					}
 				}
+
+				//Testing console combat simulation
+				if(args[1].equalsIgnoreCase("testcombat")) {
+					MythicMob mm1 = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob("ConsoleOne");
+				}
 			}
 
 			if(args[0].equalsIgnoreCase("particletest")) {

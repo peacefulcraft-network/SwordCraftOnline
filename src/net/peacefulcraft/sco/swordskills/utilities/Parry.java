@@ -7,8 +7,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
 public class Parry {
     private double damage;
@@ -19,13 +21,6 @@ public class Parry {
 
     private Entity damager;
         public Entity getDamager() { return damager; }
-
-    public boolean isPlayer(Entity e) { return e instanceof Player; }
-    public boolean isSCOPlayer(Player p) {
-        SCOPlayer s = GameManager.findSCOPlayer(p);
-        if(s == null) { return false; }
-        return true;
-    }
 
     public Parry(EntityDamageByEntityEvent e) {
         this(e.getEntity(), e.getDamager(), e.getDamage());
@@ -38,13 +33,23 @@ public class Parry {
     }
 
     public boolean ParryCalc() {
-        if(isPlayer(vic) && isSCOPlayer((Player) vic)) {
+        if(vic instanceof Player) {
             SCOPlayer s = GameManager.findSCOPlayer((Player) vic);
+            if(s == null) { return false; }
 
-            Random rand = new Random();
-            if(rand.nextInt(100) <= s.getParryChance()) {
+            if(SwordCraftOnline.r.nextInt(100) <= s.getParryChance()) {
                 ((Player) vic).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
-                if(isPlayer(damager) && isSCOPlayer((Player) damager)) {
+                if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
+                    ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
+                }
+                return true;
+            }
+        } else {
+            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(vic.getUniqueId());
+            if(am == null) { return false; }
+
+            if(SwordCraftOnline.r.nextInt(100) <= am.getParryChance()) {
+                if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
                     ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 }
                 return true;

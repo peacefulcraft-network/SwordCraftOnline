@@ -65,9 +65,7 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		}
 		public void resetExhaustion() { this.exhaustion = 0.0; }
 
-	/**Stores players critical damage chance 
-	 * TODO:Handle situation where chance is above 100
-	*/
+	/**Stores players critical damage chance*/
 	private int criticalChance = 2;
 		public int getCriticalChance() { return this.criticalChance; }
 		public void setCriticalChance(int num) { this.criticalChance = num; }
