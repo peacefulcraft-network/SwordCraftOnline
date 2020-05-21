@@ -149,7 +149,12 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
     /**Active mobs chance to parry or evade damage */
     private int parryChance;
 		public int getParryChance() { return this.parryChance; }
-		public void setParryChance(int num) { this.parryChance = num; }
+        public void setParryChance(int num) { this.parryChance = num; }
+    
+    /**Active mobs damage "dampener" on successful parry */
+    private double parryMultiplier;
+        public double getParryMultiplier() { return this.parryMultiplier; }
+        public void setParryMultiplier(double num) { this.parryMultiplier = num; }
     
     /**
      * Initializes active mob instance.
@@ -179,6 +184,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         this.criticalChance = type.getCriticalChance();
         this.criticalMultiplier = type.getCriticalMultiplier();
         this.parryChance = type.getParryChance();
+        this.parryMultiplier = type.getParryMultiplier();
     }
 
     public void tick(int c) {

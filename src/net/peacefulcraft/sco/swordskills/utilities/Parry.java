@@ -11,6 +11,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
 public class Parry {
     private double damage;
@@ -32,29 +33,40 @@ public class Parry {
         this.damage = damage;
     }
 
-    public boolean ParryCalc() {
+    public double ParryCalc() {
         if(vic instanceof Player) {
             SCOPlayer s = GameManager.findSCOPlayer((Player) vic);
-            if(s == null) { return false; }
+            if(s == null) { return this.damage; }
 
             if(SwordCraftOnline.r.nextInt(100) <= s.getParryChance()) {
                 ((Player) vic).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
                     ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 }
-                return true;
+                return this.damage * s.getParryMultiplier();
             }
         } else {
             ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(vic.getUniqueId());
-            if(am == null) { return false; }
+            if(am == null) { return this.damage; }
 
             if(SwordCraftOnline.r.nextInt(100) <= am.getParryChance()) {
                 if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
                     ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 }
-                return true;
+                return this.damage * am.getParryMultiplier();
             }
         }
-        return false;
+        return this.damage;
+    }
+
+    /**
+     * Static method used to simulate parry between two mm files
+     * Called internally for console
+     */
+    public static double simulate(MythicMob vic, double damage) {
+        if(SwordCraftOnline.r.nextInt(100) <= vic.getParryChance()) {
+            return damage * vic.getParryMultiplier();
+        }
+        return damage;
     }
 }

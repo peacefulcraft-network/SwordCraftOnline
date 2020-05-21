@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.entity.Entity;
@@ -69,16 +71,16 @@ public class CriticalHit {
             ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(damager.getUniqueId());
             if(am == null) { return 0; }
 
-            Random rand = SwordCraftOnline.r;
             int chance = am.getCriticalChance();
             int mult = 1;
+
             if(chance > 100) {
-                for(; chance > 100; chance-=100){
+                for(; chance > 100; chance -= 100) {
                     mult++;
                 }
             }
 
-            if(rand.nextInt(100) <= chance) {
+            if(SwordCraftOnline.r.nextInt(100) <= chance) {
                 d = mult * am.getCriticalMultiplier() * this.damage;
             } else if(mult > 1) {
                 d = (mult - 1) * am.getCriticalMultiplier() * damage;
@@ -87,5 +89,24 @@ public class CriticalHit {
         return d;
     }
 
+    /**
+     * Static method used to simulate critical hit between two mm files.
+     * Called internally for console
+     */
+    public static double simulate(MythicMob damager, double damage) {
+        int chance = damager.getCriticalChance();
+        int mult = 1;
+        if(chance > 100) {
+            for(; chance > 100; chance -= 100) {
+                mult++;
+            }
+        }
+        if(SwordCraftOnline.r.nextInt(100) <= chance) {
+            return mult * damager.getCriticalMultiplier() * damage;
+        } else if(mult > 1) {
+            return (mult - 1) * damager.getCriticalMultiplier() * damage;
+        }
+        return damage;
+    }
 
 }

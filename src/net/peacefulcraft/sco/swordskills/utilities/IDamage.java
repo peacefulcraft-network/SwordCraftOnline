@@ -43,4 +43,7 @@ public interface IDamage {
 
     int getParryChance();
     void setParryChance(int num);
+
+    double getParryMultiplier();
+    void setParryMultiplier(double num);
 }

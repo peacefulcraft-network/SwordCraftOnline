@@ -83,6 +83,10 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		public int getParryChance() { return this.parryChance; }
 		public void setParryChance(int num) { this.parryChance = num; }
 
+	private double parryMultiplier = 0.95D;
+		public double getParryMultiplier() { return this.parryMultiplier; }
+		public void setParryMultiplier(double num) { this.parryMultiplier = num; }
+
 	/**Additional chance to increase item level on drop */
 	private double bonusLevelMod = 0.0D;
 		public double getLevelMod() { return this.bonusLevelMod; }

@@ -532,6 +532,11 @@ public class MythicMob implements Comparable<MythicMob> {
     private int parryChance;
         /**Returns mobs base parry chance */
         public int getParryChance() { return this.parryChance; }
+    
+    /**Stores mobs base parry damage multiplier */
+    private double parryMultiplier;
+        /**Returns mobs base parry damage multiplier */
+        public double getParryMultiplier() { return this.parryMultiplier; }
 
     /**
      * Constructor and decoder for MythicMobs
@@ -588,6 +593,7 @@ public class MythicMob implements Comparable<MythicMob> {
         this.criticalMultiplier = mc.getDouble("CriticalMultiplier", 1.2D);
         this.criticalMultiplier = mc.getDouble("CritMultiplier", this.criticalMultiplier);
         this.parryChance = mc.getInteger("ParryChance", 0);
+        this.parryMultiplier = mc.getDouble("ParryMutliplier", 0.95D);
 
         //Options handling
         this.optionDespawn = mc.getBoolean("Despawn", true);
