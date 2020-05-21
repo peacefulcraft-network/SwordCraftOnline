@@ -135,6 +135,27 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         public HealthBar getHealthBar() { return this.healthBar; }
         public void setHealthBar(HealthBar b) { this.healthBar = b; }
 
+    /**Active mobs criticla hit chance */
+    private int criticalChance;
+		public int getCriticalChance() { return this.criticalChance; }
+		public void setCriticalChance(int num) { this.criticalChance = num; }
+		public void addCritical(int num) { this.criticalChance+=num; }
+
+    /**Active mobs damage multiplier on critical hit */
+	private double criticalMultiplier;
+		public double getCriticalMultiplier() { return this.criticalMultiplier; }
+		public void setCriticalMultiplier(double num) { this.criticalMultiplier = num; }
+
+    /**Active mobs chance to parry or evade damage */
+    private int parryChance;
+		public int getParryChance() { return this.parryChance; }
+        public void setParryChance(int num) { this.parryChance = num; }
+    
+    /**Active mobs damage "dampener" on successful parry */
+    private double parryMultiplier;
+        public double getParryMultiplier() { return this.parryMultiplier; }
+        public void setParryMultiplier(double num) { this.parryMultiplier = num; }
+    
     /**
      * Initializes active mob instance.
      * @param e Abstract entity
@@ -158,6 +179,12 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         this.swordSkillManager = new SwordSkillManager(this);
 
         this.damageModifiers = type.getDamageModifiers();
+
+        /**Setting combat modifiers to type instance */
+        this.criticalChance = type.getCriticalChance();
+        this.criticalMultiplier = type.getCriticalMultiplier();
+        this.parryChance = type.getParryChance();
+        this.parryMultiplier = type.getParryMultiplier();
     }
 
     public void tick(int c) {

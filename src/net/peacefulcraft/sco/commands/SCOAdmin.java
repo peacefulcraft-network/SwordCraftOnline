@@ -32,7 +32,9 @@ import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
+import net.peacefulcraft.sco.swordskills.utilities.CriticalHit;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
+import net.peacefulcraft.sco.swordskills.utilities.Parry;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
@@ -418,6 +420,36 @@ public class SCOAdmin implements CommandExecutor {
 						}
 					}catch(IndexOutOfBoundsException ex) {
 						sender.sendMessage("Invalid arguments for boss command.");
+						return true;
+					}
+				}
+
+				//Testing console combat simulation
+				if(args[1].equalsIgnoreCase("testcombat")) {
+					try{
+						int damage = Integer.valueOf(args[2]);
+						SwordCraftOnline.logInfo("[Combat Sim] Beginning Simulation...");
+						MythicMob mm1 = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob("ConsoleOne");
+						MythicMob mm2 = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob("ConsoleTwo");
+
+						double d = CriticalHit.simulate(mm1, damage);
+						if(d == damage) {
+							SwordCraftOnline.logInfo("[Combat Sim] ConsoleOne dealt: " + String.valueOf(d) + "...");
+						} else {
+							SwordCraftOnline.logInfo("[Combat Sim] ConsoleOne dealt critical hit: " + String.valueOf(d) + "...");
+						}
+
+						double parryDam = Parry.simulate(mm2, d);
+						if(parryDam != d) {
+							SwordCraftOnline.logInfo("[Combat Sim] ConsoleTwo parried. Reduced damage to: " + String.valueOf(parryDam) + "....");
+						}
+
+						SwordCraftOnline.logInfo("[Combat Sim] Simulation Complete.\n");
+
+						return true;
+
+					}catch(IndexOutOfBoundsException ex) {
+						sender.sendMessage("Invalid damage arguments. Command usage: /testcombat [damage amt]");
 						return true;
 					}
 				}

@@ -65,9 +65,7 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		}
 		public void resetExhaustion() { this.exhaustion = 0.0; }
 
-	/**Stores players critical damage chance 
-	 * TODO:Handle situation where chance is above 100
-	*/
+	/**Stores players critical damage chance*/
 	private int criticalChance = 2;
 		public int getCriticalChance() { return this.criticalChance; }
 		public void setCriticalChance(int num) { this.criticalChance = num; }
@@ -84,6 +82,10 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 	private int parryChance = 0;
 		public int getParryChance() { return this.parryChance; }
 		public void setParryChance(int num) { this.parryChance = num; }
+
+	private double parryMultiplier = 0.95D;
+		public double getParryMultiplier() { return this.parryMultiplier; }
+		public void setParryMultiplier(double num) { this.parryMultiplier = num; }
 
 	/**Additional chance to increase item level on drop */
 	private double bonusLevelMod = 0.0D;

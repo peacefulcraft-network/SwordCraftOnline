@@ -518,6 +518,26 @@ public class MythicMob implements Comparable<MythicMob> {
     private Boolean usesHealthBar;
         public Boolean usesHealthBar() { return this.usesHealthBar; }
 
+    /**Stores mobs base critical chance */
+    private int criticalChance;
+        /**Returns mobs base critical chance */
+        public int getCriticalChance() { return this.criticalChance; }
+
+    /**Stores mobs base critical multiplier */
+    private double criticalMultiplier;
+        /**Returns mobs base critical multiplier */
+        public double getCriticalMultiplier() { return this.criticalMultiplier; }
+
+    /**Stores mobs base parry chance */
+    private int parryChance;
+        /**Returns mobs base parry chance */
+        public int getParryChance() { return this.parryChance; }
+    
+    /**Stores mobs base parry damage multiplier */
+    private double parryMultiplier;
+        /**Returns mobs base parry damage multiplier */
+        public double getParryMultiplier() { return this.parryMultiplier; }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -566,6 +586,14 @@ public class MythicMob implements Comparable<MythicMob> {
         String rider = mc.getString("Rider", null);
         rider = mc.getString("Passenger", rider);
         this.rider = Optional.ofNullable(rider);
+        
+        //Combat mechanics
+        this.criticalChance = mc.getInteger("CriticalChance", 2);
+        this.criticalChance = mc.getInteger("CritChance", this.criticalChance);
+        this.criticalMultiplier = mc.getDouble("CriticalMultiplier", 1.2D);
+        this.criticalMultiplier = mc.getDouble("CritMultiplier", this.criticalMultiplier);
+        this.parryChance = mc.getInteger("ParryChance", 0);
+        this.parryMultiplier = mc.getDouble("ParryMutliplier", 0.95D);
 
         //Options handling
         this.optionDespawn = mc.getBoolean("Despawn", true);
