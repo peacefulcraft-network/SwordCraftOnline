@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.mythicmobs.mobs.bosses;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -35,31 +36,40 @@ public class BossWarden implements MythicBoss {
 
     private int level;
         public int getLevel() { return this.level; }
-        private int getSequenceDiff() { return 100 - (this.level / 10); }
 
     /**Holds wardens crystals in a map */
     private HashMap<Integer, ActiveMob> crystals;
 
-    private boolean isUsing;
-
     private int powerModifier;
+
+    private boolean inDungeon = false;
+
+    private boolean isUsing;
 
     /**
      * Constructor for boss instance. Initializes all necessary variables
-     * @param level must be above 50. Any level in intervals of 5 over this increases difficulty of boss
+     * @param level must be above 20. Any level in intervals of 2 over this increases difficulty of boss
      */
     public BossWarden(int level) {
         this.level = level;
         this.crystals = new HashMap<>();
         this.isUsing = false;
         //Determining different factors based on level over 50
-        this.powerModifier = (level - 50) / 5;
+        this.powerModifier = (level - 20) / 2;
         this.sequenceTask = new Runnable(){
             @Override
             public void run() {
                 phaseSelection();
             }
         };
+    }
+
+    /**
+     * Constructor for boss in dungeon instance. 
+     */
+    public BossWarden(ArrayList<Player> players) {
+        this(20 + (players.size() * 2));
+        this.inDungeon = true;
     }
 
     @Override
@@ -78,7 +88,8 @@ public class BossWarden implements MythicBoss {
         return this;
     }
 
-    private void phaseSelection() {
+    @Override
+    public void phaseSelection() {
         int select = SwordCraftOnline.r.nextInt(3);
 
         /**Clearing all beam locations */
