@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
@@ -16,19 +19,16 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Active instance of Mythicmob
  */
-public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
+public class ActiveMob implements SwordSkillCaster, IDamage {
     
     private long aliveTime = 0L;
     
@@ -78,7 +78,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         public Optional<UUID> getOwner() { return this.owner; }
 
     /**Stores mob boss bar if it has one */
-    private Optional<AbstractBossBar> bossBar = Optional.empty();
+    private Optional<BossBar> bossBar = Optional.empty();
 
     private boolean dead = false;
         public void setDead() { this.dead = true; }
@@ -135,6 +135,27 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         public HealthBar getHealthBar() { return this.healthBar; }
         public void setHealthBar(HealthBar b) { this.healthBar = b; }
 
+    /**Active mobs criticla hit chance */
+    private int criticalChance;
+		public int getCriticalChance() { return this.criticalChance; }
+		public void setCriticalChance(int num) { this.criticalChance = num; }
+		public void addCritical(int num) { this.criticalChance+=num; }
+
+    /**Active mobs damage multiplier on critical hit */
+	private double criticalMultiplier;
+		public double getCriticalMultiplier() { return this.criticalMultiplier; }
+		public void setCriticalMultiplier(double num) { this.criticalMultiplier = num; }
+
+    /**Active mobs chance to parry or evade damage */
+    private int parryChance;
+		public int getParryChance() { return this.parryChance; }
+        public void setParryChance(int num) { this.parryChance = num; }
+    
+    /**Active mobs damage "dampener" on successful parry */
+    private double parryMultiplier;
+        public double getParryMultiplier() { return this.parryMultiplier; }
+        public void setParryMultiplier(double num) { this.parryMultiplier = num; }
+    
     /**
      * Initializes active mob instance.
      * @param e Abstract entity
@@ -158,6 +179,12 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         this.swordSkillManager = new SwordSkillManager(this);
 
         this.damageModifiers = type.getDamageModifiers();
+
+        /**Setting combat modifiers to type instance */
+        this.criticalChance = type.getCriticalChance();
+        this.criticalMultiplier = type.getCriticalMultiplier();
+        this.parryChance = type.getParryChance();
+        this.parryMultiplier = type.getParryMultiplier();
     }
 
     public void tick(int c) {
@@ -213,6 +240,10 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         return this.entity.getLocation();
     }
 
+    public Location getBukkitLocation() {
+        return this.entity.getBukkitEntity().getLocation();
+    }
+
     public double getDamage() {
         double damage = getType().getBaseDamage();
         if(this.level > 1 && getType().getPerLevelDamage() > 0.0D) {
@@ -236,7 +267,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
     
     public void unregister() {
         if(this.bossBar.isPresent()) {
-            ((AbstractBossBar)this.bossBar.get()).removeAll();
+            this.bossBar.get().removeAll();
             this.bossBar = Optional.empty();
         }
     }
@@ -245,28 +276,32 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         return getEntity().getHealth();
     }
 
+    /**Call to update health on in display name health bar */
     public void updateHealthBar() {
         if(!this.type.usesHealthBar()) { return; }
+        if(this.type.usesBossBar()) { return;}
         this.healthBar.updateBar(getHealth());
         getLivingEntity().setCustomName(getType().getDisplayColor(this.level) + "" + getDisplayName() + this.healthBar.getHealthBar());
     }
 
+    /**Call to update players and damage on boss bar */
     public void updateBossBar() {
         if(!this.bossBar.isPresent()) { return; }
-        AbstractBossBar bar = this.bossBar.get();
-        Collection<AbstractPlayer> inRange = SwordCraftOnline.getGameManager().getPlayersInRangeSq(getLocation(), getType().getBossBarRangeSquared());
-        Collection<AbstractPlayer> current = bar.getPlayers();
+        BossBar bar = this.bossBar.get();
+        Collection<Player> inRange = SwordCraftOnline.getGameManager().getPlayersInRangeSq(getBukkitLocation(), getType().getBossBarRangeSquared());
+        Collection<Player> current = bar.getPlayers();
         double progress = getEntity().getHealth() / getEntity().getMaxHealth();
         String title = this.type.getBossBarTitle();
 
         bar.setTitle(title);
         bar.setProgress(progress);
-        current.stream().forEach(player -> {
-            if(!current.contains(player)) { bar.addPlayer(player); }
-        });
-        inRange.stream().forEach(player -> {
-            if(!inRange.contains(player)) { bar.addPlayer(player); }
-        });
+        
+        for(Player p : inRange) {
+            bar.addPlayer(p);
+        }
+        for(Player p : current) {
+            if(!inRange.contains(p)) { bar.removePlayer(p); }
+        }
     }
 
     public void setUnloaded() {

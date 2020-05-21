@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.entity.Entity;
@@ -7,8 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
 public class CriticalHit {
     private double damage;
@@ -22,13 +27,6 @@ public class CriticalHit {
     private Entity damager;
         public Entity getDamager() { return damager; }
         public void setDamager(Entity e) { damager = e; }
-
-    public boolean isPlayer(Entity e) { return e instanceof Player; }
-    public boolean isSCOPlayer(Player p) {
-        SCOPlayer s = GameManager.findSCOPlayer(p);
-        if(s == null) { return false; }
-        return true;
-    }
 
     public CriticalHit(EntityDamageByEntityEvent e) {
         this(e.getEntity(), e.getDamager(), e.getDamage());
@@ -47,18 +45,21 @@ public class CriticalHit {
      */
     public double DamageCalc() {
         double d = 0;
-        if(isPlayer(damager) && isSCOPlayer((Player) damager)) {
+        if(damager instanceof Player) {
             SCOPlayer s = GameManager.findSCOPlayer((Player) damager);
+            if(s == null) { return 0; }
 
             Random rand = new Random();
             int chance = s.getCriticalChance();
             int mult = 1;
+            /**If critical hit chance is above 100% we over critical */
             if(chance > 100) {
                 for(; chance > 100; chance-=100) {
                     mult++;
                 }
             }
 
+            /**Over critical logic: If not chance, guaranteed critical 1 level lower */
             if(rand.nextInt(100) <= chance) {
                d = mult * s.getCriticalMultiplier() * damage;
                ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + mult + "x Critical Hit!");
@@ -66,9 +67,46 @@ public class CriticalHit {
                 d = (mult - 1) * s.getCriticalMultiplier() * damage;
                 ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + (mult - 1) + "x Critical Hit!");
             }
+        } else {
+            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(damager.getUniqueId());
+            if(am == null) { return 0; }
+
+            int chance = am.getCriticalChance();
+            int mult = 1;
+
+            if(chance > 100) {
+                for(; chance > 100; chance -= 100) {
+                    mult++;
+                }
+            }
+
+            if(SwordCraftOnline.r.nextInt(100) <= chance) {
+                d = mult * am.getCriticalMultiplier() * this.damage;
+            } else if(mult > 1) {
+                d = (mult - 1) * am.getCriticalMultiplier() * damage;
+            }
         }
         return d;
     }
 
+    /**
+     * Static method used to simulate critical hit between two mm files.
+     * Called internally for console
+     */
+    public static double simulate(MythicMob damager, double damage) {
+        int chance = damager.getCriticalChance();
+        int mult = 1;
+        if(chance > 100) {
+            for(; chance > 100; chance -= 100) {
+                mult++;
+            }
+        }
+        if(SwordCraftOnline.r.nextInt(100) <= chance) {
+            return mult * damager.getCriticalMultiplier() * damage;
+        } else if(mult > 1) {
+            return (mult - 1) * damager.getCriticalMultiplier() * damage;
+        }
+        return damage;
+    }
 
 }

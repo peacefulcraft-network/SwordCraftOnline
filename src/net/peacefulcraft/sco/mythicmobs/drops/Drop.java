@@ -46,9 +46,14 @@ public class Drop implements Cloneable {
     private ItemStack item;
         public ItemStack getItem() { return this.item; }
 
+    /**Determines if drop is limited to one iteration */
+    private boolean once;
+        public boolean isOnce() { return this.once; }
+
     public Drop(String line) {
         this.line = line;
         this.name = (line.split(" "))[0];
+        
         try{
             /* Breaking arguments into format:
              * 0 Name, 1 Amount (x-y) or (x), 2 Chance to drop 0-1
@@ -77,9 +82,9 @@ public class Drop implements Cloneable {
                 }
             }
 
-            //String format: NAME AMOUNT
+            //String format: NAME AMOUNT ISONCE
             //No weight, defaulted to 1.0D
-            if(split.length == 2) {
+            if(split.length == 3) {
                 //If drop amount is variable or not.
                 if(split[1].contains("-")) {
                     String[] split2 = split[1].split("-");
@@ -90,8 +95,9 @@ public class Drop implements Cloneable {
                     this.dropAmount = split[1];
                     this.weight = 1.0D;
                 }
-            //String format: NAME AMOUNT WEIGHT
-            } else if(split.length == 3) {
+                this.once = Boolean.valueOf(split[2]);
+            //String format: NAME AMOUNT WEIGHT ISONCE
+            } else if(split.length == 4) {
                 //If drop amount is variable or not AND drop contains weight.
                 if(split[1].contains("-")) {
                     String[] split2 = split[1].split("-");
@@ -102,10 +108,12 @@ public class Drop implements Cloneable {
                     this.dropAmount = split[1];
                     this.weight = Double.valueOf(split[2]);
                 }
-            } else if(split.length >= 4) {
+                this.once = Boolean.valueOf(split[3]);
+            } else if(split.length >= 5) {
                 this.dropVar = split[1];
                 this.dropAmount = split[2];
                 this.weight = Double.valueOf(split[3]);
+                this.once = Boolean.valueOf(split[4]);
             }
         } catch(Exception ex) {
             ex.printStackTrace();

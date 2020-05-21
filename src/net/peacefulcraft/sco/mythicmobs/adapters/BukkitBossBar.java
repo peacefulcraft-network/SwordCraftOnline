@@ -23,7 +23,7 @@ public class BukkitBossBar implements AbstractBossBar {
     }
 
     public BukkitBossBar(String title, BarColor aColor, BarStyle aStyle) {
-        this.bar = Bukkit.getServer().createBossBar(title, aColor, aStyle, new BarFlag[0]);
+        this.bar = Bukkit.getServer().createBossBar(title, aColor, aStyle);
     }
     
     public String getTitle() {

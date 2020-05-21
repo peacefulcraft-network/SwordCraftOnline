@@ -20,11 +20,11 @@ public class MobTarget implements Listener {
 
         //Checking if entity is registered Mythic Mob
         if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(e.getUniqueId())) {
-            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(e.getCustomName()); 
+            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(e.getCustomName()); 
             
             //Checking if target is registered Mythic Mob
             if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(target.getUniqueId())) {
-                MythicMob mmTarget = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(target.getCustomName()); 
+                MythicMob mmTarget = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(target.getCustomName()); 
                 //Checking if factions align
                 if(mm.hasFactionTargets() && mmTarget.hasFaction()) {
                     //If target list does not contain faction cancel.
