@@ -70,7 +70,7 @@ public class ActiveSpawner {
         int offset = 0;
         if(this.level > 1) { offset = this.level * 10; }
         /**If world is in nightwave we reduce cooldown by 1 second*/
-        if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave()) { offset += 20; }
+        if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && this.s.allowNightwave()) { offset += 20; }
         if(this.cooldownTimer != 0 && getLocation().getWorld().getTime() - this.cooldownTimer < (s.getCooldown() * 20) - offset) { return; }
         this.cooldownTimer = getLocation().getWorld().getTime();
 
@@ -113,7 +113,7 @@ public class ActiveSpawner {
                 level -= SwordCraftOnline.r.nextInt(this.s.getMobLevelLower());
                 if(this.s.getMobLevelUpper() != 0) { level += SwordCraftOnline.r.nextInt(this.s.getMobLevelUpper()); }
                 if(this.level > 1) { level += this.level; }
-            } else {
+            } else if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && this.s.allowNightwave()) {
                 level *= 2;
             }
 

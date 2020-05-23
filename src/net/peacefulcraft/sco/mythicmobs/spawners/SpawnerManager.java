@@ -53,6 +53,7 @@ public class SpawnerManager implements Runnable {
     /**Determines if nightwave event is active */
     private boolean isNightwave;
         public boolean isNightwave() { return this.isNightwave; }
+        public void toggleNightwave() { isNightwave = !isNightwave; }
 
     /**
      * Constructs spawner manager and calls reload sequence.

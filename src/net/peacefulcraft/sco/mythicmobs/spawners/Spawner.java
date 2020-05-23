@@ -57,6 +57,10 @@ public class Spawner {
     private int nearbyBounds;
         public int getNearbyBounds() { return this.nearbyBounds; }
 
+    /**Determines if spawner can be converted under nightwave conditions */
+    private boolean allowNightwave;
+        public boolean allowNightwave() { return this.allowNightwave; }
+
     public Spawner(String name, MythicMob mm, MythicConfig config) {
         this.name = name;
         this.mm = mm;
@@ -74,6 +78,8 @@ public class Spawner {
         this.range = mc.getInteger("Range", 3);
         this.cooldown = mc.getInteger("Cooldown", 7);
         this.nearbyBounds = mc.getInteger("NearbyBounds", 4);
+
+        this.allowNightwave = mc.getBoolean("AllowNightwave", true);
     }
 
 }
