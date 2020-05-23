@@ -41,6 +41,11 @@ public class LootBag {
         this.drops.add(copy);
     }
 
+    /**Removes a random drop from the loot bag */
+    public void removeDrop() {
+        this.drops.remove(SwordCraftOnline.r.nextInt(this.drops.size()));
+    }
+
     /**Returns the info for lootbag */
     public String getInfo() {
         String s = ChatColor.GOLD + "Drops: ";

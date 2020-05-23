@@ -155,13 +155,12 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
     private double parryMultiplier;
         public double getParryMultiplier() { return this.parryMultiplier; }
         public void setParryMultiplier(double num) { this.parryMultiplier = num; }
+
+    /**Determines if mob was spawned during nightwave timeframe */
+    private boolean duringNightwave;
+        public boolean duringNightwave() { return this.duringNightwave; }
     
-    /**
-     * Initializes active mob instance.
-     * @param e Abstract entity
-     * @param type Mob type read from Mythic Mob
-     */
-    public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int Level) {
+    public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int level, boolean isNightwave) {
         this.uuid = uuid;
         this.entity = e;
         this.type = type;
@@ -185,6 +184,17 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         this.criticalMultiplier = type.getCriticalMultiplier();
         this.parryChance = type.getParryChance();
         this.parryMultiplier = type.getParryMultiplier();
+        
+        this.duringNightwave = isNightwave;
+    }
+
+    /**
+     * Initializes active mob instance.
+     * @param e Abstract entity
+     * @param type Mob type read from Mythic Mob
+     */
+    public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int level) {
+        this(uuid, e, type, level, false);
     }
 
     public void tick(int c) {

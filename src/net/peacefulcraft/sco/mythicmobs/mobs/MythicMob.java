@@ -51,6 +51,8 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
 import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
+import net.peacefulcraft.sco.particles.Effect;
+import net.peacefulcraft.sco.particles.effect.SmokeEffect;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
@@ -849,7 +851,10 @@ public class MythicMob implements Comparable<MythicMob> {
         } else {
             return null;
         }
-        ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level);
+        boolean nightwave = SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave();
+        if(nightwave) { level *= 2; }
+
+        ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level, nightwave);
         SwordCraftOnline.getPluginInstance().getMobManager().registerActiveMob(am);
         
         //Applying all options.
@@ -858,6 +863,14 @@ public class MythicMob implements Comparable<MythicMob> {
         am = applyMobVolatileOptions(am);
         am = applySpawnModifiers(am);
         am = applyDisplayName(am, level);
+
+        if(am.duringNightwave()) {
+            SmokeEffect effect = (SmokeEffect)SwordCraftOnline.getEffectManager().getEffectByClassName("Smoke");
+            effect.setEntity(e);
+            effect.particles = 20;
+            effect.start();
+        }
+
         return am;
     }
 
