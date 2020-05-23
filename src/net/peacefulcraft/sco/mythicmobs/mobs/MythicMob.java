@@ -851,7 +851,10 @@ public class MythicMob implements Comparable<MythicMob> {
         } else {
             return null;
         }
-        ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level, SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave());
+        boolean nightwave = SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave();
+        if(nightwave) { level *= 2; }
+
+        ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level, nightwave);
         SwordCraftOnline.getPluginInstance().getMobManager().registerActiveMob(am);
         
         //Applying all options.
