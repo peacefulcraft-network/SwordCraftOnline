@@ -43,6 +43,9 @@ public class DropTable {
     private ArrayList<Drop> nightwaveDrops = new ArrayList<Drop>();
         public boolean hasNightwaveDrops() { return (this.nightwaveDrops.size() > 0); }
 
+    private int nightwaveChance;
+        public int getNightwaveChance() { return this.nightwaveChance; }
+
     /**Reads config file into data structure 
      * Files should come in same name as mob using them.
      * I.e. SkeletonKing uses SkeletonKing
@@ -53,6 +56,7 @@ public class DropTable {
         int totalItems = mc.getInteger("TotalItems", -2);
         this.maxItems = mc.getInteger("MaxItems", totalItems);
         this.minItems = mc.getInteger("MinItems", totalItems);
+        this.nightwaveChance = mc.getInteger("NightwaveChance", 40);
         //this.bonusLevelItems = SwordCraftOnline.r.nextDouble(mc.getInteger("BonusLevelItems", 0));
         /**
          * Reading drops into droptable
@@ -129,7 +133,7 @@ public class DropTable {
                 bag.addDrop(drop);
             }
             /**If server is in nightwave and random(40) equals 2 we inject a nightwave drop */
-            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(40) == 1) {
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
                 if(this.hasNightwaveDrops()) {
                     List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
                     bag.removeDrop();
@@ -151,6 +155,13 @@ public class DropTable {
                 }
                 bag.addDrop(drop);
             }
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                if(this.hasNightwaveDrops()) {
+                    List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                    bag.removeDrop();
+                    bag.addDrop(lis.get(0));
+                }
+            }
             return bag;
         } else if(this.maxItems > 0) {
             int items = 0 - amountModifiers;
@@ -161,6 +172,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
                 if(items >= this.maxItems) {
@@ -174,6 +192,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
             }
@@ -215,6 +240,13 @@ public class DropTable {
                 }
                 bag.addDrop(drop);
             }
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                if(this.hasNightwaveDrops()) {
+                    List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                    bag.removeDrop();
+                    bag.addDrop(lis.get(0));
+                }
+            }
             return bag;
         } else if(this.minItems > 0) {
             int amount, diff = this.drops.size() - this.minItems;
@@ -229,6 +261,13 @@ public class DropTable {
                 }
                 bag.addDrop(drop);
             }
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                if(this.hasNightwaveDrops()) {
+                    List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                    bag.removeDrop();
+                    bag.addDrop(lis.get(0));
+                }
+            }
             return bag;
         } else if(this.maxItems > 0) {
             int items = 0 - amountModifiers;
@@ -239,6 +278,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
                 if(items >= this.maxItems) {
@@ -252,6 +298,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
             }
