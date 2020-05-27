@@ -61,6 +61,10 @@ public class Spawner {
     private boolean allowNightwave;
         public boolean allowNightwave() { return this.allowNightwave; }
 
+    /**Determines what time of day spawner can be triggered. */
+    private DayCycle dayCycle;
+        public DayCycle getDayCycle() { return this.dayCycle; }
+
     public Spawner(String name, MythicMob mm, MythicConfig config) {
         this.name = name;
         this.mm = mm;
@@ -80,6 +84,15 @@ public class Spawner {
         this.nearbyBounds = mc.getInteger("NearbyBounds", 4);
 
         this.allowNightwave = mc.getBoolean("AllowNightwave", true);
+
+        try{
+            String tempCycle = mc.getString("DayCycle", "ALL").toUpperCase();
+            this.dayCycle = DayCycle.valueOf(tempCycle);
+        } catch(IllegalArgumentException ex) {
+            this.dayCycle = DayCycle.ALL;
+        } catch(NullPointerException ex) {
+            this.dayCycle = DayCycle.ALL;
+        }
     }
 
 }
