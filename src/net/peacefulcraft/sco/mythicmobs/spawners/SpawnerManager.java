@@ -46,6 +46,14 @@ public class SpawnerManager implements Runnable {
     private HashMap<String, ArrayList<ActiveSpawner>> spawnerRegistry = new HashMap<>();
         public Map<String, ArrayList<ActiveSpawner>> getSpawnerRegistry() { return Collections.unmodifiableMap(this.spawnerRegistry); }
 
+    private HashMap<String, ArrayList<ActiveSpawner>> passiveRegistry = new HashMap<>();
+        public Map<String, ArrayList<ActiveSpawner>> getPassiveRegistry() { return Collections.unmodifiableMap(this.passiveRegistry); }
+        public List<ActiveSpawner> getPassiveList() { return this.passiveRegistry.values().stream().flatMap(List::stream).collect(Collectors.toList()); }
+
+    private HashMap<String, ArrayList<ActiveSpawner>> hostileRegistry = new HashMap<>();
+        public Map<String, ArrayList<ActiveSpawner>> getHostileRegistry() { return Collections.unmodifiableMap(this.hostileRegistry); }
+        public List<ActiveSpawner> getHostileList() { return this.hostileRegistry.values().stream().flatMap(List::stream).collect(Collectors.toList()); }
+
     /**Stores values for active spawners registry in one list */
     private List<ActiveSpawner> registryList = new ArrayList<>();
         public List<ActiveSpawner> getRegistryList() { return Collections.unmodifiableList(this.registryList); }
@@ -54,6 +62,9 @@ public class SpawnerManager implements Runnable {
     private boolean isNightwave;
         public boolean isNightwave() { return this.isNightwave; }
         public void toggleNightwave() { isNightwave = !isNightwave; }
+
+    private boolean isHighlighting;
+        private void setIsHighlighting(boolean b) { this.isHighlighting = b; }
 
     /**
      * Constructs spawner manager and calls reload sequence.
@@ -66,6 +77,7 @@ public class SpawnerManager implements Runnable {
         /**Setting to run spawner task once a second */
         this.spawnerTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 30);
         this.isNightwave = false;
+        this.isHighlighting = false;
     }
 
     /**Called on plugin reload or individual reload. */
@@ -180,18 +192,38 @@ public class SpawnerManager implements Runnable {
         } else if(GameManager.isDay() && this.isNightwave) {
             this.isNightwave = false;
         }
-        /**Triggers a third of active spawners in the map. */
-        for(int i = 0; i < this.registryList.size()/3; i++) {
-            ActiveSpawner as = this.registryList.get(SwordCraftOnline.r.nextInt(this.registryList.size()));
+        /**Triggers a third of hostile active spawners in the map. */
+        List<ActiveSpawner> hostiles = getHostileList();
+        for(int i = 0; i < hostiles.size()/3; i++) {
+            ActiveSpawner as = hostiles.get(SwordCraftOnline.r.nextInt(hostiles.size()));
+            as.trigger();
+        }
+
+        /**Triggers a fourth of passive active spawners in the map */
+        List<ActiveSpawner> passives = getPassiveList();
+        for(int i = 0; i < passives.size()/4; i++) {
+            ActiveSpawner as = passives.get(SwordCraftOnline.r.nextInt(passives.size()));
             as.trigger();
         }
     }
 
     /**Temporarily highlights all blocks */
     public void highlight() {
+        if(this.isHighlighting) {
+            SwordCraftOnline.logDebug("[Spawner Manager] Spawners are already highlighted!");
+            return;
+        }
+
+        this.isHighlighting = true;
         for(ActiveSpawner as : getRegistryList()) {
             as.highlight();
         }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+			@Override
+			public void run() {
+				setIsHighlighting(false);
+			}
+        }, 200);
     }
 
     /**@return spawner instance. Null if not in list */
@@ -205,10 +237,25 @@ public class SpawnerManager implements Runnable {
 
     /**Used internally to register spawners. Not called as spawn method */
     public ActiveSpawner registerSpawner(ActiveSpawner as) {
-        if(!this.spawnerRegistry.containsKey(as.getSpawner().getName())) {
-            this.spawnerRegistry.put(as.getSpawner().getName(), new ArrayList<>());
+        String name = as.getSpawner().getName();
+        if(!this.spawnerRegistry.containsKey(name)) {
+            this.spawnerRegistry.put(name, new ArrayList<>());
         }
-        this.spawnerRegistry.get(as.getSpawner().getName()).add(as);
+        this.spawnerRegistry.get(name).add(as);
+
+        /**Adding spawner to hostile and passive registrys */
+        if(as.getSpawner().isPassive()) {
+            if(!this.passiveRegistry.containsKey(name)) {
+                this.passiveRegistry.put(name, new ArrayList<>());
+            }
+            this.passiveRegistry.get(name).add(as);
+        } else {
+            if(!this.hostileRegistry.containsKey(name)) {
+                this.hostileRegistry.put(name, new ArrayList<>());
+            }
+            this.hostileRegistry.get(name).add(as);
+        }
+
         updateRegistryList();
         return as;
     }
@@ -222,6 +269,12 @@ public class SpawnerManager implements Runnable {
                 ActiveSpawner as = iter.next();
                 if(as.getLocation().equals(floored)) {
                     iter.remove();
+                    /**Removing from passive and hostile registry */
+                    if(as.getSpawner().isPassive()) {
+                        this.passiveRegistry.get(as.getSpawner().getName()).remove(as);
+                    } else {
+                        this.hostileRegistry.get(as.getSpawner().getName()).remove(as);
+                    }
                     updateRegistryList();
                     save();
                     reload(true);
@@ -243,6 +296,9 @@ public class SpawnerManager implements Runnable {
                 amount++;
             }
         }
+        this.hostileRegistry.clear();
+        this.passiveRegistry.clear();
+
         updateRegistryList();
         return amount;
     }

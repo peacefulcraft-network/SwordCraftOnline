@@ -51,6 +51,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
 import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
+import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 import net.peacefulcraft.sco.particles.Effect;
 import net.peacefulcraft.sco.particles.effect.SmokeEffect;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
@@ -504,6 +505,9 @@ public class MythicMob implements Comparable<MythicMob> {
 
     public String disguise;
 
+    private boolean isPassive;
+        public boolean isPassive() { return this.isPassive; }
+
     /**Stores factions to target */
     protected List<String> factionTargets;
         /**Returns list of faction targets */
@@ -574,6 +578,12 @@ public class MythicMob implements Comparable<MythicMob> {
         strDisplayName = mc.getString("DisplayName", strDisplayName);
         if(strDisplayName != null) {
             this.displayName = strDisplayName;
+        }
+
+        try{
+            this.isPassive = MythicEntity.isPassive(MythicEntityType.valueOf(this.strMobType));
+        } catch(Exception ex) {
+            this.isPassive = true;
         }
         
         //Handling extra mob effects

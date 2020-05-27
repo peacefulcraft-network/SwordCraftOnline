@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Ocelot;
 
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitBabyDrowned;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitBabyHusk;
@@ -155,6 +156,19 @@ public abstract class MythicEntity {
         }
         return null;
     }
+
+    /**@return true if MythicEntity is passive. False otherwise */
+    public static boolean isPassive(MythicEntityType me) {
+        if(me.equals(MythicEntityType.BAT) || me.equals(MythicEntityType.COD) || me.equals(MythicEntityType.COW) || me.equals(MythicEntityType.CHICKEN) ||
+        me.equals(MythicEntityType.DOLPHIN) || me.equals(MythicEntityType.DONKEY) || me.equals(MythicEntityType.FOX) || me.equals(MythicEntityType.HORSE) || 
+        me.equals(MythicEntityType.LLAMA) || me.equals(MythicEntityType.LLAMA) || me.equals(MythicEntityType.MULE) || me.equals(MythicEntityType.MUSHROOM_COW) ||
+        me.equals(MythicEntityType.OCELOT) || me.equals(MythicEntityType.PANDA) || me.equals(MythicEntityType.PARROT) || me.equals(MythicEntityType.PIG) ||
+        me.equals(MythicEntityType.POLAR_BEAR) || me.equals(MythicEntityType.PUFFERFISH) || me.equals(MythicEntityType.RABBIT) || me.equals(MythicEntityType.RABBIT) ||
+        me.equals(MythicEntityType.SHEEP) || me.equals(MythicEntityType.SNOWMAN) || me.equals(MythicEntityType.SQUID) || me.equals(MythicEntityType.TROPICAL_FISH)){
+            return true;
+        }
+        return false;
+    } 
 
     static {
         //entities.put(MythicEntityType.ARMOR_STAND, (Class) ArmorStand.class);

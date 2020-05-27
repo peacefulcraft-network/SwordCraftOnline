@@ -29,6 +29,8 @@ public class ActiveSpawner {
     private Location loc;
         public Location getLocation() { return new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()); }
 
+    private boolean isActivating;
+
     public ActiveSpawner(Spawner s, int level, Location loc) {
         this.s = s;
         this.level = level;
@@ -42,6 +44,7 @@ public class ActiveSpawner {
         if(!silent) {
             Material old = getLocation().getBlock().getType();
             getLocation().getBlock().setType(Material.OBSIDIAN);
+            this.isActivating = true;
             
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
                 @Override
@@ -54,6 +57,7 @@ public class ActiveSpawner {
 
     /**Highlights block with glowstone temporarily */
     public void highlight() {
+        if(this.isActivating) { return; }
         Material old = getLocation().getBlock().getType();
         getLocation().getBlock().setType(Material.GLOWSTONE);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable(){

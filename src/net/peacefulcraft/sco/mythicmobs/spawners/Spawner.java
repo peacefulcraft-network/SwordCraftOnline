@@ -65,6 +65,10 @@ public class Spawner {
     private DayCycle dayCycle;
         public DayCycle getDayCycle() { return this.dayCycle; }
 
+    /**Determines if spawner is spawning passive mobs. */
+    private boolean isPassive;
+        public boolean isPassive() { return this.isPassive; }
+
     public Spawner(String name, MythicMob mm, MythicConfig config) {
         this.name = name;
         this.mm = mm;
@@ -84,6 +88,8 @@ public class Spawner {
         this.nearbyBounds = mc.getInteger("NearbyBounds", 4);
 
         this.allowNightwave = mc.getBoolean("AllowNightwave", true);
+
+        this.isPassive = this.mm.isPassive();
 
         try{
             String tempCycle = mc.getString("DayCycle", "ALL").toUpperCase();
