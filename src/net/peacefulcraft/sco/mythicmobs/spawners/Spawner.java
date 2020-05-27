@@ -86,7 +86,7 @@ public class Spawner {
         this.allowNightwave = mc.getBoolean("AllowNightwave", true);
 
         try{
-            String tempCycle = mc.getString("DayCycle", "ALL");
+            String tempCycle = mc.getString("DayCycle", "ALL").toUpperCase();
             this.dayCycle = DayCycle.valueOf(tempCycle);
         } catch(IllegalArgumentException ex) {
             this.dayCycle = DayCycle.ALL;
