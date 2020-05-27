@@ -64,8 +64,16 @@ public class ActiveSpawner {
         }, 200);
     }
 
-    /**Called when spawner is triggered to spawn */
+    /**
+     * Called when spawner is triggered to spawn 
+     * Handles all logic related to blocking a spawner, spawner level, mob level, etc.
+     */
     public void trigger() {
+        /**Checking if spawners DayCycle matches server time of day */
+        DayCycle tempCycle = this.s.getDayCycle();
+        if(GameManager.isDay() && tempCycle.equals(DayCycle.NIGHT)) { return; }
+        if(!GameManager.isDay() && tempCycle.equals(DayCycle.DAY)) { return; }
+
         /**Checking spawners cooldown */
         int offset = 0;
         if(this.level > 1) { offset = this.level * 10; }
