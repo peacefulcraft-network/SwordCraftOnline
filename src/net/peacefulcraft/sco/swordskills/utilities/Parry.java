@@ -33,27 +33,40 @@ public class Parry {
         this.damage = damage;
     }
 
-    public double ParryCalc() {
+    /**Does parry calculations with no modifiers */
+    public double parryCalc() {
+        return parryCalc(0, 0);
+    }
+
+    /**
+     * Handles parry logic for damage dampening
+     * @param chanceModifier Any parry chance modifiers for calculation
+     * @param multModifier Any parry mulitiplier modifiers for calculation. Consider negative values as mult is dampening effect.
+     * @return Damage to be set on victim
+     */
+    public double parryCalc(int chanceModifier, double multModifier) {
         if(vic instanceof Player) {
             SCOPlayer s = GameManager.findSCOPlayer((Player) vic);
             if(s == null) { return this.damage; }
 
-            if(SwordCraftOnline.r.nextInt(100) <= s.getParryChance()) {
+            int chance = s.getParryChance() + chanceModifier;
+            if(SwordCraftOnline.r.nextInt(100) <= chance) {
                 ((Player) vic).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
                     ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 }
-                return this.damage * s.getParryMultiplier();
+                return this.damage * (s.getParryMultiplier() + multModifier);
             }
         } else {
             ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(vic.getUniqueId());
             if(am == null) { return this.damage; }
 
-            if(SwordCraftOnline.r.nextInt(100) <= am.getParryChance()) {
+            int chance = am.getParryChance() + chanceModifier;
+            if(SwordCraftOnline.r.nextInt(100) <= chance) {
                 if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
                     ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 }
-                return this.damage * am.getParryMultiplier();
+                return this.damage * (am.getParryMultiplier() + multModifier);
             }
         }
         return this.damage;
