@@ -1,6 +1,6 @@
 package net.peacefulcraft.sco.structures.structures;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.bukkit.Material;
@@ -10,6 +10,7 @@ import org.bukkit.Location;
 
 import net.peacefulcraft.sco.structures.Structure;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public class Wall extends Structure {
@@ -27,7 +28,9 @@ public class Wall extends Structure {
         this.material = mat;
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
-        this.cleanupMap = new HashMap<Location, Material>();
+        this.cleanupLis = new ArrayList<>();
+
+        this.reverseCleanup = true;
     }
 
     public Wall(int height, int width, Material mat) {
@@ -41,7 +44,9 @@ public class Wall extends Structure {
         this.matList = lis;
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
-        this.cleanupMap = new HashMap<Location, Material>();
+        this.cleanupLis = new ArrayList<>();
+
+        this.reverseCleanup = true;
     }
 
     public Wall(int height, int width, WeightedList<Material> lis) {
@@ -65,7 +70,7 @@ public class Wall extends Structure {
 					}
 					if(side.getType().equals(Material.AIR) && side != null) {
                         if(toCleanup) {
-                            cleanupMap.put(side.getLocation(), side.getType());
+                            cleanupLis.add(new Pair<Location,Material>(side.getLocation(), side.getType()));
                         }
 						side.setType(getMaterial());
 					} 
@@ -73,7 +78,7 @@ public class Wall extends Structure {
 				
 				if(replace.getType().equals(Material.AIR) && replace != null) {
                     if(toCleanup) {
-                        cleanupMap.put(replace.getLocation(), replace.getType());
+                        cleanupLis.add(new Pair<Location,Material>(replace.getLocation(), replace.getType()));
                     }
                     replace.setType(getMaterial());
 				} else {

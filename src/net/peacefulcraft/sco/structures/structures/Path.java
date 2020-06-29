@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.structures.structures;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import org.bukkit.Location;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.structures.Structure;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public class Path extends Structure {
@@ -27,7 +29,7 @@ public class Path extends Structure {
         this.material = mat;
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
-        this.cleanupMap = new HashMap<Location, Material>();
+        this.cleanupLis = new ArrayList<>();
     }
 
     public Path(int width, int length, Material mat) {
@@ -40,7 +42,7 @@ public class Path extends Structure {
         this.matList = lis;
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
-        this.cleanupMap = new HashMap<Location, Material>();
+        this.cleanupLis = new ArrayList<>();
     }
 
     public Path(int width, int length, WeightedList<Material> lis) {
@@ -66,7 +68,7 @@ public class Path extends Structure {
                 Block side = block.getRelative(DirectionalUtil.getSideDirections(targetEntity), i);
                 
                 if(toCleanup) {
-                    cleanupMap.put(side.getLocation(), side.getType());
+                    cleanupLis.add(new Pair<Location,Material>(side.getLocation(), side.getType()));
                 }
                 side.setType(getMaterial());
             }

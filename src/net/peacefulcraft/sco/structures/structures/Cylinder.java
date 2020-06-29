@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.structures.structures;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Location;
@@ -8,6 +9,7 @@ import org.bukkit.block.Block;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.structures.Structure;
+import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public class Cylinder extends Structure {
@@ -24,7 +26,9 @@ public class Cylinder extends Structure {
         this.material = mat;
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
-        this.cleanupMap = new HashMap<Location, Material>();
+        this.cleanupLis = new ArrayList<>();
+
+        this.reverseCleanup = true;
     }
 
     public Cylinder(int height, int radius, Material mat) {
@@ -37,7 +41,9 @@ public class Cylinder extends Structure {
         this.matList = lis;
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
-        this.cleanupMap = new HashMap<Location, Material>();
+        this.cleanupLis = new ArrayList<>();
+
+        this.reverseCleanup = true;
     }
 
     public Cylinder(int height, int radius, WeightedList<Material> lis) {
@@ -46,15 +52,7 @@ public class Cylinder extends Structure {
 
     @Override
     public void _construct() {
-        Location loc;
-        if(targetEntity != null && targetLocation == null) {
-            loc = targetEntity.getLocation();
-        } else if(targetLocation != null && targetEntity == null) {
-            loc = targetLocation;
-        } else {
-            SwordCraftOnline.logInfo("Attempted to construct Cylinder with illegal attribute.");
-            return;
-        }
+        Location loc = getLocation();
 
         Block center = loc.getBlock();
         for(int currentHeight = 0; currentHeight<height; currentHeight++) {
@@ -62,7 +60,7 @@ public class Cylinder extends Structure {
                 for(int z = -radius; z<radius; z++) {
                     Block current = center.getRelative(x, currentHeight, z);
                     if(toCleanup) {
-                        cleanupMap.put(current.getLocation(), current.getType());
+                        cleanupLis.add(new Pair<Location,Material>(current.getLocation(), current.getType()));
                     }
                     current.setType(getMaterial());
                 }

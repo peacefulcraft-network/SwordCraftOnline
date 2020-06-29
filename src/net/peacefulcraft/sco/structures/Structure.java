@@ -1,13 +1,17 @@
 package net.peacefulcraft.sco.structures;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public abstract class Structure  {
@@ -24,6 +28,18 @@ public abstract class Structure  {
     /**Given time in ticks before structure is removed */
     public int cleanupTimer = 200;
 
+    /**If true, structure will use slow, time driven, clean up */
+    public boolean advancedCleanup = false;
+
+    /**
+     * If true, structure will cleanup newest to oldest
+     * I.e. top down.
+     */
+    public boolean reverseCleanup = false;
+
+    /**Contains locations in order to be reset */
+    public ArrayList<Pair<Location, Material>> cleanupLis;
+
     /**Time in ticks before structure is created after start */
     public int delay = 0;
 
@@ -32,9 +48,6 @@ public abstract class Structure  {
 
     /** Targeted location for structure*/
     public Location targetLocation = null;
-
-    /**Contains locations to be reset */
-    public HashMap<Location, Material> cleanupMap;
 
     public Structure() {}
 
@@ -69,19 +82,41 @@ public abstract class Structure  {
         this.matList.add(mat, weight);
     }
 
-    /**Resets all blocks created in structure1 */
+    /**
+     * Resets all blocks created in structures 
+     * Called by extending classes
+     */
     public void cleanup() {
         if(!toCleanup) { return; }
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-            public void run() {
-                for(Location loc : cleanupMap.keySet()) {
-                    loc.getBlock().setType(cleanupMap.get(loc));
+        if(reverseCleanup) { Collections.reverse(cleanupLis); }
+
+        if(advancedCleanup) {
+            //Advanced cleanup. Iterates oldest to newest blocks replaced
+            new BukkitRunnable(){
+                @Override
+                public void run() {
+                    Pair<Location, Material> p = cleanupPop(0);
+                    if(p == null) { this.cancel(); }
+                    p.getFirst().getBlock().setType(p.getSecond());
                 }
-            }
-        }, cleanupTimer * 20);
+            }.runTaskTimer(SwordCraftOnline.getPluginInstance(), cleanupTimer * 20, 10);
+        } else {
+            //Fast cleanup. Iterates through entire list without delay between blocks
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    if(reverseCleanup) { Collections.reverse(cleanupLis); }
+                    for(Pair<Location, Material> p : cleanupLis) {
+                        p.getFirst().getBlock().setType(p.getSecond());
+                    }
+                }
+            }, cleanupTimer * 20);
+        }
     }
 
-    /**Generic construct method that validates and calls task */
+    /**
+     * Generic construct method that validates and calls task
+     * Called by extending classes
+     */
     public void construct() {
         if(!this.validate()) {
             SwordCraftOnline.logInfo("Attempted to construct Structure with invalid attributes.");
@@ -96,6 +131,29 @@ public abstract class Structure  {
 
         }, delay);
         cleanup();
+    }
+
+    /**Helper function. Pops index from cleanupLis */
+    private Pair<Location, Material> cleanupPop(int index) {
+        if(cleanupLis.isEmpty()) { return null; }
+        Pair<Location, Material> ret = cleanupLis.get(index);
+        cleanupLis.remove(index);
+        return ret;
+    }
+
+    /**
+     * Fetches valid location of structure
+     * Called by extended classes
+     */
+    public Location getLocation() {
+        if(targetEntity != null && targetLocation == null) {
+            return targetEntity.getLocation();
+        }
+        if(targetLocation != null && targetEntity == null) {
+            return targetLocation;
+        }
+        SwordCraftOnline.logInfo("Attempted to construct Structure with illegal location attributes.");
+        return null;
     }
 
     /**Abstract method to contain each structures build task */
