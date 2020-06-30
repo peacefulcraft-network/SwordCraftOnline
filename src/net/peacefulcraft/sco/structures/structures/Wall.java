@@ -74,7 +74,8 @@ public class Wall extends Structure {
                         if(this.toCleanup()) {
                             this.addCleanupList(new Pair<Location,Material>(side.getLocation(), side.getType()));
                         }
-						side.setType(getType());
+                        side.setType(getType());
+                        blockCollisionEffects(side.getLocation());
 					} 
 				}
 				
@@ -83,6 +84,7 @@ public class Wall extends Structure {
                         this.addCleanupList(new Pair<Location,Material>(replace.getLocation(), replace.getType()));
                     }
                     replace.setType(getType());
+                    blockCollisionEffects(replace.getLocation());
 				} else {
 					continue; //Was break
 				}

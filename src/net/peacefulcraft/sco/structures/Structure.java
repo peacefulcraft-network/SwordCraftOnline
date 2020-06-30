@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.structures;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +9,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -87,26 +89,61 @@ public abstract class Structure {
 
     /** Contains locations in order to be reset */
     private ArrayList<Pair<Location, Material>> cleanupLis;
-        public List<Pair<Location, Material>> getCleanupList() { return Collections.unmodifiableList(cleanupLis); }
-        public void addCleanupList(Pair<Location, Material> p) { this.cleanupLis.add(p); }
 
-    /**Time in seconds before structure is created after start */
+    public List<Pair<Location, Material>> getCleanupList() {
+        return Collections.unmodifiableList(cleanupLis);
+    }
+
+    public void addCleanupList(Pair<Location, Material> p) {
+        this.cleanupLis.add(p);
+    }
+
+    /** Time in seconds before structure is created after start */
     private int delay = 0;
-        public int getDelay() { return this.delay; }
-        public void setDelay(int i) { this.delay = i; }
 
-    /**Targeted entity for structure */
+    public int getDelay() {
+        return this.delay;
+    }
+
+    public void setDelay(int i) {
+        this.delay = i;
+    }
+
+    /** Targeted entity for structure */
     private LivingEntity targetEntity = null;
-        public LivingEntity getTargetEntity() { return this.targetEntity; }
-        public void setTargetEntity(LivingEntity e) { this.targetEntity = e; }
 
-    /** Targeted location for structure*/
+    public LivingEntity getTargetEntity() {
+        return this.targetEntity;
+    }
+
+    public void setTargetEntity(LivingEntity e) {
+        this.targetEntity = e;
+    }
+
+    /** Targeted location for structure */
     public Location targetLocation = null;
-        public Location getTargetLocation() { return this.targetLocation; }
-        public void setTargetLocation(Location l) { this.targetLocation = l; }
 
-    /**Extra effects called when entity is hit by replaced block */
-    public Method blockEffects = null;
+    public Location getTargetLocation() {
+        return this.targetLocation;
+    }
+
+    public void setTargetLocation(Location l) {
+        this.targetLocation = l;
+    }
+
+    /**
+     * Extra effects called when entity is hit by replaced block Parameter must be
+     * single living entity
+     */
+    private Method blockEffects = null;
+
+    public Method getBlockEffects() {
+        return this.blockEffects;
+    }
+
+    public void setBlockEffects(Method m) {
+        this.blockEffects = m;
+    }
 
     public Structure(Material mat, boolean toCleanup, int cleanupTimer) {
         this.material = mat;
@@ -122,20 +159,20 @@ public abstract class Structure {
         this.cleanupLis = new ArrayList<>();
     }
 
-    /**Validates strucutre is ready to be created */
+    /** Validates strucutre is ready to be created */
     public boolean validate() {
-        if((targetEntity == null && targetLocation == null) || (targetEntity != null && targetLocation != null)) {
+        if ((targetEntity == null && targetLocation == null) || (targetEntity != null && targetLocation != null)) {
             return false;
         }
-        if((matList == null && material == null) || (matList != null && material != null)) {
+        if ((matList == null && material == null) || (matList != null && material != null)) {
             return false;
         }
         return true;
     }
 
-    /**Fetches material type from weight list or single type*/
+    /** Fetches material type from weight list or single type */
     public Material getType() {
-        if(matList == null) {
+        if (matList == null) {
             return this.material;
         }
         return this.matList.getItem();
@@ -146,42 +183,50 @@ public abstract class Structure {
     }
 
     /**
-     * Resets all blocks created in structures 
-     * Called by extending classes
+     * Resets all blocks created in structures Called by extending classes
      */
     public void cleanup() {
-        if(!toCleanup) { return; }
-        if(reverseCleanup) { Collections.reverse(cleanupLis); }
+        if (!toCleanup) {
+            return;
+        }
+        if (reverseCleanup) {
+            Collections.reverse(cleanupLis);
+        }
 
-        if(advancedCleanup) {
-            //Advanced cleanup. Iterates oldest to newest blocks replaced
-            new BukkitRunnable(){
+        if (advancedCleanup) {
+            // Advanced cleanup. Iterates oldest to newest blocks replaced
+            new BukkitRunnable() {
                 @Override
                 public void run() {
                     Pair<Location, Material> p = cleanupPop(0);
-                    if(p == null) { this.cancel(); }
+                    if (p == null) {
+                        this.cancel();
+                    }
                     p.getFirst().getBlock().setType(p.getSecond());
                 }
             }.runTaskTimer(SwordCraftOnline.getPluginInstance(), cleanupTimer * 20, 10);
         } else {
-            //Fast cleanup. Iterates through entire list without delay between blocks
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-                public void run() {
-                    if(reverseCleanup) { Collections.reverse(cleanupLis); }
-                    for(Pair<Location, Material> p : cleanupLis) {
-                        p.getFirst().getBlock().setType(p.getSecond());
-                    }
-                }
-            }, cleanupTimer * 20);
+            // Fast cleanup. Iterates through entire list without delay between blocks
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(),
+                    new Runnable() {
+                        public void run() {
+                            if (reverseCleanup) {
+                                Collections.reverse(cleanupLis);
+                            }
+                            for (Pair<Location, Material> p : cleanupLis) {
+                                p.getFirst().getBlock().setType(p.getSecond());
+                            }
+                        }
+                    }, cleanupTimer * 20);
         }
     }
 
     /**
-     * Generic construct method that validates and calls task
-     * Called by extending classes
+     * Generic construct method that validates and calls task Called by extending
+     * classes
      */
     public void construct() {
-        if(!this.validate()) {
+        if (!this.validate()) {
             SwordCraftOnline.logInfo("Attempted to construct Structure with invalid attributes.");
             return;
         }
@@ -196,27 +241,63 @@ public abstract class Structure {
         cleanup();
     }
 
-    /**Helper function. Pops index from cleanupLis */
+    /** Helper function. Pops index from cleanupLis */
     private Pair<Location, Material> cleanupPop(int index) {
-        if(cleanupLis.isEmpty()) { return null; }
+        if (cleanupLis.isEmpty()) {
+            return null;
+        }
         Pair<Location, Material> ret = cleanupLis.get(index);
         cleanupLis.remove(index);
         return ret;
     }
 
     /**
-     * Fetches valid location of structure
-     * Called by extended classes
+     * Fetches valid location of structure Called by extended classes
      */
     public Location getLocation() {
-        if(targetEntity != null && targetLocation == null) {
+        if (targetEntity != null && targetLocation == null) {
             return targetEntity.getLocation();
         }
-        if(targetLocation != null && targetEntity == null) {
+        if (targetLocation != null && targetEntity == null) {
             return targetLocation;
         }
         SwordCraftOnline.logInfo("Attempted to construct Structure with illegal location attributes.");
         return null;
+    }
+
+    /**
+     * Used on block replace in construct. Checks if entity shares same location as
+     * block and calls effects method on entities
+     */
+    public void blockCollisionEffects(Location loc) {
+        if (this.blockEffects == null) {
+            return;
+        }
+        for (Entity e : loc.getWorld().getNearbyEntities(loc, 2, 2, 2)) {
+            if (!(e instanceof LivingEntity)) {
+                continue;
+            }
+            Location temp = e.getLocation();
+            int x = temp.getBlockX();
+            int y = temp.getBlockY();
+            int z = temp.getBlockZ();
+            if (x == loc.getBlockX() && y == loc.getBlockY() && z == loc.getBlockZ()) {
+                try {
+                    Object[] parameters = new Object[1];
+                    parameters[0] = (LivingEntity) e;
+                    this.blockEffects.invoke(this, parameters);
+                } catch (IllegalArgumentException ex) {
+                    SwordCraftOnline.logInfo("Attempted to invoke 'blockEffects' method in Structure with illegal arguments.");
+                    return;
+                } catch (IllegalAccessException e1) {
+                    SwordCraftOnline.logInfo("Attempted to invoke 'blockEffects' method in Structure with illegal access.");
+                    return;
+                } catch (InvocationTargetException e1) {
+                    SwordCraftOnline.logInfo("Attempted to invoke 'blockEffects' method in Structure.");
+                    return;
+                }
+            }
+        }
     }
 
     /**Abstract method to contain each structures build task */

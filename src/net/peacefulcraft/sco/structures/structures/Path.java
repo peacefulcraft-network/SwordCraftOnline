@@ -69,6 +69,7 @@ public class Path extends Structure {
                     this.addCleanupList(new Pair<Location,Material>(side.getLocation(), side.getType()));
                 }
                 side.setType(getType());
+                blockCollisionEffects(side.getLocation());
             }
         }
     }

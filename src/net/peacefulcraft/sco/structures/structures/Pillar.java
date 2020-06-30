@@ -49,6 +49,7 @@ public class Pillar extends Structure {
             for(int y = (int) loc.getY(); y <= (int) loc.getY() + height; y++) {
                  for(int z = (int) loc.getZ() - halfLength; z <= (int) loc.getZ() + halfLength; z++) {
                       loc.getWorld().getBlockAt(x, y, z).setType(this.getType());
+                      blockCollisionEffects(loc);
                  }
             }
        }
