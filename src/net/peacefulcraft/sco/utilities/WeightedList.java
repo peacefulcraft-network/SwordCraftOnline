@@ -10,6 +10,10 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 public class WeightedList<T> {
     private ArrayList<WeightedItem<T>> lis;
 
+    public WeightedList() {
+        this.lis = new ArrayList<WeightedItem<T>>();
+    }
+
     public List<WeightedList<T>.WeightedItem<T>> getList() {
         return Collections.unmodifiableList(lis);
     }
@@ -62,6 +66,14 @@ public class WeightedList<T> {
             }
         }
         return this.lis.get(randomIndex).getItem();
+    }
+
+    public WeightedList<T> clone() {
+        WeightedList<T> copy = new WeightedList<>();
+        for(WeightedItem<T> w : this.lis) {
+            copy.add(w.getItem(), w.getWeight());
+        }
+        return copy;
     }
 
     private class WeightedItem<T> {

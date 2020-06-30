@@ -1,8 +1,9 @@
 package net.peacefulcraft.sco.structures;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -14,49 +15,111 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
-public abstract class Structure  {
+public abstract class Structure {
 
-    /**Block type structure will be made of */
-    public Material material = null;
+    /** Block type structure will be made of */
+    private Material material = null;
 
-    /**Weighted map of block types for structure */
-    public WeightedList<Material> matList = null;
+    public Material getMaterial() {
+        return this.material;
+    }
 
-    /**Determines if structure is removed */
-    public boolean toCleanup = true;
+    public void setMaterial(Material m) {
+        this.material = m;
+    }
 
-    /**Given time in ticks before structure is removed */
-    public int cleanupTimer = 200;
+    /** Weighted map of block types for structure */
+    private WeightedList<Material> matList = null;
 
-    /**If true, structure will use slow, time driven, clean up */
-    public boolean advancedCleanup = false;
+    public WeightedList<Material> getMatList() {
+        return this.matList.clone();
+    }
+
+    public void addToMatList(Material m, Double w) {
+        this.matList.add(m, w);
+    }
+
+    /** Determines if structure is removed */
+    private boolean toCleanup = true;
+
+    public boolean toCleanup() {
+        return this.toCleanup;
+    }
+
+    public void setToCleanup(boolean b) {
+        this.toCleanup = b;
+    }
+
+    /** Given time in ticks before structure is removed */
+    private int cleanupTimer = 200;
+
+    public int getCleanupTimer() {
+        return this.cleanupTimer;
+    }
+
+    public void setCleanupTimer(int i) {
+        this.cleanupTimer = i;
+    }
+
+    /** If true, structure will use slow, time driven, clean up */
+    private boolean advancedCleanup = false;
+
+    public boolean isAdvancedCleanup() {
+        return this.advancedCleanup;
+    }
+
+    public void setAdvancedCleanup(boolean b) {
+        this.advancedCleanup = b;
+    }
 
     /**
-     * If true, structure will cleanup newest to oldest
-     * I.e. top down.
+     * If true, structure will cleanup newest to oldest I.e. top down.
      */
-    public boolean reverseCleanup = false;
+    private boolean reverseCleanup = false;
 
-    /**Contains locations in order to be reset */
-    public ArrayList<Pair<Location, Material>> cleanupLis;
+    public boolean isReverseCleanup() {
+        return this.reverseCleanup;
+    }
 
-    /**Time in ticks before structure is created after start */
-    public int delay = 0;
+    public void setReverseCleanup(boolean b) {
+        this.reverseCleanup = b;
+    }
+
+    /** Contains locations in order to be reset */
+    private ArrayList<Pair<Location, Material>> cleanupLis;
+        public List<Pair<Location, Material>> getCleanupList() { return Collections.unmodifiableList(cleanupLis); }
+        public void addCleanupList(Pair<Location, Material> p) { this.cleanupLis.add(p); }
+
+    /**Time in seconds before structure is created after start */
+    private int delay = 0;
+        public int getDelay() { return this.delay; }
+        public void setDelay(int i) { this.delay = i; }
 
     /**Targeted entity for structure */
-    public LivingEntity targetEntity = null;
+    private LivingEntity targetEntity = null;
+        public LivingEntity getTargetEntity() { return this.targetEntity; }
+        public void setTargetEntity(LivingEntity e) { this.targetEntity = e; }
 
     /** Targeted location for structure*/
     public Location targetLocation = null;
+        public Location getTargetLocation() { return this.targetLocation; }
+        public void setTargetLocation(Location l) { this.targetLocation = l; }
 
-    public Structure() {}
+    /**Extra effects called when entity is hit by replaced block */
+    public Method blockEffects = null;
 
-    public LivingEntity getTargetEntity() {
-        return targetEntity == null ? null : targetEntity;
+    public Structure(Material mat, boolean toCleanup, int cleanupTimer) {
+        this.material = mat;
+        this.toCleanup = toCleanup;
+        this.cleanupTimer = cleanupTimer;
+        this.cleanupLis = new ArrayList<>();
     }
 
-    public Location getTargetLocation() {
-        return targetLocation == null ? null : targetLocation;
+    public Structure(WeightedList<Material> matLis, boolean toCleanup, int cleanupTimer) {
+        this.matList = matLis;
+        this.toCleanup = toCleanup;
+        this.cleanupTimer = cleanupTimer;
+        this.cleanupLis = new ArrayList<>();
     }
 
     /**Validates strucutre is ready to be created */
@@ -71,7 +134,7 @@ public abstract class Structure  {
     }
 
     /**Fetches material type from weight list or single type*/
-    public Material getMaterial() {
+    public Material getType() {
         if(matList == null) {
             return this.material;
         }
@@ -129,7 +192,7 @@ public abstract class Structure  {
                 _construct();
             }
 
-        }, delay);
+        }, delay * 20);
         cleanup();
     }
 
