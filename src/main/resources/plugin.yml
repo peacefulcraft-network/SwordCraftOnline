@@ -16,3 +16,6 @@ commands:
     party:
       description: all party commands.
       usage: "/<command> [ create | rename | invite | disband | cancelinvite | accept | deny | setleader | leave | name ]"
+    guild:
+      description: Guild Commands
+      usage: "/<command>"

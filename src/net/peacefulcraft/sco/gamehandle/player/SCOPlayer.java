@@ -10,6 +10,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.commands.Guild;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
@@ -55,6 +56,16 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 	private SwordSkillManager swordSkillManager;
 		/**Returns instance SwordSkillManager from interface */
 		public SwordSkillManager getSwordSkillManager() { return swordSkillManager; }
+		
+	private long guildId = -1;
+		public long getGuildId() { return this.guildId; }
+		public void setGuildId(long guildId) { this.guildId = guildId; }
+		public boolean isInGuild() { return (guildId == -1); }
+		
+	private Guild.GuildRank guildRank;
+		public Guild.GuildRank getGuildRank() { return this.guildRank; }
+		public void setGuildRank(Guild.GuildRank rank) { this.guildRank = rank; } 
+	
 		
 	private double exhaustion = 0.0;
 		public double getExhaustion() { return exhaustion; }
