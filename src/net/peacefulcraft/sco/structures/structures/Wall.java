@@ -22,6 +22,12 @@ public class Wall extends Structure {
     /**Width of wall */
     private int width;
 
+    /**Special flag: eliminates need for target entity */
+    private boolean isWallWave;
+
+    /**Sides to start wall spread at -halfWidth */
+    private BlockFace sideDirection;
+
     /**Constructor for single material walls */
     public Wall(int height, int width, Material mat, boolean toCleanup, int cleanupTimer) {
         super(mat, toCleanup, cleanupTimer);
@@ -50,14 +56,30 @@ public class Wall extends Structure {
 
     @Override
     public void _construct() {
+        BlockFace sideFace = null;
+        Block upBlock = null;
+        
         LivingEntity target = getTargetEntity();
-        if(target == null) {
-            SwordCraftOnline.logInfo("Attempted to construct Wall with no target entity.");
-            return;
+        //If wall is normal
+        if(!this.isWallWave) {
+            if(target == null) {
+                SwordCraftOnline.logInfo("Attempted to construct Wall with no target entity.");
+                return;
+            }
+            sideFace = DirectionalUtil.getSideDirections(target);
+            upBlock = target.getTargetBlock((Set<Material>) null, 4).getRelative(BlockFace.UP);
+        }
+        Location loc = getLocation();
+        //If wall is part of wall wave
+        if(this.isWallWave) {
+            if(loc == null) {
+                SwordCraftOnline.logInfo("Attempted to construct Special Wall with no target location.");
+                return;
+            }
+            sideFace = this.sideDirection;
+            upBlock = loc.getBlock().getRelative(BlockFace.UP);
         }
 
-        Block upBlock = target.getTargetBlock((Set<Material>) null, 4).getRelative(BlockFace.UP);
-        BlockFace sideFace = DirectionalUtil.getSideDirections(target);
         int halfWidth = width/2;
 
         if(upBlock.getType() != null) {
@@ -92,5 +114,10 @@ public class Wall extends Structure {
         }
     }
     
+    public void setWallWave(BlockFace sideDirection, Location loc) {
+        this.targetLocation = loc;
+        this.sideDirection = sideDirection;
+        this.isWallWave = true;
+    }
 
 }

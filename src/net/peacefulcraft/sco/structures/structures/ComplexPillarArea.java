@@ -1,7 +1,5 @@
 package net.peacefulcraft.sco.structures.structures;
 
-import java.util.ArrayList;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -9,6 +7,10 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.structures.Structure;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
+/**
+ * Creates cylinder at the location with pillars that spike up within the radius
+ * Can be configured to not have the base cylinder and only create pillars.
+ */
 public class ComplexPillarArea extends Structure {
 
     /**Radius of area effected */
@@ -30,6 +32,10 @@ public class ComplexPillarArea extends Structure {
     private int pillarDensity;
         public int getPillarDensity() { return this.pillarDensity; }
         public void setPillarDensity(int i) { this.pillarDensity = i; }
+
+    private boolean hideCylinder = false;
+        public boolean toHideCylinder() { return this.hideCylinder; }
+        public void setHideCylinder(boolean b) { this.hideCylinder = b; }
 
     public ComplexPillarArea(int radius, int height, int maxHeight, Material mat, boolean toCleanup, int cleanupTimer) {
         super(mat, toCleanup, cleanupTimer);
@@ -61,19 +67,22 @@ public class ComplexPillarArea extends Structure {
     public void _construct() {
         Material material = getMaterial();
         WeightedList<Material> matList = getMatList();
-
-        Cylinder cyl;
-        if(material != null && matList == null) {
-            cyl = new Cylinder(1, radius, false, material, toCleanup(), getCleanupTimer());
-        } else if(material == null && matList != null) {
-            cyl = new Cylinder(1, radius, false, matList, toCleanup(), getCleanupTimer());
-        } else {
-            SwordCraftOnline.logInfo("Attempted to construct ComplexPillarArea with invalid material attributes.");
-            return;
-        }
         
-        cyl.targetLocation = getLocation();
-        cyl.construct();
+        //Skips cylinder creation if we are hiding it
+        if(!hideCylinder) {
+            Cylinder cyl;
+            if(material != null && matList == null) {
+                cyl = new Cylinder(1, radius, false, material, toCleanup(), getCleanupTimer());
+            } else if(material == null && matList != null) {
+                cyl = new Cylinder(1, radius, false, matList, toCleanup(), getCleanupTimer());
+            } else {
+                SwordCraftOnline.logInfo("Attempted to construct ComplexPillarArea with invalid material attributes.");
+                return;
+            }
+            
+            cyl.targetLocation = getLocation();
+            cyl.construct();
+        }
 
         /**Constructing pillars on 1/n area of the cylinder created */
         int density = (int) (3.14 * (radius * radius)) / pillarDensity;
@@ -98,6 +107,7 @@ public class ComplexPillarArea extends Structure {
                 return;
             }
 
+            //blockEffects method is handled in pillar construct()
             pill.targetLocation = loc;
             pill.construct();
         }

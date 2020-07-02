@@ -145,6 +145,28 @@ public abstract class Structure {
         this.blockEffects = m;
     }
 
+    /**If true structure will call construct after set time of cleanup */
+    private boolean isRepeating = false;
+
+    public boolean isRepeating() {
+        return this.isRepeating;
+    }
+
+    public void setRepeating(boolean b) {
+        this.isRepeating = b;
+    }
+
+    /**Time after cleanup that construct() is called */
+    private int repeatingTimer = 0;
+
+    public int getRepeatingTimer() {
+        return this.repeatingTimer;
+    }
+
+    public void setRepeatingTimer(int i) {
+        this.repeatingTimer = i;
+    }
+
     public Structure(Material mat, boolean toCleanup, int cleanupTimer) {
         this.material = mat;
         this.toCleanup = toCleanup;
@@ -186,15 +208,11 @@ public abstract class Structure {
      * Resets all blocks created in structures Called by extending classes
      */
     public void cleanup() {
-        if (!toCleanup) {
-            return;
-        }
-        if (reverseCleanup) {
-            Collections.reverse(cleanupLis);
-        }
+        if (!toCleanup) { return; }
+        if (reverseCleanup) { Collections.reverse(cleanupLis); }
 
         if (advancedCleanup) {
-            // Advanced cleanup. Iterates oldest to newest blocks replaced
+            // Advanced cleanup. Iterates over blocks slowly
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -210,15 +228,22 @@ public abstract class Structure {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(),
                     new Runnable() {
                         public void run() {
-                            if (reverseCleanup) {
-                                Collections.reverse(cleanupLis);
-                            }
                             for (Pair<Location, Material> p : cleanupLis) {
                                 p.getFirst().getBlock().setType(p.getSecond());
                             }
                         }
                     }, cleanupTimer * 20);
         }
+
+        this.cleanupLis.clear();
+        if(!this.isRepeating) { return; }
+
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), 
+                new Runnable() {
+                    public void run() {
+                        construct();
+                    }
+                }, repeatingTimer * 20);
     }
 
     /**
