@@ -538,6 +538,11 @@ public class MythicMob implements Comparable<MythicMob> {
         /**Returns mobs base parry damage multiplier */
         public double getParryMultiplier() { return this.parryMultiplier; }
 
+    /**Determines if mob is used in tutorial and added to tutorial manager list */
+    private boolean isTutorialMob;
+        /**Returns if mob is part of tutorial */
+        public boolean isTutorialMob() { return this.isTutorialMob; }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -611,6 +616,9 @@ public class MythicMob implements Comparable<MythicMob> {
         this.optionSilent = mc.getBoolean("Options.Silent", this.optionSilent);
         this.optionNoAI = mc.getBoolean("Options.NoAI", this.optionNoAI);
         this.noDamageTicks = mc.getInteger("Options.NoDamageTicks", 10) * 2;
+        this.isTutorialMob = mc.getBoolean("Options.isTutorialMob", false);
+        this.isTutorialMob = mc.getBoolean("Options.Tutorial", this.isTutorialMob);
+
         //Creeper options
         this.explosionRadius = mc.getInteger("Options.ExplosionRadius", 3);
         this.isPowered = mc.getBoolean("Options.Powered", false);

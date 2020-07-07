@@ -52,7 +52,9 @@ public class MobManager {
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
 
-    
+    /**Stores mobs used in tutorial by displayname */
+    private HashMap<String, MythicMob> mmTutorial = new HashMap<>();
+        public Map<String, MythicMob> getTutorialList() { return Collections.unmodifiableMap(mmTutorial); }
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
@@ -93,12 +95,18 @@ public class MobManager {
                     
                     String display = sl.getCustomConfig().getString(name + ".Display");
                     display = sl.getCustomConfig().getString(name + ".DisplayName", display);
-                    
+                    if(display == null || display == "") {
+                        SwordCraftOnline.logInfo("[Mob Manager] Error occurred loading mob with now display name");
+                        continue;
+                    }
+
                     MythicMob mm = new MythicMob(file, name, mc);
                     this.mmList.put(name, mm);
-                    
-                    if(display != null) {
-                        this.mmDisplay.put(display, mm);
+                    this.mmDisplay.put(display, mm);
+
+                    /**If mob is used in tutorial */
+                    if(mm.isTutorialMob()) {
+                        this.mmTutorial.put(display, mm);
                     }
 
                 } catch(Exception ex) {

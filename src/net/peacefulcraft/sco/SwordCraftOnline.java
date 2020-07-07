@@ -36,6 +36,7 @@ import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.tutorial.TutorialManager;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityAsyncPlayerChatListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
@@ -81,6 +82,9 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	private SpawnerManager spawnerManager;
 		public SpawnerManager getSpawnerManager() { return this.spawnerManager; }
+
+	private static TutorialManager tutorialManager;
+		public static TutorialManager getTutorialManager() { return tutorialManager; }
 	
 	public SwordCraftOnline() {
 
@@ -112,6 +116,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.spawnerManager = new SpawnerManager();
 
 		effectManager = new EffectManager(this);
+
+		this.tutorialManager = new TutorialManager();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
