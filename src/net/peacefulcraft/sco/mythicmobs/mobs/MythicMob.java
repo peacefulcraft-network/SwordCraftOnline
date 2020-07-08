@@ -617,7 +617,6 @@ public class MythicMob implements Comparable<MythicMob> {
         this.optionNoAI = mc.getBoolean("Options.NoAI", this.optionNoAI);
         this.noDamageTicks = mc.getInteger("Options.NoDamageTicks", 10) * 2;
         this.isTutorialMob = mc.getBoolean("Options.isTutorialMob", false);
-        this.isTutorialMob = mc.getBoolean("Options.Tutorial", this.isTutorialMob);
 
         //Creeper options
         this.explosionRadius = mc.getInteger("Options.ExplosionRadius", 3);
@@ -846,6 +845,13 @@ public class MythicMob implements Comparable<MythicMob> {
         this.disguise = mc.getString("Disguise.Type", this.disguise);
         if(this.disguise != null && this.disguise.toUpperCase().contains("PLAYER")) {
             this.fakePlayer = true;
+        }
+
+        //Extra overrides for tutorial mobs
+        if(this.isTutorialMob) {
+            this.optionInvincible = true;
+            this.optionPersistent = true;
+            this.optionDespawn = false;
         }
     }
 

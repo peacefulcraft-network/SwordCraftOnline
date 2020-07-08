@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
+import net.peacefulcraft.sco.tutorial.TutorialManager;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
@@ -56,7 +57,13 @@ public class GameManager {
 		if(Teleports.getSpawn() == null) {
 			return; 
 		}
-		
+		//TODO: Player first join send them tutorial invite
+		/*
+		if(!p.hasPlayedBefore()) {
+			TutorialManager.getTutorialMessage("Yui", "")
+		}
+		*/
+
 		//Set to teleport player to floor.
 		try {
 			p.teleport(Teleports.getWaystone(s.getFloor()));

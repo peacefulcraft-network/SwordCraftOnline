@@ -453,6 +453,12 @@ public class SCOAdmin implements CommandExecutor {
 						return true;
 					}
 				}
+
+				if(args[1].equals("reloadTutorial")) {
+					SwordCraftOnline.getTutorialManager().loadTutorials();
+					sender.sendMessage("Tutorial Manager reloaded");
+					return true;
+				}
 			}
 
 			if(args[0].equalsIgnoreCase("particletest")) {

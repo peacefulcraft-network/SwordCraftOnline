@@ -27,19 +27,23 @@ public abstract class Announcer {
         public static String getPrefix() { return prefix; }
 
     /**Messages single player */
-    public static void messagePlayer(Player p, String message) {
-        p.sendMessage(getPrefix() + ChatColor.WHITE + message);
+    public static void messagePlayer(Player p, String message, boolean usePrefix) {
+        if(usePrefix) { 
+            p.sendMessage(getPrefix() + ChatColor.WHITE + message); 
+        } else {
+            p.sendMessage(message);
+        }
     }
 
     /**Messages single player */
-    public static void messagePlayer(SCOPlayer s, String message) {
-        messagePlayer(s.getPlayer(), message);
+    public static void messagePlayer(SCOPlayer s, String message, boolean usePrefix) {
+        messagePlayer(s.getPlayer(), message, usePrefix);
     }
 
     /**Messages group of players */
-    public static void messageGroup(Collection<SCOPlayer> l, String message) {
+    public static void messageGroup(Collection<SCOPlayer> l, String message, boolean usePrefix) {
         for(SCOPlayer s : l) {
-            messagePlayer(s, message);
+            messagePlayer(s, message, usePrefix);
         }
     }
 
@@ -81,27 +85,27 @@ public abstract class Announcer {
     }
     
     /**Messages all players in gamemanager */
-    public static void messageInGame(String message) {
-        messageGroup(GameManager.getPlayers().values(), message);
+    public static void messageInGame(String message, boolean usePrefix) {
+        messageGroup(GameManager.getPlayers().values(), message, usePrefix);
     }
 
     /**Messages all online players in a party */
-    public static void messageParty(String partyName, String message) {
+    public static void messageParty(String partyName, String message, boolean usePrefix) {
         Party p = SwordCraftOnline.getPartyManager().getParty(partyName);
         if(p == null) { 
             SwordCraftOnline.logInfo("Failed to send message to: " + partyName); 
             return;
         }
-        messageGroup(p.getOnlinePlayers(), message);
+        messageGroup(p.getOnlinePlayers(), message, usePrefix);
     }
 
     /**Messages all players in a dungeon */
-    public static void messageDungeon(int index, String message) {
+    public static void messageDungeon(int index, String message, boolean usePrefix) {
         Dungeon d = DungeonManager.getDungeon(index);
         if(d == null) {
             SwordCraftOnline.logInfo("Failed to send message to dungeon: " + index);
             return;
         }
-        messageGroup(d.getPlayers(), message);
+        messageGroup(d.getPlayers(), message, usePrefix);
     }
 }
