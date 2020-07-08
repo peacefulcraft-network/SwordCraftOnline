@@ -6,34 +6,45 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
-import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
-public class TutorialManager {
+public class TutorialManager implements Runnable{
+
+    /**Time before player is automatically removed after checkpoint */
+    private int cooldown;
 
     /** List of players in tutorial */
-    private static ArrayList<SCOPlayer> players;
-
-    public static List<SCOPlayer> getPlayers() {
-        return Collections.unmodifiableList(players);
-    }
+    private static HashMap<SCOPlayer, Long> players;
+        public static Set<SCOPlayer> getPlayers() {
+            return Collections.unmodifiableSet(players.keySet());
+        }
 
     /** Storing tutorial bots by display name of mob */
     private HashMap<String, TutorialBot> bots = new HashMap<String, TutorialBot>();
+        public Map<String, TutorialBot> getTutorialBotMap() { return Collections.unmodifiableMap(bots); }
+
+        private BukkitTask tutorialTask;
 
     public TutorialManager() {
-        players = new ArrayList<SCOPlayer>();
+        players = new HashMap<SCOPlayer, Long>();
+        this.cooldown = SwordCraftOnline.getSCOConfig().getTutorialCooldown();
         loadTutorials();
+
+        this.tutorialTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 1200, 10);
     }
 
     public void loadTutorials() {
@@ -56,23 +67,42 @@ public class TutorialManager {
                     continue;
                 }
 
-                SwordCraftOnline.logInfo("DEBUG: " + name);
-
+                boolean usesMob = sl.getCustomConfig().getBoolean(name + ".UsesMythicMob");
                 Map<String, MythicMob> mobList = SwordCraftOnline.getPluginInstance().getMobManager().getTutorialList();
-                if(!mobList.containsKey(name)) {
-                    SwordCraftOnline.logInfo("[Tutorial Manager] Attempted to load file with no corresponding Mythic Mob.");
+                if(!mobList.containsKey(name) && usesMob) {
+                    SwordCraftOnline.logInfo("[Tutorial Manager] Attempted to load file with no corresponding Mythic Mob: " + name);
                     continue;
                 }
 
                 TutorialBot bot = new TutorialBot(file, name, mc);
-                bot.setMythicMob(mobList.get(name));
+                if(usesMob) {
+                    bot.setMythicMob(mobList.get(name));
+                }
+
+                this.bots.put(name, bot);
+            }
+        }
+        SwordCraftOnline.logInfo("[Tutorial Manager] Loading complete!");
+    }
+
+    @Override
+    public void run() {
+        for(SCOPlayer s : getPlayers()) {
+            long secondsLeft = ((players.get(s)/1000)+cooldown) - (System.currentTimeMillis()/1000);
+            if(secondsLeft < 0) {
+                leaveTutorial(s);
             }
         }
     }
 
+    /**Called on events to give player time to get to next point */
+    public void updatePlayerTime(SCOPlayer s) {
+        players.put(s, System.currentTimeMillis());
+    }
+
     /**Main call to process players joining tutorial */
     public void joinTutorial(SCOPlayer s) {
-        players.add(s);
+        players.put(s, System.currentTimeMillis());
     }
 
     public void joinTutorial(Player p) {
@@ -87,6 +117,7 @@ public class TutorialManager {
     /**Main call to process players leaving tutorial */
     public void leaveTutorial(SCOPlayer s) {
         players.remove(s);
+        Announcer.messagePlayer(s, "You have left the tutorial!", true);
     }
 
     public void leaveTutorial(Player p) {
@@ -99,7 +130,7 @@ public class TutorialManager {
     }
 
     public boolean isInTutorial(SCOPlayer s) {
-        return players.contains(s);
+        return getPlayers().contains(s);
     }
 
     public boolean isInTutorial(Player p) {

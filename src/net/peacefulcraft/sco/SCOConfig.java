@@ -35,6 +35,8 @@ public class SCOConfig {
 	private boolean autoTarget = true;
 
 	private HealthBarType healthBarConfig;
+
+	private Integer tutorialCooldown;
 	
 	public SCOConfig(FileConfiguration c) {
 		
@@ -60,10 +62,16 @@ public class SCOConfig {
 		parties = c.getConfigurationSection("parties").getValues(false);
 
 		healthBarConfig = HealthBarType.valueOf(c.getString("healthbar").toUpperCase());
+
+		tutorialCooldown = c.getInt("tutorialCooldown");
 	}
 	
 	public Boolean getDebug() {
 		return debug;
+	}
+
+	public Integer getTutorialCooldown() {
+		return tutorialCooldown;
 	}
 	
 	public void setWaystone(Map<String, Object> waystone, int index) {

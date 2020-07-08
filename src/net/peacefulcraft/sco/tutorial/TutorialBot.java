@@ -31,6 +31,8 @@ public class TutorialBot {
 
     private List<String> mannerisms;
 
+    private boolean usesMythicMob;
+
     private MythicMob mm;
         public void setMythicMob(MythicMob m) { this.mm = m; }
 
@@ -46,6 +48,8 @@ public class TutorialBot {
         this.goodbyes = mc.getStringList("Goodbyes");
         this.conversations = mc.getStringList("Conversations");
         this.mannerisms = mc.getStringList("Mannerisms");
+
+        this.usesMythicMob = mc.getBoolean("UsesMythicMob", true);
     }
 
     /**@return Random greeting from greeting list */
@@ -80,6 +84,7 @@ public class TutorialBot {
     }
 
     public void spawnBot(Location loc) {
+        if(!this.usesMythicMob) { return; }
         if(this.mm == null) {
             SwordCraftOnline.logInfo("[Tutorial Bot] Attempted to spawn Bot with no MythicMob set: " + this.file);
             return;
