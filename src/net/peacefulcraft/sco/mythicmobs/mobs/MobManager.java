@@ -59,13 +59,10 @@ public class MobManager {
         loadMobs();
     }
 
+    /**Loads mobs from files*/
     public void loadMobs() {
 
-        this.mmList.clear();
-        this.mmDisplay.clear();
-        this.mmDefault.clear();
-        this.mobRegistry.clear();
-        MobSpawnHandler.clearVanillaMobs();
+        clearLists();
 
         IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
@@ -107,6 +104,31 @@ public class MobManager {
             }
         }
         SwordCraftOnline.logInfo("[Mob Manager] Loading complete!");
+    }
+
+    /**Clears lists but keeps persistent mobs */
+    private void clearLists() {
+        this.mmList.clear();
+        this.mmDisplay.clear();
+        this.mmDefault.clear();
+        HashMap<UUID, ActiveMob> temp = new HashMap<UUID, ActiveMob>();
+        Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
+        while(iterator.hasNext()) {
+            ActiveMob am = iterator.next();
+            if(am.getType().isPersistent()) { 
+                temp.put(am.getUUID(), am);
+                continue; 
+            }
+        }
+        this.mobRegistry.clear();
+        this.mobRegistry = temp;
+
+        MobSpawnHandler.clearVanillaMobs();
+    }
+
+    public void reload() {
+        despawnAllMobs();
+        loadMobs();
     }
 
     public MythicMob getMythicMob(String s) {
