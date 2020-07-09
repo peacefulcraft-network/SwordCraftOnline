@@ -37,7 +37,7 @@ public class TutorialManager implements Runnable{
     private HashMap<String, TutorialBot> bots = new HashMap<String, TutorialBot>();
         public Map<String, TutorialBot> getTutorialBotMap() { return Collections.unmodifiableMap(bots); }
 
-        private BukkitTask tutorialTask;
+    private BukkitTask tutorialTask;
 
     public TutorialManager() {
         players = new HashMap<SCOPlayer, Long>();
@@ -89,9 +89,18 @@ public class TutorialManager implements Runnable{
     public void run() {
         for(SCOPlayer s : getPlayers()) {
             long secondsLeft = ((players.get(s)/1000)+cooldown) - (System.currentTimeMillis()/1000);
-            if(secondsLeft < 0) {
+            //If cooldown expire or not on floor 1
+            if(secondsLeft < 0 || s.getFloor() != 1) {
                 leaveTutorial(s);
             }
+        }
+    }
+
+    public void toggleTutorialTask() {
+        if(tutorialTask.isCancelled()) {
+            this.tutorialTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 30);
+        } else {
+            this.tutorialTask.cancel();
         }
     }
 
