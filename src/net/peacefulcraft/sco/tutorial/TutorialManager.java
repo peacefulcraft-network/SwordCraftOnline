@@ -39,6 +39,9 @@ public class TutorialManager implements Runnable{
 
     private BukkitTask tutorialTask;
 
+    private boolean isLoaded;
+        public boolean isLoaded() { return this.isLoaded; }
+
     public TutorialManager() {
         players = new HashMap<SCOPlayer, Long>();
         this.cooldown = SwordCraftOnline.getSCOConfig().getTutorialCooldown();
@@ -82,6 +85,7 @@ public class TutorialManager implements Runnable{
                 this.bots.put(name, bot);
             }
         }
+        this.isLoaded = true;
         SwordCraftOnline.logInfo("[Tutorial Manager] Loading complete!");
     }
 

@@ -39,6 +39,9 @@ public class TutorialBot {
     private ActiveMob am;
         public ActiveMob getActiveMob() { return this.am; }
 
+    private Location loc;
+        public Location getLocation() { return this.loc; }
+
     public TutorialBot(String file, String internalName, MythicConfig mc) {
         this.config = mc;
         this.file = file;
@@ -83,6 +86,10 @@ public class TutorialBot {
         }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 120, 10);
     }
 
+    /**
+     * Overrides mobmanager spawn for our conditions.
+     * @param loc Location to spawn mob
+     */
     public void spawnBot(Location loc) {
         if(!this.usesMythicMob) { return; }
         if(this.mm == null) {
@@ -94,6 +101,7 @@ public class TutorialBot {
             SwordCraftOnline.logInfo("[Tutorial Bot] Active Mob instance null. Spawn abandoned: " + this.file);
         } else {
             this.am = am;
+            this.loc = loc;
         }
     }
 }

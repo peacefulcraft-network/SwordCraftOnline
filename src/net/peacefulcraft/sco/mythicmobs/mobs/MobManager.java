@@ -96,7 +96,7 @@ public class MobManager {
                     String display = sl.getCustomConfig().getString(name + ".Display");
                     display = sl.getCustomConfig().getString(name + ".DisplayName", display);
                     if(display == null || display == "") {
-                        SwordCraftOnline.logInfo("[Mob Manager] Error occurred loading mob with now display name");
+                        SwordCraftOnline.logInfo("[Mob Manager] Error occurred loading mob with no display name");
                         continue;
                     }
 
