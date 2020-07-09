@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 import net.peacefulcraft.sco.structures.Structure;
+import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public class Pillar extends Structure {
@@ -47,9 +48,12 @@ public class Pillar extends Structure {
 
         for(int x = (int) loc.getX() - halfLength; x <= (int) loc.getX() + halfLength; x++) {
             for(int y = (int) loc.getY(); y <= (int) loc.getY() + height; y++) {
-                 for(int z = (int) loc.getZ() - halfLength; z <= (int) loc.getZ() + halfLength; z++) {
-                      loc.getWorld().getBlockAt(x, y, z).setType(this.getType());
-                      blockCollisionEffects(loc);
+                 for(int z = (int) loc.getZ() - halfLength; z <= (int) loc.getZ() + halfLength; z++) {  
+                    
+                    safeAddToCleanup(loc.getBlock().getType(), new Location(loc.getWorld(), x, y, z));
+
+                    loc.getWorld().getBlockAt(x, y, z).setType(this.getType());
+                    blockCollisionEffects(loc);
                  }
             }
        }

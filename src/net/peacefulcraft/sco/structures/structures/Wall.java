@@ -93,18 +93,16 @@ public class Wall extends Structure {
 						continue;
 					}
 					if(side.getType().equals(Material.AIR) && side != null) {
-                        if(this.toCleanup()) {
-                            this.addCleanupList(new Pair<Location,Material>(side.getLocation(), side.getType()));
-                        }
+                        safeAddToCleanup(side.getType(), side.getLocation());
+
                         side.setType(getType());
                         blockCollisionEffects(side.getLocation());
 					} 
 				}
 				
 				if(replace.getType().equals(Material.AIR) && replace != null) {
-                    if(this.toCleanup()) {
-                        this.addCleanupList(new Pair<Location,Material>(replace.getLocation(), replace.getType()));
-                    }
+                    safeAddToCleanup(replace.getType(), replace.getLocation());
+                    
                     replace.setType(getType());
                     blockCollisionEffects(replace.getLocation());
 				} else {

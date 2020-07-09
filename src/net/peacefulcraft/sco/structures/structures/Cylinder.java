@@ -56,9 +56,9 @@ public class Cylinder extends Structure {
                 for(int x = -radius; x<radius; x++) {
                     for(int z = -radius; z<radius; z++) {
                         Block current = center.getRelative(x, currentHeight, z);
-                        if(this.toCleanup()) {
-                            this.addCleanupList(new Pair<Location,Material>(current.getLocation(), current.getType()));
-                        }
+                        
+                        safeAddToCleanup(current.getType(), current.getLocation());
+
                         current.setType(getType());
                     }
                 }

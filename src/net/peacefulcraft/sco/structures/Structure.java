@@ -34,6 +34,7 @@ public abstract class Structure {
     private WeightedList<Material> matList = null;
 
     public WeightedList<Material> getMatList() {
+        if(this.matList == null) { return null; }
         return this.matList.clone();
     }
 
@@ -209,8 +210,12 @@ public abstract class Structure {
      */
     public void cleanup() {
         if (!toCleanup) { return; }
-        if (reverseCleanup) { Collections.reverse(cleanupLis); }
-
+        if (reverseCleanup) { 
+            SwordCraftOnline.logInfo("[DEBUG] REVERSED");
+            Collections.reverse(cleanupLis); 
+        }
+        
+        SwordCraftOnline.logInfo("[DEBUG] 1");
         if (advancedCleanup) {
             // Advanced cleanup. Iterates over blocks slowly
             new BukkitRunnable() {
@@ -223,6 +228,7 @@ public abstract class Structure {
                     p.getFirst().getBlock().setType(p.getSecond());
                 }
             }.runTaskTimer(SwordCraftOnline.getPluginInstance(), cleanupTimer * 20, 10);
+            SwordCraftOnline.logInfo("[DEBUG] ADVANCED");
         } else {
             // Fast cleanup. Iterates through entire list without delay between blocks
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(),
@@ -233,7 +239,9 @@ public abstract class Structure {
                             }
                         }
                     }, cleanupTimer * 20);
+            SwordCraftOnline.logInfo("[DEBUG] FAST");
         }
+        SwordCraftOnline.logInfo("[DEBUG] 2");
 
         this.cleanupLis.clear();
         if(!this.isRepeating) { return; }
@@ -264,6 +272,17 @@ public abstract class Structure {
 
         }, delay * 20);
         cleanup();
+    }
+
+    /**Checks for duplicate location values */
+    public void safeAddToCleanup(Material mat, Location loc) {
+        if(!this.toCleanup()) { return; }
+        for(Pair<Location,Material> temp : this.cleanupLis) {
+           if(temp.getFirst().equals(loc)) {
+               return;
+           } 
+        }
+        addCleanupList(new Pair<Location,Material>(loc, mat));
     }
 
     /** Helper function. Pops index from cleanupLis */
