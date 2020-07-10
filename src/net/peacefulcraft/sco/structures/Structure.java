@@ -9,6 +9,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -283,6 +285,32 @@ public abstract class Structure {
            } 
         }
         addCleanupList(new Pair<Location,Material>(loc, mat));
+    }
+
+    /**Safely conforms the to be placed block to terrain */
+    public Location conformToTerrain(Location loc) {
+        Block block = loc.getBlock();
+        if(block.getType().equals(Material.AIR) || block.getType() == null) {
+            Location bLoc = block.getLocation();
+            for(int i = 1; i <= 25; i++) {
+                Location temp = bLoc.clone().add(0, -i, 0);
+                if(!temp.getBlock().getType().equals(Material.AIR) && !temp.getBlock().isPassable()) {
+                    block = temp.getBlock();
+                    break;
+                }
+            }
+        } 
+        if(!block.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
+            Location bLoc = block.getLocation();
+            for(int i = 1; i<=5; i++) {
+                Block temp = bLoc.clone().add(0, i, 0).getBlock();
+                if(temp.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
+                    block = temp;
+                    break;
+                }
+            }
+        }
+        return block.getLocation();
     }
 
     /** Helper function. Pops index from cleanupLis */

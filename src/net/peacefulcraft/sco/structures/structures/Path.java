@@ -61,26 +61,8 @@ public class Path extends Structure {
         BlockIterator iter = new BlockIterator(start, 0, (int)start.distance(end));
         while(iter.hasNext()) {
             Block block = iter.next();
-            if(block.getType().equals(Material.AIR) || block.getType() == null) {
-                Location bLoc = block.getLocation();
-                for(int i = 1; i <= 25; i++) {
-                    Location temp = bLoc.clone().add(0, -i, 0);
-                    if(!temp.getBlock().getType().equals(Material.AIR) && !temp.getBlock().isPassable()) {
-                        block = temp.getBlock();
-                        break;
-                    }
-                }
-            } 
-            if(!block.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
-                Location bLoc = block.getLocation();
-                for(int i = 1; i<=5; i++) {
-                    Block temp = bLoc.clone().add(0, i, 0).getBlock();
-                    if(temp.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
-                        block = temp;
-                        break;
-                    }
-                }
-            }
+            Location conformed = conformToTerrain(block.getLocation());
+            block = conformed.getBlock();
 
             for(int i = -halfWidth; i <=halfWidth; i++) {
                 Block side = block.getRelative(sideFace, i);
