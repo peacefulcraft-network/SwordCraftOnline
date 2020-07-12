@@ -17,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.utilities.Pair;
+import net.peacefulcraft.sco.utilities.ReverseList;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public abstract class Structure {
@@ -212,13 +213,13 @@ public abstract class Structure {
      */
     public void cleanup() {
         if (!toCleanup) { return; }
-        if (reverseCleanup) { 
+        if (reverseCleanup) {
+            this.cleanupLis = ReverseList.reverseList(this.cleanupLis);
             SwordCraftOnline.logInfo("[DEBUG] REVERSED");
-            Collections.reverse(cleanupLis); 
         }
         
         SwordCraftOnline.logInfo("[DEBUG] 1");
-        if (advancedCleanup) {
+        if(advancedCleanup) {
             // Advanced cleanup. Iterates over blocks slowly
             new BukkitRunnable() {
                 @Override
@@ -226,10 +227,13 @@ public abstract class Structure {
                     Pair<Location, Material> p = cleanupPop(0);
                     if (p == null) {
                         this.cancel();
+                    } else {
+                        Block b = p.getFirst().getBlock();
+                        Material m = p.getSecond();
+                        b.setType(m);
                     }
-                    p.getFirst().getBlock().setType(p.getSecond());
                 }
-            }.runTaskTimer(SwordCraftOnline.getPluginInstance(), cleanupTimer * 20, 10);
+            }.runTaskTimer(SwordCraftOnline.getPluginInstance(), cleanupTimer * 20, 2);
             SwordCraftOnline.logInfo("[DEBUG] ADVANCED");
         } else {
             // Fast cleanup. Iterates through entire list without delay between blocks
@@ -280,9 +284,10 @@ public abstract class Structure {
     public void safeAddToCleanup(Material mat, Location loc) {
         if(!this.toCleanup()) { return; }
         for(Pair<Location,Material> temp : this.cleanupLis) {
-           if(temp.getFirst().equals(loc)) {
+            Location l = temp.getFirst();
+            if(l.getBlockX() == loc.getBlockX() && l.getBlockY() == loc.getBlockY() && l.getBlockZ() == loc.getBlockZ()) {
                return;
-           } 
+            } 
         }
         addCleanupList(new Pair<Location,Material>(loc, mat));
     }

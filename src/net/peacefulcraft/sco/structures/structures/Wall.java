@@ -11,7 +11,6 @@ import org.bukkit.Location;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.structures.Structure;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
-import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public class Wall extends Structure {
@@ -32,9 +31,9 @@ public class Wall extends Structure {
     public Wall(int height, int width, Material mat, boolean toCleanup, int cleanupTimer) {
         super(mat, toCleanup, cleanupTimer);
 
-        this.setReverseCleanup(true);
-        this.height = height;
+        this.height = height-1;
         this.width = width;
+        //this.setReverseCleanup(true);
     }
 
     public Wall(int height, int width, Material mat) {
@@ -45,9 +44,9 @@ public class Wall extends Structure {
     public Wall(int height, int width, WeightedList<Material> lis, boolean toCleanup, int cleanupTimer) {
         super(lis, toCleanup, cleanupTimer);
 
-        this.setReverseCleanup(true);
-        this.height = height;
+        this.height = height-1;
         this.width = width;
+        //this.setReverseCleanup(true);
     }
 
     public Wall(int height, int width, WeightedList<Material> lis) {
@@ -68,6 +67,8 @@ public class Wall extends Structure {
             }
             sideFace = DirectionalUtil.getSideDirections(target);
             upBlock = target.getTargetBlock((Set<Material>) null, 4).getRelative(BlockFace.UP);
+            Location conformed = conformToTerrain(upBlock.getLocation());
+            upBlock = conformed.getBlock();
         }
         Location loc = getLocation();
         //If wall is part of wall wave
@@ -81,17 +82,17 @@ public class Wall extends Structure {
         }
 
         int halfWidth = width/2;
-
         if(upBlock.getType() != null) {
             for(int y=0; y <= height; y++) {
 				Block replace = upBlock.getRelative(BlockFace.UP, y);
                 
                 //Iterating through blocks half width to either side of center block
 				for(int i=-halfWidth; i <= halfWidth; i++) {
-					Block side = replace.getRelative(sideFace, i);
 					if(i == 0) {
 						continue;
-					}
+                    }
+                    Block side = replace.getRelative(sideFace, i);
+
 					if(side.getType().equals(Material.AIR) && side != null) {
                         safeAddToCleanup(side.getType(), side.getLocation());
 
@@ -99,7 +100,7 @@ public class Wall extends Structure {
                         blockCollisionEffects(side.getLocation());
 					} 
 				}
-				
+                
 				if(replace.getType().equals(Material.AIR) && replace != null) {
                     safeAddToCleanup(replace.getType(), replace.getLocation());
                     

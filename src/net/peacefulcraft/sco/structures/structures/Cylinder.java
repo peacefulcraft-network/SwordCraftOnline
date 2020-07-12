@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import net.peacefulcraft.sco.structures.Structure;
-import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public class Cylinder extends Structure {
@@ -23,7 +22,7 @@ public class Cylinder extends Structure {
         super(mat, toCleanup, cleanupTimer);
 
         this.setReverseCleanup(true);
-        this.height = height;
+        this.height = height-1;
         this.radius = radius;
         this.hollow = hollow;
     }
@@ -36,7 +35,7 @@ public class Cylinder extends Structure {
         super(lis, toCleanup, cleanupTimer);
 
         this.setReverseCleanup(true);
-        this.height = height;
+        this.height = height-1;
         this.radius = radius;
         this.hollow = hollow;
     }
@@ -50,7 +49,7 @@ public class Cylinder extends Structure {
         Location loc = getLocation();
         if(loc == null) { return; }
 
-        if(hollow) {
+        if(!hollow) {
             Block center = loc.getBlock();
             for(int currentHeight = 0; currentHeight<height; currentHeight++) {
                 for(int x = -radius; x<radius; x++) {
@@ -73,7 +72,10 @@ public class Cylinder extends Structure {
                     x = (int)(loc.getX() + radius * Math.cos(angle));
                     z = (int)(loc.getZ() + radius * Math.sin(angle));
                 
-                    loc.getWorld().getBlockAt(x, y, z).setType(this.getType());
+                    Location current = new Location(loc.getWorld(), x, y, z);
+                    safeAddToCleanup(current.getBlock().getType(), current);
+
+                    current.getBlock().setType(this.getType());
                 }
                 y += 1;
             }

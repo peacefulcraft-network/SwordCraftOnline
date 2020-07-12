@@ -498,12 +498,14 @@ public class SCOAdmin implements CommandExecutor {
 				} else if(args[1].equalsIgnoreCase("Wall")) {
 					struct = new Wall(5, 7, Material.STONE, true, 5);
 					struct.setTargetEntity(p);
+					struct.setAdvancedCleanup(true);
 				} else if(args[1].equalsIgnoreCase("ComplexPillarArea")) {
 					struct = new ComplexPillarArea(10, 5, 7, Material.STONE, true, 5);
 					struct.setTargetLocation(p.getLocation());
 				} else if(args[1].equalsIgnoreCase("WallWave")) {
 					struct = new WallWave(5, 7, 10, Material.STONE, true, 5);
 					struct.setTargetEntity(p);
+					((WallWave)struct).setWallGap(1);
 				} else if(args[1].equalsIgnoreCase("Cylinder")) {
 					struct = new Cylinder(5, 5, true, Material.STONE, true, 5);
 					struct.setTargetLocation(p.getLocation());

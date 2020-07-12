@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 import net.peacefulcraft.sco.structures.Structure;
-import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
 public class Pillar extends Structure {
@@ -19,7 +18,7 @@ public class Pillar extends Structure {
         super(mat, toCleanup, cleanupTimer);
 
         this.setReverseCleanup(true);
-        this.height = height;
+        this.height = height-1;
         this.length = length;
     }
 
@@ -31,7 +30,7 @@ public class Pillar extends Structure {
         super(matLis, toCleanup, cleanupTimer);
 
         this.setReverseCleanup(true);
-        this.height = height;
+        this.height = height-1;
         this.length = length;
     }
 

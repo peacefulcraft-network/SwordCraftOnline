@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.structures.structures;
 
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -67,35 +69,31 @@ public class WallWave extends Structure {
         Location end = target.getTargetBlock((Set<Material>) null, length).getLocation();
     
         BlockIterator iter = new BlockIterator(start, 0, (int)start.distance(end));
-        /*
+        iter.next();
+
+        //Predetermining which blocks are used for walls.
+        ArrayList<Block> blockList = new ArrayList<Block>();
+        int gapCheck = 0;
         while(iter.hasNext()) {
-            Block block = iter.next();
-
-            Wall wall;
-            if(getMaterial() != null && getMatList() == null) {
-                wall = new Wall(height, width, getMaterial(), toCleanup(), getCleanupTimer());
-            } else if(getMaterial() == null && getMatList() != null) {
-                wall = new Wall(height, width, getMatList(), toCleanup(), getCleanupTimer());
+            if(wallGap != 0 && wallGap == gapCheck) {
+                gapCheck = 0;
             } else {
-                SwordCraftOnline.logInfo("Attempted to construct WallWave with illegal material attributes.");
-                return;
+                try {
+                    Block next = iter.next();
+                    Location conformed = conformToTerrain(next.getLocation());
+                    blockList.add(conformed.getBlock());
+                } catch(NoSuchElementException ex) {
+                    return;
+                }
             }
-
-            wall.setWallWave(sideFace, block.getLocation());
-            wall.setAdvancedCleanup(true);
-
-            wall.construct();
         }
-        */
+
         new BukkitRunnable(){
             int i = 0;
             @Override
             public void run() {
-                if(!iter.hasNext()) { this.cancel(); }
-                if(wallGap != 0 && wallGap == i) {
-                    i = 0;
-                } else {
-                    Block block = iter.next();
+                try{
+                    Block block = blockList.get(i);
 
                     Wall wall;
                     if(getMaterial() != null && getMatList() == null) {
@@ -112,9 +110,11 @@ public class WallWave extends Structure {
 
                     wall.construct();
                     i++;
+                } catch(IndexOutOfBoundsException ex) {
+                    this.cancel();
                 }
             }
-        }.runTaskTimer(SwordCraftOnline.getPluginInstance(), getCleanupTimer() * 20, 10);
+        }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 0, 5);
     }
     
 }
