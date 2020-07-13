@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,6 +29,13 @@ import net.peacefulcraft.sco.mythicmobs.mobs.bosses.BossIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.bosses.MythicBoss;
 import net.peacefulcraft.sco.mythicmobs.spawners.ActiveSpawner;
 import net.peacefulcraft.sco.particles.Effect;
+import net.peacefulcraft.sco.structures.Structure;
+import net.peacefulcraft.sco.structures.structures.ComplexPillarArea;
+import net.peacefulcraft.sco.structures.structures.Cylinder;
+import net.peacefulcraft.sco.structures.structures.Path;
+import net.peacefulcraft.sco.structures.structures.Pillar;
+import net.peacefulcraft.sco.structures.structures.Wall;
+import net.peacefulcraft.sco.structures.structures.WallWave;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
@@ -471,6 +479,42 @@ public class SCOAdmin implements CommandExecutor {
 				effect.start();
 				SwordCraftOnline.logInfo("Particle started...");
 
+				return true;
+			}
+
+			if(args[0].equalsIgnoreCase("structure")) {
+				Player p = (Player)sender;
+				if(args[1].isEmpty()) {
+					p.sendMessage("Enter a structure.");
+					return true;
+				}
+				Structure struct = null;
+				if(args[1].equalsIgnoreCase("Pillar")) {
+					struct = new Pillar(5, 3, Material.STONE, true, 5);
+					struct.setTargetLocation(p.getLocation());
+				} else if(args[1].equalsIgnoreCase("Path")) {
+					struct = new Path(2, 10, Material.STONE, true, 5);
+					struct.setTargetEntity(p);
+				} else if(args[1].equalsIgnoreCase("Wall")) {
+					struct = new Wall(5, 7, Material.STONE, true, 5);
+					struct.setTargetEntity(p);
+					struct.setAdvancedCleanup(true);
+				} else if(args[1].equalsIgnoreCase("ComplexPillarArea")) {
+					struct = new ComplexPillarArea(10, 5, 7, Material.STONE, true, 5);
+					struct.setTargetLocation(p.getLocation());
+				} else if(args[1].equalsIgnoreCase("WallWave")) {
+					struct = new WallWave(5, 7, 10, Material.STONE, true, 5);
+					struct.setTargetEntity(p);
+					((WallWave)struct).setWallGap(1);
+				} else if(args[1].equalsIgnoreCase("Cylinder")) {
+					struct = new Cylinder(5, 5, true, Material.STONE, true, 5);
+					struct.setTargetLocation(p.getLocation());
+				}
+				if(struct == null) {
+					SwordCraftOnline.logInfo("[DEBUG] Struct is null");
+					return true;
+				}
+				struct.construct();
 				return true;
 			}
 

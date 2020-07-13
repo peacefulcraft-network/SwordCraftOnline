@@ -1,6 +1,8 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -109,5 +111,32 @@ public class DirectionalUtil implements Listener{
         } else {
             return null;
         }
+    }
+
+
+    /**Returns relative blockface directions of entity location */
+    public static BlockFace getSideDirections(LivingEntity e) {
+		double rot = (e.getLocation().getYaw() - 90) % 360;
+		if(rot < 0 ) {
+			rot += 360.0;
+		}
+		if(0 <= rot && rot < 45.0) {
+			return BlockFace.NORTH; //Facing North
+		} else if(45.0 <= rot && rot < 135.0) {
+			return BlockFace.EAST; //Facing East
+		} else if(135.0 <= rot && rot < 225.0) {
+			return BlockFace.NORTH; //Facing South
+		} else if(225.0 <= rot && rot < 315.0) {
+			return BlockFace.EAST; //Facing West
+		} else if(315.0 <= rot && rot < 360.0) {
+			return BlockFace.NORTH; //Facing North
+		} else {
+			return null;
+		}
+    }
+    
+    /**Returns relative blockface directions of player location */
+    public static BlockFace getSideDirections(Player p) {
+        return getSideDirections((LivingEntity) p);
     }
 }
