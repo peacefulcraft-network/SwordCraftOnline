@@ -106,23 +106,4 @@ public class TutorialBot {
         lis.add(s);
         doConversation(lis);
     }
-
-    /**
-     * Overrides mobmanager spawn for our conditions.
-     * @param loc Location to spawn mob
-     */
-    public void spawnBot(Location loc) {
-        if(!this.usesMythicMob) { return; }
-        if(this.mm == null) {
-            SwordCraftOnline.logInfo("[Tutorial Bot] Attempted to spawn Bot with no MythicMob set: " + this.file);
-            return;
-        }
-        ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.file, loc);
-        if(am == null) {
-            SwordCraftOnline.logInfo("[Tutorial Bot] Active Mob instance null. Spawn abandoned: " + this.file);
-        } else {
-            this.am = am;
-            this.loc = loc;
-        }
-    }
 }
