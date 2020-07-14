@@ -15,9 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.AlchemistInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.tutorial.TutorialBot;
+import net.peacefulcraft.sco.tutorial.TutorialManager;
 
 public class MerchantListeners implements Listener {
     private final String alchemistTag = ChatColor.BLUE + "[" + ChatColor.GOLD + "Bill the Alchemist" + ChatColor.BLUE + "]";
@@ -32,7 +35,8 @@ public class MerchantListeners implements Listener {
         SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
         if(s == null) { return; }
 
-        if(entity.getCustomName().equalsIgnoreCase("Alchemist")) {
+        if(entity.getCustomName().equalsIgnoreCase("Bill the Alchemist")) {
+            tutorialCheck(s, "Bill the Alchemist", false);
             new AlchemistInventory(s).openInventory();
         }
     }
@@ -51,6 +55,44 @@ public class MerchantListeners implements Listener {
         }
     }
 
+    @EventHandler
+    public void inventoryClose(InventoryCloseEvent e) {
+        SCOPlayer s = GameManager.findSCOPlayer((Player)e.getPlayer());
+        if(s == null) { return; }
+
+        if(e.getView().getTitle().equalsIgnoreCase("Alchemist Shop")) {
+            s.getPlayer().sendMessage(alchemistTag + " Enjoy ye' wares.");
+            tutorialCheck(s, "Bill the Alchemist", true);
+        }
+    }
+
+    /**
+     * Checks if player is in tutorial and calls appropriate
+     * tutorial bot methods
+     */
+    private void tutorialCheck(SCOPlayer s, String displayName, boolean isProgressing) {
+        if(!TutorialManager.getPlayers().contains(s)) { return; }
+        /**Checking bot exists */
+        TutorialBot bot = SwordCraftOnline.getTutorialManager().getTutorialBotMap().get(displayName);
+        if(bot == null) {
+            SwordCraftOnline.logInfo("Failed to load tutorialBot from merchant interact event.");
+            return;
+        }
+        /**Checking bots stage matches player stage */
+        if(!bot.getTutorialStage().equals(SwordCraftOnline.getTutorialManager().getPlayerStage(s))) {
+            return;
+        }
+
+        /*Updating players cooldown time and calling conversation */
+        SwordCraftOnline.getTutorialManager().updatePlayerTime(s);
+        if(isProgressing) {
+            SwordCraftOnline.getTutorialManager().progressTutorialStage(s);
+            Announcer.messagePlayer(s, bot.getGoodbye(), false);
+        } else {
+            bot.doConversation(s);
+        }
+    }
+
     private void priceCheck(SCOPlayer s, String item, InventoryView inv) {
         String[] split = item.split(" - ");
         int price = Integer.valueOf(split[1].replace(",", ""));
@@ -66,15 +108,5 @@ public class MerchantListeners implements Listener {
             s.getPlayer().getWorld().dropItemNaturally(s.getPlayer().getLocation(), bought);
         }
         return;
-    }
-
-    @EventHandler
-    public void inventoryClose(InventoryCloseEvent e) {
-        SCOPlayer s = GameManager.findSCOPlayer((Player)e.getPlayer());
-        if(s == null) { return; }
-
-        if(e.getView().getTitle().equalsIgnoreCase("Alchemist Shop")) {
-            s.getPlayer().sendMessage(alchemistTag + " Enjoy ye' wares.");
-        }
     }
 }

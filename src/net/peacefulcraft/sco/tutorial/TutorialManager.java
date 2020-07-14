@@ -37,6 +37,10 @@ public class TutorialManager implements Runnable{
     private HashMap<String, TutorialBot> bots = new HashMap<String, TutorialBot>();
         public Map<String, TutorialBot> getTutorialBotMap() { return Collections.unmodifiableMap(bots); }
 
+    /**Tracks what stage a player is at in the tutorial */
+    private HashMap<TutorialStage, ArrayList<SCOPlayer>> stageTracker;
+        public Map<TutorialStage, ArrayList<SCOPlayer>> getStageTracker() { return Collections.unmodifiableMap(stageTracker); }
+            
     private BukkitTask tutorialTask;
 
     private boolean isLoaded;
@@ -48,6 +52,10 @@ public class TutorialManager implements Runnable{
         loadTutorials();
 
         this.tutorialTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 1200, 10);
+
+        for(TutorialStage ts : TutorialStage.values()) {
+            this.stageTracker.put(ts, new ArrayList<SCOPlayer>());
+        }
     }
 
     public void loadTutorials() {
@@ -116,6 +124,7 @@ public class TutorialManager implements Runnable{
     /**Main call to process players joining tutorial */
     public void joinTutorial(SCOPlayer s) {
         players.put(s, System.currentTimeMillis());
+        stageTracker.get(TutorialStage.INTRO).add(s);
     }
 
     public void joinTutorial(Player p) {
@@ -152,12 +161,45 @@ public class TutorialManager implements Runnable{
         return isInTutorial(s);
     }
 
+    public void progressTutorialStage(SCOPlayer s) {
+        if(stageTracker.get(TutorialStage.INTRO).remove(s)) {
+            stageTracker.get(TutorialStage.ALCHEMIST).add(s);
+            return;
+        }
+        if(stageTracker.get(TutorialStage.ALCHEMIST).remove(s)) {
+            stageTracker.get(TutorialStage.BLACKSMITH).add(s);
+            return;
+        }
+        if(stageTracker.get(TutorialStage.BLACKSMITH).remove(s)) {
+            stageTracker.get(TutorialStage.COMBAT).add(s);
+            return;
+        }
+        if(stageTracker.get(TutorialStage.COMBAT).remove(s)) {
+            leaveTutorial(s);
+            return;
+        }
+    }
+
+    public TutorialStage getPlayerStage(SCOPlayer s) {
+        for(TutorialStage ts : stageTracker.keySet()) {
+            if(stageTracker.get(ts).contains(s)) {
+                return ts;
+            }
+        }
+        return null;
+    }
+
     public static String getTutorialChatBar(String name) {
         return "" + ChatColor.RED + "[" + ChatColor.AQUA + name 
             + ChatColor.RED + "]" + ChatColor.WHITE + ": ";
     }
 
     public enum TutorialBots {
-        YUI;
+        YUI, BILL_THE_ALCHEMIST, SMITHY;
+    }
+
+    /**Individual stages of the tutorial */
+    public enum TutorialStage {
+        INTRO, ALCHEMIST, BLACKSMITH, COMBAT;
     }
 }

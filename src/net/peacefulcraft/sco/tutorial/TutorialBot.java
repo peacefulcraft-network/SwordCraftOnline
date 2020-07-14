@@ -1,11 +1,9 @@
 package net.peacefulcraft.sco.tutorial;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
@@ -14,6 +12,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.tutorial.TutorialManager.TutorialStage;
 
 public class TutorialBot {
 
@@ -42,6 +41,9 @@ public class TutorialBot {
     private Location loc;
         public Location getLocation() { return this.loc; }
 
+    private TutorialStage stage;
+        public TutorialStage getTutorialStage() { return this.stage; }
+
     public TutorialBot(String file, String internalName, MythicConfig mc) {
         this.config = mc;
         this.file = file;
@@ -53,6 +55,13 @@ public class TutorialBot {
         this.mannerisms = mc.getStringList("Mannerisms");
 
         this.usesMythicMob = mc.getBoolean("UsesMythicMob", true);
+
+        try {
+            this.stage = TutorialStage.valueOf(mc.getString("TutorialStage").toUpperCase());
+        } catch(Exception ex) {
+            SwordCraftOnline.logInfo("[Tutorial Bot] Error occured loading bot TutorialStage variable.");
+            this.stage = null;
+        }
     }
 
     /**@return Random greeting from greeting list */
@@ -75,6 +84,8 @@ public class TutorialBot {
      * @param lis List of SCOPlayers to be read the conversation
      */
     public void doConversation(List<SCOPlayer> lis) {
+        if(conversations.size() == 0) { return; }
+        
         ArrayList<String> copy = new ArrayList<>(conversations);
         new BukkitRunnable(){
             @Override
@@ -84,6 +95,16 @@ public class TutorialBot {
                 Announcer.messageGroup(lis, message, false);
             }
         }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 120, 10);
+    }
+
+    /**
+     * Overrides mobmanager spawn for our conditions.
+     * @param loc Location to spawn mob
+     */
+    public void doConversation(SCOPlayer s) {
+        List<SCOPlayer> lis = new ArrayList<SCOPlayer>();
+        lis.add(s);
+        doConversation(lis);
     }
 
     /**
