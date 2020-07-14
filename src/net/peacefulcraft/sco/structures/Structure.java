@@ -145,8 +145,22 @@ public abstract class Structure {
         return this.blockEffects;
     }
 
+    /**@param m Must have single parameter living entity */
     public void setBlockEffects(Method m) {
         this.blockEffects = m;
+    }
+
+    /**
+     * Extra effects called when a structure is done constructing
+     */
+    private Method endEffects = null;
+
+    public Method getEndEffects() {
+        return this.endEffects;
+    }
+
+    public void setEndEffects(Method m) {
+        this.endEffects = m;
     }
 
     /**If true structure will call construct after set time of cleanup */
@@ -277,6 +291,14 @@ public abstract class Structure {
             }
 
         }, delay * 20);
+
+        if(this.endEffects != null) {
+            try {
+                this.endEffects.invoke(null);
+            } catch(Exception ex) {
+                SwordCraftOnline.logInfo("[Structure] Error occured while attempted to load endEffects.");
+            }
+        }
         cleanup();
     }
 
