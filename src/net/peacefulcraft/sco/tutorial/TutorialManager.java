@@ -191,7 +191,7 @@ public class TutorialManager implements Runnable{
     }
 
     public enum TutorialBots {
-        YUI;
+        YUI, BILL_THE_ALCHEMIST, SMITHY;
     }
 
     /**Individual stages of the tutorial */
