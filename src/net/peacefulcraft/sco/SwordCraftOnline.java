@@ -21,6 +21,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
+import net.peacefulcraft.sco.inventories.merchants.MerchantLoader;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
@@ -81,6 +82,9 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	private SpawnerManager spawnerManager;
 		public SpawnerManager getSpawnerManager() { return this.spawnerManager; }
+
+	private MerchantLoader merchantLoader;
+		public MerchantLoader getMerchantLoader() { return merchantLoader; }
 	
 	public SwordCraftOnline() {
 
@@ -112,6 +116,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.spawnerManager = new SpawnerManager();
 
 		effectManager = new EffectManager(this);
+
+		this.merchantLoader = new MerchantLoader();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}

@@ -25,17 +25,45 @@ public class ItemIdentifier {
 		}
     }
 
-    public static ItemStack generate(String name) {
-        return generate(name, 1, false);
-    }
-
-    public static ItemStack generate(String name, Integer amount, Boolean shop) {
+    public static ItemStack generate(String name, Integer amount) {
         try {
             name = name.replaceAll(" ", "");
             Class<?> clazz = Class.forName("net.peacefulcraft.sco.items.customitems." + name);
-            Method method = clazz.getMethod("create", Integer.class, Boolean.class);
+            Method method = clazz.getMethod("create", Integer.class);
             
-            return (ItemStack) method.invoke(clazz.cast(clazz.newInstance()), amount, shop);
+            return (ItemStack) method.invoke(clazz.cast(clazz.newInstance()), amount);
+        } catch (ClassNotFoundException e) {
+            SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no corresponding class was found in net.peacefulcraft.sco.items.customitems");
+        } catch (NoSuchMethodException e) {
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " must have create method.");
+        } catch (IllegalAccessException e) {
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems" + name + " is an abstract class and cannot be instantiated.");
+        } catch (InstantiationException | InvocationTargetException e) {
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " generated exception during reflective instantiation:");
+        } catch (IllegalArgumentException e) {
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " received an invalid argument type during insantiation. Arguements must be of type (Integer, Boolean).");
+        } catch (ClassCastException e) {
+            SwordCraftOnline.logSevere("net.peacefulcraft.sco.items.customitems." + name + " must implement ICustomItem.");
+        }
+
+        ItemStack item = new ItemStack(Material.FIRE, 1);
+        ArrayList<String> desc = new ArrayList<String>();
+        desc.add("Unable to create item " + name);
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(desc);
+        meta.setDisplayName("The server");
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    public static ItemStack generate(String name, Integer amount, Integer price) {
+        try {
+            name = name.replaceAll(" ", "");
+            Class<?> clazz = Class.forName("net.peacefulcraft.sco.items.customitems." + name);
+            Method method = clazz.getMethod("create", Integer.class, Integer.class);
+            
+            return (ItemStack) method.invoke(clazz.cast(clazz.newInstance()), amount, price);
         } catch (ClassNotFoundException e) {
             SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no corresponding class was found in net.peacefulcraft.sco.items.customitems");
         } catch (NoSuchMethodException e) {

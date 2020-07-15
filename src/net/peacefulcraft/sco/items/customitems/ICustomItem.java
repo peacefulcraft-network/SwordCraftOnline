@@ -5,7 +5,12 @@ import org.bukkit.inventory.ItemStack;
 public interface ICustomItem {
     /**
      * @param amount # of items in itemstack
-     * @param shop if item is in shop inventory. Changes items name to store shop price.
      */
-    public ItemStack create(Integer amount, Boolean shop);
+    public ItemStack create(Integer amount);
+
+    /**
+     * @param amount # of items in itemstack
+     * @param price Price of items in shop
+     */
+    public ItemStack create(Integer amount, Integer price);
 }

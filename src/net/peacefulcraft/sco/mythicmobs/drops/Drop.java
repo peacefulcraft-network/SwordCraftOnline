@@ -72,7 +72,7 @@ public class Drop implements Cloneable {
                 }
             } else if(ItemIdentifier.itemExists(split[0])) {
                 //Checking if custom item
-                this.item = ItemIdentifier.generate(split[0]);
+                this.item = ItemIdentifier.generate(split[0], 1);
             } else {
                 //Not custom or skill. Make new item stack
                 try {

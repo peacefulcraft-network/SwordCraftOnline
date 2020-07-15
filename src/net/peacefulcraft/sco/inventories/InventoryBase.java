@@ -73,7 +73,11 @@ public abstract class InventoryBase{
     
     public void addButton(int row, int col, ItemStack item, String name, String lore, Boolean hidden) {
     	inventory.setItem(row * 9 + col, createButtomItem(item, name, lore, hidden)); 
-    }
+	}
+	
+	public int getSize() {
+		return inventory.getSize();
+	}
     
     private ItemStack createButtomItem(ItemStack item, String name, String lore, Boolean hidden) {
         ItemMeta im = item.getItemMeta();

@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.inventories.listeners;
 
+import java.util.HashMap;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,12 +17,16 @@ import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventories.AlchemistInventory;
+import net.peacefulcraft.sco.inventories.merchants.MerchantInventory;
+import net.peacefulcraft.sco.inventories.merchants.MerchantLoader;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 
 public class MerchantListeners implements Listener {
     private final String alchemistTag = ChatColor.BLUE + "[" + ChatColor.GOLD + "Bill the Alchemist" + ChatColor.BLUE + "]";
+
+    private static HashMap<SCOPlayer, String> nameMap = new HashMap<>();
     
     @EventHandler
     public void interactVillager(PlayerInteractEntityEvent e) {
@@ -32,9 +38,11 @@ public class MerchantListeners implements Listener {
         SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
         if(s == null) { return; }
 
-        if(entity.getCustomName().equalsIgnoreCase("Alchemist")) {
-            new AlchemistInventory(s).openInventory();
-        }
+        MerchantInventory mi = SwordCraftOnline.getPluginInstance().getMerchantLoader().getMerchantInventory(entity.getCustomName());
+        if(mi == null) { return; }
+
+        nameMap.put(s, entity.getCustomName());
+        mi.openInventory(s);
     }
 
     @EventHandler
@@ -42,8 +50,8 @@ public class MerchantListeners implements Listener {
         if(e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR)) { return; }
         SCOPlayer s = GameManager.findSCOPlayer((Player) e.getViewers().get(0));
         if(s == null) { return; }
-        
-        if(e.getView().getTitle().equalsIgnoreCase("Alchemist Shop")) {
+
+        if(MerchantLoader.isShop(e.getView().getTitle())) {
             e.setCancelled(true);
             String itemName = e.getCurrentItem().getItemMeta().getDisplayName();
             priceCheck(s, itemName, e.getView());
@@ -56,10 +64,13 @@ public class MerchantListeners implements Listener {
         int price = Integer.valueOf(split[1].replace(",", ""));
         
         if(!(s.withdrawWallet(price))) {
-            s.getPlayer().sendMessage(alchemistTag + " Seems you don't have enough money for my wares... Come back with more coin...");
+            String name = nameMap.get(s);
+            MerchantInventory mi = SwordCraftOnline.getPluginInstance().getMerchantLoader().getMerchantInventory(name);
+            String message = MerchantLoader.getTag(name) + "" + ChatColor.WHITE + mi.getDenyPhrase();
+            Announcer.messagePlayer(s, message);
             return;
         } 
-        ItemStack bought = ItemIdentifier.generate(split[0], Integer.valueOf(1), Boolean.valueOf(false));
+        ItemStack bought = ItemIdentifier.generate(split[0], Integer.valueOf(1));
         if(bought == null || bought.getType().equals(Material.AIR)) { return; }
 
         if(!(s.getPlayer().getInventory().addItem(bought).isEmpty())) {
@@ -73,8 +84,12 @@ public class MerchantListeners implements Listener {
         SCOPlayer s = GameManager.findSCOPlayer((Player)e.getPlayer());
         if(s == null) { return; }
 
-        if(e.getView().getTitle().equalsIgnoreCase("Alchemist Shop")) {
-            s.getPlayer().sendMessage(alchemistTag + " Enjoy ye' wares.");
+        if(MerchantLoader.isShop(e.getView().getTitle())) {
+            String name = nameMap.get(s);
+            MerchantInventory mi = SwordCraftOnline.getPluginInstance().getMerchantLoader().getMerchantInventory(name);
+            String message = MerchantLoader.getTag(name) + "" + ChatColor.WHITE + mi.getClosingPhrase();
+            Announcer.messagePlayer(s, message);
+            nameMap.remove(s);
         }
     }
 }

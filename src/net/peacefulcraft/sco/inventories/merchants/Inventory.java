@@ -1,16 +1,17 @@
-package net.peacefulcraft.sco.inventories;
+package net.peacefulcraft.sco.inventories.merchants;
 
-import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.items.customitems.GoldCoin;
+import net.peacefulcraft.sco.inventories.InventoryBase;
+import net.peacefulcraft.sco.inventories.InventoryType;
 
-public class AlchemistInventory extends InventoryBase implements Listener {
+public class Inventory extends InventoryBase {
 
-    public AlchemistInventory(SCOPlayer s) {
+    public Inventory(SCOPlayer s, String name, int size) {
         super(s.getPlayer(), InventoryType.MERCHANT);
-        this.inventory = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, 27, "Alchemist Shop");
-        this.addButton(2, 2, (new GoldCoin()).create(1, true));
+        this.inventory = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, size, name);
     }
 
     @Override

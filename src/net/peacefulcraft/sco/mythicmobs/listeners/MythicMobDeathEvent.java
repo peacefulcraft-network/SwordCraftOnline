@@ -64,7 +64,7 @@ public class MythicMobDeathEvent implements Listener {
 
                             break; case KILLED_WITH:
                             ItemStack item = p.getInventory().getItemInMainHand();
-                            ItemStack killedWith = ItemIdentifier.generate(conditions.get(c));
+                            ItemStack killedWith = ItemIdentifier.generate(conditions.get(c), 1);
                             if(!item.equals(killedWith)) { return; }
                         }
                     }
@@ -100,7 +100,7 @@ public class MythicMobDeathEvent implements Listener {
                                     
                                     break; case KILLED_WITH:
                                     ItemStack item = ((Player)temp).getInventory().getItemInMainHand();
-                                    ItemStack killedWith = ItemIdentifier.generate(conditions.get(c));
+                                    ItemStack killedWith = ItemIdentifier.generate(conditions.get(c), 1);
                                     if(!item.equals(killedWith)) { return; }
                                 }
                             }
