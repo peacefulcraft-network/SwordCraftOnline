@@ -21,6 +21,8 @@ import net.peacefulcraft.sco.mythicmobs.drops.Conditions;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.tutorial.TutorialManager;
+import net.peacefulcraft.sco.tutorial.TutorialManager.TutorialStage;
 
 public class MythicMobDeathEvent implements Listener {    
     @EventHandler
@@ -59,7 +61,7 @@ public class MythicMobDeathEvent implements Listener {
                             if(ent.getNearbyEntities(range, range, range).isEmpty()) { return; }
 
                             break; case IN_BIOME:
-                            Biome biome = ent.getWorld().getBiome((int)ent.getLocation().getX(), (int)ent.getLocation().getZ());
+                            Biome biome = ent.getWorld().getBiome((int)ent.getLocation().getX(), (int)ent.getLocation().getY(), (int)ent.getLocation().getZ());
                             if(biome != Biome.valueOf(conditions.get(c))) { return; }
 
                             break; case KILLED_WITH:
@@ -73,6 +75,11 @@ public class MythicMobDeathEvent implements Listener {
                 //Checking for SCOPlayer killer.
                 SCOPlayer s = GameManager.findSCOPlayer((Player)ent.getLastDamageCause());
                 if(s == null) { return; }
+
+                //If player is in the combat tutorial
+                if(TutorialManager.getPlayers().contains(s) && SwordCraftOnline.getTutorialManager().getPlayerStage(s).equals(TutorialStage.COMBAT)) {
+                    SwordCraftOnline.getTutorialManager().progressTutorialStage(s);
+                }
 
                 LootBag bag = mm.getDropTable().generate(s);
                 DropManager.drop(ent.getLocation(), bag);

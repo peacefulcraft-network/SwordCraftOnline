@@ -1,7 +1,10 @@
 package net.peacefulcraft.sco.tutorial;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,16 +33,8 @@ public class TutorialBot {
 
     private List<String> mannerisms;
 
-    private boolean usesMythicMob;
-
-    private MythicMob mm;
-        public void setMythicMob(MythicMob m) { this.mm = m; }
-
-    private ActiveMob am;
-        public ActiveMob getActiveMob() { return this.am; }
-
-    private Location loc;
-        public Location getLocation() { return this.loc; }
+    private HashMap<TutorialStage, List<String>> scenarioConversation;
+        public Map<TutorialStage, List<String>> getTransitionConversation() { return Collections.unmodifiableMap(scenarioConversation); }
 
     private TutorialStage stage;
         public TutorialStage getTutorialStage() { return this.stage; }
@@ -53,8 +48,15 @@ public class TutorialBot {
         this.goodbyes = mc.getStringList("Goodbyes");
         this.conversations = mc.getStringList("Conversations");
         this.mannerisms = mc.getStringList("Mannerisms");
-
-        this.usesMythicMob = mc.getBoolean("UsesMythicMob", true);
+        if(internalName.equalsIgnoreCase("Yui")) {
+            this.scenarioConversation = new HashMap<>();
+            this.scenarioConversation.put(TutorialStage.INTRO, mc.getStringList("INTRO"));
+            this.scenarioConversation.put(TutorialStage.ALCHEMIST, mc.getStringList("ALCHEMIST"));
+            this.scenarioConversation.put(TutorialStage.BLACKSMITH, mc.getStringList("BLACKSMITH"));
+            this.scenarioConversation.put(TutorialStage.COMBAT, mc.getStringList("COMBAT"));
+        } else {
+            this.scenarioConversation = null;
+        }
 
         try {
             this.stage = TutorialStage.valueOf(mc.getString("TutorialStage").toUpperCase());
@@ -105,5 +107,19 @@ public class TutorialBot {
         List<SCOPlayer> lis = new ArrayList<SCOPlayer>();
         lis.add(s);
         doConversation(lis);
+    }
+
+    public void doTransition(SCOPlayer s, TutorialStage ts) {
+        if(scenarioConversation == null) { return; }
+
+        List<String> copy = new ArrayList<>(scenarioConversation.get(ts));
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                if(copy.isEmpty()) { this.cancel(); }
+                String message = TutorialManager.getTutorialChatBar(file) + copy.remove(0);
+                Announcer.messagePlayer(s, message, false);
+            }
+        }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 120, 10);
     }
 }

@@ -33,12 +33,12 @@ public class TutorialManager implements Runnable{
             return Collections.unmodifiableSet(players.keySet());
         }
 
-    /** Storing tutorial bots by display name of mob */
+    /** Storing tutorial bots by their display name */
     private HashMap<String, TutorialBot> bots = new HashMap<String, TutorialBot>();
         public Map<String, TutorialBot> getTutorialBotMap() { return Collections.unmodifiableMap(bots); }
 
     /**Tracks what stage a player is at in the tutorial */
-    private HashMap<TutorialStage, ArrayList<SCOPlayer>> stageTracker;
+    private HashMap<TutorialStage, ArrayList<SCOPlayer>> stageTracker = new HashMap<>();
         public Map<TutorialStage, ArrayList<SCOPlayer>> getStageTracker() { return Collections.unmodifiableMap(stageTracker); }
             
     private BukkitTask tutorialTask;
@@ -78,17 +78,7 @@ public class TutorialManager implements Runnable{
                     continue;
                 }
 
-                boolean usesMob = sl.getCustomConfig().getBoolean(name + ".UsesMythicMob");
-                Map<String, MythicMob> mobList = SwordCraftOnline.getPluginInstance().getMobManager().getTutorialList();
-                if(!mobList.containsKey(name) && usesMob) {
-                    SwordCraftOnline.logInfo("[Tutorial Manager] Attempted to load file with no corresponding Mythic Mob: " + name);
-                    continue;
-                }
-
                 TutorialBot bot = new TutorialBot(file, name, mc);
-                if(usesMob) {
-                    bot.setMythicMob(mobList.get(name));
-                }
 
                 this.bots.put(name, bot);
             }
@@ -102,7 +92,7 @@ public class TutorialManager implements Runnable{
         for(SCOPlayer s : getPlayers()) {
             long secondsLeft = ((players.get(s)/1000)+cooldown) - (System.currentTimeMillis()/1000);
             //If cooldown expire or not on floor 1
-            if(secondsLeft < 0 || s.getFloor() != 1) {
+            if(s.getFloor() != 1 || secondsLeft < 0 || s.getFloor() != 1) {
                 leaveTutorial(s);
             }
         }
@@ -164,17 +154,21 @@ public class TutorialManager implements Runnable{
     public void progressTutorialStage(SCOPlayer s) {
         if(stageTracker.get(TutorialStage.INTRO).remove(s)) {
             stageTracker.get(TutorialStage.ALCHEMIST).add(s);
+            this.bots.get("Yui").doTransition(s, TutorialStage.INTRO);
             return;
         }
         if(stageTracker.get(TutorialStage.ALCHEMIST).remove(s)) {
             stageTracker.get(TutorialStage.BLACKSMITH).add(s);
+            this.bots.get("Yui").doTransition(s, TutorialStage.ALCHEMIST);
             return;
         }
         if(stageTracker.get(TutorialStage.BLACKSMITH).remove(s)) {
             stageTracker.get(TutorialStage.COMBAT).add(s);
+            this.bots.get("Yui").doTransition(s, TutorialStage.BLACKSMITH);
             return;
         }
         if(stageTracker.get(TutorialStage.COMBAT).remove(s)) {
+            this.bots.get("Yui").doTransition(s, TutorialStage.COMBAT);
             leaveTutorial(s);
             return;
         }
