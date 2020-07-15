@@ -245,6 +245,8 @@ public abstract class Structure {
                         Block b = p.getFirst().getBlock();
                         Material m = p.getSecond();
                         b.setType(m);
+
+                        StructureManager.removeBlock(p.getFirst());
                     }
                 }
             }.runTaskTimer(SwordCraftOnline.getPluginInstance(), cleanupTimer * 20, 2);
@@ -256,6 +258,7 @@ public abstract class Structure {
                         public void run() {
                             for (Pair<Location, Material> p : cleanupLis) {
                                 p.getFirst().getBlock().setType(p.getSecond());
+                                StructureManager.removeBlock(p.getFirst());
                             }
                         }
                     }, cleanupTimer * 20);
@@ -302,8 +305,18 @@ public abstract class Structure {
         cleanup();
     }
 
-    /**Checks for duplicate location values */
+    /**
+     * Checks for duplicate location values 
+     * Also, checks safety of manager
+     */
     public void safeAddToCleanup(Material mat, Location loc) {
+        /*If location is in manager we add. Else we don't place block */
+        if(!StructureManager.checkBlocks(loc)) {
+            StructureManager.addBlock(loc, mat);
+        } else {
+            return;
+        }
+        
         if(!this.toCleanup()) { return; }
         for(Pair<Location,Material> temp : this.cleanupLis) {
             Location l = temp.getFirst();
