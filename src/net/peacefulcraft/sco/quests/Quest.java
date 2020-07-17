@@ -52,8 +52,12 @@ public class Quest {
         public Double getSpeedReq() { return this.speedReq; }
 
     /**Required sword skill equipped before gaining quest */
-    private String swordSkillReq;
+    private String swordSkillReq = null;
         public String getSwordSkillReq() { return this.swordSkillReq; }
+
+    /**Required quest to complete before gaining quest */
+    private String questReq = null;
+        public String getQuestReq() { return this.questReq; }
 
     public Quest(String file, String internalName, MythicConfig mc) {
         this.file = file;
@@ -71,6 +75,7 @@ public class Quest {
         this.armorReq = config.getDouble("Requirement.Armor", 0);
         this.speedReq = config.getDouble("Requirement.Speed", 0);
         this.swordSkillReq = config.getString("Requirement.SwordSkill");
+        this.questReq = config.getString("Requirement.Quest");
 
         //Loading Quest Steps
         try{
@@ -121,6 +126,8 @@ public class Quest {
         if(this.speedReq != 0 && s.getMovementSpeed() < this.speedReq) {
             return false;
         }
+        //TODO: Check sword skill is in player inventory
+        //TODO: Check if player has completed a quest
         return true;
     }
 

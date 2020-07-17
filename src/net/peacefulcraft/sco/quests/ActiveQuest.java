@@ -38,11 +38,6 @@ public class ActiveQuest {
         //TODO: Register listeners to player
     }
 
-    /**Progresses quest step */
-    public void progressQuest() {
-
-    }
-
     /**@return QuestType of current step */
     public QuestType getQuestType() {
         return this.quest.getQuestStep(this.currentStep).getType();
