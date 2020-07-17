@@ -39,6 +39,8 @@ public class GatherQuestStep extends QuestStep {
             }
 
             //TODO: Location of npc
+
+            this._setDescription();
         } catch(Exception ex) {
             this.setInvalid();
             return;
@@ -58,7 +60,7 @@ public class GatherQuestStep extends QuestStep {
     }
 
     @Override
-    public String getDescription() {
+    public void _setDescription() {
         String npcName = npc.getDisplayName();
         String itemStr = "";
         for(ItemStack i : items.keySet()) {
@@ -68,9 +70,16 @@ public class GatherQuestStep extends QuestStep {
         }
         itemStr = itemStr.substring(0, itemStr.length()-2);
 
-        String ret = "Gather " + itemStr + " and deliver them to " + npcName + ". ";
-        //TODO: Add Location string
-        return ret;
+        if(this.getDescriptionRaw() == null) {
+            this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + ". ");
+        } else {
+            try {
+                //TODO: Add location string
+                this.setDescription(String.format(this.getDescriptionRaw(), itemStr, npcName));
+            } catch(Exception ex) {
+                this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + ". ");
+            }
+        }
     }
     
 }

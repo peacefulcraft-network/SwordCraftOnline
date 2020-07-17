@@ -10,6 +10,8 @@ public class TravelQuestStep extends QuestStep {
         String[] split = str.split(" ");
 
         //TODO: Check and validate location string
+
+        this._setDescription();
     }
 
     @Override
@@ -17,6 +19,20 @@ public class TravelQuestStep extends QuestStep {
         //TODO: Location string
         String ret = "Travel to ";
         return ret;
+    }
+
+    @Override
+    public void _setDescription() {
+        if(this.getDescriptionRaw() == null) {
+            this.setDescription("Travel to [].");
+        } else {
+            try {
+                //TODO: Add location string
+                //this.setDescription(String.format(this.getDescriptionRaw()));
+            } catch(Exception ex) {
+                this.setDescription("Travel to [].");
+            }
+        }
     }
     
 }

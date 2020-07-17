@@ -7,29 +7,43 @@ import net.peacefulcraft.sco.quests.Quest.QuestType;
 
 public abstract class QuestStep {
     
+    /**Quests type */
     private QuestType type;
         public QuestType getType() { return this.type; }
 
+    /**If this step is loaded improperly */
     private boolean isInvalid = false;
         public boolean isInvalid() { return this.isInvalid; }
         public void setInvalid() { this.isInvalid = true; }
 
+    /**List of rewards given on completion of step */
     private List<Reward> rewards;
         public List<Reward> getRewards() { return this.rewards; }
 
+    /**Description displayed on item in quest book */
+    private String description = null;
+        public String getDescription() { return this.description; }
+        public void setDescription(String s) { this.description = s; }
+
+    /**Raw unformatted description */
+    private String descriptionRaw = null;
+        public String getDescriptionRaw() { return this.descriptionRaw; }
+
     public QuestStep(QuestType type, String str) {
-        /**
-         * String formatting: {Type} {Target} [if kill, collect, gather: Amount]
-         * Example: "kill SkeletonKing 2", "deliver {item name} {amount} {npc name}",
-         *          "travel {location name}", "gather bone 20", "escort {npc name} {location name}"
-         */
         this.type = type;
         //Loading rewards
+        //kill SkeletonKing#3,SkeletonDrone#5 $Rewards:GoldCoin 2, Diamond 3 $Description:
         String rewardStr = str.split("$Rewards:")[1];
+        if(rewardStr.contains(" $Description:")) {
+            String[] split = rewardStr.split(" $Description:");
+            rewardStr = split[0];
+            this.descriptionRaw = split[1];
+        }
         for(String s : rewardStr.split(",")) {
             this.rewards.add(new Reward(s));
         }
     }
 
-    public abstract String getDescription();
+    /**Internal method to format step description */
+    public abstract void _setDescription();
 }

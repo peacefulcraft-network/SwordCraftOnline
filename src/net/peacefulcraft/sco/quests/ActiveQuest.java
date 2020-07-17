@@ -2,7 +2,6 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

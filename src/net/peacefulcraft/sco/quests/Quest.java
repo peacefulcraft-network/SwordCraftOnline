@@ -2,8 +2,6 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.List;
 
-import com.google.common.base.CaseFormat;
-
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
