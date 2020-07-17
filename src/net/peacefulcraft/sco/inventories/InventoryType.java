@@ -1,5 +1,5 @@
 package net.peacefulcraft.sco.inventories;
 
 public enum InventoryType {
-	SWORD_SKILL, MAIN_INVENTORY, MERCHANT, QUESTBOOK;
+	SWORD_SKILL, MAIN_INVENTORY, MERCHANT, QUEST_BOOK;
 }

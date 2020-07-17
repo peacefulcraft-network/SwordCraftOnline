@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.List;
 
+import org.bukkit.event.Event;
+
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
 
 public abstract class QuestStep {
@@ -45,6 +47,8 @@ public abstract class QuestStep {
 
     /**Internal method to format step description */
     public abstract void _setDescription();
+
+    public abstract boolean stepPreconditions(Event ev);
 
     public enum QuestType {
         KILL, DELIVER, TRAVEL, GATHER, ESCORT;

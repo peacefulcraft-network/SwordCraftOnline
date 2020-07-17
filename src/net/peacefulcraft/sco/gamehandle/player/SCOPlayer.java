@@ -160,6 +160,7 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		
 		inventoryManager = new InventoryManager(this);
 		inventoryManager.fetchInventory(InventoryType.SWORD_SKILL);
+		inventoryManager.fetchInventory(InventoryType.QUEST_BOOK);
 
 		//TODO: Remove this and replace with loading the wallet/bank from data
 		this.wallet = 1000;

@@ -31,6 +31,9 @@ public class Quest {
     private List<QuestStep> questSteps;
         public QuestStep getQuestStep(int i) { return questSteps.get(i); }
 
+    /**List of quest types used in this quest */
+    private List<QuestType> stepTypes;
+
     /**Number of steps in quest */
     private int size;
         public int getSize() { return this.size; }
@@ -86,21 +89,26 @@ public class Quest {
                 
                 switch(type){
                     case KILL:
-                        validateStep(new KillQuestStep(type, s));
+                        if(!validateStep(new KillQuestStep(type, s))) { return; }
                     break; case DELIVER:
-                        validateStep(new DeliverQuestStep(type, s));
+                        if(!validateStep(new DeliverQuestStep(type, s))) { return; }
                     break; case TRAVEL:
-                        validateStep(new TravelQuestStep(type, s));
+                        if(!validateStep(new TravelQuestStep(type, s))) { return; }
                     break; case GATHER:
-                        validateStep(new GatherQuestStep(type, s));
+                        if(!validateStep(new GatherQuestStep(type, s))) { return; }
                     break; case ESCORT:
-                        validateStep(new EscortQuestStep(type, s));
+                        if(!validateStep(new EscortQuestStep(type, s))) { return; }
                 }
             }
         } catch(IllegalArgumentException ex) {
             SwordCraftOnline.logInfo("Issue loading QuestStep for: " + questName + " , invalid QuestType.");
             return;
         }        
+    }
+
+    /**@return true if quest uses given type. False otherwise */
+    public boolean containsType(QuestType type) {
+        return this.stepTypes.contains(type);
     }
 
     private boolean validateStep(QuestStep qs) {

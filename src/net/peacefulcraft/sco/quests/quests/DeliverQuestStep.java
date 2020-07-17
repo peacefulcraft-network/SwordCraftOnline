@@ -1,23 +1,37 @@
 package net.peacefulcraft.sco.quests.quests;
 
+import org.bukkit.entity.Entity;
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep;
-import net.peacefulcraft.sco.quests.Quest.QuestType;
 
 public class DeliverQuestStep extends QuestStep {
 
     private ItemStack deliverable;
-        public ItemStack getDeliverable() { return this.deliverable; }
+
+    public ItemStack getDeliverable() {
+        return this.deliverable;
+    }
 
     private int amount;
-        public int getAmount() { return this.amount; }
+
+    public int getAmount() {
+        return this.amount;
+    }
 
     private MythicMob npc;
-        public MythicMob getNPC() { return this.npc; }
+
+    public MythicMob getNPC() {
+        return this.npc;
+    }
 
     public DeliverQuestStep(QuestType type, String str) {
         super(type, str);
@@ -26,19 +40,19 @@ public class DeliverQuestStep extends QuestStep {
         try {
             this.amount = Integer.valueOf(split[2]);
             this.deliverable = ItemIdentifier.generate(split[1], this.amount, false);
-            
+
             this.npc = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[3]);
-            if(npc == null) {
+            if (npc == null) {
                 SwordCraftOnline.logInfo("Issue loading DeliverQuestStep. Invalid mob target: " + split[1]);
                 this.setInvalid();
                 return;
             }
 
-            //TODO: Add location of npc to loading and attribute
+            // TODO: Add location of npc to loading and attribute
 
             this._setDescription();
-        
-        } catch(Exception ex) {
+
+        } catch (Exception ex) {
             this.setInvalid();
             return;
         }
@@ -48,7 +62,7 @@ public class DeliverQuestStep extends QuestStep {
         String itemName = this.deliverable.getItemMeta().getDisplayName();
         String amount = String.valueOf(this.amount);
         String npcName = this.npc.getDisplayName();
-        //TODO: Get location
+        // TODO: Get location
         String ret = "Deliver these " + amount + " " + itemName + " to " + npcName + "!";
         return ret;
     }
@@ -58,16 +72,37 @@ public class DeliverQuestStep extends QuestStep {
         String itemName = this.deliverable.getItemMeta().getDisplayName();
         String amount = String.valueOf(this.amount);
         String npcName = this.npc.getDisplayName();
-        //TODO: Get location
+        // TODO: Get location
 
-        if(this.getDescriptionRaw() == null) {
+        if (this.getDescriptionRaw() == null) {
             this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + "!");
         } else {
-            try{
+            try {
                 this.setDescription(String.format(this.getDescriptionRaw(), amount, itemName, npcName));
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + "!");
             }
         }
+    }
+
+    @Override
+    public boolean stepPreconditions(Event ev) {
+        if(!(ev instanceof PlayerInteractEntityEvent)) { return false; }
+        PlayerInteractEntityEvent e = (PlayerInteractEntityEvent)ev;
+        
+        //Is player in the game. Double check.
+        SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
+        if(s == null) { return false; }
+
+        //Is entity an active mob and is it the mythic mob we want
+        Entity entity = e.getRightClicked();       
+        ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(entity.getUniqueId());
+        if(am == null) { return false; }
+        if(!am.getDisplayName().equals(npc.getDisplayName())) { return false; }
+
+        //Does player have the items in hand
+        if(!(e.getPlayer().getInventory().contains(this.deliverable, this.amount))) { return false; }
+        
+        return true;
     }
 }

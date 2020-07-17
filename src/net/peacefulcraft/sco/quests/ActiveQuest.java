@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,6 +26,9 @@ public class ActiveQuest {
 
     private int currentStep;
 
+    private boolean completed;
+        public boolean isCompleted() { return this.completed; }
+
     public ActiveQuest(SCOPlayer s, Quest quest) {
         this.quest = quest;
         this.s = s;
@@ -34,8 +38,34 @@ public class ActiveQuest {
         }
 
         this.currentStep = 0;
+        this.completed = false;
 
         //TODO: Register listeners to player
+    }
+
+    public void progressQuest() {
+        this.currentStep += 1;
+        if(this.currentStep == quest.getSize()) {
+            this.completed = true;
+        }
+    }
+
+    /**
+     * Executes the active quest lifecycle: Check validity, distribute rewards, progress instance
+     * @param type The quest step type
+     * @param ev Triggering event
+     */
+    public void execLifeCycle(QuestType type, Event ev) {
+        if(getQuestType().equals(type)) {
+            //Check preconditions for this quest step type
+            if(!this.quest.getQuestStep(this.currentStep).stepPreconditions(ev)) { return; }
+
+            //Distribute rewards from current step
+            this.giveRewards();
+
+            //Progressing step
+            this.progressQuest();
+        }
     }
 
     /**@return QuestType of current step */
