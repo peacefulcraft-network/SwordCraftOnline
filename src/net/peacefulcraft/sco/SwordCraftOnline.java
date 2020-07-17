@@ -33,6 +33,7 @@ import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.mythicmobs.spawners.SpawnerManager;
 import net.peacefulcraft.sco.particles.EffectManager;
+import net.peacefulcraft.sco.quests.QuestManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
@@ -81,6 +82,9 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	private SpawnerManager spawnerManager;
 		public SpawnerManager getSpawnerManager() { return this.spawnerManager; }
+
+	private QuestManager questManager;
+		public QuestManager getQuestManager() { return this.questManager; }
 	
 	public SwordCraftOnline() {
 
@@ -110,6 +114,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.dropManager = new DropManager(this);
 		this.mobManager = new MobManager(this);
 		this.spawnerManager = new SpawnerManager();
+
+		this.questManager = new QuestManager();
 
 		effectManager = new EffectManager(this);
 		

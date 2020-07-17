@@ -3,7 +3,6 @@ package net.peacefulcraft.sco.quests;
 import java.util.List;
 
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
-import net.peacefulcraft.sco.quests.Quest.QuestType;
 
 public abstract class QuestStep {
     
@@ -46,4 +45,8 @@ public abstract class QuestStep {
 
     /**Internal method to format step description */
     public abstract void _setDescription();
+
+    public enum QuestType {
+        KILL, DELIVER, TRAVEL, GATHER, ESCORT;
+    }
 }

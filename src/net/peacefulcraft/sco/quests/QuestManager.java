@@ -52,4 +52,9 @@ public class QuestManager {
         if(q == null) { return null; }
         return new ActiveQuest(s, q);
     }
+
+    /**@return Quest from map or null if does not exist */
+    public Quest getQuest(String quest) {
+        return questMap.get(quest);
+    }
 }

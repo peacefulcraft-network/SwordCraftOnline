@@ -12,6 +12,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
+import net.peacefulcraft.sco.quests.QuestStep.QuestType;
 
 public class ActiveQuest {
     
@@ -35,6 +36,21 @@ public class ActiveQuest {
         this.currentStep = 0;
 
         //TODO: Register listeners to player
+    }
+
+    /**Progresses quest step */
+    public void progressQuest() {
+
+    }
+
+    /**@return QuestType of current step */
+    public QuestType getQuestType() {
+        return this.quest.getQuestStep(this.currentStep).getType();
+    }
+
+    /**@return Name of quest */
+    public String getName() {
+        return this.quest.getQuestName();
     }
 
     /**Gives player associated with quest rewards */
