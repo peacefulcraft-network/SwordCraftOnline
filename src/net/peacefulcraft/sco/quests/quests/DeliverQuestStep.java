@@ -35,6 +35,8 @@ public class DeliverQuestStep extends QuestStep {
             }
 
             //TODO: Add location of npc to loading and attribute
+
+            this._setDescription();
         
         } catch(Exception ex) {
             this.setInvalid();
@@ -42,15 +44,30 @@ public class DeliverQuestStep extends QuestStep {
         }
     }
 
-    @Override
     public String getDescription() {
         String itemName = this.deliverable.getItemMeta().getDisplayName();
         String amount = String.valueOf(this.amount);
         String npcName = this.npc.getDisplayName();
         //TODO: Get location
-        String ret = "Deliver these " + amount + " " + itemName + " to " + npcName 
-                    + "!";
+        String ret = "Deliver these " + amount + " " + itemName + " to " + npcName + "!";
         return ret;
     }
-    
+
+    @Override
+    public void _setDescription() {
+        String itemName = this.deliverable.getItemMeta().getDisplayName();
+        String amount = String.valueOf(this.amount);
+        String npcName = this.npc.getDisplayName();
+        //TODO: Get location
+
+        if(this.getDescriptionRaw() == null) {
+            this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + "!");
+        } else {
+            try{
+                this.setDescription(String.format(this.getDescriptionRaw(), amount, itemName, npcName));
+            } catch(Exception ex) {
+                this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + "!");
+            }
+        }
+    }
 }

@@ -21,14 +21,24 @@ public class EscortQuestStep extends QuestStep {
         }
 
         //TODO: Load location and compare
+
+        this._setDescription();
     }
 
     @Override
-    public String getDescription() {
+    public void _setDescription() {
         String npcName = this.npc.getDisplayName();
-        //TODO: Get location
-        String ret = "Help " + npcName + " get to [] safely!";
-        return ret;
+
+        if(this.getDescriptionRaw() == null) {
+            this.setDescription("Help " + npcName + " get to [] safely!");
+        } else {
+            try {
+                //TODO: Add location to fields.
+                this.setDescription(String.format(this.getDescriptionRaw(), npcName));
+            } catch(Exception ex) {
+                this.setDescription("Help " + npcName + " get to [] safely!");
+            }
+        }
     }
     
 }

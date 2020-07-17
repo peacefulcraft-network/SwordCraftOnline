@@ -25,6 +25,7 @@ public class KillQuestStep extends QuestStep {
             addTarget(split[1]);
         }
 
+        this._setDescription();
     }
 
     private void addTarget(String s) {
@@ -45,7 +46,7 @@ public class KillQuestStep extends QuestStep {
     }
 
     @Override
-    public String getDescription() {
+    public void _setDescription() {
         String targetStr = "";
         for(MythicMob mm : targets.keySet()) {
             String dis = mm.getDisplayName();
@@ -53,9 +54,16 @@ public class KillQuestStep extends QuestStep {
             targetStr += num + " " + dis + ", ";
         }
         targetStr = targetStr.substring(0, targetStr.length()-2);
-
-        String ret = "You are tasked to kill " + targetStr + ".";
-        return ret;
+        //If there is no description to format
+        if(this.getDescriptionRaw() == null) {
+            this.setDescription("You are tasked to kill " + targetStr + ".");
+        } else {
+            try {
+                this.setDescription(String.format(this.getDescriptionRaw(), targetStr));
+            } catch(Exception ex) {
+                this.setDescription("You are tasked to kill " + targetStr + ".");
+            }
+        }
     }
     
 }
