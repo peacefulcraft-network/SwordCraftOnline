@@ -104,4 +104,9 @@ public abstract class Announcer {
         }
         messageGroup(d.getPlayers(), message);
     }
+
+    /**@return Square icon */
+    public static String getSquare() {
+        return "■";
+    }
 }
