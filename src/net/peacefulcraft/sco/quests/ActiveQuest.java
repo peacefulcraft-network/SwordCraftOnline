@@ -38,6 +38,13 @@ public class ActiveQuest {
         //TODO: Register listeners to player
     }
 
+    public void progressQuest() {
+        this.currentStep += 1;
+        if(this.currentStep == this.quest.getSize()) {
+            //TODO: Completed quest logic. Saving completed quest to player data?
+        }
+    }
+
     /**Gives player associated with quest rewards */
     public void giveRewards() {
         for(Reward r : this.quest.getQuestStep(this.currentStep).getRewards()) {
