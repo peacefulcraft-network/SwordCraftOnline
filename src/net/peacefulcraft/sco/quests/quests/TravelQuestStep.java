@@ -1,6 +1,5 @@
 package net.peacefulcraft.sco.quests.quests;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
