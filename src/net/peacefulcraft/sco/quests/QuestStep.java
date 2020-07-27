@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
 public abstract class QuestStep {
     
@@ -30,6 +32,22 @@ public abstract class QuestStep {
     private String descriptionRaw = null;
         public String getDescriptionRaw() { return this.descriptionRaw; }
 
+    private Boolean toReset = false;
+        public Boolean toReset() { return this.toReset; }
+        public void setReset(Boolean b) { this.toReset = b; }
+
+    /**NPC quest giver */
+    private MythicMob giver;
+        public MythicMob getGiver() { return this.giver; }
+        public String getGiverName() { return this.giver.getDisplayName(); }
+
+    //TODO: Key location in which NPC can be found. A city, landmark, etc.
+
+    /**If NPC has given the quest. I.e. player interacted with quest NPC */
+    private Boolean activated = false;
+        public Boolean isActivated() { return this.activated; }
+        public void setActivated(Boolean b) { this.activated = b; }
+
     public QuestStep(QuestType type, String str) {
         this.type = type;
         //Loading rewards
@@ -45,10 +63,19 @@ public abstract class QuestStep {
         }
     }
 
+    /**Protected call to reset description */
+    public void updateDescription() {
+        //TODO: Update actual item dsecription associated with quest
+        this._setDescription();
+    }
+
     /**Internal method to format step description */
     public abstract void _setDescription();
 
     public abstract boolean stepPreconditions(Event ev);
+
+    /**Any real world effects that need to happen on activation of step */
+    public abstract void startupLifeCycle(SCOPlayer s);
 
     public enum QuestType {
         KILL, DELIVER, TRAVEL, GATHER, ESCORT;

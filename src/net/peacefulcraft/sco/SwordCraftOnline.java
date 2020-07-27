@@ -34,6 +34,11 @@ import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.mythicmobs.spawners.SpawnerManager;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.quests.QuestManager;
+import net.peacefulcraft.sco.quests.listeners.NPCActivateListener;
+import net.peacefulcraft.sco.quests.listeners.QuestEntityDamageListener;
+import net.peacefulcraft.sco.quests.listeners.QuestOpenInventoryListener;
+import net.peacefulcraft.sco.quests.listeners.QuestPlayerInteractEntityListener;
+import net.peacefulcraft.sco.quests.listeners.QuestPlayerMoveListener;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
@@ -185,6 +190,13 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new AbilityPlayerDeathListener(), this);
 		getServer().getPluginManager().registerEvents(new AbilityPlayerMoveListener(),this);
 		getServer().getPluginManager().registerEvents(new AbilityPlayerRespawnListener(), this);
+
+		//Register Quest listeners
+		getServer().getPluginManager().registerEvents(new NPCActivateListener(), this);
+		getServer().getPluginManager().registerEvents(new QuestEntityDamageListener(), this);
+		getServer().getPluginManager().registerEvents(new QuestOpenInventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new QuestPlayerInteractEntityListener(), this);
+		getServer().getPluginManager().registerEvents(new QuestPlayerMoveListener(), this);
 
 	}
 	

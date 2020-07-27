@@ -1,6 +1,9 @@
 package net.peacefulcraft.sco.quests.quests;
 
+import java.util.HashMap;
+
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -74,6 +77,12 @@ public class DeliverQuestStep extends QuestStep {
         String npcName = this.npc.getDisplayName();
         // TODO: Get location
 
+        //If quest is not activated we use find npc description
+        if(!this.isActivated()) {
+            this.setDescription("Talk to " + npcName + " in [] to start quest");
+            return;
+        }
+
         if (this.getDescriptionRaw() == null) {
             this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + "!");
         } else {
@@ -104,5 +113,18 @@ public class DeliverQuestStep extends QuestStep {
         if(!(e.getPlayer().getInventory().contains(this.deliverable, this.amount))) { return false; }
         
         return true;
+    }
+
+    @Override
+    public void startupLifeCycle(SCOPlayer s) {
+        Player p = s.getPlayer();
+
+        //Giving player deliverable item. If inv full we drop it
+        HashMap<Integer, ItemStack> ret = p.getInventory().addItem(deliverable);
+        if(ret != null) {
+            for(ItemStack i : ret.values()) {
+                p.getLocation().getWorld().dropItemNaturally(p.getLocation(), i);
+            }
+        }
     }
 }

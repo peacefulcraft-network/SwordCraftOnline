@@ -1,7 +1,10 @@
 package net.peacefulcraft.sco.quests;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
@@ -21,6 +24,7 @@ public class QuestBookManager {
 
     /**Players active quests they can complete */
     private HashMap<QuestType, ArrayList<ActiveQuest>> quests = new HashMap<>();
+        public Map<QuestType, ArrayList<ActiveQuest>> getQuests() { return Collections.unmodifiableMap(quests); }
 
     /**Players completed quests */
     private ArrayList<String> completedQuests = new ArrayList<>();
@@ -33,11 +37,12 @@ public class QuestBookManager {
     public void registerQuest(String questName) {
         ActiveQuest aq = SwordCraftOnline.getPluginInstance().getQuestManager().activateQuest(questName, this.s);
         if(aq == null) {
-            SwordCraftOnline.logInfo("Attempted to register quest + " + questName + " to player " + s.getName());
+            SwordCraftOnline.logInfo("Failed to register quest + " + questName + " to player " + s.getName());
             return;
         }
 
         //Fetching quests current step type
+        //Storing quest by quest step type
         QuestType qt = aq.getQuestType();
         if(quests.get(qt) == null) {
             quests.put(qt, new ArrayList<ActiveQuest>());
@@ -65,6 +70,25 @@ public class QuestBookManager {
         if(lis.size() == 0) {
             quests.remove(type);
         }
+    }
+
+    /**Updates quests storage location in map */
+    public void updateQuest(String questName) {
+        ActiveQuest aq = SwordCraftOnline.getPluginInstance().getQuestManager().activateQuest(questName, s);
+        if(aq == null) { return; }
+
+        //Iterating over every quest in map. Removing old instance
+        for(ArrayList<ActiveQuest> lis : quests.values()) {
+            Iterator<ActiveQuest> iter = lis.iterator();
+            while(iter.hasNext()) {
+                ActiveQuest temp = iter.next();
+                if(temp.getName().equalsIgnoreCase(questName)) {
+                    iter.remove();
+                }
+            }
+        }
+        //Registering quest again in new location
+        registerQuest(questName);
     }
 
     public void executeLoop(QuestType type, Event ev) {

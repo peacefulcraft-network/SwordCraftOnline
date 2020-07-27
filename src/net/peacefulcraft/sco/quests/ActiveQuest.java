@@ -44,9 +44,16 @@ public class ActiveQuest {
     }
 
     public void progressQuest() {
+        //Progressing step then updating in quest book manager
         this.currentStep += 1;
+        
+        //Updates quest position in questMap
+        s.getQuestBookManager().updateQuest(quest.getQuestName());
+
         if(this.currentStep == quest.getSize()) {
             this.completed = true;
+            s.getQuestBookManager().unregisterQuest(quest.getQuestName());
+            //TODO: Save quest name under completed quest
         }
     }
 
@@ -57,8 +64,20 @@ public class ActiveQuest {
      */
     public void execLifeCycle(QuestType type, Event ev) {
         if(getQuestType().equals(type)) {
+            QuestStep step = getQuestStep();
+
+            //Does the quest need to reset
+            //If yes, we set to deactivated and update the item description
+            if(step.toReset()) {
+                step.setActivated(false);
+                step.updateDescription();
+            }
+
+            //Checking if quest step is activated by NPC
+            if(!step.isActivated()) { return; }
+
             //Check preconditions for this quest step type
-            if(!this.quest.getQuestStep(this.currentStep).stepPreconditions(ev)) { return; }
+            if(!step.stepPreconditions(ev)) { return; }
 
             //Distribute rewards from current step
             this.giveRewards();
@@ -70,7 +89,7 @@ public class ActiveQuest {
 
     /**@return QuestType of current step */
     public QuestType getQuestType() {
-        return this.quest.getQuestStep(this.currentStep).getType();
+        return getQuestStep().getType();
     }
 
     /**@return Name of quest */
@@ -78,9 +97,33 @@ public class ActiveQuest {
         return this.quest.getQuestName();
     }
 
+    /**@return Name of NPC giving quest */
+    public String getNPCName() {
+        return getQuestStep().getGiverName();
+    }
+
+    /**@return If current step is activated via NPC */
+    public Boolean isStepActivated() {
+        return getQuestStep().isActivated();
+    }
+
+    /**Toggles startup lifecycle */
+    public void setStepActivated() {
+        QuestStep step = getQuestStep();
+
+        //Toggling activation
+        step.setActivated(true);
+
+        //Startup lifecycle
+        step.startupLifeCycle(this.s);
+
+        //Updates step item description to match quest
+        step.updateDescription();
+    }
+
     /**Gives player associated with quest rewards */
     public void giveRewards() {
-        for(Reward r : this.quest.getQuestStep(this.currentStep).getRewards()) {
+        for(Reward r : getQuestStep().getRewards()) {
             ItemStack item = r.getReward();
             Player p = s.getPlayer();
             if(item == null) { 
@@ -136,7 +179,7 @@ public class ActiveQuest {
     /**Helper function gets rewards as string */
     private String getRewardStr() {
         String ret = "Rewards: ";
-        for(Reward r : this.quest.getQuestStep(this.currentStep).getRewards()) {
+        for(Reward r : getQuestStep().getRewards()) {
             if(r.getReward() == null) {
                 ret += String.valueOf(r.getExperience()) + " Exp, ";
             } else {
@@ -147,5 +190,9 @@ public class ActiveQuest {
         }
         ret = ret.substring(0, ret.length()-2);
         return ret;
+    }
+
+    private QuestStep getQuestStep() {
+        return this.quest.getQuestStep(this.currentStep);
     }
 }
