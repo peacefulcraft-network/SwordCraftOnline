@@ -24,6 +24,7 @@ public class Region {
 
     /**Name of location that is displayed anywhere */
     private String name;
+        public String getName() { return this.name; }
 
     /**Brief description of location */
     private String description;

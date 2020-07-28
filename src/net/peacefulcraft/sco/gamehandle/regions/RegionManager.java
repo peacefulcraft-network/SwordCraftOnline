@@ -51,4 +51,9 @@ public class RegionManager {
         }
         SwordCraftOnline.logInfo("[Region Manager] Loading complete!");
     }
+
+    /**@return Region from map */
+    public static Region getRegion(String name) {
+        return regions.get(name);
+    } 
 }

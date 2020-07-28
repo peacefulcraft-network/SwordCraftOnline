@@ -13,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
@@ -23,6 +25,8 @@ public class GatherQuestStep extends QuestStep {
     private HashMap<ItemStack, Integer> items = new HashMap<>();
 
     private MythicMob npc;
+
+    private Region npcRegion;
 
     public GatherQuestStep(MythicConfig mc) {
         super(mc);
@@ -59,7 +63,17 @@ public class GatherQuestStep extends QuestStep {
             return;
         }
 
-        // TODO: Location of npc
+        String regionName = mc.getString("npcRegion", "");
+        regionName = mc.getString("NPCRegion", regionName);
+        if(regionName == null || regionName.isEmpty()) {
+            this.logInfo("No NPCRegion field in config.");
+            return;
+        }
+        this.npcRegion = RegionManager.getRegion(regionName);
+        if(npcRegion == null) {
+            this.logInfo("Invalid NPCRegion field in config.");
+            return;
+        }
 
         this._setDescription();
     }
@@ -68,6 +82,9 @@ public class GatherQuestStep extends QuestStep {
     public void _setDescription() {
         String npcName = npc.getDisplayName();
         String itemStr = "";
+        String regionName = npcRegion.getName();
+        String giverRegion = getGiverRegion().getName();
+
         for (ItemStack i : items.keySet()) {
             String dis = i.getItemMeta().getDisplayName();
             String num = String.valueOf(items.get(i));
@@ -77,18 +94,18 @@ public class GatherQuestStep extends QuestStep {
 
         //If quest is not activated we use find npc description
         if(!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in [] to start quest");
+            this.setDescription("Talk to " + npcName + " in " + giverRegion + " to start quest");
             return;
         }
 
         if (this.getDescriptionRaw() == null) {
-            this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + ". ");
+            this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + " in " + regionName + ". ");
         } else {
             try {
                 // TODO: Add location string
-                this.setDescription(String.format(this.getDescriptionRaw(), itemStr, npcName));
+                this.setDescription(String.format(this.getDescriptionRaw(), itemStr, npcName, regionName));
             } catch (Exception ex) {
-                this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + ". ");
+                this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + " in " + regionName + ". ");
             }
         }
     }

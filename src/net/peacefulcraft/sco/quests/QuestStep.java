@@ -6,6 +6,8 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
@@ -47,7 +49,9 @@ public abstract class QuestStep {
         public MythicMob getGiver() { return this.giver; }
         public String getGiverName() { return this.giver.getDisplayName(); }
 
-    //TODO: Key location in which NPC can be found. A city, landmark, etc.
+    /**Key location npc can be found */
+    private Region giverRegion;
+        public Region getGiverRegion() { return this.giverRegion; }
 
     /**If NPC has given the quest. I.e. player interacted with quest NPC */
     private Boolean activated = false;
@@ -64,6 +68,29 @@ public abstract class QuestStep {
         } catch(IllegalArgumentException ex) {
             SwordCraftOnline.logInfo("IllegalArguementException loading QuestStep: " + this.name);
             this.isInvalid = true;
+            return;
+        }
+
+        String giverName = mc.getString("GiverName", "");
+        giverName = mc.getString("Giver", giverName);
+        if(giverName == null || giverName.isEmpty()) {
+            this.logInfo("No GiverName field in config.");
+            return;
+        }
+        this.giver = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(giverName);
+        if(this.giver == null) {
+            this.logInfo("Invalid GiverName field in config.");
+            return;
+        }
+
+        String regionName = mc.getString("GiverRegion", "");
+        if(regionName == null || regionName.isEmpty()) {
+            this.logInfo("No GiverRegion field in config.");
+            return;
+        }
+        this.giverRegion = RegionManager.getRegion(regionName);
+        if(this.giverRegion == null) {
+            this.logInfo("Invalid GiverRegion field in config.");
             return;
         }
 
