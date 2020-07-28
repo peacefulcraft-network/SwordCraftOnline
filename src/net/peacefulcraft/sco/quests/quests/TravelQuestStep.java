@@ -1,18 +1,17 @@
 package net.peacefulcraft.sco.quests.quests;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.quests.QuestStep;
 
 public class TravelQuestStep extends QuestStep {
 
-    public TravelQuestStep(QuestType type, String str) {
-        super(type, str);
-        String[] split = str.split(" ");
+    public TravelQuestStep(MythicConfig mc) {
+        super(mc);
 
         // TODO: Check and validate location string
 

@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.quests.quests;
 
 import java.util.HashMap;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -12,6 +13,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep;
@@ -36,29 +38,36 @@ public class DeliverQuestStep extends QuestStep {
         return this.npc;
     }
 
-    public DeliverQuestStep(QuestType type, String str) {
-        super(type, str);
-        String[] split = str.split(" ");
+    public DeliverQuestStep(MythicConfig mc) {
+        super(mc);
+        
+        this.amount = mc.getInteger("Amount", 0);
 
-        try {
-            this.amount = Integer.valueOf(split[2]);
-            this.deliverable = ItemIdentifier.generate(split[1], this.amount, false);
-
-            this.npc = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[3]);
-            if (npc == null) {
-                SwordCraftOnline.logInfo("Issue loading DeliverQuestStep. Invalid mob target: " + split[1]);
-                this.setInvalid();
-                return;
-            }
-
-            // TODO: Add location of npc to loading and attribute
-
-            this._setDescription();
-
-        } catch (Exception ex) {
-            this.setInvalid();
+        String item = mc.getString("Item", "");
+        if(item == null || item.isEmpty()) {
+            this.logInfo("No Item field in config.");
             return;
         }
+        
+        this.deliverable = ItemIdentifier.generate(item, this.amount, false);
+        if(this.deliverable.getType().equals(Material.FIRE)) {
+            this.logInfo("Invalid Item field in config.");
+            return;
+        }
+
+        String npcName = mc.getString("npc", "");
+        if(npcName == null || npcName.isEmpty()) {
+            this.logInfo("No npc field in config.");
+            return;
+        }
+        this.npc = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(npcName);
+        if(npc == null) {
+            this.logInfo("Invalid npc name in config.");
+            return;
+        }
+        // TODO: Add location of npc to loading and attribute
+
+        this._setDescription();
     }
 
     public String getDescription() {

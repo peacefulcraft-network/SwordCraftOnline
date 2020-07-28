@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.quests.quests;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep;
@@ -20,40 +22,27 @@ public class KillQuestStep extends QuestStep {
 
     private HashMap<MythicMob, Integer> kills;
 
-    public KillQuestStep(QuestType type, String str) {
-        super(type, str);
-        String[] split = str.split(" ");
+    public KillQuestStep(MythicConfig mc) {
+        super(mc);
 
-        // If there are multiple mobs
-        if (split[1].contains(",")) {
-            String[] split2 = split[1].split(",");
-            for (String s : split2) {
-                addTarget(s);
-            }
-        } else {
-            addTarget(split[1]);
-        }
+        List<String> targetLis = mc.getStringList("Targets");
+        for(String s : targetLis) {
+            try {
+                String[] split = s.split(" ");
+                int amount = Integer.valueOf(split[1]);
 
-        this._setDescription();
-    }
+                MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[0]);
+                if(mm == null) {
+                    this.logInfo("Invalid target name in config.");
+                    return;
+                }
 
-    private void addTarget(String s) {
-        try {
-            String[] split = s.split("#");
-
-            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[0]);
-            if (mm == null) {
-                SwordCraftOnline.logInfo("Issue loading KillQuestStep. Invalid mob target: " + split[0]);
-                this.setInvalid();
+                this.targets.put(mm, amount);
+                this.kills.put(mm, 0);
+            } catch(Exception ex) {
+                this.logInfo("Invalid target amount in config.");
                 return;
             }
-            int amount = Integer.valueOf(split[1]);
-            
-            //Adding target map and kill count map
-            this.targets.put(mm, amount);
-            this.kills.put(mm, 0);
-        } catch (Exception ex) {
-            this.setInvalid();
         }
     }
 

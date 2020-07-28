@@ -2,17 +2,15 @@ package net.peacefulcraft.sco.quests.quests;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep;
@@ -27,14 +25,18 @@ public class EscortQuestStep extends QuestStep implements Runnable {
 
     private SCOPlayer s;
 
-    public EscortQuestStep(QuestType type, String str) {
-        super(type, str);
-        String[] split = str.split(" ");
+    public EscortQuestStep(MythicConfig mc) {
+        super(mc);
+        
+        String npcName = mc.getString("npc", "");
+        if(npcName == null || npcName.isEmpty()) {
+            this.logInfo("No npc field in config.");
+            return;
+        }
 
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[1]);
+        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(npcName);
         if (mm == null) {
-            SwordCraftOnline.logInfo("Issue loading EscortQuestStep. Invalid mob target: " + split[1]);
-            this.setInvalid();
+            this.logInfo("Invalid npc name in config.");
             return;
         }
 
