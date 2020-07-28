@@ -25,6 +25,7 @@ public class RegionCheckListener implements Listener {
         Player p = e.getPlayer();
         SCOPlayer s = GameManager.findSCOPlayer(p);
         if(s == null) { return; }
+        
         //Is players floor invalid
         if(s.getFloor() == 0) { return; }
 

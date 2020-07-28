@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Location;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
@@ -56,4 +58,12 @@ public class RegionManager {
     public static Region getRegion(String name) {
         return regions.get(name);
     } 
+
+    /**Checks all locations loaded for location */
+    public static Region getRegion(Location loc) {
+        for(Region r : regions.values()) {
+            if(r.isInRegion(loc)) { return r; }
+        }
+        return null;
+    }
 }

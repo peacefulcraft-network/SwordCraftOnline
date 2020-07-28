@@ -153,12 +153,18 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 	private QuestBookManager questBookManager;
 		public QuestBookManager getQuestBookManager() { return questBookManager; }
 
+	/**Players region */
 	private Region r = null;
 		public Region getRegion() { return this.r; }
 		public void setRegion(Region r, boolean silent) { 
 			this.r = r; 
 			if(!silent) { r.sendTitle(this.user); }
 		}
+	
+	/**Determines if player is marked for a duel or not */
+	private Boolean isInDuel = false;
+		public Boolean isInDuel() { return this.isInDuel; }
+		public void setInDueal(Boolean b) { this.isInDuel = b; }
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;

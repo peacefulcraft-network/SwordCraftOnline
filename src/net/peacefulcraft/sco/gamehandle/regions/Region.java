@@ -32,6 +32,15 @@ public class Region {
     private Integer floor;
         public Integer getFloor() { return this.floor; }
 
+    private Boolean preventPVP;
+        public Boolean doesPreventPVP() { return preventPVP; }
+
+    private Boolean preventHostileSpawn;
+        public Boolean doesPreventHostile() { return preventHostileSpawn; }
+
+    private Boolean preventPassiveSpawn;
+        public Boolean doesPreventPassive() { return preventPassiveSpawn; }
+
     public Region(String file, String internalName, MythicConfig mc) {
         this.file = file;
         this.internalName = internalName;
@@ -47,6 +56,11 @@ public class Region {
         this.description = config.getString("Description", "");
         this.description = config.getString("Desc", this.description);
         this.floor = config.getInteger("Floor", 0);
+
+        //Loading Flags
+        this.preventPVP = config.getBoolean("PreventPVP", false);
+        this.preventHostileSpawn = config.getBoolean("PreventHostileSpawn", false);
+        this.preventPassiveSpawn = config.getBoolean("PreventPassiveSpawn", false);
     }
 
     /**

@@ -15,11 +15,11 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
 import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
-import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionCheckListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
@@ -91,6 +91,9 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	private QuestManager questManager;
 		public QuestManager getQuestManager() { return this.questManager; }
+
+	private RegionManager regionManager;
+		public RegionManager getRegionManager() { return this.regionManager; }
 	
 	public SwordCraftOnline() {
 
@@ -121,6 +124,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.mobManager = new MobManager(this);
 		this.spawnerManager = new SpawnerManager();
 
+		this.regionManager = new RegionManager();
 		this.questManager = new QuestManager();
 
 		effectManager = new EffectManager(this);
@@ -161,7 +165,6 @@ public class SwordCraftOnline extends JavaPlugin{
 		// Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
-		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
 		getServer().getPluginManager().registerEvents(new RegionCheckListener(), this);
 		
