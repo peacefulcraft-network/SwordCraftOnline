@@ -18,6 +18,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
+import net.peacefulcraft.sco.gamehandle.listeners.RegionCheckListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
@@ -162,6 +163,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
 		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
+		getServer().getPluginManager().registerEvents(new RegionCheckListener(), this);
 		
 		//Mythicmob listeners
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);

@@ -10,6 +10,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
@@ -138,9 +140,6 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 			}
 			return false;
 		}
-
-	private QuestBookManager questBookManager;
-		public QuestBookManager getQuestBookManager() { return questBookManager; }
 	
 	/**Players wallet. Can be stolen. */
 	private int wallet;
@@ -149,6 +148,16 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 			if(this.wallet - i < 0) { return false; }
 			this.wallet -= i;
 			return true;
+		}
+
+	private QuestBookManager questBookManager;
+		public QuestBookManager getQuestBookManager() { return questBookManager; }
+
+	private Region r = null;
+		public Region getRegion() { return this.r; }
+		public void setRegion(Region r, boolean silent) { 
+			this.r = r; 
+			if(!silent) { r.sendTitle(this.user); }
 		}
 
 	public SCOPlayer (UUID uuid) {
