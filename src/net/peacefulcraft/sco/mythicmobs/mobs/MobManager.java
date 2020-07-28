@@ -196,12 +196,14 @@ public class MobManager {
     }
 
     public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level) {
-        if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL)) {
-            SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abdandoned.");
-            return null;
-        }
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
+            //If mob is hostile and gamemode peaceful we abort spawn
+            if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL) 
+                && !MythicEntity.isPassive(mm.getStrMobType())) {
+                SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abdandoned.");
+                return null;
+            }
             return mm.spawn(loc, level);
         }
         return null;
