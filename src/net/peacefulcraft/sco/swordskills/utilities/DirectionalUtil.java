@@ -1,5 +1,8 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
@@ -24,11 +27,24 @@ public class DirectionalUtil implements Listener{
         NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST;
     }
 
+    public static HashMap<UUID, SCOPlayer> playerCheck = new HashMap<>();
+
+    public static void addPlayer(SCOPlayer s) {
+        playerCheck.put(s.getUUID(), s);
+    }
+
+    public static void removePlayer(SCOPlayer s) {
+        playerCheck.remove(s.getUUID());
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         SCOPlayer s = GameManager.findSCOPlayer(p);
         if(s == null) { return; }
+
+        //Checking if player should have their direction changed
+        if(playerCheck.get(p.getUniqueId()) == null) { return; }
 
         /**Direction the player is moving. */
         Vector moving = e.getFrom().subtract(e.getTo()).toVector().normalize();
