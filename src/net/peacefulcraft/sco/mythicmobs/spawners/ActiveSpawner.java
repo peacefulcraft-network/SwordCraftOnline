@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.mythicmobs.spawners;
 import java.util.Hashtable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -134,6 +135,13 @@ public class ActiveSpawner {
                 SwordCraftOnline.logInfo("[Spawner Manager] Error spawning mob in: " + this.s.getName());
             }
         }
+    }
+
+    /**@return True if chunk spawner is in is loaded */
+    public boolean isLoaded() {
+        Chunk chunk = getLocation().getChunk();
+        if(chunk.isLoaded()) { return true; }
+        return false;
     }
 
     /**Creates a config map to be stored in ./SpawnerConfig.yml */

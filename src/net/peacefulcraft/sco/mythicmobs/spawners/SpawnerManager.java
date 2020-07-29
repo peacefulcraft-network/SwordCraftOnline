@@ -192,15 +192,16 @@ public class SpawnerManager implements Runnable {
         } else if(GameManager.isDay() && this.isNightwave) {
             this.isNightwave = false;
         }
+        
         /**Triggers a third of hostile active spawners in the map. */
-        List<ActiveSpawner> hostiles = getHostileList();
+        List<ActiveSpawner> hostiles = getLoadedHostileList();
         for(int i = 0; i < hostiles.size()/3; i++) {
             ActiveSpawner as = hostiles.get(SwordCraftOnline.r.nextInt(hostiles.size()));
             as.trigger();
         }
 
         /**Triggers a fourth of passive active spawners in the map */
-        List<ActiveSpawner> passives = getPassiveList();
+        List<ActiveSpawner> passives = getLoadedPassiveList();
         for(int i = 0; i < passives.size()/4; i++) {
             ActiveSpawner as = passives.get(SwordCraftOnline.r.nextInt(passives.size()));
             as.trigger();
@@ -328,6 +329,30 @@ public class SpawnerManager implements Runnable {
     private void updateRegistryList() {
         this.registryList = getSpawnerRegistry().values().stream().flatMap(List::stream).collect(Collectors.toList());
     }
+
+    /**
+     * Iterates and finds loaded hostile spawners
+     * @return List of loaded spawners
+     */
+    private List<ActiveSpawner> getLoadedHostileList() {
+        List<ActiveSpawner> ret = new ArrayList<>();
+        for(ActiveSpawner as : getHostileList()) {
+            if(as.isLoaded()) { ret.add(as); }
+        }
+        return ret;
+    }  
+
+    /**
+     * Iterates and finds loaded passive spawners
+     * @return List of loaded spawners
+     */
+    private List<ActiveSpawner> getLoadedPassiveList() {
+        List<ActiveSpawner> ret = new ArrayList<>();
+        for(ActiveSpawner as : getPassiveList()) {
+            if(as.isLoaded()) { ret.add(as); }
+        }
+        return ret;
+    } 
 
     /**
      * Makes list of active spawners
