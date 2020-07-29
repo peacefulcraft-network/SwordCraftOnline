@@ -41,6 +41,9 @@ public class Region {
     private Boolean preventPassiveSpawn;
         public Boolean doesPreventPassive() { return preventPassiveSpawn; }
 
+    private Boolean preventSwordSkills;
+        public Boolean doesPreventSwordSkills() { return this.preventSwordSkills; }
+
     public Region(String file, String internalName, MythicConfig mc) {
         this.file = file;
         this.internalName = internalName;
@@ -61,6 +64,7 @@ public class Region {
         this.preventPVP = config.getBoolean("PreventPVP", false);
         this.preventHostileSpawn = config.getBoolean("PreventHostileSpawn", false);
         this.preventPassiveSpawn = config.getBoolean("PreventPassiveSpawn", false);
+        this.preventSwordSkills = config.getBoolean("PreventSwordSkills", false);
     }
 
     /**
@@ -98,6 +102,20 @@ public class Region {
     /**Sends player title of name and desc */
     public void sendTitle(Player p) {
         Announcer.sendTitle(p, name, description);
+    }
+
+    /**@return String of information regarding this region */
+    public String getInfo() {
+        String s = "Name: " + name + "\n";
+        s += "Description: " + description + "\n";
+        s += "Floor: " + String.valueOf(floor) + "\n";
+        s += "Point 1: " + String.valueOf(x1) + "," + String.valueOf(z1) + "\n";
+        s += "Point 2: " + String.valueOf(x2) + "," + String.valueOf(z2) + "\n";
+        s += "DoesPreventPVP: " + String.valueOf(preventPVP) + "\n";
+        s += "DoesPreventHostileSpawn: " + String.valueOf(preventHostileSpawn) + "\n";
+        s += "DoesPreventPassiveSpawn: " + String.valueOf(preventPassiveSpawn) + "\n";
+        s += "DoesPreventSwordSkills: " + String.valueOf(preventSwordSkills);
+        return s;
     }
 
 }
