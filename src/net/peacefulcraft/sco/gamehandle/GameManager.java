@@ -14,9 +14,6 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
-import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
@@ -30,7 +27,7 @@ public class GameManager {
 	}
 	
 	public void preProcessPlayerJoin(UUID uuid) {
-		if(findSCOPlayerByUUID(uuid) != null)
+		if(players.get(uuid) != null)
 			throw new RuntimeException("Command executor is already in SCO");
 		
 		SCOPlayer s = new SCOPlayer(uuid);
@@ -81,14 +78,10 @@ public class GameManager {
 	}
 	
 	public static SCOPlayer findSCOPlayer(Player p) {
-		return findSCOPlayerByUUID(p.getUniqueId());
+		return players.get(p.getUniqueId());
 	}
 	
-	public static SCOPlayer findSCOPlayerByUUID(UUID uuid) {
-		return players.get(uuid);
-	}
-	
-	public static SCOPlayer findSCOPlayerByName(String name) {
+	public static SCOPlayer findSCOPlayer(String name) {
 		for(SCOPlayer p : players.values()) {
 			if(p.getName().equalsIgnoreCase(name)) {
 				return p;

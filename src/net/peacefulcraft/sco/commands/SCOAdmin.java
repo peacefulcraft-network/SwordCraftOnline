@@ -90,7 +90,7 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("playerdata")) {
 				Player p = (Player) sender;
 
-				SCOPlayer s = GameManager.findSCOPlayerByName(args[1]);
+				SCOPlayer s = GameManager.findSCOPlayer(args[1]);
 				if (s == null) {
 					p.sendMessage(ChatColor.RED + "Could not find player. Are they online?");
 					return true;
@@ -129,7 +129,7 @@ public class SCOAdmin implements CommandExecutor {
 							+ "player_kills, parry, admin_override, admin_over");
 					return true;
 				}
-				SCOPlayer s = GameManager.findSCOPlayerByName(args[1]);
+				SCOPlayer s = GameManager.findSCOPlayer(args[1]);
 				if (s == null) {
 					p.sendMessage(ChatColor.RED + "Could not find player");
 					return true;
@@ -174,7 +174,7 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("swordskills")) {
 				SCOPlayer s;
 				if (args.length > 0) {
-					s = GameManager.findSCOPlayerByName(args[1]);
+					s = GameManager.findSCOPlayer(args[1]);
 					if (s == null) {
 						sender.sendMessage(ChatColor.RED + "Could not find player");
 						return true;
