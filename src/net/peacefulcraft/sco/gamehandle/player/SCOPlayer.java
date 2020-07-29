@@ -13,6 +13,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.particles.DisplayType;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
@@ -146,6 +147,11 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 			this.wallet -= i;
 			return true;
 		}
+
+	/**Players level of particle display. Defaulted to full effect */
+	private DisplayType displayType = DisplayType.FULL;
+		public DisplayType getDisplayType() { return this.displayType; }
+		public void setDisplayType(DisplayType t) { this.displayType = t; }
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
