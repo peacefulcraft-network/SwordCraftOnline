@@ -35,7 +35,10 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 	
 	private UUID uuid;
 		public UUID getUUID() { return uuid; }
-		
+	
+	private long playerRegistryId;
+		public long getPlayerRegistryId() { return playerRegistryId; }
+
 	private Player user;
 		public Player getPlayer() { return this.user; }
 		public void linkPlayer(Player p) { this.user = p; }
@@ -113,7 +116,7 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
 		public void removeDamageModifier(Modifier m) { this.damageModifiers.remove(m); }
 
-	public SCOPlayer (UUID uuid) {
+	public SCOPlayer (UUID uuid, long playerRegistryId) {
 		this.uuid = uuid;
 		playerKills = 0;
 		floor = 0; //TODO: Load this from scopData

@@ -13,6 +13,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
@@ -28,11 +29,11 @@ public class GameManager {
 		players = new HashMap<UUID, SCOPlayer>();
 	}
 	
-	public void preProcessPlayerJoin(UUID uuid) {
+	public void preProcessPlayerJoin(UUID uuid, long playerRegistryId) {
 		if(findSCOPlayerByUUID(uuid) != null)
 			throw new RuntimeException("Command executor is already in SCO");
 		
-		SCOPlayer s = new SCOPlayer(uuid);
+		SCOPlayer s = new SCOPlayer(uuid, playerRegistryId);
 		preProcessedPlayers.put(uuid, s);
 	}
 	
@@ -49,7 +50,7 @@ public class GameManager {
 		s.linkPlayer(p);
 		players.put(p.getUniqueId(), s);
 
-		p.getInventory().setItem(8, ItemIdentifier.generateItem("SwordSkillTome", 1));
+		p.getInventory().setItem(8, ItemIdentifier.generateItem("SwordSkillTome", ItemTier.COMMON, 1));
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
 
 		if(Teleports.getSpawn() == null) {

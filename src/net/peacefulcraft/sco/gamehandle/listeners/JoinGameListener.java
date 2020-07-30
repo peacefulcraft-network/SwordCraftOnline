@@ -21,7 +21,7 @@ public class JoinGameListener implements Listener
 			PlayerRegistryJoinGameSyncTask registryTask = new PlayerRegistryJoinGameSyncTask(e.getUniqueId(), e.getName());
 			registryTask.run();
 			
-			SwordCraftOnline.getGameManager().preProcessPlayerJoin(e.getUniqueId());
+			SwordCraftOnline.getGameManager().preProcessPlayerJoin(e.getUniqueId(), registryTask.getPlayerRegistryId());
 		} catch(SCOSQLRuntimeException ex) {
 			ex.printStackTrace();
 			e.setLoginResult(Result.KICK_OTHER);
