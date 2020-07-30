@@ -49,6 +49,10 @@
 			<url>https://repo.codemc.org/repository/maven-public/</url>
 			<layout>default</layout>
 		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -79,6 +83,11 @@
             <artifactId>exp4j</artifactId>
             <version>0.4.5</version>
             <scope>compile</scope>
-        </dependency>
+		</dependency>
+		<dependency>
+			<groupId>com.github.alexis-evelyn</groupId>
+			<artifactId>NeuralNetworkAPI</artifactId>
+			<version>master-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
