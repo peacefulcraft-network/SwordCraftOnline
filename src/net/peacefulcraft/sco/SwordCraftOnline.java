@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.peacefulcraft.sco.commands.SCOAdmin;
@@ -32,6 +33,7 @@ import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
 import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.mythicmobs.spawners.SpawnerManager;
+import net.peacefulcraft.sco.neuralnetwork.CustomNetwork;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
 import net.peacefulcraft.sco.storage.SwordSkillRegistery;
@@ -112,6 +114,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.spawnerManager = new SpawnerManager();
 
 		effectManager = new EffectManager(this);
+
+		ConfigurationSerialization.registerClass(CustomNetwork.class);
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
