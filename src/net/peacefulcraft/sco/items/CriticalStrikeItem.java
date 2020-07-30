@@ -5,19 +5,41 @@ import java.util.ArrayList;
 import org.bukkit.Material;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
-import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
-public class CriticalStrikeItem implements ItemIdentifier, SwordSkillProvider {
+public class CriticalStrikeItem implements SwordSkillProvider {
+
+  private static long databaseId;
+    @Override
+    public long getDatabaseID() { return databaseId; }
+    @Override
+    public void setDatabaseID(long databaseId) { CriticalStrikeItem.databaseId = databaseId; }
 
   private ItemTier tier;
+    @Override
+    public ItemTier[] getAllowedTiers() {
+      return new ItemTier[] { ItemTier.COMMON };
+    }
 
-  public CriticalStrikeItem(ItemTier tier) {
+    @Override
+    public ItemTier getTier() { return tier; }
+
+  private int level;
+    @Override
+    public int[] getAllowedLevels() {
+      return new int[] { 1 };
+    }
+
+    @Override
+    public int getLevel() { return level; }
+
+  public CriticalStrikeItem(ItemTier tier, int level) {
     this.tier = tier;
+    this.level = level;
   }
 
   @Override
@@ -68,19 +90,9 @@ public class CriticalStrikeItem implements ItemIdentifier, SwordSkillProvider {
   }
 
   @Override
-  public boolean isDynamic() {
-    return false;
-  }
-
-  @Override
   public NBTItem applyNBT(NBTItem item) {
     item.setString("config_string", getName().replaceAll(" ", "") + "-" + getTier().toString().toUpperCase());
     return item;
-  }
-
-  @Override
-  public ItemTier getTier() {
-    return tier;
   }
 
   @Override

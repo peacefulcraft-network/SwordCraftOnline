@@ -13,8 +13,6 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;

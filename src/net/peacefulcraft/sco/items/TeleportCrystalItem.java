@@ -9,6 +9,12 @@ import net.md_5.bungee.api.ChatColor;
 
 public class TeleportCrystalItem implements ItemIdentifier {
 
+  private static long databaseId;
+    @Override
+    public long getDatabaseID() { return databaseId; }
+    @Override
+    public void setDatabaseID(long databaseId) { TeleportCrystalItem.databaseId = databaseId; }
+
   @Override
   public Material getMaterial() {
     return Material.DIAMOND;
@@ -37,12 +43,17 @@ public class TeleportCrystalItem implements ItemIdentifier {
   }
 
   @Override
-  public boolean isDynamic() {
-    return false;
+  public NBTItem applyNBT(NBTItem item) {
+    return item;
   }
 
   @Override
-  public NBTItem applyNBT(NBTItem item) {
-    return item;
+  public ItemTier[] getAllowedTiers() {
+    return new ItemTier[] { ItemTier.COMMON };
+  }
+
+  @Override
+  public ItemTier getTier() {
+    return ItemTier.COMMON;
   }
 }

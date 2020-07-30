@@ -8,6 +8,12 @@ import de.tr7zw.changeme.nbtapi.NBTItem;
 
 public class GoldCoinItem implements ItemIdentifier {
 
+  private static long databaseId;
+    @Override
+    public long getDatabaseID() { return databaseId; }
+    @Override
+    public void setDatabaseID(long databaseId) { GoldCoinItem.databaseId = databaseId; }
+
   @Override
   public Material getMaterial() {
     return Material.GOLD_NUGGET;
@@ -36,12 +42,17 @@ public class GoldCoinItem implements ItemIdentifier {
   }
 
   @Override
-  public boolean isDynamic() {
-    return false;
+  public NBTItem applyNBT(NBTItem item) {
+    return item;
   }
 
   @Override
-  public NBTItem applyNBT(NBTItem item) {
-    return item;
+  public ItemTier[] getAllowedTiers() {
+    return new ItemTier[] { ItemTier.COMMON };
+  }
+
+  @Override
+  public ItemTier getTier() {
+    return ItemTier.COMMON;
   }
 }

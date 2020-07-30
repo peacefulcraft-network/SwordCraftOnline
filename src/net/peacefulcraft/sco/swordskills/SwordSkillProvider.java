@@ -4,19 +4,25 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 
-public interface SwordSkillProvider {
-
-  /**
-   * @return Sword Skill ItemTier
-   */
-  public abstract ItemTier getTier();
+public interface SwordSkillProvider extends ItemIdentifier {
 
   /**
    * @return Sword Skill Type
    */
   public abstract SwordSkillType getType();
+
+  /**
+   * @return Allowed levels for the sword skill
+   */
+  public abstract int[] getAllowedLevels();
+
+  /**
+   * @return Sword skill level
+   */
+  public abstract int getLevel();
 
   /**
    * Intantiates the associated SwordSkill and registers it to the casters SwordSkillManager.
@@ -30,7 +36,7 @@ public interface SwordSkillProvider {
    * @return True if the requested skill exists.
    *         False if the requested skill does not exist.
    */
-  public static boolean SkillExists(String providerName) {
+  public static boolean skillExists(String providerName) {
     try {
       Class.forName("net.peacefulcraft.sco.swordskills." + providerName);
       return true;
@@ -46,8 +52,8 @@ public interface SwordSkillProvider {
    * @return True if a skill matching the requested parameters exists.
    *         False if no such skill exists.
    */
-  public static boolean SkillExists(String shortName, ItemTier tier) {
-    return SwordSkillProvider.SkillExists(SwordSkillProvider.getProviderName(shortName, tier));
+  public static boolean skillExists(String shortName, ItemTier tier) {
+    return SwordSkillProvider.skillExists(SwordSkillProvider.getProviderName(shortName, tier));
   }
 
   /**

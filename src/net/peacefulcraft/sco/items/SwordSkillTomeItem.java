@@ -9,6 +9,12 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SwordSkillTomeItem implements ItemIdentifier {
 
+  private static long databaseId;
+    @Override
+    public long getDatabaseID() { return databaseId; }
+    @Override
+    public void setDatabaseID(long databaseId) { SwordSkillTomeItem.databaseId = databaseId; }
+
   @Override
   public Material getMaterial() {
     return Material.BOOK;
@@ -37,12 +43,17 @@ public class SwordSkillTomeItem implements ItemIdentifier {
   }
 
   @Override
-  public boolean isDynamic() {
-    return true;
+  public NBTItem applyNBT(NBTItem item) {
+    return item;
   }
 
   @Override
-  public NBTItem applyNBT(NBTItem item) {
-    return item;
+  public ItemTier[] getAllowedTiers() {
+    return new ItemTier[] { ItemTier.COMMON };
+  }
+
+  @Override
+  public ItemTier getTier() {
+    return ItemTier.COMMON;
   }
 }

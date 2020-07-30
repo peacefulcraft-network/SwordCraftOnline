@@ -14,8 +14,6 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.SkillIdentifier;
-import net.peacefulcraft.sco.items.utilities.UnlockSlot;
 import net.peacefulcraft.sco.storage.tasks.SavePlayerInventory;
 
 public class SwordSkillInventory extends InventoryBase implements Listener{

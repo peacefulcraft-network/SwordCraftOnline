@@ -19,6 +19,12 @@ import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
+import net.peacefulcraft.sco.items.CriticalStrikeItem;
+import net.peacefulcraft.sco.items.GoldCoinItem;
+import net.peacefulcraft.sco.items.ItemRegistry;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SerratedBladeItem;
+import net.peacefulcraft.sco.items.TeleportCrystalItem;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
@@ -29,7 +35,6 @@ import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.storage.HikariManager;
-import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityAsyncPlayerChatListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
@@ -50,7 +55,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	public static HikariManager hikari;
 		public static HikariManager getHikariPool() { return hikari; }
-		
+
 	public static GameManager gameManager;
 		public static GameManager getGameManager() {return gameManager;}
 		
@@ -80,8 +85,6 @@ public class SwordCraftOnline extends JavaPlugin{
 		cfg = new SCOConfig(getConfig());
 
 		r = new Random();
-		
-		
 	}
 	
 	public void onEnable() {
@@ -91,7 +94,16 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.loadEventListeners();
 		
 		hikari = new HikariManager(cfg);
-		new SwordSkillRegistery();
+		
+		ItemRegistry itemRegistry = new ItemRegistry();
+		this.registerItems(itemRegistry);
+		itemRegistry.synchronizeRegistry();
+		if (!itemRegistry.isInitialized()) {
+			logSevere("Disabling plugin due to item registry sychrnoization failure");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
 		
@@ -166,6 +178,13 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new AbilityPlayerRespawnListener(), this);
 	}
 	
+	public void registerItems(ItemRegistry itemRegistry) {
+		itemRegistry.registerItemIdentifier(new CriticalStrikeItem(ItemTier.COMMON, 1));
+		itemRegistry.registerItemIdentifier(new GoldCoinItem());
+		itemRegistry.registerItemIdentifier(new SerratedBladeItem(ItemTier.COMMON, 1));
+		itemRegistry.registerItemIdentifier(new TeleportCrystalItem());
+	}
+
 	public static void logDebug(String debug) {
 		if(showDebug()) {
 			sco.getLogger().log(Level.INFO, debug);

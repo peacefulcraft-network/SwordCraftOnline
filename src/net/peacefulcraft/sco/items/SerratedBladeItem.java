@@ -15,19 +15,42 @@ import net.peacefulcraft.sco.swordskills.SwordSkillType;
 /**
  * Common Serrated Blade - Quartz Increases players critical hit chance.
  */
-public class SerratedBladeItem implements ItemIdentifier, SwordSkillProvider {
+public class SerratedBladeItem implements SwordSkillProvider {
+
+  private static long databaseId;
+    @Override
+    public long getDatabaseID() { return databaseId; }
+    @Override
+    public void setDatabaseID(long databaseId) { SerratedBladeItem.databaseId = databaseId; }
 
   private int increase;
 
   private ItemTier tier;
+    @Override
+    public ItemTier[] getAllowedTiers() {
+      return new ItemTier[] {
+        ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE,
+        ItemTier.LEGENDARY, ItemTier.ETHEREAL, ItemTier.GODLIKE
+      };
+    }
 
-  public SerratedBladeItem(ItemTier tier) {
+    @Override
+    public ItemTier getTier() {
+      return tier;
+    }
+
+  private int level;
+    @Override
+    public int[] getAllowedLevels() {
+      return new int[] { 1 };
+    }
+
+    @Override
+    public int getLevel() { return level; }
+
+  public SerratedBladeItem(ItemTier tier, int level) {
     this.tier = tier;
-  }
-
-  @Override
-  public ItemTier getTier() {
-    return tier;
+    this.level = level;
   }
 
   @Override
@@ -81,11 +104,6 @@ public class SerratedBladeItem implements ItemIdentifier, SwordSkillProvider {
   @Override
   public boolean isMovable() {
     return true;
-  }
-
-  @Override
-  public boolean isDynamic() {
-    return false;
   }
 
   @Override
