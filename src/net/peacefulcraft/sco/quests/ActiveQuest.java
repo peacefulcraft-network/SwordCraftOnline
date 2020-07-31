@@ -50,9 +50,16 @@ public class ActiveQuest {
         //Updates quest position in questMap
         s.getQuestBookManager().updateQuest(quest.getQuestName());
 
+        //If the quest doesn't use NPC we auto activate
+        if(!getQuestStep().usesGiver()) {
+            setStepActivated();
+        }
+
         if(this.currentStep == quest.getSize()) {
             this.completed = true;
             s.getQuestBookManager().unregisterQuest(quest.getQuestName());
+            //TODO: Decide how we handle story quest progression. 
+
             //TODO: Save quest name under completed quest
         }
     }

@@ -58,6 +58,15 @@ public abstract class QuestStep {
         public Boolean isActivated() { return this.activated; }
         public void setActivated(Boolean b) { this.activated = b; }
 
+    /**
+     * If step uses an NPC to activate Quest
+     * If false, step is activated on completion of previous step.
+     * Beginning steps cannot be false
+     */
+    private Boolean usesGiver;
+        public Boolean usesGiver() { return this.usesGiver; }
+        public void setUsesGiver(boolean b) { this.usesGiver = b; }
+
     public QuestStep(MythicConfig mc) {
         //TODO: Handle this step name in description of item created.
         this.name = mc.getString("Name");
@@ -93,6 +102,8 @@ public abstract class QuestStep {
             this.logInfo("Invalid GiverRegion field in config.");
             return;
         }
+
+        this.usesGiver = mc.getBoolean("UsesGiver", true);
 
         List<String> rewardsLis = mc.getStringList("Rewards");
         this.descriptionRaw = mc.getString("Description", "");

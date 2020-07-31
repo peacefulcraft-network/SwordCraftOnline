@@ -5,6 +5,7 @@ import java.util.List;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
 import net.peacefulcraft.sco.quests.quests.DeliverQuestStep;
 import net.peacefulcraft.sco.quests.quests.EscortQuestStep;
@@ -36,6 +37,20 @@ public class Quest {
     /**Number of steps in quest */
     private int size;
         public int getSize() { return this.size; }
+
+    /**
+     * Determines if quest is story
+     * If false, quest will be freely assigned to quest givers
+     */
+    private Boolean isStoryQuest;
+        public Boolean isStoryQuest() { return this.isStoryQuest; }
+
+    /**
+     * Amount of time a quest is available to recieve in game before swapping out
+     * In minutes
+     */
+    private Integer existTime;
+        public Integer getExistTime() { return this.existTime; }
 
     /**Required to visit this floor before gaining quest */
     private Integer floorReq;
@@ -70,7 +85,6 @@ public class Quest {
         this.stepConfigs = steps;
 
         this.questName = config.getString("Name");
-        //this.questStepStr = config.getStringList("QuestSteps");
         this.size = stepConfigs.size();
         
         //Loading requirements
@@ -81,6 +95,9 @@ public class Quest {
         this.speedReq = config.getDouble("Requirement.Speed", 0);
         this.swordSkillReq = config.getString("Requirement.SwordSkill");
         this.questReq = config.getString("Requirement.Quest");
+
+        this.isStoryQuest = config.getBoolean("IsStoryQuest", false);
+        this.existTime = config.getInteger("ExistTime", 300);
 
         //Loading Quest Steps
         for(MythicConfig sConfig : this.stepConfigs) {
@@ -109,6 +126,14 @@ public class Quest {
     private void validateStep(QuestStep qs) {
         if(qs.isInvalid()) { this.isInvalid = true; }
         this.questSteps.add(qs);
+        //If the step is first we ensure it uses npc
+        if(this.questSteps.indexOf(qs) == 0) {
+            if(qs.getGiverName().isEmpty() || qs.getGiverName() == null) {
+                this.isInvalid = true;
+            } else {
+                qs.setUsesGiver(true);
+            }
+        }
     }
 
     /**@return true if player passes requirements for quest */

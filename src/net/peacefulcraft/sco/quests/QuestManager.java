@@ -5,13 +5,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
-public class QuestManager {
+public class QuestManager implements Runnable {
     
     /**Stores loaded quests by String name */
     private HashMap<String, Quest> questMap;
@@ -19,9 +23,21 @@ public class QuestManager {
     /**Stores invalid quests */
     private HashMap<String, Quest> invalidQuests;
 
+    /**Stores quests available on the map currently */
+    private HashMap<String, Quest> availableQuests;
+
+    /**Stores current NPCs giving quests currently */
+    private ArrayList<ActiveMob> currentQuestGivers;
+
+    private BukkitTask questTask;
+
     public QuestManager() {
         this.questMap = new HashMap<>();
+        this.availableQuests = new HashMap<>();
+        this.currentQuestGivers = new ArrayList<>();
         loadQuests();
+
+        this.questTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 2400);
     }
 
     public void loadQuests() {
@@ -74,6 +90,60 @@ public class QuestManager {
             }
         }
         SwordCraftOnline.logInfo("[Quest Manager] Loading complete!");
+    }
+
+    @Override
+    public void run() {
+        ArrayList<ActiveMob> lis = SwordCraftOnline.getPluginInstance().getMobManager().getQuestGivers();
+        ArrayList<Quest> nonStory = getNonStoryQuests();
+        
+        //Checking all current quest givers for expired quests
+        for(ActiveMob am : currentQuestGivers) {
+            //If there is a quest and it has expired
+            if(am.getQuest() != null && am.checkQuestAssignment()) { 
+                //Setting mobs quest to null and removing quest from available quests
+                am.setQuest(null);
+                availableQuests.remove(am.getQuest().getQuestName());
+            }
+        }
+
+        //Checking 1/4th of the quest givers
+        for(int i = 0; i < lis.size()/4; i++) {
+            //Selecting random AM and checking if it has quest
+            ActiveMob am = lis.get(SwordCraftOnline.r.nextInt(lis.size()));
+            if(am.getQuest() != null) { continue; }
+
+            //If quest is already available we don't care
+            Quest q = nonStory.get(SwordCraftOnline.r.nextInt(nonStory.size()));
+            if(availableQuests.containsKey(q.getQuestName())) { continue; }
+
+            am.setQuest(q);
+            availableQuests.put(q.getQuestName(), q);
+        }
+    }
+
+    /**
+     * Fetches all non-story quests in map
+     * @return List of quests
+     */
+    private ArrayList<Quest> getNonStoryQuests() {
+        ArrayList<Quest> ret = new ArrayList<>();
+        for(Quest q : questMap.values()) {
+            if(q.isStoryQuest()) { continue; }
+            ret.add(q);
+        }
+        return ret;
+    }
+
+    /**
+     * Enables and disables quest giving task
+     */
+    public void toggleQuestTask() {
+        if(questTask.isCancelled()) {
+            this.questTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 2400);
+        } else {
+            this.questTask.cancel();
+        }
     }
 
     /**@return new ActiveQuest instance if quest String valid. Null Otherwise */

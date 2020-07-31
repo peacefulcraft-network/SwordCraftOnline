@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.mythicmobs.mobs;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.MetadataValue;
@@ -53,8 +55,6 @@ public class MobManager {
 
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
-
-    
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
@@ -108,7 +108,78 @@ public class MobManager {
                 }
             }
         }
+
+        //Loading in persistent mobs stored in .yml
+        IOLoader<SwordCraftOnline> file = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "PersistentMobConfig.yml");
+        FileConfiguration config = file.getCustomConfig();
+        for(String internal : mmList.keySet()) {
+            List<Map<?,?>> lis = config.getMapList(internal);
+            if(lis.isEmpty()) { continue; }
+            for(Map<?,?> m : lis) {
+                Location loc = new Location(
+                    Bukkit.getWorld((String) m.get("world")),
+                    Double.parseDouble(String.valueOf(m.get("x"))),
+                    Double.parseDouble(String.valueOf(m.get("y"))),
+                    Double.parseDouble(String.valueOf(m.get("z"))));
+
+                ActiveMob am = spawnMob(internal, loc);
+                if(am == null) {
+                    SwordCraftOnline.logInfo("[Mob Manager] Error loading: " + internal + " from PersistentMobConfig.yml");
+                    continue;
+                }
+            }
+        }
+
         SwordCraftOnline.logInfo("[Mob Manager] Loading complete!");
+    }
+
+    /**
+     * Call on plugin disable.
+     * Safely despawns all mobs, including persistent.
+     */
+    public void save() {
+        IOLoader<SwordCraftOnline> file = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "PersistentMobConfig.yml");
+        FileConfiguration config = file.getCustomConfig();
+
+        /**
+         * Iterating over every active mob to save those with persistent locations
+         * Since AM are not stored by Mob type we need to iterate over completely
+         * then save to config.
+         */
+        HashMap<String, ArrayList<Object>> toSave = new HashMap<>();
+        for(ActiveMob am : mobRegistry.values()) {
+            MythicMob type = am.getType();
+            if(type.isPersistent()) {
+                HashMap<String, Object> loc = new HashMap<>();
+                Location l = am.getPermLocation();
+                loc.put("world", l.getWorld().getName());
+                loc.put("x", l.getX());
+                loc.put("y", l.getY());
+                loc.put("z", l.getZ());
+
+                String internal = type.getInternalName();
+                if(toSave.get(internal) == null) {
+                    toSave.put(internal, new ArrayList<>());
+                }
+                toSave.get(internal).add(loc);
+            }
+        }
+
+        //Second iteration to save to config
+        for(String internal : toSave.keySet()) {
+            config.createSection(internal);
+            config.set(internal, toSave.get(internal));
+        }
+
+        try{
+            config.save(file.getFile());
+        } catch(IOException ex) {
+            SwordCraftOnline.logInfo("[Mob Manager] Failed to save PersistenMobConfig.yml");
+            return;
+        } 
+
+        removeAllMobs(true);
+        SwordCraftOnline.logInfo("[Mob Manager] PersistentMobConfig.yml saved!");
     }
 
     public MythicMob getMythicMob(String s) {
@@ -204,7 +275,10 @@ public class MobManager {
         }
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
-            return mm.spawn(loc, level);
+            ActiveMob am =  mm.spawn(loc, level);
+            //If mob is quest giver we set permenant location
+            if(mm.canGiveQuests()) { am.setPermLocation(BukkitAdapter.adapt(loc)); }
+            return am;
         }
         return null;
     }
@@ -240,12 +314,16 @@ public class MobManager {
         return null;
     }
     
-    public int removeAllMobs() {
+    /**
+     * @param ignorePersistent If true, all mobs including persistent types are removed
+     * @return Number of mobs removed
+     */
+    public int removeAllMobs(boolean ignorePersistent) {
         int amount = 0;
         Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
         while(iterator.hasNext()) {
             ActiveMob am = iterator.next();
-            if(am.getType().isPersistent()) { continue; }
+            if(am.getType().isPersistent() && !ignorePersistent) { continue; }
             am.setDespawned();
             am.getEntity().remove();
             iterator.remove();
@@ -268,6 +346,19 @@ public class MobManager {
             }
         }
         return amount;
+    }
+
+    /**
+     * @return List of all registered mobs that can give quests
+     */
+    public ArrayList<ActiveMob> getQuestGivers() {
+        ArrayList<ActiveMob> ret = new ArrayList<>();
+        for(ActiveMob am : mobRegistry.values()) {
+            if(am.canGiveQuests()) {
+                ret.add(am);
+            }
+        }
+        return ret;
     }
 
     public Collection<ActiveMob> getActiveMobs() {
