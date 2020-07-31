@@ -5,6 +5,7 @@ import java.util.List;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
 import net.peacefulcraft.sco.quests.quests.DeliverQuestStep;
 import net.peacefulcraft.sco.quests.quests.EscortQuestStep;
@@ -18,25 +19,38 @@ public class Quest {
 
     private String internalName;
 
+    private List<MythicConfig> stepConfigs;
+
     private MythicConfig config;
 
     /**Name of quest used to store/index quest */
     private String questName;
         public String getQuestName() { return this.questName; }
 
-    /**Quest steps stored in string */
-    private List<String> questStepStr;
-
     /**Loaded Quest Steps */
     private List<QuestStep> questSteps;
         public QuestStep getQuestStep(int i) { return questSteps.get(i); }
 
-    /**List of quest types used in this quest */
-    private List<QuestType> stepTypes;
+    private Boolean isInvalid = false;
+        public Boolean isInvalid() { return this.isInvalid; }
 
     /**Number of steps in quest */
     private int size;
         public int getSize() { return this.size; }
+
+    /**
+     * Determines if quest is story
+     * If false, quest will be freely assigned to quest givers
+     */
+    private Boolean isStoryQuest;
+        public Boolean isStoryQuest() { return this.isStoryQuest; }
+
+    /**
+     * Amount of time a quest is available to recieve in game before swapping out
+     * In minutes
+     */
+    private Integer existTime;
+        public Integer getExistTime() { return this.existTime; }
 
     /**Required to visit this floor before gaining quest */
     private Integer floorReq;
@@ -62,14 +76,16 @@ public class Quest {
     private String questReq = null;
         public String getQuestReq() { return this.questReq; }
 
-    public Quest(String file, String internalName, MythicConfig mc) {
+    public Quest(String file, String internalName, List<MythicConfig> steps, MythicConfig data) {
         this.file = file;
         this.internalName = internalName;
-        this.config = mc;
+        
+        //Config is main requirement data, stepConfigs is individual steps.
+        this.config = data;
+        this.stepConfigs = steps;
 
         this.questName = config.getString("Name");
-        this.questStepStr = config.getStringList("QuestSteps");
-        this.size = questStepStr.size();
+        this.size = stepConfigs.size();
         
         //Loading requirements
         this.levelReq = config.getInteger("Requirement.Level", 0);
@@ -80,44 +96,44 @@ public class Quest {
         this.swordSkillReq = config.getString("Requirement.SwordSkill");
         this.questReq = config.getString("Requirement.Quest");
 
+        this.isStoryQuest = config.getBoolean("IsStoryQuest", false);
+        this.existTime = config.getInteger("ExistTime", 300);
+
         //Loading Quest Steps
-        try{
-            for(String s : this.questStepStr) {
-                //Fetching quest type, passing original to QuestStep
-                String[] split = (s.split("$Rewards:")[0]).split(" ");
-                QuestType type = QuestType.valueOf(split[0]);
-                
-                switch(type){
+        for(MythicConfig sConfig : this.stepConfigs) {
+            try {
+                QuestType type = QuestType.valueOf(sConfig.getString("Type").toUpperCase());
+                switch(type) {
                     case KILL:
-                        if(!validateStep(new KillQuestStep(type, s))) { return; }
-                    break; case DELIVER:
-                        if(!validateStep(new DeliverQuestStep(type, s))) { return; }
-                    break; case TRAVEL:
-                        if(!validateStep(new TravelQuestStep(type, s))) { return; }
-                    break; case GATHER:
-                        if(!validateStep(new GatherQuestStep(type, s))) { return; }
+                        validateStep(new KillQuestStep(sConfig));
                     break; case ESCORT:
-                        if(!validateStep(new EscortQuestStep(type, s))) { return; }
+                        validateStep(new EscortQuestStep(sConfig));
+                    break; case DELIVER:
+                        validateStep(new DeliverQuestStep(sConfig));
+                    break; case GATHER:
+                        validateStep(new GatherQuestStep(sConfig));
+                    break; case TRAVEL:
+                        validateStep(new TravelQuestStep(sConfig));
                 }
+
+            } catch(IllegalArgumentException ex) {
+                //We are already catching the exception internally
+                return;
             }
-        } catch(IllegalArgumentException ex) {
-            SwordCraftOnline.logInfo("Issue loading QuestStep for: " + questName + " , invalid QuestType.");
-            return;
-        }        
+        }     
     }
 
-    /**@return true if quest uses given type. False otherwise */
-    public boolean containsType(QuestType type) {
-        return this.stepTypes.contains(type);
-    }
-
-    private boolean validateStep(QuestStep qs) {
-        if(qs.isInvalid()) {
-            SwordCraftOnline.logInfo("Invalid quest step in: " + questName);
-            return false;
-        }
+    private void validateStep(QuestStep qs) {
+        if(qs.isInvalid()) { this.isInvalid = true; }
         this.questSteps.add(qs);
-        return true;
+        //If the step is first we ensure it uses npc
+        if(this.questSteps.indexOf(qs) == 0) {
+            if(qs.getGiverName().isEmpty() || qs.getGiverName() == null) {
+                this.isInvalid = true;
+            } else {
+                qs.setUsesGiver(true);
+            }
+        }
     }
 
     /**@return true if player passes requirements for quest */

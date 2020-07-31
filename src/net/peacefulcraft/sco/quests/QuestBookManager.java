@@ -26,7 +26,10 @@ public class QuestBookManager {
     private HashMap<QuestType, ArrayList<ActiveQuest>> quests = new HashMap<>();
         public Map<QuestType, ArrayList<ActiveQuest>> getQuests() { return Collections.unmodifiableMap(quests); }
 
-    /**Players completed quests */
+    /**
+     * Players completed quests 
+     * TODO: Store this in player data
+     */
     private ArrayList<String> completedQuests = new ArrayList<>();
 
     public QuestBookManager(SCOPlayer s) {

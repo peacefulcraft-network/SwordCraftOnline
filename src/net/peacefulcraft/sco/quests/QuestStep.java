@@ -4,8 +4,12 @@ import java.util.List;
 
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
 public abstract class QuestStep {
@@ -13,6 +17,10 @@ public abstract class QuestStep {
     /**Quests type */
     private QuestType type;
         public QuestType getType() { return this.type; }
+
+    /**Steps name */
+    private String name;
+        public String getName() { return this.name; }
 
     /**If this step is loaded improperly */
     private boolean isInvalid = false;
@@ -41,24 +49,68 @@ public abstract class QuestStep {
         public MythicMob getGiver() { return this.giver; }
         public String getGiverName() { return this.giver.getDisplayName(); }
 
-    //TODO: Key location in which NPC can be found. A city, landmark, etc.
+    /**Key location npc can be found */
+    private Region giverRegion;
+        public Region getGiverRegion() { return this.giverRegion; }
 
     /**If NPC has given the quest. I.e. player interacted with quest NPC */
     private Boolean activated = false;
         public Boolean isActivated() { return this.activated; }
         public void setActivated(Boolean b) { this.activated = b; }
 
-    public QuestStep(QuestType type, String str) {
-        this.type = type;
-        //Loading rewards
-        //kill SkeletonKing#3,SkeletonDrone#5 $Rewards:GoldCoin 2, Diamond 3 $Description:
-        String rewardStr = str.split("$Rewards:")[1];
-        if(rewardStr.contains(" $Description:")) {
-            String[] split = rewardStr.split(" $Description:");
-            rewardStr = split[0];
-            this.descriptionRaw = split[1];
+    /**
+     * If step uses an NPC to activate Quest
+     * If false, step is activated on completion of previous step.
+     * Beginning steps cannot be false
+     */
+    private Boolean usesGiver;
+        public Boolean usesGiver() { return this.usesGiver; }
+        public void setUsesGiver(boolean b) { this.usesGiver = b; }
+
+    public QuestStep(MythicConfig mc) {
+        //TODO: Handle this step name in description of item created.
+        this.name = mc.getString("Name");
+        
+        //Fetching quest type
+        try{
+            this.type = QuestType.valueOf(mc.getString("Type").toUpperCase());
+        } catch(IllegalArgumentException ex) {
+            SwordCraftOnline.logInfo("IllegalArguementException loading QuestStep: " + this.name);
+            this.isInvalid = true;
+            return;
         }
-        for(String s : rewardStr.split(",")) {
+
+        String giverName = mc.getString("GiverName", "");
+        giverName = mc.getString("Giver", giverName);
+        if(giverName == null || giverName.isEmpty()) {
+            this.logInfo("No GiverName field in config.");
+            return;
+        }
+        this.giver = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(giverName);
+        if(this.giver == null) {
+            this.logInfo("Invalid GiverName field in config.");
+            return;
+        }
+
+        String regionName = mc.getString("GiverRegion", "");
+        if(regionName == null || regionName.isEmpty()) {
+            this.logInfo("No GiverRegion field in config.");
+            return;
+        }
+        this.giverRegion = RegionManager.getRegion(regionName);
+        if(this.giverRegion == null) {
+            this.logInfo("Invalid GiverRegion field in config.");
+            return;
+        }
+
+        this.usesGiver = mc.getBoolean("UsesGiver", true);
+
+        List<String> rewardsLis = mc.getStringList("Rewards");
+        this.descriptionRaw = mc.getString("Description", "");
+        descriptionRaw = mc.getString("Desc", descriptionRaw);
+
+        //Loading rewards
+        for(String s : rewardsLis) {
             this.rewards.add(new Reward(s));
         }
     }
@@ -67,6 +119,12 @@ public abstract class QuestStep {
     public void updateDescription() {
         //TODO: Update actual item dsecription associated with quest
         this._setDescription();
+    }
+
+    /**Logs info regarding Step loading in console and sets step invalid*/
+    public void logInfo(String info) {
+        SwordCraftOnline.logInfo("Error loading: " + this.getName() + ". " + info);
+        this.setInvalid();
     }
 
     /**Internal method to format step description */

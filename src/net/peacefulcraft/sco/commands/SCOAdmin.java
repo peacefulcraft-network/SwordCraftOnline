@@ -211,7 +211,7 @@ public class SCOAdmin implements CommandExecutor {
 				// Prevents null pointer errors on reloading mobs before droptables.
 				if (args[1].equalsIgnoreCase("reload")) {
 					// Despawns all active mobs
-					SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs();
+					SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs(true);
 					SwordCraftOnline.getPluginInstance().getDropManager().loadDropTables();
 					SwordCraftOnline.getPluginInstance().getMobManager().loadMobs();
 
@@ -256,7 +256,7 @@ public class SCOAdmin implements CommandExecutor {
 
 				// Kills all active instances of mobs
 				if (args[1].equalsIgnoreCase("killall")) {
-					int amount = SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs();
+					int amount = SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs(false);
 					if (sender instanceof Player) {
 						sender.sendMessage(ChatColor.GREEN + "Removed " + amount + " Mythic Mobs!");
 					}

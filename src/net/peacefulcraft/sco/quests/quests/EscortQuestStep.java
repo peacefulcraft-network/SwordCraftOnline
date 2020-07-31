@@ -10,13 +10,20 @@ import org.bukkit.scheduler.BukkitTask;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep;
 
 public class EscortQuestStep extends QuestStep implements Runnable {
 
+    /**NPC we are escorting */
     private MythicMob npc;
+
+    /**Region we have to bring them to */
+    private Region npcRegion;
 
     private ActiveMob npcAm;
 
@@ -24,18 +31,32 @@ public class EscortQuestStep extends QuestStep implements Runnable {
 
     private SCOPlayer s;
 
-    public EscortQuestStep(QuestType type, String str) {
-        super(type, str);
-        String[] split = str.split(" ");
-
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[1]);
-        if (mm == null) {
-            SwordCraftOnline.logInfo("Issue loading EscortQuestStep. Invalid mob target: " + split[1]);
-            this.setInvalid();
+    public EscortQuestStep(MythicConfig mc) {
+        super(mc);
+        
+        String npcName = mc.getString("npc", "");
+        npcName = mc.getString("NPC", npcName);
+        if(npcName == null || npcName.isEmpty()) {
+            this.logInfo("No npc field in config.");
+            return;
+        }
+        this.npc = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(npcName);
+        if (this.npc == null) {
+            this.logInfo("Invalid npc name in config.");
             return;
         }
 
-        // TODO: Load location and compare
+        String regionName = mc.getString("npcRegion", "");
+        regionName = mc.getString("NPCRegion", regionName);
+        if(regionName == null || regionName.isEmpty()) {
+            this.logInfo("No NPCRegion field in config.");
+            return;
+        }
+        this.npcRegion = RegionManager.getRegion(regionName);
+        if(npcRegion == null) {
+            this.logInfo("Invalid NPCRegion field in config.");
+            return;
+        }
 
         this._setDescription();
     }
@@ -43,34 +64,37 @@ public class EscortQuestStep extends QuestStep implements Runnable {
     @Override
     public void _setDescription() {
         String npcName = this.npc.getDisplayName();
+        String startRegion = getGiverRegion().getName();
+        String targetRegion = this.npcRegion.getName();
 
         //If quest is not activated we use find npc description
         if(!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in [] to start quest");
+            this.setDescription("Talk to " + npcName + " in " + startRegion + " to start quest");
             return;
         }
 
         if (this.getDescriptionRaw() == null) {
-            this.setDescription("Help " + npcName + " get to [] safely!");
+            this.setDescription("Help " + npcName + " get to " + targetRegion + " safely!");
         } else {
             try {
-                // TODO: Add location to fields.
-                this.setDescription(String.format(this.getDescriptionRaw(), npcName));
+                this.setDescription(String.format(this.getDescriptionRaw(), npcName, targetRegion));
             } catch (Exception ex) {
-                this.setDescription("Help " + npcName + " get to [] safely!");
+                this.setDescription("Help " + npcName + " get to " + targetRegion + " safely!");
             }
         }
     }
 
     @Override
     public boolean stepPreconditions(Event ev) {
-         if(!(ev instanceof PlayerMoveEvent)) { return false; }
+        if(!(ev instanceof PlayerMoveEvent)) { return false; }
         PlayerMoveEvent e = (PlayerMoveEvent)ev;
 
+        //Is in game
         SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
         if(s == null) { return false; } 
         
-        //TODO: Check location
+        //Regions match
+        if(!s.getRegion().equals(this.npcRegion)) { return false; }
 
         return true;
     }

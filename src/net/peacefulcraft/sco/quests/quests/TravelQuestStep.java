@@ -5,44 +5,51 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.quests.QuestStep;
 
 public class TravelQuestStep extends QuestStep {
 
-    public TravelQuestStep(QuestType type, String str) {
-        super(type, str);
-        String[] split = str.split(" ");
+    private Region targetRegion;
 
-        // TODO: Check and validate location string
+    public TravelQuestStep(MythicConfig mc) {
+        super(mc);
+
+        String regionStr = mc.getString("TargetRegion", "");
+        if(regionStr == null || regionStr.isEmpty()) {
+            this.logInfo("No TargetRegion field in config.");
+            return;
+        } 
+        this.targetRegion = RegionManager.getRegion(regionStr);
+        if(this.targetRegion == null) {
+            this.logInfo("Invalid TargetRegion field in config.");
+            return;
+        }
 
         this._setDescription();
     }
 
     @Override
-    public String getDescription() {
-        // TODO: Location string
-        String ret = "Travel to ";
-        return ret;
-    }
-
-    @Override
     public void _setDescription() {
         String npcName = getGiverName();
+        String startRegion = getGiverRegion().getName();
+        String target = targetRegion.getName();
 
         //If quest is not activated we use find npc description
         if(!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in [] to start quest");
+            this.setDescription("Talk to " + npcName + " in " + startRegion + " to start quest.");
             return;
         }
 
         if (this.getDescriptionRaw() == null) {
-            this.setDescription("Travel to [].");
+            this.setDescription("Travel to " + target + ".");
         } else {
             try {
-                // TODO: Add location string
-                // this.setDescription(String.format(this.getDescriptionRaw()));
+                this.setDescription(String.format(this.getDescriptionRaw(), target));
             } catch (Exception ex) {
-                this.setDescription("Travel to [].");
+                this.setDescription("Travel to " + target + ".");
             }
         }
     }
@@ -57,7 +64,8 @@ public class TravelQuestStep extends QuestStep {
         SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
         if(s == null) { return false; }
 
-        //TODO: Check location
+        //Is player in region
+        if(!s.getRegion().equals(targetRegion)) { return false; }
 
         return true;
     }

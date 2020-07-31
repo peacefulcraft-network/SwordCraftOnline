@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.quests.quests;
 
 import java.util.HashMap;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -11,7 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep;
@@ -30,44 +34,58 @@ public class DeliverQuestStep extends QuestStep {
         return this.amount;
     }
 
+    /**NPC we are delivering to */
     private MythicMob npc;
 
     public MythicMob getNPC() {
         return this.npc;
     }
 
-    public DeliverQuestStep(QuestType type, String str) {
-        super(type, str);
-        String[] split = str.split(" ");
+    /**Location NPC can be found */
+    private Region npcRegion;
 
-        try {
-            this.amount = Integer.valueOf(split[2]);
-            this.deliverable = ItemIdentifier.generate(split[1], this.amount, false);
+    public DeliverQuestStep(MythicConfig mc) {
+        super(mc);
+        
+        this.amount = mc.getInteger("Amount", 0);
 
-            this.npc = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[3]);
-            if (npc == null) {
-                SwordCraftOnline.logInfo("Issue loading DeliverQuestStep. Invalid mob target: " + split[1]);
-                this.setInvalid();
-                return;
-            }
-
-            // TODO: Add location of npc to loading and attribute
-
-            this._setDescription();
-
-        } catch (Exception ex) {
-            this.setInvalid();
+        String item = mc.getString("Item", "");
+        if(item == null || item.isEmpty()) {
+            this.logInfo("No Item field in config.");
             return;
         }
-    }
+        
+        this.deliverable = ItemIdentifier.generate(item, this.amount, false);
+        if(this.deliverable.getType().equals(Material.FIRE)) {
+            this.logInfo("Invalid Item field in config.");
+            return;
+        }
 
-    public String getDescription() {
-        String itemName = this.deliverable.getItemMeta().getDisplayName();
-        String amount = String.valueOf(this.amount);
-        String npcName = this.npc.getDisplayName();
-        // TODO: Get location
-        String ret = "Deliver these " + amount + " " + itemName + " to " + npcName + "!";
-        return ret;
+        String npcName = mc.getString("npc", "");
+        npcName = mc.getString("NPC", npcName);
+        if(npcName == null || npcName.isEmpty()) {
+            this.logInfo("No npc field in config.");
+            return;
+        }
+        this.npc = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(npcName);
+        if(npc == null) {
+            this.logInfo("Invalid npc name in config.");
+            return;
+        }
+
+        String regionName = mc.getString("NPCRegion", "");
+        regionName = mc.getString("npcRegion", regionName);
+        if(regionName == null || regionName.isEmpty()) {
+            this.logInfo("No NPC Region field in config.");
+            return;
+        }
+        this.npcRegion = RegionManager.getRegion(regionName);
+        if(this.npcRegion == null) {
+            this.logInfo("Invalid NPC Region field in config.");
+            return;
+        }
+
+        this._setDescription();
     }
 
     @Override
@@ -75,21 +93,22 @@ public class DeliverQuestStep extends QuestStep {
         String itemName = this.deliverable.getItemMeta().getDisplayName();
         String amount = String.valueOf(this.amount);
         String npcName = this.npc.getDisplayName();
-        // TODO: Get location
+        String giverRegionName = getGiverRegion().getName();
+        String deliverRegionName = this.npcRegion.getName();
 
         //If quest is not activated we use find npc description
         if(!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in [] to start quest");
+            this.setDescription("Talk to " + npcName + " in " + giverRegionName + " to start quest");
             return;
         }
 
         if (this.getDescriptionRaw() == null) {
-            this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + "!");
+            this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + " in " + deliverRegionName + ".");
         } else {
             try {
-                this.setDescription(String.format(this.getDescriptionRaw(), amount, itemName, npcName));
+                this.setDescription(String.format(this.getDescriptionRaw(), amount, itemName, npcName, deliverRegionName));
             } catch (Exception ex) {
-                this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + "!");
+                this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + " in " + deliverRegionName + ".");
             }
         }
     }
@@ -102,6 +121,9 @@ public class DeliverQuestStep extends QuestStep {
         //Is player in the game. Double check.
         SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
         if(s == null) { return false; }
+
+        //Is the player in the region of the npc?
+        if(!s.getRegion().equals(this.npcRegion)) { return false; }
 
         //Is entity an active mob and is it the mythic mob we want
         Entity entity = e.getRightClicked();       
