@@ -135,7 +135,7 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	public void onDisable() {
 		this.getLogger().info("Disabling player inventories...");
-		HashMap<UUID, SCOPlayer> players = gameManager.getPlayers();
+		HashMap<UUID, SCOPlayer> players = GameManager.getPlayers();
 		for(UUID u : players.keySet()) {
 			players.get(u).playerDisconnect();
 		}

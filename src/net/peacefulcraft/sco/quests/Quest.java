@@ -14,8 +14,10 @@ import net.peacefulcraft.sco.quests.quests.TravelQuestStep;
 public class Quest {
     
     private String file;
+        public String getFile() { return this.file; }
 
     private String internalName;
+        public String getInternalName() { return this.internalName; }
 
     private List<MythicConfig> stepConfigs;
 
