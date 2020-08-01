@@ -46,6 +46,14 @@ public class Quest {
         public Boolean isStoryQuest() { return this.isStoryQuest; }
 
     /**
+     * Determines if quest was marked deleted by Cardinal
+     * If true, quest cannot be given but can be loaded and completed.
+     */
+    private Boolean isDeleted;
+        public Boolean isDeleted() { return this.isDeleted; }
+        public void setDeleted(Boolean b) { this.isDeleted = b; }
+
+    /**
      * Amount of time a quest is available to recieve in game before swapping out
      * In minutes
      */
@@ -98,6 +106,7 @@ public class Quest {
 
         this.isStoryQuest = config.getBoolean("IsStoryQuest", false);
         this.existTime = config.getInteger("ExistTime", 300);
+        this.isDeleted = config.getBoolean("IsDeleted", false);
 
         //Loading Quest Steps
         for(MythicConfig sConfig : this.stepConfigs) {

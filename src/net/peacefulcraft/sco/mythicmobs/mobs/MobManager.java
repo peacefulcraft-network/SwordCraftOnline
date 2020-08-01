@@ -110,7 +110,7 @@ public class MobManager {
         }
 
         //Loading in persistent mobs stored in .yml
-        IOLoader<SwordCraftOnline> file = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "PersistentMobConfig.yml");
+        IOLoader<SwordCraftOnline> file = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "PersistentMobConfig.yml", "Mobs");
         FileConfiguration config = file.getCustomConfig();
         for(String internal : mmList.keySet()) {
             List<Map<?,?>> lis = config.getMapList(internal);
@@ -138,7 +138,7 @@ public class MobManager {
      * Safely despawns all mobs, including persistent.
      */
     public void save() {
-        IOLoader<SwordCraftOnline> file = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "PersistentMobConfig.yml");
+        IOLoader<SwordCraftOnline> file = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "PersistentMobConfig.yml", "Mobs");
         FileConfiguration config = file.getCustomConfig();
 
         /**

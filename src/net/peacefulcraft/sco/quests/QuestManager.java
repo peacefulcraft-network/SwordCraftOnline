@@ -1,11 +1,13 @@
 package net.peacefulcraft.sco.quests;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
@@ -123,13 +125,37 @@ public class QuestManager implements Runnable {
     }
 
     /**
-     * Fetches all non-story quests in map
+     * Marks given quest name deleted in system.
+     * This prevents quest from being distributed, but can still be loaded and completed
+     * @param name Name of quest
+     */
+    public void markDeleted(String name) {
+        Quest q = questMap.get(name);
+        if(q == null) { return; }
+        
+        q.setDeleted(true);
+
+        IOLoader<SwordCraftOnline> file = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), q.getFile(), "Quests");
+        FileConfiguration config = file.getCustomConfig();
+
+        config.set("IsDeleted", true);
+
+        try{
+            config.save(file.getFile());
+            SwordCraftOnline.logInfo("[Quest Manager] Successfully saved: " + q.getFile());
+        } catch(IOException ex) {
+            SwordCraftOnline.logInfo("[Quset Manager] Failed to save: " + q.getFile());
+        }
+    }
+
+    /**
+     * Fetches all non-story quests in map that aren't marked deleted
      * @return List of quests
      */
     private ArrayList<Quest> getNonStoryQuests() {
         ArrayList<Quest> ret = new ArrayList<>();
         for(Quest q : questMap.values()) {
-            if(q.isStoryQuest()) { continue; }
+            if(q.isStoryQuest() || q.isDeleted()) { continue; }
             ret.add(q);
         }
         return ret;
