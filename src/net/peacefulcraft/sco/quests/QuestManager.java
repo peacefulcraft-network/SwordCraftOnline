@@ -149,6 +149,20 @@ public class QuestManager implements Runnable {
     }
 
     /**
+     * Iterates over quests and finds quests marked deleted
+     * @return List of quests
+     */
+    public ArrayList<Quest> getDeletedQuests() {
+        ArrayList<Quest> ret = new ArrayList<>();
+        for(Quest q : questMap.values()) {
+            if(q.isDeleted()) {
+                ret.add(q);
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Fetches all non-story quests in map that aren't marked deleted
      * @return List of quests
      */
