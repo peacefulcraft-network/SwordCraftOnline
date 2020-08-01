@@ -28,9 +28,12 @@ public class QuestBookManager {
 
     /**
      * Players completed quests 
-     * TODO: Store this in player data
      */
     private ArrayList<String> completedQuests = new ArrayList<>();
+        public void addCompletedQuest(String name) {
+            if(completedQuests.contains(name)) { return; }
+            completedQuests.add(name);
+        }
 
     public QuestBookManager(SCOPlayer s) {
         this.s = s;
@@ -117,6 +120,42 @@ public class QuestBookManager {
                 }
             }
         }
+    }
+
+    /**
+     * Creates map of player data relative to their quests and completed quests
+     */
+    public void save() {
+        //Map of String,? to store by quest name
+        //Object will be another map of containing necessary information of step
+        //CurrentStep, QuestStep(Step data), etc.
+        
+        Map<String,Object> saveMap = new HashMap<>();
+
+        //Iterating over all registered active quests
+        Map<String, Object> actives = new HashMap<>();
+        for(QuestType type : quests.keySet()) {
+            for(ActiveQuest aq : quests.get(type)) {
+                String name = aq.getName();
+                actives.put(name, aq.getSaveData());
+            }
+        }
+
+        //Saving active quests to map
+        saveMap.put("ActiveQuests", actives);
+        
+        //Saving completed quests to map
+        saveMap.put("CompletedQuests", this.completedQuests);
+    }
+
+    /**
+     * Loads player data from map object
+     */
+    public void load() {
+        //Load map object created from save() somehow
+        //Iterate over ActiveQuests key. Read in CurrentStep, StepData key
+        //Read in CompletedQuests key
+        //TODO: This^
     }
 
     public boolean isQuestRegistered(String name) {

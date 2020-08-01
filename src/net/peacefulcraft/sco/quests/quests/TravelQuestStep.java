@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.quests.quests;
 
+import java.util.Map;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -18,12 +20,12 @@ public class TravelQuestStep extends QuestStep {
         super(mc);
 
         String regionStr = mc.getString("TargetRegion", "");
-        if(regionStr == null || regionStr.isEmpty()) {
+        if (regionStr == null || regionStr.isEmpty()) {
             this.logInfo("No TargetRegion field in config.");
             return;
-        } 
+        }
         this.targetRegion = RegionManager.getRegion(regionStr);
-        if(this.targetRegion == null) {
+        if (this.targetRegion == null) {
             this.logInfo("Invalid TargetRegion field in config.");
             return;
         }
@@ -37,8 +39,8 @@ public class TravelQuestStep extends QuestStep {
         String startRegion = getGiverRegion().getName();
         String target = targetRegion.getName();
 
-        //If quest is not activated we use find npc description
-        if(!this.isActivated()) {
+        // If quest is not activated we use find npc description
+        if (!this.isActivated()) {
             this.setDescription("Talk to " + npcName + " in " + startRegion + " to start quest.");
             return;
         }
@@ -56,16 +58,22 @@ public class TravelQuestStep extends QuestStep {
 
     @Override
     public boolean stepPreconditions(Event ev) {
-        //Is event playermove
-        if(!(ev instanceof PlayerMoveEvent)) { return false; }
-        PlayerMoveEvent e = (PlayerMoveEvent)ev;
+        // Is event playermove
+        if (!(ev instanceof PlayerMoveEvent)) {
+            return false;
+        }
+        PlayerMoveEvent e = (PlayerMoveEvent) ev;
 
-        //Is player in game
+        // Is player in game
         SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
-        if(s == null) { return false; }
+        if (s == null) {
+            return false;
+        }
 
-        //Is player in region
-        if(!s.getRegion().equals(targetRegion)) { return false; }
+        // Is player in region
+        if (!s.getRegion().equals(targetRegion)) {
+            return false;
+        }
 
         return true;
     }
@@ -73,6 +81,13 @@ public class TravelQuestStep extends QuestStep {
     @Override
     public void startupLifeCycle(SCOPlayer s) {
         return;
+    }
+
+    @Override
+    public Map<String, Object> getSaveData() {
+        //No data necessary for player progression
+        //Location checks are done in lifecycle
+        return null;
     }
     
 }

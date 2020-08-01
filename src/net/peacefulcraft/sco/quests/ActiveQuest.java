@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,8 +40,6 @@ public class ActiveQuest {
 
         this.currentStep = 0;
         this.completed = false;
-
-        //TODO: Register listeners to player
     }
 
     public void progressQuest() {
@@ -55,12 +54,18 @@ public class ActiveQuest {
             setStepActivated();
         }
 
+        //If quest is completed
         if(this.currentStep == quest.getSize()) {
+            sendCompletedTitle();
+            
             this.completed = true;
             s.getQuestBookManager().unregisterQuest(quest.getQuestName());
             //TODO: Decide how we handle story quest progression. 
 
-            //TODO: Save quest name under completed quest
+            //Adding quest name to completed quest list
+            s.getQuestBookManager().addCompletedQuest(quest.getQuestName());
+        } else {
+            sendProgressedTitle();
         }
     }
 
@@ -92,6 +97,25 @@ public class ActiveQuest {
             //Progressing step
             this.progressQuest();
         }
+    }
+
+    /**@return Map of relative save data */
+    public Map<String,Object> getSaveData() {
+        Map<String,Object> ret = new HashMap<>();
+
+        ret.put("CurrentStep", Integer.valueOf(currentStep));
+        ret.put("StepData", getQuestStep().getSaveData());
+        return ret;
+    }
+
+    /**Sends player announce title of quest completed */
+    private void sendCompletedTitle() {
+        Announcer.sendTitle(s.getPlayer(), "Quest Completed!", "Completed: \"" + getName() + "\"");
+    }
+
+    /**Sends player announce title of quest step completed */
+    private void sendProgressedTitle() {
+        Announcer.sendTitle(s.getPlayer(), "Quest progression unlocked!", "Progression unlocked in: \"" + getName() + "\"");
     }
 
     /**@return QuestType of current step */

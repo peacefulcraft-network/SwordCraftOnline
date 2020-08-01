@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.quests.quests;
 
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Player;
@@ -19,10 +21,10 @@ import net.peacefulcraft.sco.quests.QuestStep;
 
 public class EscortQuestStep extends QuestStep implements Runnable {
 
-    /**NPC we are escorting */
+    /** NPC we are escorting */
     private MythicMob npc;
 
-    /**Region we have to bring them to */
+    /** Region we have to bring them to */
     private Region npcRegion;
 
     private ActiveMob npcAm;
@@ -33,10 +35,10 @@ public class EscortQuestStep extends QuestStep implements Runnable {
 
     public EscortQuestStep(MythicConfig mc) {
         super(mc);
-        
+
         String npcName = mc.getString("npc", "");
         npcName = mc.getString("NPC", npcName);
-        if(npcName == null || npcName.isEmpty()) {
+        if (npcName == null || npcName.isEmpty()) {
             this.logInfo("No npc field in config.");
             return;
         }
@@ -48,12 +50,12 @@ public class EscortQuestStep extends QuestStep implements Runnable {
 
         String regionName = mc.getString("npcRegion", "");
         regionName = mc.getString("NPCRegion", regionName);
-        if(regionName == null || regionName.isEmpty()) {
+        if (regionName == null || regionName.isEmpty()) {
             this.logInfo("No NPCRegion field in config.");
             return;
         }
         this.npcRegion = RegionManager.getRegion(regionName);
-        if(npcRegion == null) {
+        if (npcRegion == null) {
             this.logInfo("Invalid NPCRegion field in config.");
             return;
         }
@@ -67,8 +69,8 @@ public class EscortQuestStep extends QuestStep implements Runnable {
         String startRegion = getGiverRegion().getName();
         String targetRegion = this.npcRegion.getName();
 
-        //If quest is not activated we use find npc description
-        if(!this.isActivated()) {
+        // If quest is not activated we use find npc description
+        if (!this.isActivated()) {
             this.setDescription("Talk to " + npcName + " in " + startRegion + " to start quest");
             return;
         }
@@ -86,15 +88,21 @@ public class EscortQuestStep extends QuestStep implements Runnable {
 
     @Override
     public boolean stepPreconditions(Event ev) {
-        if(!(ev instanceof PlayerMoveEvent)) { return false; }
-        PlayerMoveEvent e = (PlayerMoveEvent)ev;
+        if (!(ev instanceof PlayerMoveEvent)) {
+            return false;
+        }
+        PlayerMoveEvent e = (PlayerMoveEvent) ev;
 
-        //Is in game
+        // Is in game
         SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
-        if(s == null) { return false; } 
-        
-        //Regions match
-        if(!s.getRegion().equals(this.npcRegion)) { return false; }
+        if (s == null) {
+            return false;
+        }
+
+        // Regions match
+        if (!s.getRegion().equals(this.npcRegion)) {
+            return false;
+        }
 
         return true;
     }
@@ -103,30 +111,40 @@ public class EscortQuestStep extends QuestStep implements Runnable {
     public void startupLifeCycle(SCOPlayer s) {
         Player p = s.getPlayer();
 
-        ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(npc.getDisplayName(), p.getLocation());
-        if(am == null) {
-            SwordCraftOnline.logInfo("Error spawning NPC: " + npc.getDisplayName() + " for escort quest tied to player: " + p.getDisplayName());
+        ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(npc.getDisplayName(),
+                p.getLocation());
+        if (am == null) {
+            SwordCraftOnline.logInfo("Error spawning NPC: " + npc.getDisplayName()
+                    + " for escort quest tied to player: " + p.getDisplayName());
             return;
         }
 
-        //Saving fields for follow task
+        // Saving fields for follow task
         this.npcAm = am;
         this.s = s;
 
-        //Creating follow task that runs every 2 seconds
-        this.followTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 40);
+        // Creating follow task that runs every 2 seconds
+        this.followTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20,
+                40);
     }
 
     @Override
     public void run() {
-        //NPC died
-        if(this.npcAm.isDead()) { 
+        // NPC died
+        if (this.npcAm.isDead()) {
             this.setReset(true);
             this.followTask.cancel();
         }
 
-        Creature mob = (Creature)this.npcAm.getEntity().getBukkitEntity();
+        Creature mob = (Creature) this.npcAm.getEntity().getBukkitEntity();
         mob.setTarget(this.s.getPlayer());
+    }
+
+    @Override
+    public Map<String, Object> getSaveData() {
+        //No data necessary for player progression
+        //Escort quests are done at quest completion or death
+        return null;
     }
     
 }

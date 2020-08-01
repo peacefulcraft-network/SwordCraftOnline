@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.quests;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.event.Event;
 
@@ -134,6 +135,9 @@ public abstract class QuestStep {
 
     /**Any real world effects that need to happen on activation of step */
     public abstract void startupLifeCycle(SCOPlayer s);
+
+    /**@return Map object for relative save data of step */
+    public abstract Map<String,Object> getSaveData();
 
     public enum QuestType {
         KILL, DELIVER, TRAVEL, GATHER, ESCORT;

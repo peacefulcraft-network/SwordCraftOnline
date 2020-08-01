@@ -2,10 +2,8 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.List;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
-import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
 import net.peacefulcraft.sco.quests.quests.DeliverQuestStep;
 import net.peacefulcraft.sco.quests.quests.EscortQuestStep;
