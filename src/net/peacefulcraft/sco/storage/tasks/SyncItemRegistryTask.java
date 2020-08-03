@@ -5,9 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-
-import javax.naming.spi.DirStateFactory.Result;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,8 +24,8 @@ public class SyncItemRegistryTask extends BukkitRunnable {
   public void run() {
     try (
       Connection con = SwordCraftOnline.getHikariPool().getConnection();
-      PreparedStatement stmt_select = con.prepareStatement("SELECT `id` FROM `item` WHERE `name`=? AND `rarity`=?");
-      PreparedStatement stmt_insert = con.prepareStatement("INSERT INTO `item` (name, rarity) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
+      PreparedStatement stmt_select = con.prepareStatement("SELECT `id` FROM `item_registry` WHERE `name`=? AND `rarity`=?");
+      PreparedStatement stmt_insert = con.prepareStatement("INSERT INTO `item_registry` (name, rarity) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
     ) {
       con.setAutoCommit(false);
 
