@@ -55,7 +55,7 @@ public class SyncItemRegistryTask extends BukkitRunnable {
         if (databaseId == 0) {
           SwordCraftOnline.logSevere("Unable to register item " + localItem.getName() + " " + localItem.getTier());
         } else {
-          localItem.setDatabaseId(databaseId);
+          localItem.setDatabaseID(databaseId);
         }
       }
 
