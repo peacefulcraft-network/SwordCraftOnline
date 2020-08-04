@@ -8,13 +8,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.peacefulcraft.sco.storage.StorageTaskCallbackTask;
+import de.tr7zw.nbtapi.NBTItem;
+import net.peacefulcraft.sco.items.CustomDataHolder;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 
 public abstract class InventoryBase{
-	
-	private long inventoryId;
-		public long getInventoryId() { return inventoryId; }
-		public void setInventoryId(long inventoryId) { this.inventoryId = inventoryId; }
 
 	public abstract InventoryType getType();
 		
@@ -27,22 +26,12 @@ public abstract class InventoryBase{
 	}
 
 	/**
-	 * @param long inventoryId: Database ID of the inventory that is to be loaded.
-	 * @param boolean async: Whether the task should be dispatched to an async worker thread or block the current thread.
+	 * @param items An array of item identifiers to populate the inventory
 	 */
-	public InventoryBase(long inventoryId, boolean async) {
-	}
-
-	/**
-	 * @param long inventoryId: Database ID of the inventory that is to be loaded.
-	 * @param boolean async: Whether the task should be dispatched to an async worker thread or block the current thread.
-	 * @param StorageTaskCallbackTask callback: A task to execute after the inventory fetch task. Runs on success or failure.
-	 * @param boolean sychrnoizeCallback: Should the callback be scheduled onto the main server thread, or run on the same thread as the fetch job
-	 */
-	public InventoryBase(long inventoryId, boolean async, StorageTaskCallbackTask callback, boolean sychrnoizeCallback) {
+	public InventoryBase(ItemIdentifier[] items) {
 
 	}
-	
+
 	/**
 	 * Default configuration for inventory
 	 */
@@ -53,11 +42,6 @@ public abstract class InventoryBase{
 	 * accordingly
 	 */
 	public abstract void resizeInventory(int size);
-	
-	/**
-	 * Save the inventory
-	 */
-	public abstract void saveInventory();
 	
 	public void fillRow(int row, int amount, ItemStack item) {
 		for(int i = 8-amount; i<=8; i++) {
@@ -87,5 +71,55 @@ public abstract class InventoryBase{
 			item.setItemMeta(im);
 			return item;
 	}
-	
+
+	/**
+	 * Get an item in the provided inventory slot and return it's item identifier
+	 * @param slot The inventory slot to get the item from
+	 * @return The item's item identifier, or null if slot is empty.
+	 * 				 If the ItemIdentifier is a CustomDataHolder, the custom item data will 
+	 * 				 be parsed into the ItemIdentifier
+	 */
+	public ItemIdentifier getItem(int slot) {
+		ItemStack item = inventory.getItem(slot);
+		if (item.getType() == Material.AIR) {
+			return null;
+		}
+
+		NBTItem nbti = new NBTItem(item);
+		String identifierName = nbti.getString("identifier");
+		ItemTier tier = ItemTier.valueOf(nbti.getString("tier"));
+
+		ItemIdentifier identifier = ItemIdentifier.generateIdentifier(identifierName, tier);
+		if (identifier instanceof CustomDataHolder) {
+			((CustomDataHolder) identifier).parseCustomItemData(item);
+		}
+
+		return identifier;
+	}
+
+	/**
+	 * Returns an array of equal size to the inventory with each item's ItemIdentifier
+	 * in the coresponding slot. Empty slots will have null values. Uses InventoryBase.getItem();
+	 * @return List of mapped ItemIdentifiers from the inventories' contents
+	 */
+	public ItemIdentifier[] generateItemIdentifiers() {
+		ItemIdentifier[] identifiers = new ItemIdentifier[inventory.getSize()];
+		for(int i=0; i<identifiers.length; i++) {
+			identifiers[i] = getItem(i);
+		}
+
+		return identifiers;
+	}
+
+	/**
+	 * @return Array of item quanities for each slot of the inventory
+	 */
+	public int[] getInventoryQuantities() {
+		int[] quanities = new int[inventory.getSize()];
+		for(int i=0; i<quanities.length; i++) {
+			quanities[i] = inventory.getItem(i).getAmount();
+		}
+
+		return quanities;
+	}
 }

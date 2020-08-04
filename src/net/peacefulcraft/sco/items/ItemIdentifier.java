@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -59,14 +61,6 @@ public interface ItemIdentifier {
   public abstract boolean isMovable();
 
   /**
-   * Apply the appropriate NBT flags for this item to the item stack.
-   * 
-   * @param item Item on which flags should be applied.
-   * @return The resulting ItemStack.
-   */
-  public abstract NBTItem applyNBT(NBTItem item);
-
-  /**
    * Check if an item with the give name exists.
    * 
    * @param name Name of the item.
@@ -86,7 +80,7 @@ public interface ItemIdentifier {
    * @param String name of the identiifer
    * @param ItemTier item tier to generate
    */
-  public static ItemIdentifier generatIdentifier(String name, ItemTier tier) {
+  public static ItemIdentifier generateIdentifier(String name, ItemTier tier) {
     try {
       name = name.replaceAll(" ", "");
       Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
@@ -127,15 +121,28 @@ public interface ItemIdentifier {
    * @param amount ItemStack quantity.
    */
   public static ItemStack generateItem(String name, ItemTier tier, int amount) throws RuntimeException {
-    ItemIdentifier itemIdentifier = ItemIdentifier.generatIdentifier(name, tier);
+    ItemIdentifier itemIdentifier = ItemIdentifier.generateIdentifier(name, tier);
     ItemStack item = new ItemStack(itemIdentifier.getMaterial(), amount);
 
     NBTItem nbti = new NBTItem(item);
-    nbti = itemIdentifier.applyNBT(nbti);
     nbti.setBoolean("movable", itemIdentifier.isMovable());
     nbti.setBoolean("droppable", itemIdentifier.isDroppable());
     nbti.setString("identifier", name.replaceAll(" ", ""));
+    nbti.setString("tier", tier.toString());
 
     return nbti.getItem();
+  }
+
+  public static ItemStack generateCustomDataItem(String name, ItemTier tier, int amount, JsonObject data) throws RuntimeException {
+    ItemIdentifier itemIdentifier = ItemIdentifier.generateIdentifier(name, tier);
+    ItemStack item = ItemIdentifier.generateItem(name, tier, amount);
+
+    if (itemIdentifier instanceof CustomDataHolder) {
+      item = ((CustomDataHolder) itemIdentifier).applyCustomItemData(item, data);
+    } else {
+      SwordCraftOnline.logWarning("Attempted to generate item " + name + " " + tier + " with custom data, but " + name + " does not support custom data fields.");
+    }
+
+    return item;
   }
 }

@@ -4,10 +4,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 
-public interface SwordSkillProvider extends ItemIdentifier {
+public interface SwordSkillProvider extends ItemIdentifier, CustomDataHolder {
 
   /**
    * @return Sword Skill Type
