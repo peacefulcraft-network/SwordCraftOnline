@@ -17,16 +17,6 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 public interface ItemIdentifier {
 
   /**
-   * @return The database id for the item identifier
-   */
-  public abstract long getDatabaseID();
-
-  /**
-   * @param long databaseId The global database Id for this item identifier
-   */
-  public abstract void setDatabaseID(long databaseId);
-
-  /**
    * @return The Minecraft Material for the item.
    */
   public abstract Material getMaterial();

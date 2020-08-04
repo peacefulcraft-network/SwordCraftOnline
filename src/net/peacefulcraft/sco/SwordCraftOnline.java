@@ -21,7 +21,6 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.items.CriticalStrikeItem;
 import net.peacefulcraft.sco.items.GoldCoinItem;
-import net.peacefulcraft.sco.items.ItemRegistry;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.SerratedBladeItem;
 import net.peacefulcraft.sco.items.TeleportCrystalItem;
@@ -58,7 +57,7 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	public static GameManager gameManager;
 		public static GameManager getGameManager() {return gameManager;}
-		
+
 	public static PartyManager partyManager;
 		public static PartyManager getPartyManager() {return partyManager;}
 
@@ -94,15 +93,6 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.loadEventListeners();
 		
 		hikari = new HikariManager(cfg);
-		
-		ItemRegistry itemRegistry = new ItemRegistry();
-		this.registerItems(itemRegistry);
-		itemRegistry.synchronizeRegistry();
-		if (!itemRegistry.isInitialized()) {
-			logSevere("Disabling plugin due to item registry sychrnoization failure");
-			this.getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
 
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
