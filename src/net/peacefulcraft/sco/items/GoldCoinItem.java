@@ -4,15 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
-
 public class GoldCoinItem implements ItemIdentifier {
-
-  private static long databaseId;
-    @Override
-    public long getDatabaseID() { return databaseId; }
-    @Override
-    public void setDatabaseID(long databaseId) { GoldCoinItem.databaseId = databaseId; }
 
   @Override
   public Material getMaterial() {
@@ -39,11 +31,6 @@ public class GoldCoinItem implements ItemIdentifier {
   @Override
   public boolean isMovable() {
     return true;
-  }
-
-  @Override
-  public NBTItem applyNBT(NBTItem item) {
-    return item;
   }
 
   @Override

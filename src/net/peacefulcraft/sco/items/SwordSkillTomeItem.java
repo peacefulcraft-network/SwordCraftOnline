@@ -4,16 +4,9 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.md_5.bungee.api.ChatColor;
 
 public class SwordSkillTomeItem implements ItemIdentifier {
-
-  private static long databaseId;
-    @Override
-    public long getDatabaseID() { return databaseId; }
-    @Override
-    public void setDatabaseID(long databaseId) { SwordSkillTomeItem.databaseId = databaseId; }
 
   @Override
   public Material getMaterial() {
@@ -40,11 +33,6 @@ public class SwordSkillTomeItem implements ItemIdentifier {
   @Override
   public boolean isMovable() {
     return false;
-  }
-
-  @Override
-  public NBTItem applyNBT(NBTItem item) {
-    return item;
   }
 
   @Override

@@ -4,16 +4,9 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.md_5.bungee.api.ChatColor;
 
 public class TeleportCrystalItem implements ItemIdentifier {
-
-  private static long databaseId;
-    @Override
-    public long getDatabaseID() { return databaseId; }
-    @Override
-    public void setDatabaseID(long databaseId) { TeleportCrystalItem.databaseId = databaseId; }
 
   @Override
   public Material getMaterial() {
@@ -40,11 +33,6 @@ public class TeleportCrystalItem implements ItemIdentifier {
   @Override
   public boolean isMovable() {
     return true;
-  }
-
-  @Override
-  public NBTItem applyNBT(NBTItem item) {
-    return item;
   }
 
   @Override

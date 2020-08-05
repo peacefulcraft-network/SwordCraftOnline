@@ -2,9 +2,12 @@ package net.peacefulcraft.sco.items;
 
 import java.util.ArrayList;
 
-import org.bukkit.Material;
+import com.google.gson.JsonObject;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
+import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.SerratedBladeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
@@ -17,36 +20,34 @@ import net.peacefulcraft.sco.swordskills.SwordSkillType;
  */
 public class SerratedBladeItem implements SwordSkillProvider {
 
-  private static long databaseId;
-    @Override
-    public long getDatabaseID() { return databaseId; }
-    @Override
-    public void setDatabaseID(long databaseId) { SerratedBladeItem.databaseId = databaseId; }
-
   private int increase;
 
   private ItemTier tier;
-    @Override
-    public ItemTier[] getAllowedTiers() {
-      return new ItemTier[] {
+
+  @Override
+  public ItemTier[] getAllowedTiers() {
+    return new ItemTier[] {
         ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE,
         ItemTier.LEGENDARY, ItemTier.ETHEREAL, ItemTier.GODLIKE
       };
-    }
+  }
 
-    @Override
-    public ItemTier getTier() {
-      return tier;
-    }
+  @Override
+  public ItemTier getTier() {
+    return tier;
+  }
 
   private int level;
-    @Override
-    public int[] getAllowedLevels() {
-      return new int[] { 1 };
-    }
 
-    @Override
-    public int getLevel() { return level; }
+  @Override
+  public int[] getAllowedLevels() {
+    return new int[] { 1 };
+  }
+
+  @Override
+  public int getLevel() {
+    return level;
+  }
 
   public SerratedBladeItem(ItemTier tier, int level) {
     this.tier = tier;
@@ -107,12 +108,6 @@ public class SerratedBladeItem implements SwordSkillProvider {
   }
 
   @Override
-  public NBTItem applyNBT(NBTItem item) {
-    item.setString("config_string", getName().replaceAll(" ", "") + "-" + getTier().toString().toUpperCase());
-    return item;
-  }
-
-  @Override
   public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
     SCOPlayer sp = caster.getSwordSkillManager().getSCOPlayer();
     sp.setCriticalChance(sp.getCriticalChance() + this.increase);
@@ -130,5 +125,30 @@ public class SerratedBladeItem implements SwordSkillProvider {
       default:
         return new SerratedBladeSkill(caster, this, 1);
     }
+  }
+
+  @Override
+  public JsonObject getCustomData() {
+    JsonObject json = new JsonObject();
+    json.addProperty("level", this.level);
+    return json;
+  }
+
+  @Override
+  public void setCustomData(JsonObject data) {
+    this.level = data.get("level").getAsInt();
+  }
+
+  @Override
+  public void parseCustomItemData(ItemStack item) {
+    NBTItem nbti = new NBTItem(item);
+    this.level = nbti.getInteger("level");
+  }
+
+  @Override
+  public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
+    NBTItem nbti = new NBTItem(item);
+    nbti.setInteger("level", data.get("level").getAsInt());
+    return nbti.getItem();
   }
 }
