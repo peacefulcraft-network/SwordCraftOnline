@@ -22,32 +22,38 @@ public class SerratedBladeItem implements SwordSkillProvider {
 
   private int increase;
 
+  private int quantity;
+    @Override
+    public int getQuantity() {
+      return quantity;
+    }
+    @Override
+    public void setQuantity(int quantity) {
+      this.quantity = quantity;
+    }
+
   private ItemTier tier;
-
-  @Override
-  public ItemTier[] getAllowedTiers() {
-    return new ItemTier[] {
-        ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE,
-        ItemTier.LEGENDARY, ItemTier.ETHEREAL, ItemTier.GODLIKE
-      };
-  }
-
-  @Override
-  public ItemTier getTier() {
-    return tier;
-  }
+    @Override
+    public ItemTier[] getAllowedTiers() {
+      return new ItemTier[] {
+          ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE,
+          ItemTier.LEGENDARY, ItemTier.ETHEREAL, ItemTier.GODLIKE
+        };
+    }
+    @Override
+    public ItemTier getTier() {
+      return tier;
+    }
 
   private int level;
-
-  @Override
-  public int[] getAllowedLevels() {
-    return new int[] { 1 };
-  }
-
-  @Override
-  public int getLevel() {
-    return level;
-  }
+    @Override
+    public int[] getAllowedLevels() {
+      return new int[] { 1 };
+    }
+    @Override
+    public int getLevel() {
+      return level;
+    }
 
   public SerratedBladeItem(ItemTier tier, int level) {
     this.tier = tier;

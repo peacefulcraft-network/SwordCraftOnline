@@ -34,9 +34,9 @@ public class SwordSkillInventory extends InventoryBase implements SaveableInvent
 	@Override
 	public void saveInventory() {
 		(new InventorySaveTask(
-			inventoryId, 0, InventoryType.SWORD_SKILL,
-			this.generateItemIdentifiers(), this.getInventoryQuantities(),
-			null)
+				inventoryId, 0, InventoryType.SWORD_SKILL,
+				this.generateItemIdentifiers(), null
+			)
 		).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
 	}
 }

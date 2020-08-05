@@ -46,6 +46,16 @@ public interface ItemIdentifier {
   public abstract ArrayList<String> getLore();
 
   /**
+   * @return The number of items this identifier represents
+   */
+  public abstract int getQuantity();
+  
+  /**
+   * @param quantity number of items this identifier represents
+   */
+  public abstract void setQuantity(int quantity);
+
+  /**
    * Indicates whether a player can drop this item.
    * 
    * @return True if this item can be dropped. False if this item can not be
@@ -77,16 +87,17 @@ public interface ItemIdentifier {
 
   /**
    * Generates the requested ItemIdenfiier.
-   * @param String name of the identiifer
-   * @param ItemTier item tier to generate
+   * @param name of the identiifer
+   * @param item tier to generate
+   * @param quantity Number of items this identifier represents
    */
-  public static ItemIdentifier generateIdentifier(String name, ItemTier tier) {
+  public static ItemIdentifier generateIdentifier(String name, ItemTier tier, int quantity) {
     try {
       name = name.replaceAll(" ", "");
       Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
       Constructor<?> constructor = clas.getConstructor();
     
-      ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier));
+      ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
 
       // Check that the requested item tier is allowed
       for (ItemTier allowedTier : identiifer.getAllowedTiers()) {
@@ -121,27 +132,29 @@ public interface ItemIdentifier {
    * @param amount ItemStack quantity.
    */
   public static ItemStack generateItem(String name, ItemTier tier, int amount) throws RuntimeException {
+    return ItemIdentifier.generateItem(name, tier, amount, null);
+  }
+
+    /**
+   * Generates the requested item as an ItemStack
+   * @param name The name/class of the item.
+   * @param tier The tier of the desired item
+   * @param amount ItemStack quantity.
+   * @param data Json object with custom NBT flags
+   */
+  public static ItemStack generateItem(String name, ItemTier tier, int amount, JsonObject data) throws RuntimeException {
     ItemIdentifier itemIdentifier = ItemIdentifier.generateIdentifier(name, tier);
     ItemStack item = new ItemStack(itemIdentifier.getMaterial(), amount);
+
+    if (data != null && itemIdentifier instanceof CustomDataHolder) {
+      item = ((CustomDataHolder) itemIdentifier).applyCustomItemData(item, data);
+    }
 
     NBTItem nbti = new NBTItem(item);
     nbti.setBoolean("movable", itemIdentifier.isMovable());
     nbti.setBoolean("droppable", itemIdentifier.isDroppable());
     nbti.setString("identifier", name.replaceAll(" ", ""));
     nbti.setString("tier", tier.toString());
-
-    return nbti.getItem();
-  }
-
-  public static ItemStack generateCustomDataItem(String name, ItemTier tier, int amount, JsonObject data) throws RuntimeException {
-    ItemIdentifier itemIdentifier = ItemIdentifier.generateIdentifier(name, tier);
-    ItemStack item = ItemIdentifier.generateItem(name, tier, amount);
-
-    if (itemIdentifier instanceof CustomDataHolder) {
-      item = ((CustomDataHolder) itemIdentifier).applyCustomItemData(item, data);
-    } else {
-      SwordCraftOnline.logWarning("Attempted to generate item " + name + " " + tier + " with custom data, but " + name + " does not support custom data fields.");
-    }
 
     return item;
   }

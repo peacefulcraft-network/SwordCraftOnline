@@ -6,6 +6,21 @@ import org.bukkit.Material;
 
 public class GoldCoinItem implements ItemIdentifier {
 
+  private int quantity;
+    @Override
+    public int getQuantity() {
+      return quantity;
+    }
+    @Override
+    public void setQuantity(int quantity) {
+      this.quantity = quantity;
+    }
+
+  public GoldCoinItem(ItemTier tier, int quantity) {
+    // Tier is static so it is just there for static constructor invocation in ItemIdentifier
+    this.quantity = quantity;
+  }
+
   @Override
   public Material getMaterial() {
     return Material.GOLD_NUGGET;

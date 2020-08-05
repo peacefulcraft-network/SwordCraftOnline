@@ -89,7 +89,7 @@ public abstract class InventoryBase{
 		String identifierName = nbti.getString("identifier");
 		ItemTier tier = ItemTier.valueOf(nbti.getString("tier"));
 
-		ItemIdentifier identifier = ItemIdentifier.generateIdentifier(identifierName, tier);
+		ItemIdentifier identifier = ItemIdentifier.generateIdentifier(identifierName, tier, item.getAmount());
 		if (identifier instanceof CustomDataHolder) {
 			((CustomDataHolder) identifier).parseCustomItemData(item);
 		}
@@ -109,17 +109,5 @@ public abstract class InventoryBase{
 		}
 
 		return identifiers;
-	}
-
-	/**
-	 * @return Array of item quanities for each slot of the inventory
-	 */
-	public int[] getInventoryQuantities() {
-		int[] quanities = new int[inventory.getSize()];
-		for(int i=0; i<quanities.length; i++) {
-			quanities[i] = inventory.getItem(i).getAmount();
-		}
-
-		return quanities;
 	}
 }

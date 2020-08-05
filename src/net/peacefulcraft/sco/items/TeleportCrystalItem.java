@@ -7,7 +7,21 @@ import org.bukkit.Material;
 import net.md_5.bungee.api.ChatColor;
 
 public class TeleportCrystalItem implements ItemIdentifier {
+  private int quantity;
+    @Override
+    public int getQuantity() {
+      return quantity;
+    }
+    @Override
+    public void setQuantity(int quantity) {
+      this.quantity = quantity;
+    }
 
+  public TeleportCrystalItem(ItemTier tier, int quantity) {
+    // Tier is static so it is just there for static constructor invocation in ItemIdentifier
+    this.quantity = quantity;
+  }
+  
   @Override
   public Material getMaterial() {
     return Material.DIAMOND;

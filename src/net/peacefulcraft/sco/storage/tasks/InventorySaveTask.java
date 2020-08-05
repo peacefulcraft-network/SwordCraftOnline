@@ -20,7 +20,6 @@ public class InventorySaveTask extends BukkitRunnable {
   private long ownerId;
   private InventoryType type;
   private ItemIdentifier[] items;
-  private int[] itemQuantities;
   private StorageTaskCallbackTask callback;
 
   /**
@@ -30,12 +29,11 @@ public class InventorySaveTask extends BukkitRunnable {
    * @param itemQuantities Array with item slot quantities with indexes matching those of items[] param
    * @param callback The storage task to execute after the task completes
    */
-  public InventorySaveTask(long inventoryId, long ownerId, InventoryType type, ItemIdentifier[] items, int[] itemQuantities, StorageTaskCallbackTask callback) {
+  public InventorySaveTask(long inventoryId, long ownerId, InventoryType type, ItemIdentifier[] items, StorageTaskCallbackTask callback) {
     this.inventoryId = inventoryId;
     this.ownerId = ownerId;
     this.type = type;
     this.items = items;
-    this.itemQuantities = itemQuantities;
     this.callback = callback;
   }
 
@@ -88,7 +86,7 @@ public class InventorySaveTask extends BukkitRunnable {
           stmt_insert_item.setInt(2, i);
           stmt_insert_item.setString(3, items[i].getClass().getSimpleName());
           stmt_insert_item.setString(4, items[i].getTier().toString().toUpperCase());
-          stmt_insert_item.setInt(5, itemQuantities[i]);
+          stmt_insert_item.setInt(5, items[i].getQuantity());
           if (items[i] instanceof CustomDataHolder) {
             stmt_insert_item.setString(6, ((CustomDataHolder) items[i]).getCustomData().toString());
           } else {
