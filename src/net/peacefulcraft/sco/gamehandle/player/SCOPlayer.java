@@ -153,6 +153,11 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		public DisplayType getDisplayType() { return this.displayType; }
 		public void setDisplayType(DisplayType t) { this.displayType = t; }
 
+	/**Determines if player is in duel or not */
+	private Boolean isInDuel = false;
+		public Boolean isInDuel() { return this.isInDuel; }
+		public void setInDuel(Boolean b) { this.isInDuel = b; }
+
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
 		playerKills = 0;
