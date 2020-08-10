@@ -8,6 +8,8 @@ public class Duel {
 
     private SCOPlayer challenged;
 
+    private int moneyWager = 0;
+
     /**
      * Create base duel with two players opposing
      * @param s1
@@ -18,8 +20,16 @@ public class Duel {
         this.challenged = challenged;
 
         //Marking both players in duel
-        challenger.setInDuel(true);
-        challenged.setInDuel(true);
+        challenger.setDuel(this);
+        challenged.setDuel(this);
+    }
+
+    public void setWager(int money) {
+        this.moneyWager = money;
+    }
+
+    public int getWager() {
+        return this.moneyWager;
     }
 
 }
