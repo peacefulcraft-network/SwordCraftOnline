@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
@@ -17,7 +18,7 @@ public class RegionDamageListener implements Listener {
         Entity vic = ev.getEntity();
         Entity damager = ev.getDamager();
 
-        //If both entities are players
+        //If victim is player
         if(!(vic instanceof Player)) { return; }
         if(!(damager instanceof Player)) { return; }
 
@@ -32,6 +33,26 @@ public class RegionDamageListener implements Listener {
         //If victim is in region that prevents PVP
         if(r1 != null && r1.doesPreventPVP()) {
             ev.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void deathCancel(EntityDamageEvent e) {
+        Entity vic = e.getEntity();
+
+        //Is entity player
+        if(!(vic instanceof Player)) { return; }
+        Player p = (Player) vic;
+
+        //Is player in the game
+        SCOPlayer s = GameManager.findSCOPlayer(p);
+        if(s == null) { return; }
+        if(s.getRegion() == null) { return; }
+
+        if(p.getHealth() - e.getFinalDamage() <= 0) {
+            if(s.getRegion().doesPreventPlayerDeath()) {
+                e.setCancelled(true);
+            }
         }
     }
 }

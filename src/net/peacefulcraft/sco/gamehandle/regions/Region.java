@@ -44,6 +44,9 @@ public class Region {
     private Boolean preventSwordSkills;
         public Boolean doesPreventSwordSkills() { return this.preventSwordSkills; }
 
+    private Boolean preventPlayerDeath;
+        public Boolean doesPreventPlayerDeath() { return this.preventPlayerDeath; }
+
     public Region(String file, String internalName, MythicConfig mc) {
         this.file = file;
         this.internalName = internalName;
@@ -65,6 +68,7 @@ public class Region {
         this.preventHostileSpawn = config.getBoolean("PreventHostileSpawn", false);
         this.preventPassiveSpawn = config.getBoolean("PreventPassiveSpawn", false);
         this.preventSwordSkills = config.getBoolean("PreventSwordSkills", false);
+        this.preventPlayerDeath = config.getBoolean("PreventPlayerDeath", false);
     }
 
     /**
