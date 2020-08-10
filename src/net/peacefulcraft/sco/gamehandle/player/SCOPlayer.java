@@ -10,6 +10,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
@@ -153,6 +154,11 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		public DisplayType getDisplayType() { return this.displayType; }
 		public void setDisplayType(DisplayType t) { this.displayType = t; }
 
+	/**Determines if player is in duel or not */
+	private Duel duel = null;
+		public void setDuel(Duel d) { this.duel = d; }
+		public Duel getDuel() { return this.duel; }
+
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
 		playerKills = 0;
@@ -169,6 +175,11 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 
 		//TODO: Remove this and replace with loading the wallet/bank from data
 		this.wallet = 1000;
+	}
+
+	public Boolean isInDuel() {
+		if(this.duel != null) { return true; }
+		return false;
 	}
 
 	/**True if player can perform left click */

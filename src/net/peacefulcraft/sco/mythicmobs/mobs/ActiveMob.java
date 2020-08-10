@@ -270,6 +270,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
             this.bossBar.get().removeAll();
             this.bossBar = Optional.empty();
         }
+        SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(this.uuid);
     }
 
     public double getHealth() {
@@ -308,6 +309,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         if(!this.dead) {
             if(this.type.despawns() && !this.type.isPersistent()) {
                 this.dead = true;
+                this.getLivingEntity().setHealth(0);
                 unregister();
             } else {
                 SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().remove(this.uuid);
@@ -315,6 +317,9 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         } 
     }
 
+    /**
+     * Unregisters mob and kills it
+     */
     public void setDespawned() {
         if(!this.dead) {
             this.dead = true;

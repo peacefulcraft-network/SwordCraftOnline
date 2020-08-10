@@ -29,6 +29,9 @@ public class ActiveSpawner {
     private Location loc;
         public Location getLocation() { return new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()); }
 
+    private Boolean locked = false;
+        public void setLocked(Boolean b) { this.locked = b; }
+
     public ActiveSpawner(Spawner s, int level, Location loc) {
         this.s = s;
         this.level = level;
@@ -66,6 +69,9 @@ public class ActiveSpawner {
 
     /**Called when spawner is triggered to spawn */
     public void trigger() {
+        //Checking if spawner is locked
+        if(locked) { return; }
+
         /**Checking spawners cooldown */
         int offset = 0;
         if(this.level > 1) { offset = this.level * 10; }
