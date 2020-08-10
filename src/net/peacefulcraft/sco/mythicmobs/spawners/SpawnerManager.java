@@ -107,7 +107,7 @@ public class SpawnerManager implements Runnable {
                         Double.parseDouble(String.valueOf(m.get("y"))),
                         Double.parseDouble(String.valueOf(m.get("z"))));
                     
-                    int level = (int) m.get("level");
+                    int level = Integer.valueOf((String)m.get("level"));
                     ActiveSpawner as = setSpawner(name, loc, level, silent);
                     if(as == null) {
                         SwordCraftOnline.logInfo("[Spawner Manager] Error loading: " + name + " for invalid Active Spawner parameter.");
