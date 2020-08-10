@@ -30,6 +30,7 @@ public class SCOPlayerDeathListener implements Listener {
             if(s.isInDuel()) {
                 //Triggering players duel lifecycle
                 Duel d = s.getDuel();
+                d.setLoser(s);
                 d.deleteLifeCycle();
 
                 e.setCancelled(true);
