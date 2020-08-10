@@ -102,6 +102,17 @@ public abstract class Structure {
         this.cleanupLis.add(p);
     }
 
+    /**Determines if structure calls cleanup outside of construct */
+    private boolean manualCleanup = false;
+
+    public boolean isManualCleanup() {
+        return this.manualCleanup;
+    }
+
+    public void setManualCleanup(Boolean b) {
+        this.manualCleanup = b;
+    }
+
     /** Time in seconds before structure is created after start */
     private int delay = 0;
 
@@ -302,6 +313,9 @@ public abstract class Structure {
                 SwordCraftOnline.logInfo("[Structure] Error occured while attempted to load endEffects.");
             }
         }
+
+        //If cleanup is called manually
+        if(this.manualCleanup) { return; }
         cleanup();
     }
 

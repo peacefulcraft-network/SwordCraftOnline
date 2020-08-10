@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.gamehandle.announcer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public abstract class Announcer {
     public static void messageGroup(Collection<SCOPlayer> l, String message) {
         for(SCOPlayer s : l) {
             messagePlayer(s, message);
+        }
+    }
+
+    public static void messageGroup(List<Player> lis, String message) {
+        for(Player p : lis) {
+            messagePlayer(p, message);
         }
     }
 
@@ -103,5 +110,47 @@ public abstract class Announcer {
             return;
         }
         messageGroup(d.getPlayers(), message);
+    }
+
+    public static void sendCountdown(Player p, int seconds, String preRunMessage, String postRunMessage) {
+        Announcer.messagePlayer(p,preRunMessage);
+        (new CountdownTimer(seconds, p, postRunMessage)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
+    }
+
+    public static void sendCountdown(List<Player> lis, int seconds, String preRunMessage, String postRunMessage){
+        Announcer.messageGroup(lis, preRunMessage);
+        (new CountdownTimer(seconds, lis, postRunMessage)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
+    }
+
+    private static class CountdownTimer extends BukkitRunnable {
+        private int seconds;
+        private List<Player> lis;
+        private String countdownMessage;
+
+        public CountdownTimer(int seconds, Player p, String postMessage) {
+            this.seconds = seconds;
+            lis = new ArrayList<>();
+            lis.add(p);
+            this.countdownMessage = postMessage;
+        }
+
+        public CountdownTimer(int seconds, List<Player> lis, String postMessage) {
+            this.seconds = seconds;
+            this.lis = lis;
+            this.countdownMessage = postMessage;
+        }
+
+        @Override
+        public void run() {
+            if(seconds < 1) {
+                Announcer.messageGroup(lis, countdownMessage);
+                this.cancel();
+                return;
+            }
+            String message = String.valueOf(seconds) + "...";
+            Announcer.messageGroup(lis, message);
+            seconds--;
+        }
+        
     }
 }

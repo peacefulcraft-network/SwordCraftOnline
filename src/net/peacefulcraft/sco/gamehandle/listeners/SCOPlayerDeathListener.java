@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 
 /**
@@ -27,6 +28,10 @@ public class SCOPlayerDeathListener implements Listener {
         //If player died
         if(p.getHealth() - e.getFinalDamage() <= 0) {
             if(s.isInDuel()) {
+                //Triggering players duel lifecycle
+                Duel d = s.getDuel();
+                d.deleteLifeCycle();
+
                 e.setCancelled(true);
             }
         }
