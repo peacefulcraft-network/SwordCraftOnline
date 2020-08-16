@@ -42,7 +42,7 @@ public class PlayerRegistryJoinGameSyncTask {
 			PreparedStatement stmt_select = con.prepareStatement(
 				"SELECT `id` FROM `player` WHERE `uuid`=?"
 			);
-			stmt_select.setString(1, this.uuid.toString().replaceAll("-", "");
+			stmt_select.setString(1, this.uuid.toString().replaceAll("-", ""));
 			ResultSet res = stmt_select.executeQuery();
 			
 			if (res.next()) {

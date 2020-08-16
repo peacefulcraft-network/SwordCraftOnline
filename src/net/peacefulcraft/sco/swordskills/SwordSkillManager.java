@@ -8,7 +8,7 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
 public class SwordSkillManager
@@ -139,9 +139,10 @@ public class SwordSkillManager
 	 */
 	public void syncSkillInventory(SwordSkillInventory inv) {
 		unregisterAllSkills();
-		for(SkillIdentifier identifier : inv.generateSkillIdentifiers()) {
-			identifier.getProvider().registerSkill(s);
+		for(ItemIdentifier identifier : inv.generateItemIdentifiers()) {
+			if (identifier instanceof SwordSkillProvider) {
+				((SwordSkillProvider) identifier).registerSwordSkill(s);
+			}
 		}
 	}
-
 }

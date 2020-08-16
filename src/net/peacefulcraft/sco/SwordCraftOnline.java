@@ -19,11 +19,6 @@ import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
-import net.peacefulcraft.sco.items.CriticalStrikeItem;
-import net.peacefulcraft.sco.items.GoldCoinItem;
-import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.SerratedBladeItem;
-import net.peacefulcraft.sco.items.TeleportCrystalItem;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
@@ -111,7 +106,7 @@ public class SwordCraftOnline extends JavaPlugin{
 	
 	public void onDisable() {
 		this.getLogger().info("Disabling player inventories...");
-		HashMap<UUID, SCOPlayer> players = gameManager.getPlayers();
+		HashMap<UUID, SCOPlayer> players = GameManager.getPlayers();
 		for(UUID u : players.keySet()) {
 			players.get(u).playerDisconnect();
 		}
@@ -166,13 +161,6 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new AbilityPlayerDeathListener(), this);
 		getServer().getPluginManager().registerEvents(new AbilityPlayerMoveListener(),this);
 		getServer().getPluginManager().registerEvents(new AbilityPlayerRespawnListener(), this);
-	}
-	
-	public void registerItems(ItemRegistry itemRegistry) {
-		itemRegistry.registerItemIdentifier(new CriticalStrikeItem(ItemTier.COMMON, 1));
-		itemRegistry.registerItemIdentifier(new GoldCoinItem());
-		itemRegistry.registerItemIdentifier(new SerratedBladeItem(ItemTier.COMMON, 1));
-		itemRegistry.registerItemIdentifier(new TeleportCrystalItem());
 	}
 
 	public static void logDebug(String debug) {

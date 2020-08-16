@@ -15,6 +15,7 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
@@ -24,7 +25,6 @@ import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
-import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
@@ -53,7 +53,6 @@ public class SCOAdmin implements CommandExecutor {
 				// TODO: ITEM VALIDATION
 				//if(!Item.itemExists(args[1])) { return false; }
 
-				// TODO: MAKE UTIL ITEMS SKILLPROVIDERS WITH NO EQUIP ABILITY
 				if(args.length == 2) {
 					//p.getInventory().addItem(Item.giveItem(args[1], null));
 					return true;
@@ -61,7 +60,7 @@ public class SCOAdmin implements CommandExecutor {
 				if(args.length == 3) {
 					if(!Validator.teirExists(args[2])) {return false; }
 
-					p.getInventory().addItem(Generator.generateItem(args[1], 1, ItemTier.valueOf(args[2])));
+					p.getInventory().addItem(ItemIdentifier.generateItem(args[1], ItemTier.valueOf(args[2]), 1));
 					return true;
 				}
 				return false;

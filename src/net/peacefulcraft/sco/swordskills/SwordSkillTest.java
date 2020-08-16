@@ -11,7 +11,7 @@ import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
  */
 public class SwordSkillTest extends SwordSkill {
 
-    public SwordSkillTest(SwordSkillCaster c, SkillProvider provider) {
+    public SwordSkillTest(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.useModule(new TimedCooldown(5000L));

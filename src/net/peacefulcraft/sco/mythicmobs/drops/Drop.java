@@ -8,8 +8,6 @@ import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.SkillIdentifier;
-import net.peacefulcraft.sco.swordskills.utilities.Generator;
 
 public class Drop implements Cloneable {
     private String name;
@@ -61,13 +59,13 @@ public class Drop implements Cloneable {
             if(split[0].contains("-")) {
                 //Checking if sword skill
                 String[] split2 = split[0].split("-");
-                if(SkillIdentifier.itemExists(split2[0])) {
+                if(ItemIdentifier.itemExists(split2[0])) {
                     this.ssInfo = split2;
-                    this.item = Generator.generateItem(this.ssInfo[0], Integer.valueOf(this.ssInfo[1]), ItemTier.valueOf(this.ssInfo[2]));
+                    this.item = ItemIdentifier.generateItem(this.ssInfo[0], ItemTier.valueOf(this.ssInfo[2]), Integer.valueOf(this.ssInfo[1]));
                 }
             } else if(ItemIdentifier.itemExists(split[0])) {
                 //Checking if custom item
-                this.item = ItemIdentifier.generate(split[0]);
+                this.item = ItemIdentifier.generateItem(split[0], ItemTier.valueOf(this.ssInfo[2]), Integer.valueOf(this.ssInfo[1]));
             } else {
                 //Not custom or skill. Make new item stack
                 try {

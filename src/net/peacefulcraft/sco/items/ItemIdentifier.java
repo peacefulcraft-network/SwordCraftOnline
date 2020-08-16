@@ -143,7 +143,7 @@ public interface ItemIdentifier {
    * @param data Json object with custom NBT flags
    */
   public static ItemStack generateItem(String name, ItemTier tier, int amount, JsonObject data) throws RuntimeException {
-    ItemIdentifier itemIdentifier = ItemIdentifier.generateIdentifier(name, tier);
+    ItemIdentifier itemIdentifier = ItemIdentifier.generateIdentifier(name, tier, amount);
     ItemStack item = new ItemStack(itemIdentifier.getMaterial(), amount);
 
     if (data != null && itemIdentifier instanceof CustomDataHolder) {
