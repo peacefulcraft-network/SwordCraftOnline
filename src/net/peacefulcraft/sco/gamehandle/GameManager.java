@@ -12,11 +12,16 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
+import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.inventories.PersistentPlayerInventory;
+import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
+import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
+import net.peacefulcraft.sco.storage.tasks.InventoryRegistryLookupTask;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
@@ -29,12 +34,32 @@ public class GameManager {
 		players = new HashMap<UUID, SCOPlayer>();
 	}
 	
+	/**
+	 * WARNING: This method should be invoked asynchronously. It performs serveral
+	 * blocking MySQL queries that will cause server hangs if invoked on the main thread.
+	 * @param uuid
+	 * @param playerRegistryId
+	 */
 	public void preProcessPlayerJoin(UUID uuid, long playerRegistryId) {
 		if(findSCOPlayerByUUID(uuid) != null)
 			throw new RuntimeException("Command executor is already in SCO");
 		
 		SCOPlayer s = new SCOPlayer(uuid, playerRegistryId);
 		preProcessedPlayers.put(uuid, s);
+
+		InventoryRegistryLookupTask inventoriesLookup = new InventoryRegistryLookupTask(playerRegistryId);
+		inventoriesLookup.run();
+		inventoriesLookup.getInventoryIds().forEach((type, id) -> {
+			InventoryLoadTask inventoryLoad = new InventoryLoadTask(playerRegistryId);
+			inventoryLoad.run();
+			if (inventoryLoad.getItems() == null) { return; }
+
+			if (type == InventoryType.SWORD_SKILL) {
+				s.getInventoryManager().registerInventory(new SwordSkillInventory(s, inventoryLoad.getItems()));
+			} else if (type == InventoryType.PLAYER) {
+				s.getInventoryManager().registerInventory(new PersistentPlayerInventory(s, inventoryLoad.getItems()));
+			}
+		});
 	}
 	
 	public void processPlayerJoin(Player p) {
@@ -74,8 +99,6 @@ public class GameManager {
 		
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
-
-		p.getInventory().clear();
 
 		p.sendMessage("You have left " + ChatColor.BLUE + "SwordCraftOnline");
 	}

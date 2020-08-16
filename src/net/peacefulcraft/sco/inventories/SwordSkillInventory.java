@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.inventories;
 
+import org.bukkit.inventory.Inventory;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
@@ -19,7 +21,6 @@ public class SwordSkillInventory extends InventoryBase implements SaveableInvent
 
 	public SwordSkillInventory(SwordSkillCaster caster, ItemIdentifier[] items) {
 		super(items);
-
 		this.caster = caster;
 	}
 
@@ -28,7 +29,10 @@ public class SwordSkillInventory extends InventoryBase implements SaveableInvent
 	}
 
 	@Override
-	public void resizeInventory(int size) {
+	public void resizeInventory(int newSize) {
+		Inventory newInventory = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, newSize);
+		this.copyItemsOneToOne(this.inventory, newInventory);
+		this.inventory = newInventory;
 	}
 
 	@Override

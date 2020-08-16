@@ -122,14 +122,11 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		floor = 0; //TODO: Load this from scopData
 		
 		scopData = new PlayerDataManager(this);
+		inventoryManager = new InventoryManager(this);
 
 		this.damageModifiers = new ArrayList<Modifier>();
 		
 		swordSkillManager = new SwordSkillManager(this);
-		
-		inventoryManager = new InventoryManager(this);
-		inventoryManager.fetchInventory(InventoryType.SWORD_SKILL);
-
 	}
 
 	/**True if player can perform left click */
