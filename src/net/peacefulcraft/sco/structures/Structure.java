@@ -196,6 +196,17 @@ public abstract class Structure {
         this.repeatingTimer = i;
     }
 
+    /**If true, structure will conform to terrain */
+    public Boolean doesConform = true;
+
+    public Boolean doesConform() {
+        return this.doesConform;
+    }
+
+    public void setDoesConform(Boolean b) {
+        this.doesConform = b;
+    }
+
     public Structure(Material mat, boolean toCleanup, int cleanupTimer) {
         this.material = mat;
         this.toCleanup = toCleanup;
@@ -343,6 +354,9 @@ public abstract class Structure {
 
     /**Safely conforms the to be placed block to terrain */
     public Location conformToTerrain(Location loc) {
+        //If we don't conform return original loc
+        if(!this.doesConform) { return loc; }
+        
         Block block = loc.getBlock();
         if(block.getType().equals(Material.AIR) || block.getType() == null) {
             Location bLoc = block.getLocation();
