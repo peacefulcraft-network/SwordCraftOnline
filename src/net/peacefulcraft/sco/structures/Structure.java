@@ -13,14 +13,19 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.ReverseList;
 import net.peacefulcraft.sco.utilities.WeightedList;
 
-public abstract class Structure {
+public abstract class Structure implements Listener {
 
     /** Block type structure will be made of */
     private Material material = null;
@@ -94,12 +99,20 @@ public abstract class Structure {
     /** Contains locations in order to be reset */
     private ArrayList<Pair<Location, Material>> cleanupLis;
 
+    /** Contains locations without material match */
+    private ArrayList<Location> cleanupLocs;
+
     public List<Pair<Location, Material>> getCleanupList() {
         return Collections.unmodifiableList(cleanupLis);
     }
 
+    /**
+     * Safely adds pair and location to cleanup
+     * @param p Pair of location,material
+     */
     public void addCleanupList(Pair<Location, Material> p) {
         this.cleanupLis.add(p);
+        this.cleanupLocs.add(p.getFirst());
     }
 
     /**Determines if structure calls cleanup outside of construct */
@@ -172,6 +185,19 @@ public abstract class Structure {
 
     public void setEndEffects(Method m) {
         this.endEffects = m;
+    }
+
+    /**
+     * Extra effects called when entity walks ontop of blocks in structure
+     */
+    private Method walkEffects = null;
+
+    public Method getWalkEffects() {
+        return this.walkEffects;
+    }
+
+    public void setWalkEffects(Method m) {
+        this.walkEffects = m;
     }
 
     /**If true structure will call construct after set time of cleanup */
@@ -288,7 +314,9 @@ public abstract class Structure {
         }
         SwordCraftOnline.logInfo("[DEBUG] 2");
 
+        //Clearing all cleanup fields
         this.cleanupLis.clear();
+        this.cleanupLocs.clear();
         if(!this.isRepeating) { return; }
 
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), 
@@ -437,6 +465,46 @@ public abstract class Structure {
                     return;
                 }
             }
+        }
+    }
+
+    /**
+     * Used to apply walk effects
+     */
+    @EventHandler
+    private void walkEffectListener(PlayerMoveEvent e) {
+        //If player actually moved blocks
+        if(!(e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockZ() != e.getTo().getBlockZ() || e.getFrom().getBlockY() != e.getTo().getBlockY())) {return; }
+
+        //If player is in the game
+        SCOPlayer s = GameManager.findSCOPlayer(e.getPlayer());
+        if(s == null) { return; }
+
+        //If this structure has walk effects
+        if(this.walkEffects == null) { return; }
+
+        //If this structure has registered locations to check
+        if(this.cleanupLocs.isEmpty()) { return; }
+
+        Location to = e.getTo();
+        Location loc = new Location(to.getWorld(), to.getBlockX(), to.getBlockY(), to.getBlockZ());
+
+        //If structure was stepped on
+        if(!this.cleanupLocs.contains(loc)) { return; }
+
+        try{
+            Object[] parameters = new Object[1];
+            parameters[0] = (LivingEntity) e.getPlayer();
+            this.walkEffects.invoke(this, parameters);
+        } catch (IllegalArgumentException ex) {
+            SwordCraftOnline.logInfo("Attempted to invoke 'walkEffects' method in Structure with illegal arguments.");
+            return;
+        } catch (IllegalAccessException e1) {
+            SwordCraftOnline.logInfo("Attempted to invoke 'walkEffects' method in Structure with illegal access.");
+            return;
+        } catch (InvocationTargetException e1) {
+            SwordCraftOnline.logInfo("Attempted to invoke 'walkEffects' method in Structure.");
+            return;
         }
     }
 
