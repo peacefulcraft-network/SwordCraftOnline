@@ -555,6 +555,14 @@ public class MythicMob implements Comparable<MythicMob> {
         public void setHerculean(Boolean b) { this.isHerculean = b; }
 
     /**
+     * Determines if mob can be spawned outside of boss interface
+     * Should only be used on boss mobs in a dungeon
+     */
+    private Boolean isBossLocked;
+        /**@return True if mob is boss locked */
+        public Boolean isBossLocked() { return this.isBossLocked; }
+
+    /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
      * @param internalName Name of file i.e. SkeletonKing
@@ -719,6 +727,7 @@ public class MythicMob implements Comparable<MythicMob> {
         this.bossBarPlayMusic = mc.getBoolean("BossBar.PlayMusic", false);
 
         //Boss Mob Handling
+        this.isBossLocked = mc.getBoolean("Boss.IsBossLocked", false);
         
 
         //Mob Skill handling

@@ -16,6 +16,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MobManager.SpawnFields;
 import net.peacefulcraft.sco.utilities.TeleportUtil;
 
 public class BossWarden implements MythicBoss {
@@ -74,7 +75,7 @@ public class BossWarden implements MythicBoss {
 
     @Override
     public MythicBoss spawn(Location loc) {
-        this.am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob("BossWarden", loc, this.level);
+        this.am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob("BossWarden", loc, this.level, SpawnFields.BOSS_INTERFACE);
         this.am.updateBossBar();
 
         //Creates crystals around the boss

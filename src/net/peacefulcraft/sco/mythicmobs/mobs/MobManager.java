@@ -253,18 +253,23 @@ public class MobManager implements Runnable {
         return am.getLevel();
     }
 
-    public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level, boolean isHerculean) {
+    public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level, SpawnFields field) {
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
             //If mob is hostile and gamemode peaceful we abort spawn
             if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL) 
                 && !MythicEntity.isPassive(mm.getStrMobType())) {
-                SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abdandoned.");
+                SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abandoned.");
                 return null;
             }
             //If we set herculean
-            if(isHerculean) {
+            if(field.equals(SpawnFields.HERCULEAN)) {
                 mm.setHerculean(true);
+            }
+            //If spawn reason is BOSS_INTERFACE and mob is locked we cancel spawn
+            if(!field.equals(SpawnFields.BOSS_INTERFACE) && mm.isBossLocked()) {
+                SwordCraftOnline.logInfo("[Mob Manager] Attempted to spawn mob, " + mobName + ", outside of boss interface. Spawning abandoned.");
+                return null;
             }
 
             return mm.spawn(loc, level);
@@ -273,20 +278,20 @@ public class MobManager implements Runnable {
     }
 
     public ActiveMob spawnMob(String mobName, AbstractLocation loc) {
-        return spawnMob(mobName, loc, 1, false);
+        return spawnMob(mobName, loc, 1, SpawnFields.NONE);
     }
 
     public ActiveMob spawnMob(String mobName, Location loc, int level) {
-        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, false);
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, SpawnFields.NONE);
     }
 
     public ActiveMob spawnMob(String mobName, Location loc) {
-        return spawnMob(mobName, BukkitAdapter.adapt(loc), 1, false);
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), 1, SpawnFields.NONE);
     }
 
     /**Mob spawn method with herculean toggle */
-    public ActiveMob spawnMob(String mobName, Location loc, int level, boolean isHerculean) {
-        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, isHerculean);
+    public ActiveMob spawnMob(String mobName, Location loc, int level, SpawnFields field) {
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, field);
     }
 
     public MythicMob determineMobType(AbstractEntity l) {
@@ -407,5 +412,12 @@ public class MobManager implements Runnable {
         } else {
             this.mobTask.cancel();
         }
+    }
+
+    /**
+     * Enum constants used to assist in mob spawning variables
+     */
+    public enum SpawnFields {
+        NONE, BOSS_INTERFACE, HERCULEAN;
     }
 }

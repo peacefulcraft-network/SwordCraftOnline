@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MobManager.SpawnFields;
 import net.peacefulcraft.sco.utilities.TeleportUtil;
 
 /**
@@ -131,12 +132,12 @@ public class ActiveSpawner {
             }
 
             //If spawner is capable and we hit 1/n chance
-            boolean isHerculean = false;
+            SpawnFields field = SpawnFields.NONE;
             if(this.s.canSpawnHerculean() && SwordCraftOnline.r.nextInt(this.s.getHerculeanChance()) == 1) {
-                isHerculean = true;
+                field = SpawnFields.HERCULEAN;
             }
 
-            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicInternal(), loc, level, isHerculean);
+            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicInternal(), loc, level, field);
             if(am == null) {
                 SwordCraftOnline.logInfo("[Spawner Manager] Error spawning mob in: " + this.s.getName());
             }
