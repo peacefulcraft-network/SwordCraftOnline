@@ -253,7 +253,7 @@ public class MobManager implements Runnable {
         return am.getLevel();
     }
 
-    public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level) {
+    public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level, boolean isHerculean) {
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
             //If mob is hostile and gamemode peaceful we abort spawn
@@ -262,21 +262,31 @@ public class MobManager implements Runnable {
                 SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abdandoned.");
                 return null;
             }
+            //If we set herculean
+            if(isHerculean) {
+                mm.setHerculean(true);
+            }
+
             return mm.spawn(loc, level);
         }
         return null;
     }
 
     public ActiveMob spawnMob(String mobName, AbstractLocation loc) {
-        return spawnMob(mobName, loc, 1);
+        return spawnMob(mobName, loc, 1, false);
     }
 
     public ActiveMob spawnMob(String mobName, Location loc, int level) {
-        return spawnMob(mobName, BukkitAdapter.adapt(loc), level);
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, false);
     }
 
     public ActiveMob spawnMob(String mobName, Location loc) {
-        return spawnMob(mobName, BukkitAdapter.adapt(loc), 1);
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), 1, false);
+    }
+
+    /**Mob spawn method with herculean toggle */
+    public ActiveMob spawnMob(String mobName, Location loc, int level, boolean isHerculean) {
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, isHerculean);
     }
 
     public MythicMob determineMobType(AbstractEntity l) {

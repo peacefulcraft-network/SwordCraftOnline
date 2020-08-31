@@ -130,7 +130,13 @@ public class ActiveSpawner {
                 level *= 2;
             }
 
-            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicInternal(), loc, level);
+            //If spawner is capable and we hit 1/n chance
+            boolean isHerculean = false;
+            if(this.s.canSpawnHerculean() && SwordCraftOnline.r.nextInt(this.s.getHerculeanChance()) == 1) {
+                isHerculean = true;
+            }
+
+            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicInternal(), loc, level, isHerculean);
             if(am == null) {
                 SwordCraftOnline.logInfo("[Spawner Manager] Error spawning mob in: " + this.s.getName());
             }

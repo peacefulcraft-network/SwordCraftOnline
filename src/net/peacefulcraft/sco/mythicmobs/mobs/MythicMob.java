@@ -551,6 +551,8 @@ public class MythicMob implements Comparable<MythicMob> {
     private Boolean isHerculean;
         /**Returns true if mob is herculean */
         public Boolean isHerculean() { return this.isHerculean; }
+        /**Sets mobs herculean field */
+        public void setHerculean(Boolean b) { this.isHerculean = b; }
 
     /**
      * Constructor and decoder for MythicMobs

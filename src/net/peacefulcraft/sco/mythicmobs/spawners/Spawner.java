@@ -69,6 +69,14 @@ public class Spawner {
     private boolean isPassive;
         public boolean isPassive() { return this.isPassive; }
 
+    /**Determines if spawner is capable of spawning herculean level monsters */
+    private boolean canSpawnHerculean;
+        public boolean canSpawnHerculean() { return this.canSpawnHerculean; }
+        
+    /**Determines spawners chance to spawn a herculean level monster */
+    private int herculeanChance;
+        public int getHerculeanChance() { return this.herculeanChance; }
+
     public Spawner(String name, MythicMob mm, MythicConfig config) {
         this.name = name;
         this.mm = mm;
@@ -90,6 +98,9 @@ public class Spawner {
         this.allowNightwave = mc.getBoolean("AllowNightwave", true);
 
         this.isPassive = this.mm.isPassive();
+
+        this.canSpawnHerculean = mc.getBoolean("CanSpawnHerculean", false);
+        this.herculeanChance = mc.getInteger("HerculeanChance", 1000);
 
         try{
             String tempCycle = mc.getString("DayCycle", "ALL").toUpperCase();
