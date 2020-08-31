@@ -397,4 +397,15 @@ public class MobManager implements Runnable {
             am.updateHealthBar();
         }
     }
+
+    /**
+     * Toggles mob run task on/off
+     */
+    public void toggleMobTask() {
+        if(mobTask.isCancelled()) {
+            this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 20);
+        } else {
+            this.mobTask.cancel();
+        }
+    }
 }
