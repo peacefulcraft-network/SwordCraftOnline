@@ -341,6 +341,13 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
         unregister();
     }
 
+    /**
+     * @return True if mob is herculean
+     */
+    public boolean isHerculean() {
+        return this.type.isHerculean();
+    }
+
     @Override
     /**Returns active mobs attack damage attribute */
     public double getAttackDamage() {

@@ -544,6 +544,15 @@ public class MythicMob implements Comparable<MythicMob> {
         public double getParryMultiplier() { return this.parryMultiplier; }
 
     /**
+     * Determines if mob is herculean level 
+     * If true, mob recieves additional bonuses to attributes
+     * and has unique name plate
+     */
+    private Boolean isHerculean;
+        /**Returns true if mob is herculean */
+        public Boolean isHerculean() { return this.isHerculean; }
+
+    /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
      * @param internalName Name of file i.e. SkeletonKing
@@ -684,6 +693,7 @@ public class MythicMob implements Comparable<MythicMob> {
         this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
         this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
         this.usesHealthBar = Boolean.valueOf(mc.getBoolean("Options.HealthBar", true));
+        this.isHerculean = mc.getBoolean("Options.Herculean");
         
         //Boss Bar Handling
         this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
@@ -863,10 +873,13 @@ public class MythicMob implements Comparable<MythicMob> {
         boolean nightwave = SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave();
         if(nightwave) { level *= 2; }
 
+        if(this.isHerculean) { level += 10; }
+
         ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level, nightwave);
         SwordCraftOnline.getPluginInstance().getMobManager().registerActiveMob(am);
         
         //Applying all options.
+        applyHerculeanEffects();
         am = applySkills(am);
         am = applyMobOptions(am, level);
         am = applyMobVolatileOptions(am);
@@ -881,6 +894,15 @@ public class MythicMob implements Comparable<MythicMob> {
         }
 
         return am;
+    }
+
+    /**Mob options modified if mob is herculean level */
+    public void applyHerculeanEffects() {
+        if(this.isHerculean) {
+            this.damage *= 1.5;
+            this.armor *= 2;
+            this.attrAttackSpeed *= 1.2;
+        }
     }
 
     /**Applies any name modifiers. Color, healthbar, etc. */
@@ -1428,6 +1450,11 @@ public class MythicMob implements Comparable<MythicMob> {
 
     /**Converts level to chat color */
     public ChatColor getDisplayColor(int level) {
+        //If mob is herculean we disregard level
+        if(this.isHerculean) {
+            return ChatColor.DARK_PURPLE;
+        }
+        
         if(level > 0 && level <= 24) {
             return ChatColor.WHITE; 
         } else if(level >= 25  && level <= 49) {

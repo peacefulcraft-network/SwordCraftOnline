@@ -17,11 +17,15 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.ChatColor;
-import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
@@ -32,7 +36,7 @@ import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 
-public class MobManager {
+public class MobManager implements Runnable {
     private final SwordCraftOnline s;
 
     /**Stores MM: Key file name */
@@ -52,19 +56,28 @@ public class MobManager {
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
 
-    
+    /**Registry of active herculean level mobs */
+    private HashMap<UUID, ActiveMob> herculeanRegistry = new HashMap<>();
+        public Map<UUID, ActiveMob> getHerculeanRegistry() { return Collections.unmodifiableMap(this.herculeanRegistry); }
+
+    /** Main task logic for mob manager*/
+    private BukkitTask mobTask;
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
+        this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 20);
+
         loadMobs();
     }
 
     public void loadMobs() {
 
+        //Clearing all registered mob instances
         this.mmList.clear();
         this.mmDisplay.clear();
         this.mmDefault.clear();
         this.mobRegistry.clear();
+        this.herculeanRegistry.clear();
         MobSpawnHandler.clearVanillaMobs();
 
         IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
@@ -109,6 +122,38 @@ public class MobManager {
         SwordCraftOnline.logInfo("[Mob Manager] Loading complete!");
     }
 
+    @Override
+    //Mob managers herculean run task
+    public void run() {
+        HashMap<SCOPlayer, Integer> map = new HashMap<>();
+        
+        //Iterating over every registered herculean level AM
+        for(ActiveMob am : herculeanRegistry.values()) {
+            for(Entity e : am.getLivingEntity().getNearbyEntities(30, 15, 30)) {
+                if(!(e instanceof Player)) { continue; }
+
+                //If player is playing game
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { continue; }
+
+                //Tracking how many Herculean mobs are nearby
+                if(!map.containsKey(s)) {
+                    map.put(s, 0);
+                }
+                map.put(s, map.get(s) + 1);
+            }
+        }
+
+        //Iterating over players to message them
+        for(SCOPlayer s : map.keySet()) {
+            if(map.get(s) > 1) {
+                Announcer.messagePlayer(s, "There are multiple Herculean level mobs nearby...", 60000);
+            } else {
+                Announcer.messagePlayer(s, "There is a Herculean level mob nearby...", 60000);
+            }
+        }
+    }
+
     public MythicMob getMythicMob(String s) {
         if(s == null) { return null; }
         if(this.mmList.containsKey(s)) {
@@ -135,12 +180,20 @@ public class MobManager {
         }
         ActiveMob am = new ActiveMob(l.getUniqueId(), l, mm, level);
         this.mobRegistry.put(l.getUniqueId(), am);
+        //Registering herculean mobs to own registry
+        if(am.isHerculean()) {
+            this.herculeanRegistry.put(l.getUniqueId(), am);
+        }
         mm.applyMobVolatileOptions(am);
         return am;
     }
 
     public ActiveMob registerActiveMob(ActiveMob am) {
         this.mobRegistry.put(am.getUUID() , am);
+        //Registering herculean mobs to own registry
+        if(am.isHerculean()) {
+            this.herculeanRegistry.put(am.getUUID(), am);
+        }
         return am;
     }
 
@@ -154,16 +207,21 @@ public class MobManager {
         }
         final ActiveMob am = new ActiveMob(l.getUniqueId(), l, mm, getMythicMobLevel(mm, l));
         this.mobRegistry.put(l.getUniqueId(), am);
+        if(am.isHerculean()) {
+            this.herculeanRegistry.put(l.getUniqueId(), am);
+        }
         mm.applyMobVolatileOptions(am);
         return am;
     }
 
     public void unregisterActiveMob(UUID u) {
         this.mobRegistry.remove(u);
+        this.herculeanRegistry.remove(u);
     }
 
     public void unregisterActiveMob(ActiveMob am) {
         this.mobRegistry.remove(am.getEntity().getUniqueId());
+        this.herculeanRegistry.remove(am.getEntity().getUniqueId());
     }
 
     public ActiveMob getMythicMobInstance(Entity target) {
