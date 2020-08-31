@@ -266,7 +266,7 @@ public class MobManager implements Runnable {
             if(field.equals(SpawnFields.HERCULEAN)) {
                 mm.setHerculean(true);
             }
-            //If spawn reason is BOSS_INTERFACE and mob is locked we cancel spawn
+            //If spawn reason is not BOSS_INTERFACE and mob is locked we cancel spawn
             if(!field.equals(SpawnFields.BOSS_INTERFACE) && mm.isBossLocked()) {
                 SwordCraftOnline.logInfo("[Mob Manager] Attempted to spawn mob, " + mobName + ", outside of boss interface. Spawning abandoned.");
                 return null;
