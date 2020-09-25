@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -12,7 +13,6 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.storage.StorageTaskCallbackTask;
 
 public class InventorySaveTask extends BukkitRunnable {
   
@@ -20,7 +20,9 @@ public class InventorySaveTask extends BukkitRunnable {
   private long ownerId;
   private InventoryType type;
   private ItemIdentifier[] items;
-  private StorageTaskCallbackTask callback;
+
+  private CompletableFuture<Void> promise;
+    public CompletableFuture<Void> getCompletableFuture() { return this.promise; }
 
   /**
    * @param inventoryId If applicable, the database id of the inventory
@@ -29,12 +31,12 @@ public class InventorySaveTask extends BukkitRunnable {
    * @param itemQuantities Array with item slot quantities with indexes matching those of items[] param
    * @param callback The storage task to execute after the task completes
    */
-  public InventorySaveTask(long inventoryId, long ownerId, InventoryType type, ItemIdentifier[] items, StorageTaskCallbackTask callback) {
+  public InventorySaveTask(long inventoryId, long ownerId, InventoryType type, ItemIdentifier[] items) {
     this.inventoryId = inventoryId;
     this.ownerId = ownerId;
     this.type = type;
     this.items = items;
-    this.callback = callback;
+    this.promise = new CompletableFuture<Void>();
   }
 
   @Override
@@ -98,9 +100,11 @@ public class InventorySaveTask extends BukkitRunnable {
       }
 
       con.commit();
+      promise.complete(null);
     } catch (SQLException ex) {
       ex.printStackTrace();
       SwordCraftOnline.logSevere("A database error occured while saving inventory " + inventoryId + " for entity " + ownerId);
+      promise.completeExceptionally(ex);
     }
   }
 }

@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -18,8 +22,10 @@ import net.peacefulcraft.sco.items.ItemTier;
 public class InventoryLoadTask extends BukkitRunnable {
 
   private long inventoryId;
-  private ItemIdentifier[] items;
-    public ItemIdentifier[] getItems() { return items; }
+  private ArrayList<ItemIdentifier> items;
+
+  private CompletableFuture<List<ItemIdentifier>> promise;
+    public CompletableFuture<List<ItemIdentifier>> getCompletableFuture() { return this.promise; }
 
   /**
    * @param inventoryId The ID of the inventory to load
@@ -27,6 +33,7 @@ public class InventoryLoadTask extends BukkitRunnable {
    */
   public InventoryLoadTask(long inventoryId) {
     this.inventoryId = inventoryId;
+    this.promise = new CompletableFuture<List<ItemIdentifier>>();
   }
 
   @Override
@@ -41,7 +48,7 @@ public class InventoryLoadTask extends BukkitRunnable {
       int invSize = 9;
       if (res.next()) {
         invSize = res.getInt(1);
-        items = new ItemIdentifier[invSize];
+        items = new ArrayList<ItemIdentifier>(invSize);
       } else {
         SwordCraftOnline.logWarning("Attempted to load non-existent inventory " + inventoryId);
         return;
@@ -58,13 +65,16 @@ public class InventoryLoadTask extends BukkitRunnable {
           ((CustomDataHolder) itemIdentifier).setCustomData(customData);
         }
 
-        items[res.getInt("slot")] = itemIdentifier;
+        items.set(res.getInt("slot"), itemIdentifier);
       }
+      this.promise.complete(Collections.unmodifiableList(this.items));
 
     } catch (SQLException ex) {
-
+      SwordCraftOnline.logSevere("A database error occured while attempting to load inventory " + inventoryId);
+      promise.completeExceptionally(ex);
     } catch (RuntimeException ex) {
       SwordCraftOnline.logSevere("Sucesfully loaded inventory " + inventoryId + ", but an error occured while parsing the inventory. It may be corrupt.");
+      promise.completeExceptionally(ex);
     }
   }
 }
