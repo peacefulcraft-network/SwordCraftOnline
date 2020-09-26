@@ -1,0 +1,127 @@
+package net.peacefulcraft.sco.utilities;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockIterator;
+
+import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+
+/**
+ * Location util static class
+ * 
+ * Holds methods regarding getting shapes, permutations around a location
+ * I.e. All blocks near a location in X radius
+ */
+public class LocationUtil {
+    
+    /**
+     * Given location, calculates and logs nearby locations in square shape
+     * @param sideLength Side length of square
+     * @param loc Location to be checked
+     * @return List of locations
+     */
+    public static List<Location> getSquareLocations(Location loc, int sideLength) {
+        List<Location> locations = new ArrayList<>();
+        int halfSize = sideLength/2;
+
+        //Iterating over every location within square bounds
+        for(int x = -halfSize; x < halfSize; x++) {
+            for(int z = -halfSize; z < halfSize; z++) {
+                locations.add(loc.clone().add(x, 0, z));
+            }
+        }
+
+        return locations;
+    }
+
+    /**
+     * Given location and target, returns all locations associated between the two.
+     * @param origin Origin of pathway
+     * @param target Target location
+     * @param length Max length of path. Set to -1 to have none.
+     * @param width Width of pathway
+     * @param conform If true, locations will be set to match surrounding terrain
+     * @return List of locations
+     */
+    public static List<Location> getPathLocations(Location origin, Location target, int length, int width, boolean conform) {
+        List<Location> locations = new ArrayList<>();
+        
+        int halfWidth = width/2;
+        BlockFace sideFace = DirectionalUtil.getSideDirections(origin, target);
+
+        BlockIterator iter = new BlockIterator(origin, 0, (int)target.distance(target));
+        int i = 0;
+        while(iter.hasNext()) {
+            // If we conform and reach max length. 
+            if(i >= length && conform) { break; }
+            Block block = iter.next();
+            
+            // Iterating over width blocks
+            for(int j = -halfWidth; j <= halfWidth; j++) {
+                Block side = block.getRelative(sideFace, j);
+                locations.add(conform(side.getLocation()));
+            }
+            i++;
+        }
+        return locations;
+    }
+
+    /**
+     * Given locations, returns all locations in pillar shape of given dimensions
+     * @param loc Location to be checked
+     * @param height Height of pillar
+     * @param length Side length of pillar
+     * @return List of locations
+     */
+    public static List<Location> getPillarLocations(Location loc, int height, int length) {
+        List<Location> locations = new ArrayList<>();
+
+        int halfLength = length/2;
+
+        // Iterating over locations in pillar
+        for(int x = (int) loc.getX() - halfLength; x <= loc.getX() + halfLength; x++) {
+            for(int y = (int) loc.getY(); y <= (int) loc.getY() + height; y++) {
+                for(int z = (int) loc.getZ() - halfLength; z <= (int) loc.getZ() + halfLength; z++) {
+                    Location temp = new Location(loc.getWorld(), x, y ,z);
+                    locations.add(temp);
+                }
+            }
+        }
+        return locations;
+    }
+
+    /**
+     * Helper method. Conforms location to ground
+     * @return Location set to ground
+     */
+    private static Location conform(Location loc) {
+        Block block = loc.getBlock();
+        if(block.getType().equals(Material.AIR) || block.getType() == null) {
+            Location bLoc = block.getLocation();
+            for(int i = 1; i <= 25; i++) {
+                Location temp = bLoc.clone().add(0, -i, 0);
+                if(!temp.getBlock().getType().equals(Material.AIR) && !temp.getBlock().isPassable()) {
+                    block = temp.getBlock();
+                    break;
+                }
+            }
+        } 
+        if(!block.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
+            Location bLoc = block.getLocation();
+            for(int i = 1; i<=5; i++) {
+                Block temp = bLoc.clone().add(0, i, 0).getBlock();
+                if(temp.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
+                    block = temp;
+                    break;
+                }
+            }
+        }
+        return block.getLocation();
+    }
+
+}

@@ -103,6 +103,15 @@ public class DirectionalUtil implements Listener{
     */
     public static CardinalDirection getCardinalDirection(Location loc, int offset) {
         double rotation = (loc.getYaw() - offset) % 360;
+        return getCardinalDirection(rotation);
+    }
+
+    /**
+     * Calculates cardinal direction based on rotation from 0.0 degrees (north)
+     * @param rotation degrees from north
+     * @return Cardinal direction of rotation
+     */
+    private static CardinalDirection getCardinalDirection(double rotation) {
         if(rotation < 0) {
             rotation += 360.0;
         }
@@ -129,30 +138,59 @@ public class DirectionalUtil implements Listener{
         }
     }
 
-
-    /**Returns relative blockface directions of entity location */
+    /**
+     * Returns relative blockface directions of entity location 
+     * TODO: Rename to signify the method better
+     */
     public static BlockFace getSideDirections(LivingEntity e) {
 		double rot = (e.getLocation().getYaw() - 90) % 360;
-		if(rot < 0 ) {
-			rot += 360.0;
+		return getRelativeBlockFace(rot);
+    }
+
+    /**
+     * Helper method. Returns strict block faces based on angle rotation
+     * from 0.0 degress (north)
+     * @param rotation Rotation from north
+     * @return Blockface of direction
+     */
+    private static BlockFace getRelativeBlockFace(double rotation) {
+        if(rotation < 0 ) {
+			rotation += 360.0;
 		}
-		if(0 <= rot && rot < 45.0) {
+		if(0 <= rotation && rotation < 45.0) {
 			return BlockFace.NORTH; //Facing North
-		} else if(45.0 <= rot && rot < 135.0) {
+		} else if(45.0 <= rotation && rotation < 135.0) {
 			return BlockFace.EAST; //Facing East
-		} else if(135.0 <= rot && rot < 225.0) {
+		} else if(135.0 <= rotation && rotation < 225.0) {
 			return BlockFace.NORTH; //Facing South
-		} else if(225.0 <= rot && rot < 315.0) {
+		} else if(225.0 <= rotation && rotation < 315.0) {
 			return BlockFace.EAST; //Facing West
-		} else if(315.0 <= rot && rot < 360.0) {
+		} else if(315.0 <= rotation && rotation < 360.0) {
 			return BlockFace.NORTH; //Facing North
 		} else {
 			return null;
 		}
     }
     
-    /**Returns relative blockface directions of player location */
+    /**
+     * Returns relative blockface directions of player location 
+     * TODO: Rename to signify the method better
+     */
     public static BlockFace getSideDirections(Player p) {
         return getSideDirections((LivingEntity) p);
+    }
+
+    /**
+     * Inefficient, but it works
+     * TODO: Rename to signify the method better
+     * Takes two locations and calculates the blockface between the locations
+     * @return Relative blockface
+     */
+    public static BlockFace getSideDirections(Location origin, Location target) {
+        // Angle is location based on North cardinal direction
+        double angle = (Math.atan2(origin.getX() - target.getX(), origin.getZ() - target.getZ()));
+        angle = (-(angle / Math.PI) * 360.0d) / 2.0d + 180.0d;
+
+        return getRelativeBlockFace(angle);
     }
 }
