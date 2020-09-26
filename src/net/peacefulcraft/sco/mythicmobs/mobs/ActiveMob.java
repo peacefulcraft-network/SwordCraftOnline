@@ -24,9 +24,7 @@ import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 /**
  * Active instance of Mythicmob

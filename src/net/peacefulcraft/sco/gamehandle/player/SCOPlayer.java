@@ -1,8 +1,5 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
@@ -19,7 +16,6 @@ import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class SCOPlayer extends ModifierUser implements SwordSkillCaster, IDamage
