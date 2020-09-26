@@ -96,6 +96,46 @@ public class LocationUtil {
     }
 
     /**
+     * Given location, returns all locations in cylinder shape of given dimensions
+     * @param loc Location to be checked
+     * @param height Height of cylinder
+     * @param radius Radius of cylinder
+     * @param hollow If true, cylinder will be a hollow ring
+     * @return List of locations
+     */
+    public static List<Location> getCylinderLocations(Location loc, int height, int radius, boolean hollow) {
+        List<Location> locations = new ArrayList<Location>();
+        if(hollow) {
+            int x;
+            int y = loc.getBlockY();
+            int z;
+            for(int i = 0; i <= height; i++) {
+                for(double j = 0.0d; j< 360.0; j += 0.1) {
+                    double angle = j * Math.PI / 180;
+                    x = (int)(loc.getX() + radius * Math.cos(angle));
+                    z = (int)(loc.getZ() + radius * Math.sin(angle));
+
+                    Location current = new Location(loc.getWorld(), x, y ,z);
+                    locations.add(current);
+                }
+            }
+        } else {
+            Block center = loc.getBlock();
+            for(int currentHeight = 0; currentHieght < height; currentHeight++) {
+                for(int x = -radius; x < radius; x++) {
+                    for(int z = -radius; z < radius; z++) {
+                        Block current = center.getRelative(x, currentHeight, z);
+                        Location temp = current.getLocation();
+
+                        locations.add(temp);
+                    }
+                }
+            }
+        }
+        return locations;
+    }
+
+    /**
      * Helper method. Conforms location to ground
      * @return Location set to ground
      */
