@@ -121,7 +121,7 @@ public class LocationUtil {
             }
         } else {
             Block center = loc.getBlock();
-            for(int currentHeight = 0; currentHieght < height; currentHeight++) {
+            for(int currentHeight = 0; currentHeight < height; currentHeight++) {
                 for(int x = -radius; x < radius; x++) {
                     for(int z = -radius; z < radius; z++) {
                         Block current = center.getRelative(x, currentHeight, z);
