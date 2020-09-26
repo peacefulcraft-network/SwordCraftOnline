@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.mythicmobs.mobs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.IDamage;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 /**
  * Active instance of Mythicmob
@@ -126,7 +128,6 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
      */
     private List<Modifier> damageModifiers;
         public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
-        public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
 
     /**
      * Active Mobs instance of Health Bar. 
@@ -347,6 +348,78 @@ public class ActiveMob implements SwordSkillCaster, IDamage {
     public boolean isHerculean() {
         return this.type.isHerculean();
     }
+
+    /**
+	 * If modifier type exists, we change the value to given amount.
+	 * @param type ModifierType to be searched for
+	 * @param multiplier Value to be set
+	 */
+	public void setDamageModifierMultiplier(ModifierType type, double multiplier) {
+		for(Modifier m : this.damageModifiers) {
+			if(m.getType().equals(type)) {
+				m.setMultiplier(multiplier);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Safely adds modifier to list. 
+	 * If modifier already contains modifier we replace it
+	 * @param m Modifier to be added.
+	 */
+	public void addDamageModifier(Modifier m) { 
+		removeDamageModifier(m);
+		this.damageModifiers.add(m);
+	}
+
+	/**
+	 * Safely removes modifier of same type from list
+	 * @param m Modifier to be removed
+	 */
+	public void removeDamageModifier(Modifier m) {
+		removeDamageModifier(m.getType());
+	}
+
+	/**
+	 * Safely removes modifier of same type from list
+	 * @param type Modifier to be removed
+	 */
+	public void removeDamageModifier(ModifierType type) {
+		// If modifier of same type exists we remove
+		Iterator<Modifier> iter = this.damageModifiers.iterator();
+		while(iter.hasNext()) {
+			Modifier mod = iter.next();
+			if(mod.getType().equals(type)) {
+				iter.remove();
+			}
+		}
+	}
+
+	/**
+	 * Searches for modifier of same type
+	 * @param type Type to be searched for
+	 * @return Modifier if found. Null otherwise
+	 */
+	public Modifier getDamageModifier(ModifierType type) {
+		// If type exists we return
+		for(Modifier m : this.damageModifiers) {
+			if(m.getType().equals(type)) {
+				return m;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Searches for modifier of same type
+	 * @param m Modifier to search for same type
+	 * @return Modifier of type if found. Null otherwise
+	 */
+	public Modifier getDamageModifier(Modifier m) {
+		return getDamageModifier(m.getType());
+	}
+
 
     @Override
     /**Returns active mobs attack damage attribute */

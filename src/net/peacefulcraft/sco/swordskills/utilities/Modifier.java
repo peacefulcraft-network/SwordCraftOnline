@@ -20,23 +20,6 @@ import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
  * EntityDamageEvent.
  */
 public class Modifier {
-    /**
-     * Enum to signify how we calculate the modifier.
-     * To subtract use ADD and set to negative
-     * To divide use MULTIPLY and set to a fraction.
-     */
-    public enum MultiplierType{
-        ADD, MULTIPLY;
-        
-        public static MultiplierType get(String s) {
-            if(s == null) { return null; }
-            try{
-                return valueOf(s.toUpperCase());
-            }catch(IllegalArgumentException e) {
-                return null;
-            }
-        }
-    }
 
     /**
      * Enum of effectively all mobs / entities in MC
@@ -67,32 +50,43 @@ public class Modifier {
     ModifierType type;
     /**The amount to modify the damage*/
     double multiplier;
-    /**The type of calculation we do. */
-    MultiplierType mType;
     /**True if strength, false if weakness */
     Boolean strength;
 
     /**
      * Constructs baseline modifier.
      */
-    public Modifier(ModifierType type, double multiplier, MultiplierType mType, boolean strength) {
+    public Modifier(ModifierType type, double multiplier, boolean strength) {
         this.type = type;
         this.multiplier = multiplier;
-        this.mType = mType;
         this.strength = strength;
     }
 
     /**
      * Constructs modifier from string.
-     * String should be formatted: ZOMBIE-1.2-MULTIPLY
+     * String should be formatted: ZOMBIE-1.2
      * @param strength True if strength, False if weakness
      */
     public Modifier(String s, boolean strength) {
         String[] split = s.split("-");
         this.type = ModifierType.get(split[0]);
         this.multiplier = Double.valueOf(split[1]);
-        this.mType = MultiplierType.get(split[2]);
         this.strength = strength;
+    }
+
+    /**
+     * Sets multiplier to given value
+     * @param value Value to be set
+     */
+    public void setMultiplier(double value) {
+        this.multiplier = value;
+    }
+    
+    /**
+     * @return Modifiers type
+     */
+    public ModifierType getType() {
+        return this.type;
     }
 
     /**
@@ -172,8 +166,7 @@ public class Modifier {
      * Holds internal calculation of modifier and multiplier type.
      */
     private double internalCalc(EntityDamageEvent e) {
-        if(this.mType == MultiplierType.MULTIPLY) { return e.getFinalDamage() * this.multiplier; }
-        return e.getFinalDamage() + this.multiplier;
+        return e.getFinalDamage() * this.multiplier;
     }
 
     /**
@@ -206,7 +199,6 @@ public class Modifier {
     private String getInfo() {
         String s = "[Modifier Info]: ";
         s += "[Modifier Type] " + this.type.toString() + " ";
-        s += "[Modification Type] " + this.mType.toString() + " ";
         s += "[Multiplier] " + String.valueOf(this.multiplier) + " ";
         s += "[Strength] " + String.valueOf(this.strength);
         return s;
