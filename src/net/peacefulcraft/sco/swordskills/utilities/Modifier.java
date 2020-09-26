@@ -81,12 +81,27 @@ public class Modifier {
     public void setMultiplier(double value) {
         this.multiplier = value;
     }
+
+    /**
+     * @return Value of multiplier
+     */
+    public double getMultiplier() {
+        return this.multiplier;
+    }
     
     /**
      * @return Modifiers type
      */
     public ModifierType getType() {
         return this.type;
+    }
+
+    /**
+     * Clones modifier
+     * @return Copied modifier
+     */
+    public Modifier clone() {
+        return new Modifier(this.type, this.multiplier, this.strength);
     }
 
     /**

@@ -33,8 +33,6 @@ public interface IDamage {
     double getArmorToughness();
     void setArmorToughness(double mod, boolean multiply);
 
-    List<Modifier> getDamageModifiers();
-
     int getCriticalChance();
     void setCriticalChance(int num);
 
