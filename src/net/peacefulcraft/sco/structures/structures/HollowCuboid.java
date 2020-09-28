@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.structures.structures;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -29,6 +30,15 @@ public class HollowCuboid extends Structure {
     private int z1;
 
     private int z2;
+
+    /**Determines if cuboid has top layer */
+    private boolean hasLid = true;
+        /**
+         * Sets lid attribute variable. This removes the top
+         * layer of the cuboid
+         */
+        public void setHasLid(boolean b) { this.hasLid = b; }
+        public boolean hasLid() { return this.hasLid; }
 
     /**
      * List of safe edge locations around cuboid
@@ -74,6 +84,10 @@ public class HollowCuboid extends Structure {
         for(int x = -halfSize; x < halfSize; x++) {
             for(int z = -halfSize; z < halfSize; z++) {
                 for(int y = 0; y < height; y++) {
+                    // If height is 1 below and we don't want lid.
+                    if(y == height-1 && !this.hasLid) {
+                        continue;
+                    }
                     if(x == 0 || y == 0 || z == 0 || x == size-1 || y == height-1 || z == size-1) {
                         Location temp = loc.clone().add(x, y, z);
                         safeAddToCleanup(temp.getBlock().getType(), temp);
@@ -169,6 +183,13 @@ public class HollowCuboid extends Structure {
      */
     public Location getSafeEdgeLocation() {
         return this.safeEdgeLocations.get(SwordCraftOnline.r.nextInt(this.safeEdgeLocations.size()-1));
+    }
+
+    /**
+     * @return All possible safe edge locations along side of cuboid
+     */
+    public List<Location> getAllSafeEdgeLocations() {
+        return Collections.unmodifiableList(this.safeEdgeLocations);
     }
 
 }
