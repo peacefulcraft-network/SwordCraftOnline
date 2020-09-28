@@ -6,13 +6,23 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.LivingEntity;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
+/**
+ * Holds necessary information for SCOPlayers and AciveMobs
+ * Attribute changing methods and damage modifier methods
+ */
 public class ModifierUser {
 
     private List<Modifier> damageModifiers;
+
+    private LivingEntity entity;
+    
+    public LivingEntity getLivingEntity() { return this.entity; }
 
     public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
 
@@ -173,5 +183,52 @@ public class ModifierUser {
                 addDamageModifiers(clone);
             }
         }, duration * 20);
+    }
+
+    /**
+     * Fetches mobs attribute base value
+     * @param attribute Attribute to be searched for
+     * @return Double value of attribute
+     */
+    public double getAttribute(Attribute attribute) {
+        return getLivingEntity().getAttribute(attribute).getBaseValue();
+    }
+
+    /**
+     * Sets given attribute to value
+     * @param attribute Attribute to be set
+     * @param amount Value to be set
+     * @param duration Resets value after this time in seconds. If -1 it does not
+     */
+    public void setAttribute(Attribute attribute, double amount, int duration) {
+        double d = getAttribute(attribute);
+
+        getLivingEntity().getAttribute(attribute).setBaseValue(amount);
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setAttribute(attribute, d, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    /**
+     * Multiplies given attribute by amount
+     * @param attribute Attribute to be set
+     * @param amount Value to be set
+     * @param duration Resets value after this time in seconds. If -1 it does not
+     */
+    public void multiplyAttribute(Attribute attribute, double amount, int duration) {
+        double d = getAttribute(attribute);
+
+        getLivingEntity().getAttribute(attribute).setBaseValue(amount * getAttribute(attribute));
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setAttribute(attribute, d, -1);
+                }
+            }, duration * 20);
+        }
     }
 }
