@@ -31,7 +31,11 @@ public class ActiveSpawner {
     private Location loc;
         public Location getLocation() { return new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()); }
 
+    private Boolean locked = false;
+        public void setLocked(Boolean b) { this.locked = b; }
+
     private boolean isActivating;
+
 
     public ActiveSpawner(Spawner s, int level, Location loc) {
         this.s = s;
@@ -75,6 +79,9 @@ public class ActiveSpawner {
      * Handles all logic related to blocking a spawner, spawner level, mob level, etc.
      */
     public void trigger() {
+        //Checking if spawner is locked
+        if(locked) { return; }
+      
         /**Checking if spawners DayCycle matches server time of day */
         DayCycle tempCycle = this.s.getDayCycle();
         if(GameManager.isDay() && tempCycle.equals(DayCycle.NIGHT)) { return; }

@@ -136,7 +136,7 @@ public class partyCommands implements CommandExecutor
 	
 	private boolean invite(Player p, String name) {
 		Party party = SwordCraftOnline.getPartyManager().getParty(GameManager.findSCOPlayer(p).getPartyName());
-		SCOPlayer invited = GameManager.findSCOPlayerByName(name);
+		SCOPlayer invited = GameManager.findSCOPlayer(name);
 		if(invited == null) {
 			return false;
 		} else {
@@ -146,7 +146,7 @@ public class partyCommands implements CommandExecutor
 	}
 	
 	private boolean cancelInvite(Player p, String name) {
-		SCOPlayer invited = GameManager.findSCOPlayerByName(name);
+		SCOPlayer invited = GameManager.findSCOPlayer(name);
 		Party party = SwordCraftOnline.getPartyManager().getParty(GameManager.findSCOPlayer(p).getPartyName());
 		if(party.cancelInvite(invited)) {
 			return true;
@@ -173,7 +173,7 @@ public class partyCommands implements CommandExecutor
 			p.sendMessage(ChatColor.GOLD + "Must be party leader to set new leader");
 			return;
 		}
-		party.setLeader(GameManager.findSCOPlayerByName(name));
+		party.setLeader(GameManager.findSCOPlayer(name));
 		p.sendMessage(ChatColor.BLUE + name + ChatColor.GOLD + " has been made party leader");
 	}
 	

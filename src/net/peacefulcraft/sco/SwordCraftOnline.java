@@ -14,10 +14,11 @@ import net.peacefulcraft.sco.commands.setWaystone;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
+import net.peacefulcraft.sco.gamehandle.listeners.DuelMoveListener;
 import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
-import net.peacefulcraft.sco.gamehandle.listeners.ItemDropOnDeath;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
+import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDeathListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
@@ -149,8 +150,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		// Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
-		getServer().getPluginManager().registerEvents(new ItemDropOnDeath(), this);
+		getServer().getPluginManager().registerEvents(new SCOPlayerDeathListener(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
+		getServer().getPluginManager().registerEvents(new DuelMoveListener(), this);
 		
 		//Mythicmob listeners
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);

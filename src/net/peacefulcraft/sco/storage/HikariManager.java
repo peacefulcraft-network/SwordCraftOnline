@@ -33,7 +33,7 @@ public class HikariManager {
 	}
 	
 	/**
-	 * TOOD: Beter health checking, logging, and error reporting
+	 * TOOD: Better health checking, logging, and error reporting
 	 * @return
 	 */
 	public boolean isAlive() {
