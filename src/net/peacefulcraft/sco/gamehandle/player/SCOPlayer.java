@@ -7,9 +7,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.particles.DisplayType;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
@@ -138,6 +140,16 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 			return true;
 		}
 
+	/**Players level of particle display. Defaulted to full effect */
+	private DisplayType displayType = DisplayType.FULL;
+		public DisplayType getDisplayType() { return this.displayType; }
+		public void setDisplayType(DisplayType t) { this.displayType = t; }
+
+	/**Determines if player is in duel or not */
+	private Duel duel = null;
+		public void setDuel(Duel d) { this.duel = d; }
+		public Duel getDuel() { return this.duel; }
+
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
 		playerKills = 0;
@@ -152,6 +164,11 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 
 		//TODO: Remove this and replace with loading the wallet/bank from data
 		this.wallet = 1000;
+	}
+
+	public Boolean isInDuel() {
+		if(this.duel != null) { return true; }
+		return false;
 	}
 
 	/**True if player can perform left click */
