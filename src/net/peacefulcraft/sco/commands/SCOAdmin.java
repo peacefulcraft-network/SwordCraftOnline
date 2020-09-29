@@ -461,6 +461,12 @@ public class SCOAdmin implements CommandExecutor {
 						return true;
 					}
 				}
+
+				if(args[1].equalsIgnoreCase("togglenightwave")) {
+					SwordCraftOnline.getPluginInstance().getSpawnerManager().toggleNightwave();
+					sender.sendMessage("Spawner Manager set nightwave to: " + String.valueOf(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave()));
+					return true;
+				}
 			}
 
 			if(args[0].equalsIgnoreCase("particletest")) {
