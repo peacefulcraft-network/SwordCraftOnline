@@ -1,8 +1,10 @@
 package net.peacefulcraft.sco.gamehandle;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -89,6 +91,16 @@ public class GameManager {
 		}
 		return null;
 	}
+
+	public static List<SCOPlayer> findSCOPlayers(List<Player> lis) {
+        List<SCOPlayer> output = new ArrayList<>();
+        for(Player p : lis) {
+            SCOPlayer s = GameManager.findSCOPlayer(p);
+			if(s == null) { continue; }
+			output.add(s);
+		}
+		return output;
+    }
 
 	public Set<Player> getPlayersInRangeSq(Location location, int rangeSq) {
 		Set<Player> inRange = new HashSet<>();

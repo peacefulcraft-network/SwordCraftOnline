@@ -217,12 +217,12 @@ public abstract class Announcer {
     }
 
     public static void sendCountdown(Player p, int seconds, String preRunMessage, String postRunMessage) {
-        Announcer.messagePlayer(p,preRunMessage);
+        Announcer.messagePlayer(p,preRunMessage, 0);
         (new CountdownTimer(seconds, p, postRunMessage)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
     }
 
     public static void sendCountdown(List<Player> lis, int seconds, String preRunMessage, String postRunMessage){
-        Announcer.messageGroup(lis, preRunMessage);
+        Announcer.messageGroup(GameManager.findSCOPlayers(lis), preRunMessage, 0);
         (new CountdownTimer(seconds, lis, postRunMessage)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
     }
 
@@ -247,12 +247,12 @@ public abstract class Announcer {
         @Override
         public void run() {
             if(seconds < 1) {
-                Announcer.messageGroup(lis, countdownMessage);
+                Announcer.messageGroup(GameManager.findSCOPlayers(lis), countdownMessage, 0);
                 this.cancel();
                 return;
             }
             String message = String.valueOf(seconds) + "...";
-            Announcer.messageGroup(lis, message);
+            Announcer.messageGroup(GameManager.findSCOPlayers(lis), message, 0);
             seconds--;
         }
         
