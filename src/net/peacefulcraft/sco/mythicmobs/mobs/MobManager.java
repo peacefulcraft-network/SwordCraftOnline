@@ -219,9 +219,23 @@ public class MobManager implements Runnable {
         this.herculeanRegistry.remove(u);
     }
 
+    /**
+     * Unregisteres an active mob from registry
+     * @param am ActiveMob to be unregistered
+     */
     public void unregisterActiveMob(ActiveMob am) {
         this.mobRegistry.remove(am.getEntity().getUniqueId());
         this.herculeanRegistry.remove(am.getEntity().getUniqueId());
+    }
+
+    /**
+     * Unregisteres a list of active mobs
+     * @param lis List to be cleared
+     */
+    public void unregisterActiveMobs(List<ActiveMob> lis) {
+        for(ActiveMob am : lis) {
+            unregisterActiveMob(am);
+        }
     }
 
     public ActiveMob getMythicMobInstance(Entity target) {
@@ -348,6 +362,19 @@ public class MobManager implements Runnable {
             }
         }
         return amount;
+    }
+
+    /**
+     * Despawns a group of mobs
+     * @param lis List of activemobs to be removed
+     */
+    public void despawnMobs(List<ActiveMob> lis) {
+        for(ActiveMob am : lis) {
+            if((am.getType()).optionDespawn && !am.getType().isPersistent()) {
+                am.setDespawned();
+                am.getEntity().remove();
+            }
+        }
     }
 
     public Collection<ActiveMob> getActiveMobs() {

@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -97,8 +98,9 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
     private int noDamageTicks;
         public int getNoDamageTicks() { return this.noDamageTicks; }
 
-    private AbstractEntity newTarget = null;
-        public void setTarget(AbstractEntity ae) { this.newTarget = ae; }
+    /**Active mobs target to follow */
+    private LivingEntity target = null;
+        public LivingEntity getTarget() { return this.target; }
 
     private double lastDamageSkillAmount = 0.0D;
 
@@ -338,6 +340,17 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
      */
     public boolean isHerculean() {
         return this.type.isHerculean();
+    }
+
+    /**
+     * Sets active mobs target and instances attribute
+     * @param e LivingEntity to be tracked
+     */
+    public void setTarget(LivingEntity e) {
+        LivingEntity ent = getLivingEntity();
+        ((Creature)ent).setTarget(e);
+
+        this.target = e;
     }
 }
 
