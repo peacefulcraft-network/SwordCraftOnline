@@ -57,6 +57,26 @@ public class Spawner {
     private int nearbyBounds;
         public int getNearbyBounds() { return this.nearbyBounds; }
 
+    /**Determines if spawner can be converted under nightwave conditions */
+    private boolean allowNightwave;
+        public boolean allowNightwave() { return this.allowNightwave; }
+
+    /**Determines what time of day spawner can be triggered. */
+    private DayCycle dayCycle;
+        public DayCycle getDayCycle() { return this.dayCycle; }
+
+    /**Determines if spawner is spawning passive mobs. */
+    private boolean isPassive;
+        public boolean isPassive() { return this.isPassive; }
+
+    /**Determines if spawner is capable of spawning herculean level monsters */
+    private boolean canSpawnHerculean;
+        public boolean canSpawnHerculean() { return this.canSpawnHerculean; }
+        
+    /**Determines spawners chance to spawn a herculean level monster */
+    private int herculeanChance;
+        public int getHerculeanChance() { return this.herculeanChance; }
+
     public Spawner(String name, MythicMob mm, MythicConfig config) {
         this.name = name;
         this.mm = mm;
@@ -74,6 +94,22 @@ public class Spawner {
         this.range = mc.getInteger("Range", 3);
         this.cooldown = mc.getInteger("Cooldown", 7);
         this.nearbyBounds = mc.getInteger("NearbyBounds", 4);
+
+        this.allowNightwave = mc.getBoolean("AllowNightwave", true);
+
+        this.isPassive = this.mm.isPassive();
+
+        this.canSpawnHerculean = mc.getBoolean("CanSpawnHerculean", false);
+        this.herculeanChance = mc.getInteger("HerculeanChance", 1000);
+
+        try{
+            String tempCycle = mc.getString("DayCycle", "ALL").toUpperCase();
+            this.dayCycle = DayCycle.valueOf(tempCycle);
+        } catch(IllegalArgumentException ex) {
+            this.dayCycle = DayCycle.ALL;
+        } catch(NullPointerException ex) {
+            this.dayCycle = DayCycle.ALL;
+        }
     }
 
 }

@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Ocelot;
 
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitBabyDrowned;
 import net.peacefulcraft.sco.mythicmobs.adapters.entities.BukkitBabyHusk;
@@ -84,6 +85,8 @@ import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 public abstract class MythicEntity {
     private static HashMap<MythicEntityType, Class<? extends MythicEntity>> entities = new HashMap<>();
 
+    private static HashMap<EntityType, MythicEntityType> passive = new HashMap<>();
+
     public abstract void instantiate(MythicConfig paramMythicConfig);
 
     public abstract Entity spawn(MythicMob paramMythicMob, Location paramLocation);
@@ -156,7 +159,47 @@ public abstract class MythicEntity {
         return null;
     }
 
+    public static boolean isPassive(EntityType type) {
+        if(passive.containsKey(type)) { return true; }
+        return false;
+    }
+
+    public static boolean isPassive(MythicEntityType type) {
+        if(passive.containsValue(type)) { return true; }
+        return false;
+    }
+
+    public static boolean isPassive(String type) {
+        for(EntityType t : passive.keySet()) {
+            if(t.name().equalsIgnoreCase(type)) { return true; }
+        }
+        return false;
+    }
+
     static {
+        passive.put(EntityType.BAT, MythicEntityType.BAT);
+        passive.put(EntityType.COD, MythicEntityType.COD);
+        passive.put(EntityType.COW, MythicEntityType.COW);
+        passive.put(EntityType.CHICKEN, MythicEntityType.CHICKEN);
+        passive.put(EntityType.DOLPHIN, MythicEntityType.DOLPHIN);
+        passive.put(EntityType.DONKEY, MythicEntityType.DONKEY);
+        passive.put(EntityType.FOX, MythicEntityType.FOX);
+        passive.put(EntityType.HORSE, MythicEntityType.HORSE);
+        passive.put(EntityType.LLAMA, MythicEntityType.LLAMA);
+        passive.put(EntityType.MULE, MythicEntityType.MULE);
+        passive.put(EntityType.MUSHROOM_COW, MythicEntityType.MUSHROOM_COW);
+        passive.put(EntityType.OCELOT, MythicEntityType.OCELOT);
+        passive.put(EntityType.PANDA, MythicEntityType.PANDA);
+        passive.put(EntityType.PARROT, MythicEntityType.PARROT);
+        passive.put(EntityType.PIG, MythicEntityType.PIG);
+        passive.put(EntityType.POLAR_BEAR, MythicEntityType.POLAR_BEAR);
+        passive.put(EntityType.PUFFERFISH, MythicEntityType.PUFFERFISH);
+        passive.put(EntityType.RABBIT, MythicEntityType.RABBIT);
+        passive.put(EntityType.SHEEP, MythicEntityType.SHEEP);
+        passive.put(EntityType.SNOWMAN, MythicEntityType.SNOWMAN);
+        passive.put(EntityType.SQUID, MythicEntityType.SQUID);
+        passive.put(EntityType.TROPICAL_FISH, MythicEntityType.TROPICAL_FISH);
+
         //entities.put(MythicEntityType.ARMOR_STAND, (Class) ArmorStand.class);
         entities.put(MythicEntityType.BABY_DROWNED, BukkitBabyDrowned.class);
         entities.put(MythicEntityType.BABY_HUSK, BukkitBabyHusk.class);
