@@ -10,10 +10,13 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.peacefulcraft.sco.inventories.InventoryBase;
-import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.inventories.PlayerInventory;
+import net.peacefulcraft.sco.inventories.SwordSkillInventory;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
+import net.peacefulcraft.sco.storage.tasks.InventoryRegistryLookupTask;
+import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
@@ -41,24 +44,25 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 
 	private Player user;
 		public Player getPlayer() { return this.user; }
-		public void linkPlayer(Player p) { this.user = p; }
 	
 	private PlayerDataManager scopData;
 		public PlayerDataManager getData() { return scopData; }
-	
-	private InventoryManager inventoryManager;
-		public InventoryManager getInventoryManager() { return this.inventoryManager; }
-		public InventoryBase getInventory(InventoryType inventory) { return inventoryManager.getInventory(inventory); }
 		
+	/**Stores SwordSkills */
+	private SwordSkillManager swordSkillManager;
+		/**Returns instance SwordSkillManager from interface */
+		public SwordSkillManager getSwordSkillManager() { return this.swordSkillManager; }
+
+	private PlayerInventory playerInventory;
+		public PlayerInventory getPlayerInventory() { return this.playerInventory; }
+
+	private SwordSkillInventory swordSkillInventory;
+		public SwordSkillInventory getSwordSkillInventory() { return this.swordSkillInventory; }
+
 	/**Time remaining until another attack can be performed */
 	private int attackTime;
 		public int getAttackTime() { return attackTime; }
 		public void setAttackTime(int ticks) { this.attackTime = ticks; }
-
-	/**Stores SwordSkills */
-	private SwordSkillManager swordSkillManager;
-		/**Returns instance SwordSkillManager from interface */
-		public SwordSkillManager getSwordSkillManager() { return swordSkillManager; }
 		
 	private double exhaustion = 0.0;
 		public double getExhaustion() { return exhaustion; }
@@ -122,11 +126,40 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		floor = 0; //TODO: Load this from scopData
 		
 		scopData = new PlayerDataManager(this);
-		inventoryManager = new InventoryManager(this);
 
 		this.damageModifiers = new ArrayList<Modifier>();
 		
 		swordSkillManager = new SwordSkillManager(this);
+
+		InventoryRegistryLookupTask inventoriesLookup = new InventoryRegistryLookupTask(playerRegistryId);
+		inventoriesLookup.fetchInventoryIds().thenAcceptAsync((inventoryTypeIdMap) -> {
+			// Load the Player's Inventory
+			if (inventoryTypeIdMap.containsKey(InventoryType.PLAYER)) {
+				this.playerInventory = new PlayerInventory(inventoryTypeIdMap.get(InventoryType.PLAYER));
+			} else {
+				// Create a new Inventory if one does not exist already
+				new InventorySaveTask(this.playerRegistryId, InventoryType.PLAYER, new ItemIdentifier [0]).saveInventory()
+					.thenAcceptAsync((inventoryId) -> {
+						this.playerInventory = new PlayerInventory(inventoryId);
+					});
+			}
+
+			// Load the SwordSkillInventory
+			if (inventoryTypeIdMap.containsKey(InventoryType.SWORD_SKILL)) {
+				this.swordSkillInventory = new SwordSkillInventory(inventoryTypeIdMap.get(InventoryType.PLAYER));
+			} else {
+				// Create a new Inventory if one does not exist already
+				new InventorySaveTask(this.playerRegistryId, InventoryType.SWORD_SKILL, new ItemIdentifier [0]).saveInventory()
+					.thenAcceptAsync((inventoryId) -> {
+						this.swordSkillInventory = new SwordSkillInventory(inventoryId);
+					});
+			}
+		});
+	}
+
+	public void linkPlayer(Player p) {
+		this.user = p;
+		this.playerInventory.bindInventory(p.getInventory());
 	}
 
 	/**True if player can perform left click */

@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,8 +13,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InventoryBase;
-import net.peacefulcraft.sco.inventories.InventoryType;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 
 /**
  * Tracks opening and closing of inventories
@@ -54,21 +51,6 @@ public class InventoryActions implements Listener{
 			 * Open the player's sword skill inventory
 			 * Creates one if it does not already exist
 			 */
-			SwordSkillInventory inv = (SwordSkillInventory) s.getInventory(InventoryType.SWORD_SKILL);
-			
-			inv.openInventory();
-			openInventories.put(p, (InventoryBase) inv);
+			s.getSwordSkillInventory().openInventory(s);
 		}
-	
-	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent e) {
-		if(!openInventories.containsKey(e.getPlayer())) { return; }
-		
-		InventoryBase inv = openInventories.remove(e.getPlayer());
-		inv.saveInventory();
-		
-		if(inv instanceof SwordSkillInventory) {
-			GameManager.findSCOPlayer((Player) e.getPlayer()).getSwordSkillManager().syncSkillInventory((SwordSkillInventory) inv);
-		}
-	}
 }

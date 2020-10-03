@@ -7,5 +7,4 @@ package net.peacefulcraft.sco.swordskills;
 public interface SwordSkillCaster {
 
     public SwordSkillManager getSwordSkillManager();
-
 }

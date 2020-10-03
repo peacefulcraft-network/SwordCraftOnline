@@ -13,8 +13,6 @@ import org.bukkit.entity.Player;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventories.InventoryType;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
@@ -25,7 +23,6 @@ import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
 
 public class SCOAdmin implements CommandExecutor {
@@ -35,16 +32,6 @@ public class SCOAdmin implements CommandExecutor {
 		if (label.equalsIgnoreCase("scoadmin")) {
 			if (args.length == 0) {
 				sender.sendMessage("scoadmin [ swordskillbook | generateitem | playerdata | setplayerdata | debug]");
-				return true;
-			}
-
-			if (args[0].equalsIgnoreCase("swordskillbook")) {
-				Player p = (Player) sender;
-				SwordCraftOnline.getGameManager();
-				SwordSkillInventory inv = (SwordSkillInventory) GameManager.findSCOPlayer(p).getInventory(InventoryType.SWORD_SKILL);
-				
-				inv.openInventory();
-				
 				return true;
 			}
 
@@ -80,7 +67,7 @@ public class SCOAdmin implements CommandExecutor {
 						
 						if(args.length > 3) {
 							if(args[3].equalsIgnoreCase("swordskill")) {
-								p.openInventory(s.getInventoryManager().getInventory(InventoryType.SWORD_SKILL).getInventory());
+								s.getSwordSkillInventory().openInventory(s);
 								return true;
 							} else {
 								p.sendMessage(ChatColor.GOLD + "Valid agruments" + ChatColor.RED + " swordskill");
