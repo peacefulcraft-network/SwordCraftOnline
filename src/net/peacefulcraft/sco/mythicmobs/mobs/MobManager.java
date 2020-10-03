@@ -368,7 +368,7 @@ public class MobManager implements Runnable {
      * Despawns a group of mobs
      * @param lis List of activemobs to be removed
      */
-    public void despawnMobs(List<ActiveMob> lis) {
+    public void despawnMobs(Collection<ActiveMob> lis) {
         for(ActiveMob am : lis) {
             if((am.getType()).optionDespawn && !am.getType().isPersistent()) {
                 am.setDespawned();
