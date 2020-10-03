@@ -166,7 +166,7 @@ public class SpawnerManager implements Runnable {
                         for(String mmStr : mmStrList) {
                             MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMList().get(mmStr);
                             if(mmStr == null) {
-                                SwordCraftOnline.logInfo("[Spawner Manager] Error loading file. MythicMob yml value null.");
+                                SwordCraftOnline.logInfo("[Spawner Manager] Error loading file. MythicMob yml value null in: " + name + ".");
                                 continue loaderLoop;
                             } else if(mm == null) {
                                 SwordCraftOnline.logInfo("[Spawner Manager] Error loading file. MythicMob Type null for: " + mmStr);
