@@ -44,6 +44,7 @@ import net.peacefulcraft.sco.swordskills.utilities.CriticalHit;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Parry;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class SCOAdmin implements CommandExecutor {
 
@@ -144,11 +145,11 @@ public class SCOAdmin implements CommandExecutor {
 
 				String data = args[2];
 				if (data.equalsIgnoreCase("critical_chance") || data.equalsIgnoreCase("crit_chance")) {
-					s.setCriticalChance((int) i);
+					s.setCombatModifier(CombatModifier.CRITICAL_CHANCE,(int) i, -1);
 					p.sendMessage(ChatColor.GOLD + "Critical Chance set to: " + ChatColor.RED + i);
 					return true;
 				} else if (data.equalsIgnoreCase("critical_multiplier") || data.equalsIgnoreCase("crit_mult")) {
-					s.setCriticalMultiplier(i);
+					s.setCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, i, -1);
 					p.sendMessage(ChatColor.GOLD + "Critical Multiplier set to: " + ChatColor.RED + i);
 					return true;
 				} else if (data.equalsIgnoreCase("player_kills")) {
@@ -161,7 +162,7 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 				} else if (data.equalsIgnoreCase("parry")) {
 					p.sendMessage(ChatColor.GOLD + "Parry Chance set to: " + ChatColor.RED + i);
-					s.setParryChance((int) i);
+					s.setCombatModifier(CombatModifier.PARRY_CHANCE, i, -1);
 					return true;
 				} else {
 					p.sendMessage(ChatColor.GOLD + "Valid arguments: " + ChatColor.RED

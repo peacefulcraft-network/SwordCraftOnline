@@ -8,6 +8,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.ParrySkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class ParryItem extends SkillProvider {
 
@@ -24,7 +25,7 @@ public class ParryItem extends SkillProvider {
 
         setModifiers();
 
-        s.setCriticalChance(s.getCriticalChance() + this.increase);
+        s.addCombatModifier(CombatModifier.PARRY_CHANCE, this.increase, -1);
 
         new ParrySkill(s, -1, (SkillProvider)this, this.increase);
     }

@@ -65,27 +65,9 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		}
 		public void resetExhaustion() { this.exhaustion = 0.0; }
 
-	/**Stores players critical damage chance*/
-	private int criticalChance = 2;
-		public int getCriticalChance() { return this.criticalChance; }
-		public void setCriticalChance(int num) { this.criticalChance = num; }
-		public void addCritical(int num) { this.criticalChance+=num; }
-
-	private double criticalMultiplier = 1.2;
-		public double getCriticalMultiplier() { return this.criticalMultiplier; }
-		public void setCriticalMultiplier(double num) { this.criticalMultiplier = num; }
-
 	private boolean adminOverride = false;
 		public boolean hasOverride() { return this.adminOverride; }
 		public void setAdminOverride(boolean bool) { this.adminOverride = bool; }
-
-	private int parryChance = 0;
-		public int getParryChance() { return this.parryChance; }
-		public void setParryChance(int num) { this.parryChance = num; }
-
-	private double parryMultiplier = 0.95D;
-		public double getParryMultiplier() { return this.parryMultiplier; }
-		public void setParryMultiplier(double num) { this.parryMultiplier = num; }
 
 	/**Additional chance to increase item level on drop */
 	private double bonusLevelMod = 0.0D;
@@ -225,9 +207,9 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		+ ChatColor.GOLD + repeat(40, "-") + '\n';
 		String partyName = ChatColor.GOLD + "Party Name: " + ChatColor.BLUE + getPartyName() + '\n';
 		String playerKills = ChatColor.GOLD + "Player Kills: " + ChatColor.BLUE + getPlayerKills() + '\n';
-		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCriticalChance() + '\n';
-		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCriticalMultiplier() + '\n'; 
-		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getParryChance() + '\n';
+		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_CHANCE) + '\n';
+		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER) + '\n'; 
+		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.PARRY_CHANCE) + '\n';
 		String override = ChatColor.GOLD + "Admin Override: " + ChatColor.BLUE + hasOverride() + '\n';
 		
 		String skills = ChatColor.GOLD + "Active Skills: " + ChatColor.BLUE;

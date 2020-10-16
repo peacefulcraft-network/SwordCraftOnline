@@ -21,6 +21,14 @@ public class ModifierUser {
     private List<Modifier> damageModifiers;
 
     private LivingEntity entity;
+
+    private int criticalChance;
+    
+    private double criticalMultiplier;
+
+    private int parryChance;
+
+    private double parryMultiplier;
     
     public LivingEntity getLivingEntity() { return this.entity; }
 
@@ -230,5 +238,113 @@ public class ModifierUser {
                 }
             }, duration * 20);
         }
+    }
+
+
+    /**
+     * Adds a double value to a set attribute
+     * @param attribute Attribute to be set
+     * @param amount Value to be added. I.e. 0.2, 0.4, 1, etc.
+     * @param duration Resets value after this time in seconds. If -1 it does not
+     */
+    public void addAttribute(Attribute attribute, double amount, int duration) {
+        double d = getAttribute(attribute);
+
+        getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setAttribute(attribute, d, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    /**
+     * Fetches combat modifier value
+     * @param mod CombatModifier we want
+     * @return value of modifier, -1 default.
+     */
+    public double getCombatModifier(CombatModifier mod) {
+        switch(mod) {
+            case CRITICAL_CHANCE:
+                return criticalChance;
+            case CRITICAL_MULTIPLIER:
+                return criticalMultiplier;
+            case PARRY_CHANCE:
+                return parryChance;
+            case PARRY_MULTIPLIER:
+                return parryMultiplier;
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * Sets CombatModifier to value for duration
+     * @param mod Modifier we want to set
+     * @param amount Amount to be set
+     * @param duration Resets value after this time in seconds. If -1 it does not.
+     */
+    public void setCombatModifier(CombatModifier mod, double amount, int duration) {
+        double d = getCombatModifier(mod);
+
+        switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance = (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier = amount;
+            case PARRY_CHANCE:
+                parryChance = (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier = amount;
+        }
+
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setCombatModifier(mod, d, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    /**
+     * Multiplies given combat modifier by amount.
+     * @param mod CombatModifier we want to adjust
+     * @param amount Amount to be multiplied by
+     * @param duration Resets value after this time in seconds. If -1 it does not.
+     */
+    public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
+        double d = getCombatModifier(mod);
+
+        setCombatModifier(mod, d * amount, -1);
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setCombatModifier(mod, d, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    public void addCombatModifier(CombatModifier mod, double amount, int duration) {
+        double d = getCombatModifier(mod);
+
+        setCombatModifier(mod, d + amount, -1);
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setCombatModifier(mod, d, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    /**
+     * Combat modifiers used by both Active Mobs and Players
+     */
+    public enum CombatModifier {
+        CRITICAL_CHANCE, CRITICAL_MULTIPLIER, PARRY_CHANCE, PARRY_MULTIPLIER;
     }
 }
