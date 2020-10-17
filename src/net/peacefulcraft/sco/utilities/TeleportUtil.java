@@ -1,7 +1,6 @@
 package net.peacefulcraft.sco.utilities;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 
 /**
  * Central class for teleportation utilities

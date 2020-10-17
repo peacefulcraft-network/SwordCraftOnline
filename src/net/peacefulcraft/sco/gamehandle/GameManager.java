@@ -1,8 +1,10 @@
 package net.peacefulcraft.sco.gamehandle;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,9 +16,6 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
-import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
@@ -30,7 +29,7 @@ public class GameManager {
 	}
 	
 	public void preProcessPlayerJoin(UUID uuid) {
-		if(findSCOPlayerByUUID(uuid) != null)
+		if(players.get(uuid) != null)
 			throw new RuntimeException("Command executor is already in SCO");
 		
 		SCOPlayer s = new SCOPlayer(uuid);
@@ -81,14 +80,10 @@ public class GameManager {
 	}
 	
 	public static SCOPlayer findSCOPlayer(Player p) {
-		return findSCOPlayerByUUID(p.getUniqueId());
+		return players.get(p.getUniqueId());
 	}
 	
-	public static SCOPlayer findSCOPlayerByUUID(UUID uuid) {
-		return players.get(uuid);
-	}
-	
-	public static SCOPlayer findSCOPlayerByName(String name) {
+	public static SCOPlayer findSCOPlayer(String name) {
 		for(SCOPlayer p : players.values()) {
 			if(p.getName().equalsIgnoreCase(name)) {
 				return p;
@@ -96,6 +91,16 @@ public class GameManager {
 		}
 		return null;
 	}
+
+	public static List<SCOPlayer> findSCOPlayers(List<Player> lis) {
+        List<SCOPlayer> output = new ArrayList<>();
+        for(Player p : lis) {
+            SCOPlayer s = GameManager.findSCOPlayer(p);
+			if(s == null) { continue; }
+			output.add(s);
+		}
+		return output;
+    }
 
 	public Set<Player> getPlayersInRangeSq(Location location, int rangeSq) {
 		Set<Player> inRange = new HashSet<>();

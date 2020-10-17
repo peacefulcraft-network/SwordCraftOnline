@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.mythicmobs.spawners;
 import java.util.Hashtable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MobManager.SpawnFields;
 import net.peacefulcraft.sco.utilities.TeleportUtil;
 
 /**
@@ -29,7 +31,11 @@ public class ActiveSpawner {
     private Location loc;
         public Location getLocation() { return new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()); }
 
+    private Boolean locked = false;
+        public void setLocked(Boolean b) { this.locked = b; }
+
     private boolean isActivating;
+
 
     public ActiveSpawner(Spawner s, int level, Location loc) {
         this.s = s;
@@ -73,6 +79,9 @@ public class ActiveSpawner {
      * Handles all logic related to blocking a spawner, spawner level, mob level, etc.
      */
     public void trigger() {
+        //Checking if spawner is locked
+        if(locked) { return; }
+      
         /**Checking if spawners DayCycle matches server time of day */
         DayCycle tempCycle = this.s.getDayCycle();
         if(GameManager.isDay() && tempCycle.equals(DayCycle.NIGHT)) { return; }
@@ -129,11 +138,25 @@ public class ActiveSpawner {
                 level *= 2;
             }
 
-            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicInternal(), loc, level);
+            //If spawner is capable and we hit 1/n chance
+            SpawnFields field = SpawnFields.NONE;
+            if(this.s.canSpawnHerculean() && SwordCraftOnline.r.nextInt(this.s.getHerculeanChance()) == 1) {
+                field = SpawnFields.HERCULEAN;
+            }
+
+            // Fetching random mob from spawner by internal name
+            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicMob().getInternalName(), loc, level, field);
             if(am == null) {
                 SwordCraftOnline.logInfo("[Spawner Manager] Error spawning mob in: " + this.s.getName());
             }
         }
+    }
+
+    /**@return True if chunk spawner is in is loaded */
+    public boolean isLoaded() {
+        Chunk chunk = getLocation().getChunk();
+        if(chunk.isLoaded()) { return true; }
+        return false;
     }
 
     /**Creates a config map to be stored in ./SpawnerConfig.yml */

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,6 +29,13 @@ import net.peacefulcraft.sco.mythicmobs.mobs.bosses.BossIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.bosses.MythicBoss;
 import net.peacefulcraft.sco.mythicmobs.spawners.ActiveSpawner;
 import net.peacefulcraft.sco.particles.Effect;
+import net.peacefulcraft.sco.structures.Structure;
+import net.peacefulcraft.sco.structures.structures.ComplexPillarArea;
+import net.peacefulcraft.sco.structures.structures.Cylinder;
+import net.peacefulcraft.sco.structures.structures.Path;
+import net.peacefulcraft.sco.structures.structures.Pillar;
+import net.peacefulcraft.sco.structures.structures.Wall;
+import net.peacefulcraft.sco.structures.structures.WallWave;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
@@ -36,6 +44,7 @@ import net.peacefulcraft.sco.swordskills.utilities.CriticalHit;
 import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Parry;
 import net.peacefulcraft.sco.swordskills.utilities.Validator;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class SCOAdmin implements CommandExecutor {
 
@@ -82,7 +91,7 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("playerdata")) {
 				Player p = (Player) sender;
 
-				SCOPlayer s = GameManager.findSCOPlayerByName(args[1]);
+				SCOPlayer s = GameManager.findSCOPlayer(args[1]);
 				if (s == null) {
 					p.sendMessage(ChatColor.RED + "Could not find player. Are they online?");
 					return true;
@@ -121,7 +130,7 @@ public class SCOAdmin implements CommandExecutor {
 							+ "player_kills, parry, admin_override, admin_over");
 					return true;
 				}
-				SCOPlayer s = GameManager.findSCOPlayerByName(args[1]);
+				SCOPlayer s = GameManager.findSCOPlayer(args[1]);
 				if (s == null) {
 					p.sendMessage(ChatColor.RED + "Could not find player");
 					return true;
@@ -136,11 +145,11 @@ public class SCOAdmin implements CommandExecutor {
 
 				String data = args[2];
 				if (data.equalsIgnoreCase("critical_chance") || data.equalsIgnoreCase("crit_chance")) {
-					s.setCriticalChance((int) i);
+					s.setCombatModifier(CombatModifier.CRITICAL_CHANCE,(int) i, -1);
 					p.sendMessage(ChatColor.GOLD + "Critical Chance set to: " + ChatColor.RED + i);
 					return true;
 				} else if (data.equalsIgnoreCase("critical_multiplier") || data.equalsIgnoreCase("crit_mult")) {
-					s.setCriticalMultiplier(i);
+					s.setCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, i, -1);
 					p.sendMessage(ChatColor.GOLD + "Critical Multiplier set to: " + ChatColor.RED + i);
 					return true;
 				} else if (data.equalsIgnoreCase("player_kills")) {
@@ -153,7 +162,7 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 				} else if (data.equalsIgnoreCase("parry")) {
 					p.sendMessage(ChatColor.GOLD + "Parry Chance set to: " + ChatColor.RED + i);
-					s.setParryChance((int) i);
+					s.setCombatModifier(CombatModifier.PARRY_CHANCE, i, -1);
 					return true;
 				} else {
 					p.sendMessage(ChatColor.GOLD + "Valid arguments: " + ChatColor.RED
@@ -166,7 +175,7 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("swordskills")) {
 				SCOPlayer s;
 				if (args.length > 0) {
-					s = GameManager.findSCOPlayerByName(args[1]);
+					s = GameManager.findSCOPlayer(args[1]);
 					if (s == null) {
 						sender.sendMessage(ChatColor.RED + "Could not find player");
 						return true;
@@ -477,6 +486,42 @@ public class SCOAdmin implements CommandExecutor {
 				effect.start();
 				SwordCraftOnline.logInfo("Particle started...");
 
+				return true;
+			}
+
+			if(args[0].equalsIgnoreCase("structure")) {
+				Player p = (Player)sender;
+				if(args[1].isEmpty()) {
+					p.sendMessage("Enter a structure.");
+					return true;
+				}
+				Structure struct = null;
+				if(args[1].equalsIgnoreCase("Pillar")) {
+					struct = new Pillar(5, 3, Material.STONE, true, 5);
+					struct.setTargetLocation(p.getLocation());
+				} else if(args[1].equalsIgnoreCase("Path")) {
+					struct = new Path(2, 10, Material.STONE, true, 5);
+					struct.setTargetEntity(p);
+				} else if(args[1].equalsIgnoreCase("Wall")) {
+					struct = new Wall(5, 7, Material.STONE, true, 5);
+					struct.setTargetEntity(p);
+					struct.setAdvancedCleanup(true);
+				} else if(args[1].equalsIgnoreCase("ComplexPillarArea")) {
+					struct = new ComplexPillarArea(10, 5, 7, Material.STONE, true, 5);
+					struct.setTargetLocation(p.getLocation());
+				} else if(args[1].equalsIgnoreCase("WallWave")) {
+					struct = new WallWave(5, 7, 10, Material.STONE, true, 5);
+					struct.setTargetEntity(p);
+					((WallWave)struct).setWallGap(1);
+				} else if(args[1].equalsIgnoreCase("Cylinder")) {
+					struct = new Cylinder(5, 5, true, Material.STONE, true, 5);
+					struct.setTargetLocation(p.getLocation());
+				}
+				if(struct == null) {
+					SwordCraftOnline.logInfo("[DEBUG] Struct is null");
+					return true;
+				}
+				struct.construct();
 				return true;
 			}
 

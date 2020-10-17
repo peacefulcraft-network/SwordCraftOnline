@@ -1,6 +1,11 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,11 +27,24 @@ public class DirectionalUtil implements Listener{
         NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST;
     }
 
+    public static HashMap<UUID, SCOPlayer> playerCheck = new HashMap<>();
+
+    public static void addPlayer(SCOPlayer s) {
+        playerCheck.put(s.getUUID(), s);
+    }
+
+    public static void removePlayer(SCOPlayer s) {
+        playerCheck.remove(s.getUUID());
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         SCOPlayer s = GameManager.findSCOPlayer(p);
         if(s == null) { return; }
+
+        //Checking if player should have their direction changed
+        if(playerCheck.get(p.getUniqueId()) == null) { return; }
 
         /**Direction the player is moving. */
         Vector moving = e.getFrom().subtract(e.getTo()).toVector().normalize();
@@ -85,6 +103,15 @@ public class DirectionalUtil implements Listener{
     */
     public static CardinalDirection getCardinalDirection(Location loc, int offset) {
         double rotation = (loc.getYaw() - offset) % 360;
+        return getCardinalDirection(rotation);
+    }
+
+    /**
+     * Calculates cardinal direction based on rotation from 0.0 degrees (north)
+     * @param rotation degrees from north
+     * @return Cardinal direction of rotation
+     */
+    private static CardinalDirection getCardinalDirection(double rotation) {
         if(rotation < 0) {
             rotation += 360.0;
         }
@@ -109,5 +136,61 @@ public class DirectionalUtil implements Listener{
         } else {
             return null;
         }
+    }
+
+    /**
+     * Returns relative blockface directions of entity location 
+     * TODO: Rename to signify the method better
+     */
+    public static BlockFace getSideDirections(LivingEntity e) {
+		double rot = (e.getLocation().getYaw() - 90) % 360;
+		return getRelativeBlockFace(rot);
+    }
+
+    /**
+     * Helper method. Returns strict block faces based on angle rotation
+     * from 0.0 degress (north)
+     * @param rotation Rotation from north
+     * @return Blockface of direction
+     */
+    private static BlockFace getRelativeBlockFace(double rotation) {
+        if(rotation < 0 ) {
+			rotation += 360.0;
+		}
+		if(0 <= rotation && rotation < 45.0) {
+			return BlockFace.NORTH; //Facing North
+		} else if(45.0 <= rotation && rotation < 135.0) {
+			return BlockFace.EAST; //Facing East
+		} else if(135.0 <= rotation && rotation < 225.0) {
+			return BlockFace.NORTH; //Facing South
+		} else if(225.0 <= rotation && rotation < 315.0) {
+			return BlockFace.EAST; //Facing West
+		} else if(315.0 <= rotation && rotation < 360.0) {
+			return BlockFace.NORTH; //Facing North
+		} else {
+			return null;
+		}
+    }
+    
+    /**
+     * Returns relative blockface directions of player location 
+     * TODO: Rename to signify the method better
+     */
+    public static BlockFace getSideDirections(Player p) {
+        return getSideDirections((LivingEntity) p);
+    }
+
+    /**
+     * Inefficient, but it works
+     * TODO: Rename to signify the method better
+     * Takes two locations and calculates the blockface between the locations
+     * @return Relative blockface
+     */
+    public static BlockFace getSideDirections(Location origin, Location target) {
+        // Angle is location based on North cardinal direction
+        double angle = (Math.atan2(origin.getX() - target.getX(), origin.getZ() - target.getZ()));
+        angle = (-(angle / Math.PI) * 360.0d) / 2.0d + 180.0d;
+
+        return getRelativeBlockFace(angle);
     }
 }

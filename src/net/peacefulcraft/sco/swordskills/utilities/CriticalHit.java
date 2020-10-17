@@ -1,7 +1,5 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.entity.Entity;
@@ -14,11 +12,10 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class CriticalHit {
     private double damage;
-        public double getDamage() { return DamageCalc(); }
-        public void setDamage(double i) { damage = i; }
 
     private Entity vic;
         public Entity getVic() { return vic; }
@@ -39,18 +36,27 @@ public class CriticalHit {
     }
 
     /**
+     * Does critical damage calculation with no modifiers.
+     */
+    public double damageCalc() {
+        return damageCalc(0, 0);
+    }
+
+    /**
      * Handles critical hit chance and over criticals.
      * Over critical occurs on 100% chance intervals. For each
      * 100% over 100% damage is increased 1x.
+     * @param chanceModifier Any temporary crit chance value for this calculation
+     * @param damageModifier Any temporary crit damage value for this calculation
      */
-    public double DamageCalc() {
+    public double damageCalc(int chanceModifier, double multModifier) {
         double d = 0;
         if(damager instanceof Player) {
             SCOPlayer s = GameManager.findSCOPlayer((Player) damager);
             if(s == null) { return 0; }
 
             Random rand = new Random();
-            int chance = s.getCriticalChance();
+            int chance = (int) (s.getCombatModifier(CombatModifier.CRITICAL_CHANCE) + chanceModifier);
             int mult = 1;
             /**If critical hit chance is above 100% we over critical */
             if(chance > 100) {
@@ -60,18 +66,19 @@ public class CriticalHit {
             }
 
             /**Over critical logic: If not chance, guaranteed critical 1 level lower */
+            double multiplier = s.getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER)+ multModifier;
             if(rand.nextInt(100) <= chance) {
-               d = mult * s.getCriticalMultiplier() * damage;
+               d = mult * multiplier * damage;
                ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + mult + "x Critical Hit!");
             } else if(mult > 1) {
-                d = (mult - 1) * s.getCriticalMultiplier() * damage;
+                d = (mult - 1) * multiplier * damage;
                 ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + (mult - 1) + "x Critical Hit!");
             }
         } else {
             ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(damager.getUniqueId());
             if(am == null) { return 0; }
 
-            int chance = am.getCriticalChance();
+            int chance = (int) am.getCombatModifier(CombatModifier.CRITICAL_CHANCE) + chanceModifier;
             int mult = 1;
 
             if(chance > 100) {
@@ -80,10 +87,11 @@ public class CriticalHit {
                 }
             }
 
+            double multiplier = am.getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER) + multModifier;
             if(SwordCraftOnline.r.nextInt(100) <= chance) {
-                d = mult * am.getCriticalMultiplier() * this.damage;
+                d = mult * multiplier * this.damage;
             } else if(mult > 1) {
-                d = (mult - 1) * am.getCriticalMultiplier() * damage;
+                d = (mult - 1) * multiplier * damage;
             }
         }
         return d;

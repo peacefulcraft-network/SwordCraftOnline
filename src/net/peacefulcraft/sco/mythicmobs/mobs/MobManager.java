@@ -17,11 +17,15 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.ChatColor;
-import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
@@ -32,7 +36,7 @@ import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 
-public class MobManager {
+public class MobManager implements Runnable {
     private final SwordCraftOnline s;
 
     /**Stores MM: Key file name */
@@ -52,10 +56,17 @@ public class MobManager {
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
 
-    
+    /**Registry of active herculean level mobs */
+    private HashMap<UUID, ActiveMob> herculeanRegistry = new HashMap<>();
+        public Map<UUID, ActiveMob> getHerculeanRegistry() { return Collections.unmodifiableMap(this.herculeanRegistry); }
+
+    /** Main task logic for mob manager*/
+    private BukkitTask mobTask;
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
+        this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 20);
+
         loadMobs();
     }
 
@@ -131,6 +142,38 @@ public class MobManager {
         loadMobs();
     }
 
+    @Override
+    //Mob managers herculean run task
+    public void run() {
+        HashMap<SCOPlayer, Integer> map = new HashMap<>();
+        
+        //Iterating over every registered herculean level AM
+        for(ActiveMob am : herculeanRegistry.values()) {
+            for(Entity e : am.getLivingEntity().getNearbyEntities(30, 15, 30)) {
+                if(!(e instanceof Player)) { continue; }
+
+                //If player is playing game
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { continue; }
+
+                //Tracking how many Herculean mobs are nearby
+                if(!map.containsKey(s)) {
+                    map.put(s, 0);
+                }
+                map.put(s, map.get(s) + 1);
+            }
+        }
+
+        //Iterating over players to message them
+        for(SCOPlayer s : map.keySet()) {
+            if(map.get(s) > 1) {
+                Announcer.messagePlayer(s, "There are multiple Herculean level mobs nearby...", 60000);
+            } else {
+                Announcer.messagePlayer(s, "There is a Herculean level mob nearby...", 60000);
+            }
+        }
+    }
+
     public MythicMob getMythicMob(String s) {
         if(s == null) { return null; }
         if(this.mmList.containsKey(s)) {
@@ -157,12 +200,20 @@ public class MobManager {
         }
         ActiveMob am = new ActiveMob(l.getUniqueId(), l, mm, level);
         this.mobRegistry.put(l.getUniqueId(), am);
+        //Registering herculean mobs to own registry
+        if(am.isHerculean()) {
+            this.herculeanRegistry.put(l.getUniqueId(), am);
+        }
         mm.applyMobVolatileOptions(am);
         return am;
     }
 
     public ActiveMob registerActiveMob(ActiveMob am) {
         this.mobRegistry.put(am.getUUID() , am);
+        //Registering herculean mobs to own registry
+        if(am.isHerculean()) {
+            this.herculeanRegistry.put(am.getUUID(), am);
+        }
         return am;
     }
 
@@ -176,16 +227,35 @@ public class MobManager {
         }
         final ActiveMob am = new ActiveMob(l.getUniqueId(), l, mm, getMythicMobLevel(mm, l));
         this.mobRegistry.put(l.getUniqueId(), am);
+        if(am.isHerculean()) {
+            this.herculeanRegistry.put(l.getUniqueId(), am);
+        }
         mm.applyMobVolatileOptions(am);
         return am;
     }
 
     public void unregisterActiveMob(UUID u) {
         this.mobRegistry.remove(u);
+        this.herculeanRegistry.remove(u);
     }
 
+    /**
+     * Unregisteres an active mob from registry
+     * @param am ActiveMob to be unregistered
+     */
     public void unregisterActiveMob(ActiveMob am) {
         this.mobRegistry.remove(am.getEntity().getUniqueId());
+        this.herculeanRegistry.remove(am.getEntity().getUniqueId());
+    }
+
+    /**
+     * Unregisteres a list of active mobs
+     * @param lis List to be cleared
+     */
+    public void unregisterActiveMobs(List<ActiveMob> lis) {
+        for(ActiveMob am : lis) {
+            unregisterActiveMob(am);
+        }
     }
 
     public ActiveMob getMythicMobInstance(Entity target) {
@@ -217,28 +287,52 @@ public class MobManager {
         return am.getLevel();
     }
 
-    public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level) {
-        if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL)) {
-            SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abdandoned.");
-            return null;
-        }
+    public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level, List<SpawnFields> fields) {
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
+            //If mob is hostile and gamemode peaceful we abort spawn
+            if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL) 
+                && !MythicEntity.isPassive(mm.getStrMobType())) {
+                SwordCraftOnline.logInfo("[Mob Manager] World difficult is peaceful. Spawning abandoned.");
+                return null;
+            }
+            //If we set herculean
+            if(fields != null && fields.contains(SpawnFields.HERCULEAN)) {
+                mm.setHerculean(true);
+            }
+            //If spawn reason is not BOSS_INTERFACE and mob is locked we cancel spawn
+            if(fields != null && !fields.contains(SpawnFields.BOSS_INTERFACE) && mm.isBossLocked()) {
+                SwordCraftOnline.logInfo("[Mob Manager] Attempted to spawn mob, " + mobName + ", outside of boss interface. Spawning abandoned.");
+                return null;
+            }
+
             return mm.spawn(loc, level);
         }
         return null;
     }
 
     public ActiveMob spawnMob(String mobName, AbstractLocation loc) {
-        return spawnMob(mobName, loc, 1);
+        return spawnMob(mobName, loc, 1, null);
     }
 
     public ActiveMob spawnMob(String mobName, Location loc, int level) {
-        return spawnMob(mobName, BukkitAdapter.adapt(loc), level);
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, null);
     }
 
     public ActiveMob spawnMob(String mobName, Location loc) {
-        return spawnMob(mobName, BukkitAdapter.adapt(loc), 1);
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), 1, null);
+    }
+
+    /**Mob spawn method with single field */
+    public ActiveMob spawnMob(String mobName, Location loc, int level, SpawnFields field) {
+        List<SpawnFields> fields = new ArrayList<>();
+        fields.add(field);
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, fields);
+    }
+
+    /**Mob spawn method with fields attribute */
+    public ActiveMob spawnMob(String mobName, Location loc, int level, List<SpawnFields> fields) {
+        return spawnMob(mobName, BukkitAdapter.adapt(loc), level, fields);
     }
 
     public MythicMob determineMobType(AbstractEntity l) {
@@ -288,6 +382,19 @@ public class MobManager {
             }
         }
         return amount;
+    }
+
+    /**
+     * Despawns a group of mobs
+     * @param lis List of activemobs to be removed
+     */
+    public void despawnMobs(Collection<ActiveMob> lis) {
+        for(ActiveMob am : lis) {
+            if((am.getType()).optionDespawn && !am.getType().isPersistent()) {
+                am.setDespawned();
+                am.getEntity().remove();
+            }
+        }
     }
 
     public Collection<ActiveMob> getActiveMobs() {
@@ -348,5 +455,23 @@ public class MobManager {
             SwordCraftOnline.logDebug("Updating health bar of: " + am.getDisplayName() + " with health: " + String.valueOf(am.getHealth()));
             am.updateHealthBar();
         }
+    }
+
+    /**
+     * Toggles mob run task on/off
+     */
+    public void toggleMobTask() {
+        if(mobTask.isCancelled()) {
+            this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 20);
+        } else {
+            this.mobTask.cancel();
+        }
+    }
+
+    /**
+     * Enum constants used to assist in mob spawning variables
+     */
+    public enum SpawnFields {
+        NONE, BOSS_INTERFACE, HERCULEAN;
     }
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -16,6 +17,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MobManager.SpawnFields;
 import net.peacefulcraft.sco.utilities.TeleportUtil;
 
 public class BossWarden implements MythicBoss {
@@ -74,7 +76,7 @@ public class BossWarden implements MythicBoss {
 
     @Override
     public MythicBoss spawn(Location loc) {
-        this.am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob("BossWarden", loc, this.level);
+        this.am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob("BossWarden", loc, this.level, SpawnFields.BOSS_INTERFACE);
         this.am.updateBossBar();
 
         //Creates crystals around the boss
@@ -120,16 +122,10 @@ public class BossWarden implements MythicBoss {
      */
     private void abilityZero() {
         double armor = this.am.getArmor();
-        this.am.setArmor(3 + this.powerModifier, true);
+        this.am.setAttribute(Attribute.GENERIC_ARMOR, 3 + this.powerModifier, 10);
 
-        double toughness = this.am.getArmorToughness();
-        this.am.setArmorToughness(3 + this.powerModifier, true);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-            public void run() {
-                am.setArmor(armor, false);
-                am.setArmor(toughness, false);
-            }
-        }, 200);
+        double toughness = this.am.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
+        this.am.setAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS, 3 + this.powerModifier, 10);
 
         //Selects new phase after (8 - powermodifier) seconds
         this.isUsing = false;

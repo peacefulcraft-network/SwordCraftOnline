@@ -1,5 +1,8 @@
 package net.peacefulcraft.sco.mythicmobs.spawners;
 
+import java.util.List;
+
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
@@ -9,9 +12,12 @@ public class Spawner {
     private MythicConfig mc;
 
     /**Spawners mob to be spawned */
-    private MythicMob mm;
-        public MythicMob getMythicMob() { return this.mm; }
-        public String getMythicInternal() { return this.mm.getInternalName(); }
+    //private MythicMob mm;
+    //    public MythicMob getMythicMob() { return this.mm; }
+    //    public String getMythicInternal() { return this.mm.getInternalName(); }
+
+    /**List of mobs to be spawned */
+    private List<MythicMob> mobList;
 
     /**Spawners file name */
     private String name;
@@ -69,9 +75,17 @@ public class Spawner {
     private boolean isPassive;
         public boolean isPassive() { return this.isPassive; }
 
-    public Spawner(String name, MythicMob mm, MythicConfig config) {
+    /**Determines if spawner is capable of spawning herculean level monsters */
+    private boolean canSpawnHerculean;
+        public boolean canSpawnHerculean() { return this.canSpawnHerculean; }
+        
+    /**Determines spawners chance to spawn a herculean level monster */
+    private int herculeanChance;
+        public int getHerculeanChance() { return this.herculeanChance; }
+
+    public Spawner(String name, List<MythicMob> mobList, MythicConfig config) {
         this.name = name;
-        this.mm = mm;
+        this.mobList = mobList;
         this.mc = config;
 
         this.size = mc.getInteger("Size", 5);
@@ -89,7 +103,11 @@ public class Spawner {
 
         this.allowNightwave = mc.getBoolean("AllowNightwave", true);
 
-        this.isPassive = this.mm.isPassive();
+        // New attribute by spawner. Default false
+        this.isPassive = mc.getBoolean("IsPassive", false);
+
+        this.canSpawnHerculean = mc.getBoolean("CanSpawnHerculean", false);
+        this.herculeanChance = mc.getInteger("HerculeanChance", 1000);
 
         try{
             String tempCycle = mc.getString("DayCycle", "ALL").toUpperCase();
@@ -99,6 +117,10 @@ public class Spawner {
         } catch(NullPointerException ex) {
             this.dayCycle = DayCycle.ALL;
         }
+    }
+
+    public MythicMob getMythicMob() {
+        return this.mobList.get(SwordCraftOnline.r.nextInt(this.mobList.size()));
     }
 
 }

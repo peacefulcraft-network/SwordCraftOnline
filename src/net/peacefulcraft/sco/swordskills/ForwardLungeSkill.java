@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityInteractEvent;
@@ -50,14 +51,7 @@ public class ForwardLungeSkill extends SwordSkill {
 
         p.setVelocity(v);
 
-        double base = s.getAttackDamage();
-        s.setAttackDamage(this.increase, true);
-
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-            public void run() {
-                s.setAttackDamage(base, false);
-            }
-        }, 40);
+        s.multiplyAttribute(Attribute.GENERIC_ATTACK_DAMAGE, this.increase, 2);
     }
 
     @Override
