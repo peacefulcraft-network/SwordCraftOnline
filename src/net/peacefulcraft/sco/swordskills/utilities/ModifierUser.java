@@ -18,20 +18,34 @@ import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
  */
 public class ModifierUser {
 
+    /**List of Modifiers user has */
     private List<Modifier> damageModifiers;
 
+    /**Instance of living entity using this class */
     private LivingEntity entity;
 
+    /**CombatModifier: Chance user lands critical hit */
     protected int criticalChance;
     
+    /**CombatModifier: Additional damage dealt on critical hit */
     protected double criticalMultiplier;
 
+    /**CombatModifier: Chance user lowers incoming damage */
     protected int parryChance;
 
+    /**CombatModifier: Damage dampener on incoming damage */
     protected double parryMultiplier;
     
+    /**
+     * Fetches implementing sub class living entity
+     * @return LivingEntity instance
+     */
     public LivingEntity getLivingEntity() { return this.entity; }
 
+    /**
+     * Fetches copy of damage modifiers
+     * @return Unmodifiable copy of DamageModifiers list
+     */
     public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
 
     /**
