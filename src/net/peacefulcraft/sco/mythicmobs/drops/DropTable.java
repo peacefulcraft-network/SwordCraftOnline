@@ -223,7 +223,7 @@ public class DropTable {
             amountModifiers += (int)(s.getLevel() * bonusLevelMod);
         }
         if(s.getCombatModifier(CombatModifier.BONUS_DROP) != 0.0D) {
-            amountModifiers *= s.getCombatModifier(CombatModifier.BONUS_DROP);
+            amountModifiers *= (int) s.getCombatModifier(CombatModifier.BONUS_DROP);
         }
 
         if(this.minItems > 0 && this.maxItems > 0) {
