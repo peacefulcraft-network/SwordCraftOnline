@@ -71,18 +71,12 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 
 	/**Additional chance to increase item level on drop */
 	private double bonusLevelMod = 0.0D;
-		public double getLevelMod() { return this.bonusLevelMod; }
-		public void setLevelMod(double d) { this.bonusLevelMod = d; }
 
 	/**Additional chance to get more items on drop */
 	private double bonusDropMod = 0.0D;
-		public double getDropMod() { return this.bonusDropMod; }
-		public void setDropMod(double d) { this.bonusDropMod = d; }
 
 	/**Players exp multiplier */
 	private double expMod = 1.0D;
-		public double getExpMod() { return this.expMod; }
-		public void  setExpMod(double d) { this.expMod = d; }
 
 	/**Players current movement direction */
 	private DirectionalUtil.Movement movement;
@@ -201,6 +195,74 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	public void setPlayerKills(int red) {
 		this.playerKills = red;
 	}	
+
+	@Override
+	public double getCombatModifier(CombatModifier mod) {
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                return criticalChance;
+            case CRITICAL_MULTIPLIER:
+                return criticalMultiplier;
+            case PARRY_CHANCE:
+                return parryChance;
+            case PARRY_MULTIPLIER:
+				return parryMultiplier;
+			case ITEM_LEVEL:
+				return this.bonusLevelMod;
+			case BONUS_DROP:
+				return this.bonusDropMod;
+			case BONUS_EXP:
+				return this.expMod;
+            default:
+                return -1;
+        }
+	}
+
+	@Override
+	public void setCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance = (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier = amount;
+            case PARRY_CHANCE:
+                parryChance = (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier = amount;
+			case ITEM_LEVEL:
+				this.bonusLevelMod = amount;
+			case BONUS_DROP:
+				this.bonusDropMod = amount;
+			case BONUS_EXP:
+				this.expMod = amount;
+		}
+		
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
+		}
+	}
+
+	@Override
+	public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		this.setCombatModifier(mod, d * amount, -1);
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
+		}
+	}
+
+	@Override
+	public void addCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		this.setCombatModifier(mod, d + amount, -1);
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
+		}
+	}
 
 	public String getPlayerData() {		
 		String header = repeat(5, " ") + ChatColor.GOLD + "[" + ChatColor.BLUE + "SCOPlayer" + ChatColor.GOLD + "]" + ChatColor.BLUE + getName() + "'s Data" + '\n' 

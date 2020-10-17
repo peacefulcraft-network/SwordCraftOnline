@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class DropTable {
     private final String fileName;
@@ -214,15 +215,15 @@ public class DropTable {
         LootBag bag = new LootBag();
 
         //Set bag experience to be multiple of exp bonus
-        bag.setExp((int)(s.getExpMod() * this.experience));
+        bag.setExp((int)(s.getCombatModifier(CombatModifier.BONUS_EXP) * this.experience));
 
         int amountModifiers = 0;
         double bonusLevelMod = SwordCraftOnline.r.nextDouble();
         if(bonusLevelMod != 0.0D) {
             amountModifiers += (int)(s.getLevel() * bonusLevelMod);
         }
-        if(s.getDropMod() != 0.0D) {
-            amountModifiers *= s.getDropMod();
+        if(s.getCombatModifier(CombatModifier.BONUS_DROP) != 0.0D) {
+            amountModifiers *= s.getCombatModifier(CombatModifier.BONUS_DROP);
         }
 
         if(this.minItems > 0 && this.maxItems > 0) {
