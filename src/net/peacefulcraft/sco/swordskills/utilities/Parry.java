@@ -1,7 +1,5 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
-import java.util.Random;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
