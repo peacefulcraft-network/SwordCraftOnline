@@ -37,6 +37,7 @@ public class QuestManager implements Runnable {
         this.questMap = new HashMap<>();
         this.availableQuests = new HashMap<>();
         this.currentQuestGivers = new ArrayList<>();
+        this.invalidQuests = new HashMap<>();
         loadQuests();
 
         this.questTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 2400);
@@ -44,6 +45,7 @@ public class QuestManager implements Runnable {
 
     public void loadQuests() {
         this.questMap.clear();
+        this.invalidQuests.clear();
 
         IOLoader<SwordCraftOnline> defaultQuests = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleQuests.yml", "Quests");
         defaultQuests= new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleQuests.yml", "Quests");
@@ -55,7 +57,7 @@ public class QuestManager implements Runnable {
              * Changes regarding Quest loading from .yml
              * Constructing a list of MythicConfigs which store step data
              * One config which stores the quest requirement data
-             * The main name of the quest is passed in requirement data, sub-names of quests are passed in steps
+             * The main name of the quest is passed in requirement data, sub-names of quests steps are passed in steps
              */
             List<MythicConfig> stepConfigs = new ArrayList<MythicConfig>();
             MythicConfig mainConfig = null;
@@ -79,6 +81,11 @@ public class QuestManager implements Runnable {
                 }
             }
 
+            // Catching no main configs
+            if(mainConfig == null) {
+                continue;
+            }
+
             String qName = mainConfig.getString("Name");
             String file = sl.getFile().getPath();
             String internalName = sl.getFile().getName();
@@ -89,6 +96,7 @@ public class QuestManager implements Runnable {
                 this.invalidQuests.put(qName, q);
             } else {
                 this.questMap.put(qName, q);
+                SwordCraftOnline.logInfo("[Quest Manager] Loaded: " + qName);
             }
         }
         SwordCraftOnline.logInfo("[Quest Manager] Loading complete!");

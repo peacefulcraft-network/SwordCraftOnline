@@ -50,18 +50,21 @@ public class DeliverQuestStep extends QuestStep {
 
         this.amount = mc.getInteger("Amount", 0);
 
+        // Item name validation
         String item = mc.getString("Item", "");
         if (item == null || item.isEmpty()) {
             this.logInfo("No Item field in config.");
             return;
         }
 
+        // Custom item validation
         this.deliverable = ItemIdentifier.generate(item, this.amount, false);
-        if (this.deliverable.getType().equals(Material.FIRE)) {
+        if (this.deliverable.getType().equals(Material.FIRE) || this.deliverable == null) {
             this.logInfo("Invalid Item field in config.");
             return;
         }
 
+        // Deliver to npc validation
         String npcName = mc.getString("npc", "");
         npcName = mc.getString("NPC", npcName);
         if (npcName == null || npcName.isEmpty()) {
@@ -74,6 +77,7 @@ public class DeliverQuestStep extends QuestStep {
             return;
         }
 
+        // NPC region validation
         String regionName = mc.getString("NPCRegion", "");
         regionName = mc.getString("npcRegion", regionName);
         if (regionName == null || regionName.isEmpty()) {

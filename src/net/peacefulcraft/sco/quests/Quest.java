@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.List;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
@@ -133,8 +134,18 @@ public class Quest {
     }
 
     private void validateStep(QuestStep qs) {
-        if(qs.isInvalid()) { this.isInvalid = true; }
-        this.questSteps.add(qs);
+        if(qs.isInvalid()) { 
+            this.isInvalid = true; 
+        }
+        
+        // If null pointer is thrown it means a step went bad.
+        try {
+            this.questSteps.add(qs);
+        } catch(NullPointerException ex) {
+            this.isInvalid = true;
+            return;
+        }
+
         //If the step is first we ensure it uses npc
         if(this.questSteps.indexOf(qs) == 0) {
             if(qs.getGiverName().isEmpty() || qs.getGiverName() == null) {

@@ -81,6 +81,7 @@ public abstract class QuestStep {
             return;
         }
 
+        // Giver name validation
         String giverName = mc.getString("GiverName", "");
         giverName = mc.getString("Giver", giverName);
         if(giverName == null || giverName.isEmpty()) {
@@ -93,6 +94,7 @@ public abstract class QuestStep {
             return;
         }
 
+        // Region validation
         String regionName = mc.getString("GiverRegion", "");
         if(regionName == null || regionName.isEmpty()) {
             this.logInfo("No GiverRegion field in config.");
@@ -110,7 +112,7 @@ public abstract class QuestStep {
         this.descriptionRaw = mc.getString("Description", "");
         descriptionRaw = mc.getString("Desc", descriptionRaw);
 
-        //Loading rewards
+        // Reward validation
         for(String s : rewardsLis) {
             this.rewards.add(new Reward(s));
         }
