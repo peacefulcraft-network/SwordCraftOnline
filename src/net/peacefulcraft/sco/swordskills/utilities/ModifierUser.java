@@ -275,6 +275,14 @@ public class ModifierUser {
     }
 
     /**
+     * Checks if user is dead
+     * @return True if user is dead, false otherwise
+     */
+    public boolean isDead() {
+        return getLivingEntity().isDead();
+    }
+
+    /**
      * Fetches combat modifier value
      * @param mod CombatModifier we want
      * @return value of modifier, -1 default.
@@ -327,7 +335,7 @@ public class ModifierUser {
             case PARRY_MULTIPLIER:
                 parryMultiplier = amount;
             default:
-                SwordCraftOnline.logInfo("[Modifier User] Attempted to set player specific combat modifier on super class.");
+                SwordCraftOnline.logInfo("[Modifier User] Attempted to set player specific combat modifier on super class. " + mod.toString());
         }
 
         if(duration != -1) {

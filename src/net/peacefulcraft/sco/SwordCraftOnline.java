@@ -18,7 +18,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.DuelMoveListener;
 import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
-import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDeathListener;
+import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDamageListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
@@ -29,7 +29,6 @@ import net.peacefulcraft.sco.mythicmobs.listeners.CentipedeDamage;
 import net.peacefulcraft.sco.mythicmobs.listeners.HealthBarUpdate;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
-import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
 import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.mythicmobs.spawners.SpawnerManager;
@@ -150,13 +149,12 @@ public class SwordCraftOnline extends JavaPlugin{
 		// Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
-		getServer().getPluginManager().registerEvents(new SCOPlayerDeathListener(), this);
+		getServer().getPluginManager().registerEvents(new SCOPlayerDamageListener(), this);
 		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
 		getServer().getPluginManager().registerEvents(new DuelMoveListener(), this);
 		
 		//Mythicmob listeners
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
-		getServer().getPluginManager().registerEvents(new MobTarget(), this);
 		getServer().getPluginManager().registerEvents(new MobOptions(), this);
 		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		getServer().getPluginManager().registerEvents(new CentipedeDamage(), this);

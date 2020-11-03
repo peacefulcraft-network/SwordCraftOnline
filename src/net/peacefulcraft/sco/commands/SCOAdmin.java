@@ -25,6 +25,7 @@ import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.Centipede;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
 import net.peacefulcraft.sco.mythicmobs.mobs.bosses.BossIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.bosses.MythicBoss;
 import net.peacefulcraft.sco.mythicmobs.spawners.ActiveSpawner;
@@ -218,6 +219,26 @@ public class SCOAdmin implements CommandExecutor {
 
 					SwordCraftOnline.getPluginInstance().getSpawnerManager().save();
 					SwordCraftOnline.getPluginInstance().getSpawnerManager().loadSequence();
+					return true;
+				}
+
+				if (args[1].equalsIgnoreCase("SpawnPet")) {
+					Player p = (Player) sender;
+					if(SwordCraftOnline.getPluginInstance().getMobManager().getMMList().keySet().contains(args[2])) {
+						try {
+							SCOPlayer s = GameManager.findSCOPlayer(p);
+							MythicPet pet = new MythicPet(args[2], s);
+							
+							if(pet.spawn(p.getLocation(), 5) != null) {
+								sender.sendMessage(ChatColor.GREEN + "Spawned pet " + args[2]);
+								return true;
+							}
+						} catch(IndexOutOfBoundsException ex) {
+							return true;
+						}
+					}
+					sender.sendMessage(ChatColor.GREEN + "File for " + args[2] + " Not Found.");
+					SwordCraftOnline.logInfo("[MOB SPAWN] Not found: " + args[2]);
 					return true;
 				}
 

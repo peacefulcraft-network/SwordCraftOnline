@@ -1,8 +1,10 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -11,6 +13,8 @@ import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
 import net.peacefulcraft.sco.particles.DisplayType;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
@@ -126,6 +130,14 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		public void setDuel(Duel d) { this.duel = d; }
 		public Duel getDuel() { return this.duel; }
 
+	/**Players active pet */
+	private MythicPet pet = null;
+		public MythicPet getPet() { return this.pet; }
+		public void setPet(MythicPet pet) { this.pet = pet; }
+
+	/**The last mob related damage of this player */
+	private ModifierUser lastCauseOfDamage = null;
+
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
 		playerKills = 0;
@@ -195,6 +207,37 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	public void setPlayerKills(int red) {
 		this.playerKills = red;
 	}	
+
+	/**
+	 * Gets SCOPlayer current location
+	 * @return Location of player
+	 */
+	public Location getLocation() {
+		return user.getLocation();
+	}
+
+	/**
+	 * Sets players LCOD to modifier user
+	 * @param damager Instance that caused damage
+	 */
+	public void setLastCauseOfDamage(ModifierUser damager) {
+		this.lastCauseOfDamage = damager;
+	}
+
+	/**
+	 * Safely returns last cause of damage
+	 * @return ModifierUser to cause damage, null otherwise
+	 */
+	public ModifierUser getLastCauseOfDamage() {
+		if(lastCauseOfDamage == null) { return null; }
+
+		// Last mob to cause damage is dead
+		if(lastCauseOfDamage instanceof ActiveMob && ((ActiveMob)lastCauseOfDamage).isDead()) {
+			return null;
+		}
+
+		return lastCauseOfDamage;
+	}
 
 	@Override
 	public double getCombatModifier(CombatModifier mod) {

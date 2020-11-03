@@ -60,6 +60,10 @@ public class MobManager implements Runnable {
     private HashMap<UUID, ActiveMob> herculeanRegistry = new HashMap<>();
         public Map<UUID, ActiveMob> getHerculeanRegistry() { return Collections.unmodifiableMap(this.herculeanRegistry); }
 
+    /**Registry of active pets */
+    private HashMap<UUID, MythicPet> petRegistry = new HashMap<>();
+        public Map<UUID, MythicPet> getPetRegistry() { return Collections.unmodifiableMap(this.petRegistry); }
+
     /** Main task logic for mob manager*/
     private BukkitTask mobTask;
 
@@ -122,6 +126,7 @@ public class MobManager implements Runnable {
         this.mmList.clear();
         this.mmDisplay.clear();
         this.mmDefault.clear();
+        this.petRegistry.clear();
         HashMap<UUID, ActiveMob> temp = new HashMap<UUID, ActiveMob>();
         Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
         while(iterator.hasNext()) {
@@ -306,7 +311,8 @@ public class MobManager implements Runnable {
                 return null;
             }
 
-            return mm.spawn(loc, level);
+            ActiveMob am = mm.spawn(loc, level);
+            return am;
         }
         return null;
     }
@@ -399,6 +405,14 @@ public class MobManager implements Runnable {
 
     public Collection<ActiveMob> getActiveMobs() {
         return this.mobRegistry.values();
+    }
+
+    /**
+     * Registers mythic pet to mob mananger
+     * @param mp Pet to be registered
+     */
+    public void registerPet(MythicPet mp) {
+        this.petRegistry.put(mp.getActiveMob().getUUID(), mp);
     }
 
     /**Removes centipede from active centipede registry */
