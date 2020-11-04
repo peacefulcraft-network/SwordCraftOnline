@@ -34,6 +34,7 @@ import net.peacefulcraft.sco.structures.structures.ComplexPillarArea;
 import net.peacefulcraft.sco.structures.structures.Cylinder;
 import net.peacefulcraft.sco.structures.structures.Path;
 import net.peacefulcraft.sco.structures.structures.Pillar;
+import net.peacefulcraft.sco.structures.structures.Viral;
 import net.peacefulcraft.sco.structures.structures.Wall;
 import net.peacefulcraft.sco.structures.structures.WallWave;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
@@ -514,6 +515,9 @@ public class SCOAdmin implements CommandExecutor {
 					((WallWave)struct).setWallGap(1);
 				} else if(args[1].equalsIgnoreCase("Cylinder")) {
 					struct = new Cylinder(5, 5, true, Material.STONE, true, 5);
+					struct.setTargetLocation(p.getLocation());
+				} else if(args[1].equalsIgnoreCase("viral")) {
+					struct = new Viral(5, Material.STONE, true, 5);
 					struct.setTargetLocation(p.getLocation());
 				}
 				if(struct == null) {

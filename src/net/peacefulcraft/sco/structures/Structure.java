@@ -238,6 +238,7 @@ public abstract class Structure implements Listener {
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
         this.cleanupLis = new ArrayList<>();
+        this.cleanupLocs = new ArrayList<>();
     }
 
     public Structure(WeightedList<Material> matLis, boolean toCleanup, int cleanupTimer) {
@@ -245,6 +246,7 @@ public abstract class Structure implements Listener {
         this.toCleanup = toCleanup;
         this.cleanupTimer = cleanupTimer;
         this.cleanupLis = new ArrayList<>();
+        this.cleanupLocs = new ArrayList<>();
     }
 
     /** Validates strucutre is ready to be created */
