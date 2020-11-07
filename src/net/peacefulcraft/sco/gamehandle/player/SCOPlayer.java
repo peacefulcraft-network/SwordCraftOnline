@@ -122,6 +122,7 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 
 	public SCOPlayer (UUID uuid, long playerRegistryId) {
 		this.uuid = uuid;
+		this.playerRegistryId = playerRegistryId;
 		playerKills = 0;
 		floor = 0; //TODO: Load this from scopData
 		
