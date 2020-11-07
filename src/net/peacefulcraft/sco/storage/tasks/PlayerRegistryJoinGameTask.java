@@ -48,13 +48,14 @@ public class PlayerRegistryJoinGameTask {
 				ResultSet res = stmt_select.executeQuery();
 				
 				if (res.next()) {
-					this.playerRegistryId = res.getLong(1);
+					this.playerRegistryId = res.getLong("id");
 					PreparedStatement stmt_update = con.prepareStatement(
 						"UPDATE `player` SET last_login=current_timestamp() WHERE id=?"
 					);
 					stmt_update.setLong(1, this.playerRegistryId);
 					stmt_update.executeUpdate();
 
+					SwordCraftOnline.logDebug("Updated player registery for user " + this.uuid.toString() + " | " + this.playerRegistryId);
 				} else {
 					PreparedStatement stmt_insert = con.prepareStatement(
 						"INSERT INTO `player` (uuid, name) VALUES(?,?)",
@@ -71,6 +72,8 @@ public class PlayerRegistryJoinGameTask {
 						throw new CompletionException(new Exception("Player(" + this.uuid + ") insert into registry did not return a generated key"));
 					}
 					this.playerRegistryId = res.getLong(1);
+
+					SwordCraftOnline.logDebug("Created new player registry entry for user " + this.uuid.toString() + " | " + this.playerRegistryId);
 				}
 				
 				con.commit();
