@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
 
 /**
