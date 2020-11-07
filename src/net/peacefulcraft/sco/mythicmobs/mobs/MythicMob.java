@@ -816,7 +816,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
      */
     public ActiveMob applySkills(ActiveMob am) {
         for(String s : this.skills) {
-            Generator.readSkill(s, am);
+            // TODO: Generator.readSkill(s, am);
         }
         return am;
     }
