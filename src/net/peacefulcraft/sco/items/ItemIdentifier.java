@@ -48,12 +48,12 @@ public interface ItemIdentifier {
   /**
    * @return The number of items this identifier represents
    */
-  public abstract int getQuantity();
+  public abstract Integer getQuantity();
   
   /**
    * @param quantity number of items this identifier represents
    */
-  public abstract void setQuantity(int quantity);
+  public abstract void setQuantity(Integer quantity);
 
   /**
    * Indicates whether a player can drop this item.
@@ -95,7 +95,8 @@ public interface ItemIdentifier {
     try {
       name = name.replaceAll(" ", "");
       Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
-      Constructor<?> constructor = clas.getConstructor();
+      Class<?> params[] = new Class[] { ItemTier.class, int.class };
+      Constructor<?> constructor = clas.getConstructor(params);
     
       ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
 
@@ -109,7 +110,7 @@ public interface ItemIdentifier {
 		} catch (ClassNotFoundException e) {
 			SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
 		} catch (NoSuchMethodException e) {
-			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must have a constuctor with arguments (int, ItemTier)");
+			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must have a constuctor with arguments (ItemTier, int)");
 		} catch (SecurityException e) {
 			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " does not have a public constructor.");
 		} catch (InstantiationException | InvocationTargetException e) {

@@ -26,28 +26,28 @@ public class CriticalStrikeItem implements SwordSkillProvider {
       return tier;
     }
 
-  private int level;
+  private Integer level;
     @Override
-    public int[] getAllowedLevels() {
-      return new int[] { 1 };
+    public Integer[] getAllowedLevels() {
+      return new Integer[] { 1 };
     }
     @Override
-    public int getLevel() {
+    public Integer getLevel() {
       return level;
     }
-    public void setLevel(int level) { this.level = level; }
+    public void setLevel(Integer level) { this.level = level; }
 
-  private int quantity;
+  private Integer quantity;
     @Override
-    public int getQuantity() {
+    public Integer getQuantity() {
       return quantity;
     }
     @Override
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
       this.quantity = quantity;
     }
 
-  public CriticalStrikeItem(ItemTier tier, int quantity) {
+  public CriticalStrikeItem(ItemTier tier, Integer quantity) {
     this.tier = tier;
     this.quantity = quantity;
   }

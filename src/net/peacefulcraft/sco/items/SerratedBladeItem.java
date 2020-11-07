@@ -22,13 +22,13 @@ public class SerratedBladeItem implements SwordSkillProvider {
 
   private int increase;
 
-  private int quantity;
+  private Integer quantity;
     @Override
-    public int getQuantity() {
+    public Integer getQuantity() {
       return quantity;
     }
     @Override
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
       this.quantity = quantity;
     }
 
@@ -47,15 +47,15 @@ public class SerratedBladeItem implements SwordSkillProvider {
 
   private int level;
     @Override
-    public int[] getAllowedLevels() {
-      return new int[] { 1 };
+    public Integer[] getAllowedLevels() {
+      return new Integer[] { 1 };
     }
     @Override
-    public int getLevel() {
+    public Integer getLevel() {
       return level;
     }
 
-  public SerratedBladeItem(ItemTier tier, int level) {
+  public SerratedBladeItem(ItemTier tier, Integer level) {
     this.tier = tier;
     this.level = level;
   }

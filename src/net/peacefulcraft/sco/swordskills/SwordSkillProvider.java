@@ -18,12 +18,12 @@ public interface SwordSkillProvider extends ItemIdentifier, CustomDataHolder {
   /**
    * @return Allowed levels for the sword skill
    */
-  public abstract int[] getAllowedLevels();
+  public abstract Integer[] getAllowedLevels();
 
   /**
    * @return Sword skill level
    */
-  public abstract int getLevel();
+  public abstract Integer getLevel();
 
   /**
    * Intantiates the associated SwordSkill and registers it to the casters SwordSkillManager.
