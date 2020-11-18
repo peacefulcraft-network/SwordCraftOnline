@@ -145,6 +145,15 @@ public class Region {
     }
 
     /**
+     * Checks if region has parent
+     * @return true if region has parent
+     */
+    public boolean hasParent() {
+        if(parent == null) { return false; }
+        return true;
+    }
+
+    /**
      * Safely adds child region
      * @param r new child region
      */
@@ -162,12 +171,17 @@ public class Region {
     }
 
     /**
-     * Checks if region has parent
-     * @return true if region has parent
+     * Fetches child region by location
+     * @param loc Location we are checking
+     * @return Child region if it exists, null otherwise
      */
-    public boolean hasParent() {
-        if(parent == null) { return false; }
-        return true;
+    public Region getChild(Location loc) {
+        for(Region r : children) {
+            if(r.isInRegion(loc)) {
+                return r;
+            }
+        }
+        return null;
     }
 
     /**@return String of information regarding this region */

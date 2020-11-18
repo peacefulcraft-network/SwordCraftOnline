@@ -31,13 +31,20 @@ public class RegionCheckListener implements Listener {
 
         //Are there regions on the floor. Possible redundant check
         ArrayList<Region> regions = RegionManager.getFloorRegionsMap().get(s.getFloor());
-        if(regions == null) { return; }
+        if(regions == null || regions.isEmpty()) { return; }
 
         Location locTo = e.getTo();
         for(Region r : regions){
-            //If player has entered a new region and they were not in one
-            if(r.isInRegion(locTo) && s.getRegion() == null) {
-                s.setRegion(r, false);
+            //If player has entered a new region
+            if(s.getRegion() != r && r.isInRegion(locTo)) {
+                
+                // Fetching child if it exists
+                Region child = r.getChild(locTo);
+                if(child != null) {
+                    s.setRegion(child, r.isSilentParentTransfer());
+                } else {
+                    s.setRegion(r, false);
+                }
                 return;
             }
         }
