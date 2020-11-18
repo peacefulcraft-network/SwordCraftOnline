@@ -1,8 +1,12 @@
 package net.peacefulcraft.sco.gamehandle.regions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 
@@ -47,6 +51,16 @@ public class Region {
     private Boolean preventPlayerDeath;
         public Boolean doesPreventPlayerDeath() { return this.preventPlayerDeath; }
 
+    /**Parent region this region is contained in */
+    private Region parent = null;
+
+    /**Sub-regions contained inside parent */
+    private List<Region> children = new ArrayList<>();
+
+    /**Determines if moving between this parent-child border sends title */
+    private Boolean silentParentTransfer;
+        public Boolean isSilentParentTransfer() { return silentParentTransfer; }
+
     public Region(String file, String internalName, MythicConfig mc) {
         this.file = file;
         this.internalName = internalName;
@@ -69,6 +83,19 @@ public class Region {
         this.preventPassiveSpawn = config.getBoolean("PreventPassiveSpawn", false);
         this.preventSwordSkills = config.getBoolean("PreventSwordSkills", false);
         this.preventPlayerDeath = config.getBoolean("PreventPlayerDeath", false);
+
+        // Parent - child relationships
+        this.silentParentTransfer = config.getBoolean("SilentParentTransfer", false);
+        String sParent = config.getString("ParentRegion");
+        sParent = config.getString("Parent", sParent);
+
+        Region parent = RegionManager.getRegion(sParent);
+        if(parent == null) {
+            SwordCraftOnline.logInfo("[Region] Attempted to set parent of: " + this.name + 
+            ". Could not find parent region: " + sParent);
+        } else {
+            setParent(parent);
+        }
     }
 
     /**
@@ -106,6 +133,41 @@ public class Region {
     /**Sends player title of name and desc */
     public void sendTitle(Player p) {
         Announcer.sendTitle(p, name, description);
+    }
+
+    /**
+     * Safely sets parent a child relationship
+     * @param r Parent region
+     */
+    public void setParent(Region r) {
+        parent = r;
+        r.addChild(r);
+    }
+
+    /**
+     * Safely adds child region
+     * @param r new child region
+     */
+    public void addChild(Region r) {
+        children.add(r);
+    }
+
+    /**
+     * Checks if region is child region
+     * @param r Region to check
+     * @return true if region is child
+     */
+    public boolean isChild(Region r) {
+        return children.contains(r);
+    }
+
+    /**
+     * Checks if region has parent
+     * @return true if region has parent
+     */
+    public boolean hasParent() {
+        if(parent == null) { return false; }
+        return true;
     }
 
     /**@return String of information regarding this region */
