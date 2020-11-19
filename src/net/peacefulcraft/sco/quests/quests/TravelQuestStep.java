@@ -10,6 +10,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.quests.Message;
 import net.peacefulcraft.sco.quests.QuestStep;
 
 public class TravelQuestStep extends QuestStep {
@@ -80,6 +81,7 @@ public class TravelQuestStep extends QuestStep {
 
     @Override
     public void startupLifeCycle(SCOPlayer s) {
+        startupMessage(s);
         return;
     }
 
@@ -89,5 +91,4 @@ public class TravelQuestStep extends QuestStep {
         //Location checks are done in lifecycle
         return null;
     }
-    
 }

@@ -14,6 +14,10 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.quests.ActiveQuest;
 
+/***
+ * Main class to handle activating quests via NPC interaction.
+ * Verifies quest givers nameplate against quest step giver NPC
+ */
 public class NPCActivateListener implements Listener {
 
     @EventHandler

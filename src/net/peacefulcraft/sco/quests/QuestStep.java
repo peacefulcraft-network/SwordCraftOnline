@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.quests;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.quests.Message.MessageType;
 
 public abstract class QuestStep {
     
@@ -58,6 +60,9 @@ public abstract class QuestStep {
     private Boolean activated = false;
         public Boolean isActivated() { return this.activated; }
         public void setActivated(Boolean b) { this.activated = b; }
+
+    /**Messages for quest organized by type */
+    protected HashMap<MessageType, Message> messages;
 
     /**
      * If step uses an NPC to activate Quest
@@ -108,13 +113,20 @@ public abstract class QuestStep {
 
         this.usesGiver = mc.getBoolean("UsesGiver", true);
 
-        List<String> rewardsLis = mc.getStringList("Rewards");
         this.descriptionRaw = mc.getString("Description", "");
         descriptionRaw = mc.getString("Desc", descriptionRaw);
 
         // Reward validation
+        List<String> rewardsLis = mc.getStringList("Rewards");
         for(String s : rewardsLis) {
             this.rewards.add(new Reward(s));
+        }
+
+        // Message validation
+        List<String> messageLis = mc.getStringList("Messages");
+        for(String s : messageLis) {
+            Message mess = new Message(s, this);
+            messages.put(mess.getType(), mess);
         }
     }
 
@@ -133,6 +145,12 @@ public abstract class QuestStep {
     /**Internal method to format step description */
     public abstract void _setDescription();
 
+    /**
+     * Conditions for a quest step. Must return true for quest
+     * to be marked complete
+     * @param ev Respective event passed by listeners
+     * @return True if step is completed, false otherwise.
+     */
     public abstract boolean stepPreconditions(Event ev);
 
     /**Any real world effects that need to happen on activation of step */
@@ -141,7 +159,20 @@ public abstract class QuestStep {
     /**@return Map object for relative save data of step */
     public abstract Map<String,Object> getSaveData();
 
+    /**
+     * Sends startup message to player. Called in startup cycle
+     * @param s Player we send message to
+     */
+    protected void startupMessage(SCOPlayer s) {
+        Message mess = messages.get(MessageType.STARTUP);
+        if(mess == null) { return; }
+
+        mess.sendMessage(s);
+    }
+
+    /**Type of quest step. Determines how loading is handled */
     public enum QuestType {
         KILL, DELIVER, TRAVEL, GATHER, ESCORT;
     }
+
 }

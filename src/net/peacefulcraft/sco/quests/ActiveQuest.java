@@ -145,7 +145,7 @@ public class ActiveQuest {
         //Toggling activation
         step.setActivated(true);
 
-        //Startup lifecycle
+        //Startup lifecycle of step
         step.startupLifeCycle(this.s);
 
         //Updates step item description to match quest
