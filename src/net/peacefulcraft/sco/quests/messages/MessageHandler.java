@@ -14,15 +14,12 @@ public class MessageHandler {
     
     private HashMap<String, Message> messages;
 
-    private QuestStep step;
-
     /**
      * Constructor
      * @param entries Entries pulled from .yml
      */
     public MessageHandler(Map<?,?> entries, QuestStep step) {
         this.messages = new HashMap<>();
-        this.step = step;
 
         // Converting entry map into message map
         for(Object i : entries.keySet()) {

@@ -18,9 +18,6 @@ public class Message {
         BASIC, INTERACTIVE, STARTUP, COMPLETE, RESPONSE;
     }
 
-    /**Delay between messages in seconds */
-    private final int MESSAGE_DELAY = 1;
-
     /**Type of message */
     private MessageType type;
         public MessageType getType() { return this.type; }
