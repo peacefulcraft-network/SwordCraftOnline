@@ -165,6 +165,23 @@ public class QuestBookManager {
         return isQuestRegistered(q);
     }
 
+    /**
+     * Fetches active quest by name from player register
+     * @param name Name of quest
+     * @return ActiveQuest instance if exists, null otherwise
+     */
+    public ActiveQuest getRegisteredQuest(String name) {
+        // Quest step should be registered in here
+        for(ArrayList<ActiveQuest> lis : getQuests().values()) {
+            for(ActiveQuest aq : lis) {
+                if(aq.getName().equals(name)) {
+                    return aq;
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean isQuestRegistered(Quest q) {
         for(QuestType type : quests.keySet()) {
             for(ActiveQuest aq : quests.get(type)) {

@@ -133,6 +133,7 @@ public class KillQuestStep extends QuestStep {
 
     @Override
     public void startupLifeCycle(SCOPlayer s) {
+        startupMessage(s);
         return;
     }
 

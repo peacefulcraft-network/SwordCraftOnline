@@ -86,14 +86,14 @@ public class Region {
 
         // Parent - child relationships
         this.silentParentTransfer = config.getBoolean("SilentParentTransfer", false);
-        String sParent = config.getString("ParentRegion");
+        String sParent = config.getString("ParentRegion", "");
         sParent = config.getString("Parent", sParent);
 
         Region parent = RegionManager.getRegion(sParent);
-        if(parent == null) {
+        if(parent == null && !sParent.isEmpty()) {
             SwordCraftOnline.logInfo("[Region] Attempted to set parent of: " + this.name + 
             ". Could not find parent region: " + sParent);
-        } else {
+        } else if(parent != null) {
             setParent(parent);
         }
     }

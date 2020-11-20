@@ -10,7 +10,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;

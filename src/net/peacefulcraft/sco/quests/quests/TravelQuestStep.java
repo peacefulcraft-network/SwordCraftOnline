@@ -10,7 +10,6 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
-import net.peacefulcraft.sco.quests.Message;
 import net.peacefulcraft.sco.quests.QuestStep;
 
 public class TravelQuestStep extends QuestStep {

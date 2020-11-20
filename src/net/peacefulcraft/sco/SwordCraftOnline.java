@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.peacefulcraft.sco.commands.QuestMessager;
 import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.setTeleport;
@@ -159,6 +160,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.getCommand("setTeleport").setExecutor(new setTeleport());
 		this.getCommand("party").setExecutor(new partyCommands());
 		this.getCommand("scoadmin").setExecutor(new SCOAdmin());
+		this.getCommand("questmessager").setExecutor(new QuestMessager());
 		
 	}
 	

@@ -1,6 +1,5 @@
 package net.peacefulcraft.sco.quests;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
-import net.peacefulcraft.sco.quests.Message.MessageType;
+import net.peacefulcraft.sco.quests.messages.MessageHandler;
 
 public abstract class QuestStep {
     
@@ -61,9 +60,6 @@ public abstract class QuestStep {
         public Boolean isActivated() { return this.activated; }
         public void setActivated(Boolean b) { this.activated = b; }
 
-    /**Messages for quest organized by type */
-    protected HashMap<MessageType, Message> messages;
-
     /**
      * If step uses an NPC to activate Quest
      * If false, step is activated on completion of previous step.
@@ -72,6 +68,9 @@ public abstract class QuestStep {
     private Boolean usesGiver;
         public Boolean usesGiver() { return this.usesGiver; }
         public void setUsesGiver(boolean b) { this.usesGiver = b; }
+
+    /**Messages for quest organized by type */
+    protected MessageHandler messageHandler = null;
 
     public QuestStep(MythicConfig mc) {
         //TODO: Handle this step name in description of item created.
@@ -123,10 +122,10 @@ public abstract class QuestStep {
         }
 
         // Message validation
-        List<String> messageLis = mc.getStringList("Messages");
-        for(String s : messageLis) {
-            Message mess = new Message(s, this);
-            messages.put(mess.getType(), mess);
+        List<Map<?,?>> temp = mc.getMapList("Messages");
+        if(!temp.isEmpty()) { 
+            Map<?,?> messageMap = mc.getMapList("Messages").get(0);
+            messageHandler = new MessageHandler(messageMap, this); 
         }
     }
 
@@ -134,6 +133,14 @@ public abstract class QuestStep {
     public void updateDescription() {
         //TODO: Update actual item dsecription associated with quest
         this._setDescription();
+    }
+
+    /**
+     * Sends response message to player
+     * @param resName Name of response
+     */
+    public void sendResponse(String resName, SCOPlayer s) {
+        messageHandler.sendMessage(resName, s);
     }
 
     /**Logs info regarding Step loading in console and sets step invalid*/
@@ -164,10 +171,7 @@ public abstract class QuestStep {
      * @param s Player we send message to
      */
     protected void startupMessage(SCOPlayer s) {
-        Message mess = messages.get(MessageType.STARTUP);
-        if(mess == null) { return; }
-
-        mess.sendMessage(s);
+        messageHandler.sendStartup(s);
     }
 
     /**Type of quest step. Determines how loading is handled */

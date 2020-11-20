@@ -463,6 +463,15 @@ public class SCOAdmin implements CommandExecutor {
 				}
 			}
 
+			if(args[0].equalsIgnoreCase("quest")) {
+				if(args[1].equalsIgnoreCase("reload")) {
+					SwordCraftOnline.getPluginInstance().getQuestManager().reload();
+					return true;
+				}
+			
+				return true;
+			}
+
 			if(args[0].equalsIgnoreCase("particletest")) {
 				Player p = (Player)sender;
 				if(args[1].isEmpty()) {

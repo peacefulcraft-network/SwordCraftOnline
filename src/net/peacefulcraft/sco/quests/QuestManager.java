@@ -43,6 +43,15 @@ public class QuestManager implements Runnable {
         this.questTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 2400);
     }
 
+    public void reload() {
+        this.questMap.clear();
+        this.availableQuests.clear();
+        this.currentQuestGivers.clear();
+        this.invalidQuests.clear();
+
+        loadQuests();
+    }
+
     public void loadQuests() {
         this.questMap.clear();
         this.invalidQuests.clear();

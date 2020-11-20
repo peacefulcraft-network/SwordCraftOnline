@@ -126,6 +126,8 @@ public class EscortQuestStep extends QuestStep implements Runnable {
         // Creating follow task that runs every 2 seconds
         this.followTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20,
                 40);
+
+        startupMessage(s);
     }
 
     @Override

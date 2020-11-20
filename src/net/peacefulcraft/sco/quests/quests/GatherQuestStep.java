@@ -144,6 +144,7 @@ public class GatherQuestStep extends QuestStep {
 
     @Override
     public void startupLifeCycle(SCOPlayer s) {
+        startupMessage(s);
         return;
     }
 

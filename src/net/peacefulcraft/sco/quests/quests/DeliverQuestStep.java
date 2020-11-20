@@ -168,6 +168,8 @@ public class DeliverQuestStep extends QuestStep {
                 p.getLocation().getWorld().dropItemNaturally(p.getLocation(), i);
             }
         }
+
+        startupMessage(s);
     }
 
     @Override

@@ -138,6 +138,16 @@ public class ActiveQuest {
         return getQuestStep().isActivated();
     }
 
+    /**
+     * Sends current steps response message
+     * @param resName Response name
+     */
+    public void sendResponse(String resName) {
+        QuestStep step = getQuestStep();
+
+        step.sendResponse(resName, s);
+    }
+
     /**Toggles startup lifecycle */
     public void setStepActivated() {
         QuestStep step = getQuestStep();
