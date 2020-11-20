@@ -128,6 +128,7 @@ public class KillQuestStep extends QuestStep {
             }
         }
 
+        completeMessage(s);
         return true;
     }
 

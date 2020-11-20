@@ -154,6 +154,7 @@ public class DeliverQuestStep extends QuestStep {
             return false;
         }
 
+        completeMessage(s);
         return true;
     }
 

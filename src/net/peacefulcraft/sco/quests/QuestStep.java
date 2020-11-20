@@ -174,6 +174,14 @@ public abstract class QuestStep {
         messageHandler.sendStartup(s);
     }
 
+    /**
+     * Sends complete message to player. Called at end of preconditions
+     * @param s Player we send message to
+     */
+    protected void completeMessage(SCOPlayer s) {
+        messageHandler.sendComplete(s);
+    }
+
     /**Type of quest step. Determines how loading is handled */
     public enum QuestType {
         KILL, DELIVER, TRAVEL, GATHER, ESCORT;

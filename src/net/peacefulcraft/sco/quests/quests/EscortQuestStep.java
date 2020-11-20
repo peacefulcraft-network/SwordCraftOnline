@@ -104,6 +104,7 @@ public class EscortQuestStep extends QuestStep implements Runnable {
             return false;
         }
 
+        completeMessage(s);
         return true;
     }
 

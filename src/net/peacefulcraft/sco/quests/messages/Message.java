@@ -15,7 +15,7 @@ public class Message {
     
     /**Type of message for quest. Determines where string is sent and when. */
     public enum MessageType {
-        BASIC, INTERACTIVE, STARTUP, RESPONSE;
+        BASIC, INTERACTIVE, STARTUP, COMPLETE, RESPONSE;
     }
 
     /**Delay between messages in seconds */
@@ -52,7 +52,7 @@ public class Message {
         // Breaking message up into segments
         this.message = message.replace("&break", "\n");
 
-        
+
     }
 
     /**

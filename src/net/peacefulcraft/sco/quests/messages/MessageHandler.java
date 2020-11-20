@@ -31,9 +31,23 @@ public class MessageHandler {
         }
     }
 
+    /**
+     * Searches for startup message and sends to player
+     */
     public void sendStartup(SCOPlayer s) {
         for(Message m : messages.values()) {
             if(m.getType().equals(MessageType.STARTUP)) {
+                m.sendMessage(s);
+            }
+        }
+    }
+
+    /**
+     * Searches for complete message and sends to player
+     */
+    public void sendComplete(SCOPlayer s) {
+        for(Message m : messages.values()) {
+            if(m.getType().equals(MessageType.COMPLETE)) {
                 m.sendMessage(s);
             }
         }

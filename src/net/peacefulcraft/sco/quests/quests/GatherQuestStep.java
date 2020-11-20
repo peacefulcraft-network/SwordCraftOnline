@@ -139,6 +139,7 @@ public class GatherQuestStep extends QuestStep {
             }
         }
 
+        completeMessage(s);
         return true;
     }
 

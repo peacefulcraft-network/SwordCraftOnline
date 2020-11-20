@@ -75,6 +75,7 @@ public class TravelQuestStep extends QuestStep {
             return false;
         }
 
+        completeMessage(s);
         return true;
     }
 
