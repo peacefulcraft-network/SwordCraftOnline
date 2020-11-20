@@ -99,18 +99,18 @@ public abstract class QuestStep {
         }
 
         // Region validation
+        this.usesGiver = mc.getBoolean("UsesGiver", true);
+
         String regionName = mc.getString("GiverRegion", "");
-        if(regionName == null || regionName.isEmpty()) {
+        if(!usesGiver && (regionName == null || regionName.isEmpty())) {
             this.logInfo("No GiverRegion field in config.");
             return;
         }
         this.giverRegion = RegionManager.getRegion(regionName);
-        if(this.giverRegion == null) {
+        if(!usesGiver && this.giverRegion == null) {
             this.logInfo("Invalid GiverRegion field in config.");
             return;
         }
-
-        this.usesGiver = mc.getBoolean("UsesGiver", true);
 
         this.descriptionRaw = mc.getString("Description", "");
         descriptionRaw = mc.getString("Desc", descriptionRaw);

@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.quests.quests;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
@@ -23,16 +24,10 @@ import net.peacefulcraft.sco.quests.QuestStep;
 
 public class DeliverQuestStep extends QuestStep {
 
-    private ItemStack deliverable;
+    private List<ItemStack> deliverables;
 
-    public ItemStack getDeliverable() {
-        return this.deliverable;
-    }
-
-    private int amount;
-
-    public int getAmount() {
-        return this.amount;
+    public List<ItemStack> getDeliverables() {
+        return this.deliverables;
     }
 
     /** NPC we are delivering to */
@@ -48,20 +43,22 @@ public class DeliverQuestStep extends QuestStep {
     public DeliverQuestStep(MythicConfig mc) {
         super(mc);
 
-        this.amount = mc.getInteger("Amount", 0);
-
         // Item name validation
-        String item = mc.getString("Item", "");
-        if (item == null || item.isEmpty()) {
+        List<String> items = mc.getStringList("Items");
+        if (items == null || items.isEmpty()) {
             this.logInfo("No Item field in config.");
             return;
         }
 
         // Custom item validation
-        this.deliverable = ItemIdentifier.generate(item, this.amount, false);
-        if (this.deliverable.getType().equals(Material.FIRE) || this.deliverable == null) {
-            this.logInfo("Invalid Item field in config.");
-            return;
+        for(String s : items) {
+            int amount = Integer.valueOf(s.split(" ")[1]);
+            ItemStack item = ItemIdentifier.generate(s, amount, false);
+            if (item.getType().equals(Material.FIRE) || item == null) {
+                this.logInfo("Invalid Item field in config.");
+                return;
+            }
+            this.deliverables.add(item);
         }
 
         // Deliver to npc validation
@@ -95,8 +92,10 @@ public class DeliverQuestStep extends QuestStep {
 
     @Override
     public void _setDescription() {
-        String itemName = this.deliverable.getItemMeta().getDisplayName();
-        String amount = String.valueOf(this.amount);
+        String itemNames = "";
+        for(ItemStack i : deliverables) {
+            itemNames += i.getItemMeta().getDisplayName();
+        }
         String npcName = this.npc.getDisplayName();
         String giverRegionName = getGiverRegion().getName();
         String deliverRegionName = this.npcRegion.getName();
@@ -109,13 +108,13 @@ public class DeliverQuestStep extends QuestStep {
 
         if (this.getDescriptionRaw() == null) {
             this.setDescription(
-                    "Deliver these " + amount + " " + itemName + " to " + npcName + " in " + deliverRegionName + ".");
+                    "Deliver these " + itemNames + " to " + npcName + " in " + deliverRegionName + ".");
         } else {
             try {
                 this.setDescription(
-                        String.format(this.getDescriptionRaw(), amount, itemName, npcName, deliverRegionName));
+                        String.format(this.getDescriptionRaw(), itemNames, npcName, deliverRegionName));
             } catch (Exception ex) {
-                this.setDescription("Deliver these " + amount + " " + itemName + " to " + npcName + " in "
+                this.setDescription("Deliver these " + itemNames + " to " + npcName + " in "
                         + deliverRegionName + ".");
             }
         }
@@ -149,9 +148,11 @@ public class DeliverQuestStep extends QuestStep {
             return false;
         }
 
-        // Does player have the items in hand
-        if (!(e.getPlayer().getInventory().contains(this.deliverable, this.amount))) {
-            return false;
+        // Does player have the items in inventory
+        for(ItemStack item : this.deliverables) {
+            if(!(e.getPlayer().getInventory().contains(item, item.getAmount()))) {
+                return false;
+            }
         }
 
         completeMessage(s);
@@ -163,7 +164,13 @@ public class DeliverQuestStep extends QuestStep {
         Player p = s.getPlayer();
 
         // Giving player deliverable item. If inv full we drop it
-        HashMap<Integer, ItemStack> ret = p.getInventory().addItem(deliverable);
+        HashMap<Integer, ItemStack> ret = new HashMap<>();
+        for(ItemStack item : deliverables) {
+            HashMap<Integer, ItemStack> temp = p.getInventory().addItem(item);
+            temp.forEach((key,value) -> {
+                ret.put(key, value);
+            });
+        }
         if (ret != null) {
             for (ItemStack i : ret.values()) {
                 p.getLocation().getWorld().dropItemNaturally(p.getLocation(), i);
