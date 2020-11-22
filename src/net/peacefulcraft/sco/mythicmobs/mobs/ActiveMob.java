@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -97,8 +98,9 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
     private int noDamageTicks;
         public int getNoDamageTicks() { return this.noDamageTicks; }
 
-    private AbstractEntity newTarget = null;
-        public void setTarget(AbstractEntity ae) { this.newTarget = ae; }
+    /**Active mobs target to follow */
+    private LivingEntity target = null;
+        public LivingEntity getTarget() { return this.target; }
 
     private double lastDamageSkillAmount = 0.0D;
 
@@ -123,27 +125,6 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         public HealthBar getHealthBar() { return this.healthBar; }
         public void setHealthBar(HealthBar b) { this.healthBar = b; }
 
-    /**Active mobs criticla hit chance */
-    private int criticalChance;
-		public int getCriticalChance() { return this.criticalChance; }
-		public void setCriticalChance(int num) { this.criticalChance = num; }
-		public void addCritical(int num) { this.criticalChance+=num; }
-
-    /**Active mobs damage multiplier on critical hit */
-	private double criticalMultiplier;
-		public double getCriticalMultiplier() { return this.criticalMultiplier; }
-		public void setCriticalMultiplier(double num) { this.criticalMultiplier = num; }
-
-    /**Active mobs chance to parry or evade damage */
-    private int parryChance;
-		public int getParryChance() { return this.parryChance; }
-        public void setParryChance(int num) { this.parryChance = num; }
-    
-    /**Active mobs damage "dampener" on successful parry */
-    private double parryMultiplier;
-        public double getParryMultiplier() { return this.parryMultiplier; }
-        public void setParryMultiplier(double num) { this.parryMultiplier = num; }
-
     /**Determines if mob was spawned during nightwave timeframe */
     private boolean duringNightwave;
         public boolean duringNightwave() { return this.duringNightwave; }
@@ -166,11 +147,11 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         this.swordSkillManager = new SwordSkillManager(this);
 
         /**Setting combat modifiers to type instance */
-        this.criticalChance = type.getCriticalChance();
-        this.criticalMultiplier = type.getCriticalMultiplier();
-        this.parryChance = type.getParryChance();
-        this.parryMultiplier = type.getParryMultiplier();
-        
+        setCombatModifier(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);
+        setCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, type.getCriticalMultiplier(), -1);
+        setCombatModifier(CombatModifier.PARRY_CHANCE, type.getParryChance(), -1);
+        setCombatModifier(CombatModifier.PARRY_MULTIPLIER, type.getParryMultiplier(), -1);
+
         this.duringNightwave = isNightwave;
     }
 
@@ -338,6 +319,17 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
      */
     public boolean isHerculean() {
         return this.type.isHerculean();
+    }
+
+    /**
+     * Sets active mobs target and instances attribute
+     * @param e LivingEntity to be tracked
+     */
+    public void setTarget(LivingEntity e) {
+        LivingEntity ent = getLivingEntity();
+        ((Creature)ent).setTarget(e);
+
+        this.target = e;
     }
 }
 

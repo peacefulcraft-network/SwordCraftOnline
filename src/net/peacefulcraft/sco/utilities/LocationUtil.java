@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockIterator;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 
 /**
@@ -131,6 +132,29 @@ public class LocationUtil {
                     }
                 }
             }
+        }
+        return locations;
+    }
+
+    /**
+     * Given location, returns random locations in radius around it
+     * @param loc Location to be checked
+     * @param radius Radius of area checked
+     * @param amount Number of locations in list
+     * @return List of locations found
+     */
+    public static List<Location> getRandomLocations(Location loc, int radius, int amount) {
+        List<Location> locations = new ArrayList<Location>();
+        for(int i = 0; i <= amount; i++) {
+            int r = SwordCraftOnline.r.nextInt(radius);
+            int x = 0;
+            if(r != 0) { x += SwordCraftOnline.r.nextInt(r); }
+            int z = (int)Math.sqrt(Math.pow(r, 2) - Math.pow(x,2));
+            if(SwordCraftOnline.r.nextBoolean()) { x *= -1; }
+            if(SwordCraftOnline.r.nextBoolean()) { x *= -1; }
+
+            Location temp = loc.clone().add(x, 0, z);
+            locations.add(conform(temp));
         }
         return locations;
     }

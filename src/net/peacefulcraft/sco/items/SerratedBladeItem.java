@@ -8,6 +8,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.SerratedBladeSkill;
 import net.peacefulcraft.sco.swordskills.SkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 /**
  * Common Serrated Blade - Quartz Increases players critical hit chance.
@@ -27,7 +28,7 @@ public class SerratedBladeItem extends SkillProvider {
         
         setModifiers();
 
-        sp.setCriticalChance(sp.getCriticalChance() + this.increase);
+        sp.addCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
 
         new SerratedBladeSkill(sp, -1, (SkillProvider) this, this.increase);
     }
