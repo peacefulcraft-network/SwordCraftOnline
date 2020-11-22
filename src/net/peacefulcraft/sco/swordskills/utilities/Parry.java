@@ -1,7 +1,5 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
-import java.util.Random;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -12,6 +10,7 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class Parry {
     private double damage;
@@ -49,24 +48,24 @@ public class Parry {
             SCOPlayer s = GameManager.findSCOPlayer((Player) vic);
             if(s == null) { return this.damage; }
 
-            int chance = s.getParryChance() + chanceModifier;
+            int chance = (int) s.getCombatModifier(CombatModifier.PARRY_CHANCE) + chanceModifier;
             if(SwordCraftOnline.r.nextInt(100) <= chance) {
                 ((Player) vic).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
                     ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 }
-                return this.damage * (s.getParryMultiplier() + multModifier);
+                return this.damage * (s.getCombatModifier(CombatModifier.PARRY_MULTIPLIER) + multModifier);
             }
         } else {
             ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(vic.getUniqueId());
             if(am == null) { return this.damage; }
 
-            int chance = am.getParryChance() + chanceModifier;
+            int chance = (int) am.getCombatModifier(CombatModifier.PARRY_CHANCE) + chanceModifier;
             if(SwordCraftOnline.r.nextInt(100) <= chance) {
                 if(damager instanceof Player && GameManager.findSCOPlayer((Player)damager) != null) {
                     ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Attack Parried!");
                 }
-                return this.damage * (am.getParryMultiplier() + multModifier);
+                return this.damage * (am.getCombatModifier(CombatModifier.PARRY_MULTIPLIER) + multModifier);
             }
         }
         return this.damage;

@@ -1,8 +1,10 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -11,6 +13,8 @@ import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
 import net.peacefulcraft.sco.particles.DisplayType;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
@@ -65,42 +69,18 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		}
 		public void resetExhaustion() { this.exhaustion = 0.0; }
 
-	/**Stores players critical damage chance*/
-	private int criticalChance = 2;
-		public int getCriticalChance() { return this.criticalChance; }
-		public void setCriticalChance(int num) { this.criticalChance = num; }
-		public void addCritical(int num) { this.criticalChance+=num; }
-
-	private double criticalMultiplier = 1.2;
-		public double getCriticalMultiplier() { return this.criticalMultiplier; }
-		public void setCriticalMultiplier(double num) { this.criticalMultiplier = num; }
-
 	private boolean adminOverride = false;
 		public boolean hasOverride() { return this.adminOverride; }
 		public void setAdminOverride(boolean bool) { this.adminOverride = bool; }
 
-	private int parryChance = 0;
-		public int getParryChance() { return this.parryChance; }
-		public void setParryChance(int num) { this.parryChance = num; }
-
-	private double parryMultiplier = 0.95D;
-		public double getParryMultiplier() { return this.parryMultiplier; }
-		public void setParryMultiplier(double num) { this.parryMultiplier = num; }
-
 	/**Additional chance to increase item level on drop */
 	private double bonusLevelMod = 0.0D;
-		public double getLevelMod() { return this.bonusLevelMod; }
-		public void setLevelMod(double d) { this.bonusLevelMod = d; }
 
 	/**Additional chance to get more items on drop */
 	private double bonusDropMod = 0.0D;
-		public double getDropMod() { return this.bonusDropMod; }
-		public void setDropMod(double d) { this.bonusDropMod = d; }
 
 	/**Players exp multiplier */
 	private double expMod = 1.0D;
-		public double getExpMod() { return this.expMod; }
-		public void  setExpMod(double d) { this.expMod = d; }
 
 	/**Players current movement direction */
 	private DirectionalUtil.Movement movement;
@@ -149,6 +129,14 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	private Duel duel = null;
 		public void setDuel(Duel d) { this.duel = d; }
 		public Duel getDuel() { return this.duel; }
+
+	/**Players active pet */
+	private MythicPet pet = null;
+		public MythicPet getPet() { return this.pet; }
+		public void setPet(MythicPet pet) { this.pet = pet; }
+
+	/**The last mob related damage of this player */
+	private ModifierUser lastCauseOfDamage = null;
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
@@ -220,14 +208,113 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		this.playerKills = red;
 	}	
 
+	/**
+	 * Gets SCOPlayer current location
+	 * @return Location of player
+	 */
+	public Location getLocation() {
+		return user.getLocation();
+	}
+
+	/**
+	 * Sets players LCOD to modifier user
+	 * @param damager Instance that caused damage
+	 */
+	public void setLastCauseOfDamage(ModifierUser damager) {
+		this.lastCauseOfDamage = damager;
+	}
+
+	/**
+	 * Safely returns last cause of damage
+	 * @return ModifierUser to cause damage, null otherwise
+	 */
+	public ModifierUser getLastCauseOfDamage() {
+		if(lastCauseOfDamage == null) { return null; }
+
+		// Last mob to cause damage is dead
+		if(lastCauseOfDamage instanceof ActiveMob && ((ActiveMob)lastCauseOfDamage).isDead()) {
+			return null;
+		}
+
+		return lastCauseOfDamage;
+	}
+
+	@Override
+	public double getCombatModifier(CombatModifier mod) {
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                return criticalChance;
+            case CRITICAL_MULTIPLIER:
+                return criticalMultiplier;
+            case PARRY_CHANCE:
+                return parryChance;
+            case PARRY_MULTIPLIER:
+				return parryMultiplier;
+			case ITEM_LEVEL:
+				return this.bonusLevelMod;
+			case BONUS_DROP:
+				return this.bonusDropMod;
+			case BONUS_EXP:
+				return this.expMod;
+            default:
+                return -1;
+        }
+	}
+
+	@Override
+	public void setCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance = (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier = amount;
+            case PARRY_CHANCE:
+                parryChance = (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier = amount;
+			case ITEM_LEVEL:
+				this.bonusLevelMod = amount;
+			case BONUS_DROP:
+				this.bonusDropMod = amount;
+			case BONUS_EXP:
+				this.expMod = amount;
+		}
+		
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
+		}
+	}
+
+	@Override
+	public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		this.setCombatModifier(mod, d * amount, -1);
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
+		}
+	}
+
+	@Override
+	public void addCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		this.setCombatModifier(mod, d + amount, -1);
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
+		}
+	}
+
 	public String getPlayerData() {		
 		String header = repeat(5, " ") + ChatColor.GOLD + "[" + ChatColor.BLUE + "SCOPlayer" + ChatColor.GOLD + "]" + ChatColor.BLUE + getName() + "'s Data" + '\n' 
 		+ ChatColor.GOLD + repeat(40, "-") + '\n';
 		String partyName = ChatColor.GOLD + "Party Name: " + ChatColor.BLUE + getPartyName() + '\n';
 		String playerKills = ChatColor.GOLD + "Player Kills: " + ChatColor.BLUE + getPlayerKills() + '\n';
-		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCriticalChance() + '\n';
-		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCriticalMultiplier() + '\n'; 
-		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getParryChance() + '\n';
+		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_CHANCE) + '\n';
+		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER) + '\n'; 
+		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.PARRY_CHANCE) + '\n';
 		String override = ChatColor.GOLD + "Admin Override: " + ChatColor.BLUE + hasOverride() + '\n';
 		
 		String skills = ChatColor.GOLD + "Active Skills: " + ChatColor.BLUE;

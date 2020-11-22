@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class CriticalHit {
     private double damage;
@@ -55,7 +56,7 @@ public class CriticalHit {
             if(s == null) { return 0; }
 
             Random rand = new Random();
-            int chance = s.getCriticalChance() + chanceModifier;
+            int chance = (int) (s.getCombatModifier(CombatModifier.CRITICAL_CHANCE) + chanceModifier);
             int mult = 1;
             /**If critical hit chance is above 100% we over critical */
             if(chance > 100) {
@@ -65,7 +66,7 @@ public class CriticalHit {
             }
 
             /**Over critical logic: If not chance, guaranteed critical 1 level lower */
-            double multiplier = s.getCriticalMultiplier() + multModifier;
+            double multiplier = s.getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER)+ multModifier;
             if(rand.nextInt(100) <= chance) {
                d = mult * multiplier * damage;
                ((Player) damager).sendMessage(ChatColor.BOLD + "" + ChatColor.RED + mult + "x Critical Hit!");
@@ -77,7 +78,7 @@ public class CriticalHit {
             ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(damager.getUniqueId());
             if(am == null) { return 0; }
 
-            int chance = am.getCriticalChance() + chanceModifier;
+            int chance = (int) am.getCombatModifier(CombatModifier.CRITICAL_CHANCE) + chanceModifier;
             int mult = 1;
 
             if(chance > 100) {
@@ -86,7 +87,7 @@ public class CriticalHit {
                 }
             }
 
-            double multiplier = am.getCriticalMultiplier() + multModifier;
+            double multiplier = am.getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER) + multModifier;
             if(SwordCraftOnline.r.nextInt(100) <= chance) {
                 d = mult * multiplier * this.damage;
             } else if(mult > 1) {

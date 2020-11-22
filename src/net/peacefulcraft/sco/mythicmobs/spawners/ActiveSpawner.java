@@ -144,7 +144,8 @@ public class ActiveSpawner {
                 field = SpawnFields.HERCULEAN;
             }
 
-            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicInternal(), loc, level, field);
+            // Fetching random mob from spawner by internal name
+            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(this.s.getMythicMob().getInternalName(), loc, level, field);
             if(am == null) {
                 SwordCraftOnline.logInfo("[Spawner Manager] Error spawning mob in: " + this.s.getName());
             }
