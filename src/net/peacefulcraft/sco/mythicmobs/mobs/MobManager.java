@@ -60,6 +60,10 @@ public class MobManager implements Runnable {
     private HashMap<UUID, ActiveMob> herculeanRegistry = new HashMap<>();
         public Map<UUID, ActiveMob> getHerculeanRegistry() { return Collections.unmodifiableMap(this.herculeanRegistry); }
 
+    /**Registry of active pets */
+    private HashMap<UUID, MythicPet> petRegistry = new HashMap<>();
+        public Map<UUID, MythicPet> getPetRegistry() { return Collections.unmodifiableMap(this.petRegistry); }
+
     /** Main task logic for mob manager*/
     private BukkitTask mobTask;
 
@@ -70,15 +74,10 @@ public class MobManager implements Runnable {
         loadMobs();
     }
 
+    /**Loads mobs from files*/
     public void loadMobs() {
 
-        //Clearing all registered mob instances
-        this.mmList.clear();
-        this.mmDisplay.clear();
-        this.mmDefault.clear();
-        this.mobRegistry.clear();
-        this.herculeanRegistry.clear();
-        MobSpawnHandler.clearVanillaMobs();
+        clearLists();
 
         IOLoader<SwordCraftOnline> defaultMobs = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
         defaultMobs  = new IOLoader<SwordCraftOnline>(SwordCraftOnline.getPluginInstance(), "ExampleMobs.yml", "Mobs");
@@ -120,6 +119,32 @@ public class MobManager implements Runnable {
             }
         }
         SwordCraftOnline.logInfo("[Mob Manager] Loading complete!");
+    }
+
+    /**Clears lists but keeps persistent mobs */
+    private void clearLists() {
+        this.mmList.clear();
+        this.mmDisplay.clear();
+        this.mmDefault.clear();
+        this.petRegistry.clear();
+        HashMap<UUID, ActiveMob> temp = new HashMap<UUID, ActiveMob>();
+        Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
+        while(iterator.hasNext()) {
+            ActiveMob am = iterator.next();
+            if(am.getType().isPersistent()) { 
+                temp.put(am.getUUID(), am);
+                continue; 
+            }
+        }
+        this.mobRegistry.clear();
+        this.mobRegistry = temp;
+
+        MobSpawnHandler.clearVanillaMobs();
+    }
+
+    public void reload() {
+        despawnAllMobs();
+        loadMobs();
     }
 
     @Override
@@ -219,9 +244,23 @@ public class MobManager implements Runnable {
         this.herculeanRegistry.remove(u);
     }
 
+    /**
+     * Unregisteres an active mob from registry
+     * @param am ActiveMob to be unregistered
+     */
     public void unregisterActiveMob(ActiveMob am) {
         this.mobRegistry.remove(am.getEntity().getUniqueId());
         this.herculeanRegistry.remove(am.getEntity().getUniqueId());
+    }
+
+    /**
+     * Unregisteres a list of active mobs
+     * @param lis List to be cleared
+     */
+    public void unregisterActiveMobs(List<ActiveMob> lis) {
+        for(ActiveMob am : lis) {
+            unregisterActiveMob(am);
+        }
     }
 
     public ActiveMob getMythicMobInstance(Entity target) {
@@ -272,7 +311,8 @@ public class MobManager implements Runnable {
                 return null;
             }
 
-            return mm.spawn(loc, level);
+            ActiveMob am = mm.spawn(loc, level);
+            return am;
         }
         return null;
     }
@@ -350,8 +390,29 @@ public class MobManager implements Runnable {
         return amount;
     }
 
+    /**
+     * Despawns a group of mobs
+     * @param lis List of activemobs to be removed
+     */
+    public void despawnMobs(Collection<ActiveMob> lis) {
+        for(ActiveMob am : lis) {
+            if((am.getType()).optionDespawn && !am.getType().isPersistent()) {
+                am.setDespawned();
+                am.getEntity().remove();
+            }
+        }
+    }
+
     public Collection<ActiveMob> getActiveMobs() {
         return this.mobRegistry.values();
+    }
+
+    /**
+     * Registers mythic pet to mob mananger
+     * @param mp Pet to be registered
+     */
+    public void registerPet(MythicPet mp) {
+        this.petRegistry.put(mp.getActiveMob().getUUID(), mp);
     }
 
     /**Removes centipede from active centipede registry */

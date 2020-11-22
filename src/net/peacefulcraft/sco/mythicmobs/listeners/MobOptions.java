@@ -12,6 +12,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.entity.SlimeSplitEvent;
@@ -173,5 +174,21 @@ public class MobOptions implements Listener {
         ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(ent.getUniqueId());
 
         am.updateBossBar();
+    }
+
+    @EventHandler
+    public void mobTarget(EntityTargetEvent e) {
+        Entity ent = e.getEntity();
+
+        if(!(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().keySet().contains(ent.getUniqueId()))) { return; }
+        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getCustomName());
+        if(mm == null) {
+            SwordCraftOnline.logWarning("Attempted to load null mythic mob instance from manager in MobOptions mobTarget listener");
+            return;
+        }
+
+        if(SwordCraftOnline.getPluginInstance().getMobManager().getPetRegistry().get(ent.getUniqueId()) != null) {
+            e.setCancelled(true);
+        }
     }
 }

@@ -4,6 +4,7 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 /**
  * Skill increases player critical hit chance by level.
@@ -33,7 +34,7 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        s.setCriticalChance(s.getCriticalChance() + increase);
+        s.addCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
     }
 
     @Override
@@ -49,6 +50,6 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void unregisterSkill() {
-        s.setCriticalChance(s.getCriticalChance() - increase);
+        s.addCombatModifier(CombatModifier.CRITICAL_CHANCE, -this.increase, -1);
     }
 }

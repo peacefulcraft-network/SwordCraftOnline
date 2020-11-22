@@ -18,12 +18,34 @@ import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
  */
 public class ModifierUser {
 
+    /**List of Modifiers user has */
     private List<Modifier> damageModifiers;
 
+    /**Instance of living entity using this class */
     private LivingEntity entity;
+
+    /**CombatModifier: Chance user lands critical hit */
+    protected int criticalChance;
     
+    /**CombatModifier: Additional damage dealt on critical hit */
+    protected double criticalMultiplier;
+
+    /**CombatModifier: Chance user lowers incoming damage */
+    protected int parryChance;
+
+    /**CombatModifier: Damage dampener on incoming damage */
+    protected double parryMultiplier;
+    
+    /**
+     * Fetches implementing sub class living entity
+     * @return LivingEntity instance
+     */
     public LivingEntity getLivingEntity() { return this.entity; }
 
+    /**
+     * Fetches copy of damage modifiers
+     * @return Unmodifiable copy of DamageModifiers list
+     */
     public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
 
     /**
@@ -230,5 +252,144 @@ public class ModifierUser {
                 }
             }, duration * 20);
         }
+    }
+
+
+    /**
+     * Adds a double value to a set attribute
+     * @param attribute Attribute to be set
+     * @param amount Value to be added. I.e. 0.2, 0.4, 1, etc.
+     * @param duration Resets value after this time in seconds. If -1 it does not
+     */
+    public void addAttribute(Attribute attribute, double amount, int duration) {
+        double d = getAttribute(attribute);
+
+        getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setAttribute(attribute, d, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    /**
+     * Checks if user is dead
+     * @return True if user is dead, false otherwise
+     */
+    public boolean isDead() {
+        return getLivingEntity().isDead();
+    }
+
+    /**
+     * Fetches combat modifier value
+     * @param mod CombatModifier we want
+     * @return value of modifier, -1 default.
+     */
+    public double getCombatModifier(CombatModifier mod) {
+        switch(mod) {
+            case CRITICAL_CHANCE:
+                return criticalChance;
+            case CRITICAL_MULTIPLIER:
+                return criticalMultiplier;
+            case PARRY_CHANCE:
+                return parryChance;
+            case PARRY_MULTIPLIER:
+                return parryMultiplier;
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * Helper method for delayed resetting of attributes to a value
+     * @param mod Modifier we want to set
+     * @param amount Amount to be set
+     * @param duration Time in seconds for value to be set
+     */
+    protected void _setCombatModifier(CombatModifier mod, double amount, int duration) {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+            public void run() {
+                setCombatModifier(mod, amount, -1);
+            }
+        }, duration * 20);
+    }
+
+    /**
+     * Sets CombatModifier to value for duration
+     * @param mod Modifier we want to set
+     * @param amount Amount to be set
+     * @param duration Resets value after this time in seconds. If -1 it does not.
+     */
+    public void setCombatModifier(CombatModifier mod, double amount, int duration) {
+        double d = getCombatModifier(mod);
+
+        switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance = (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier = amount;
+            case PARRY_CHANCE:
+                parryChance = (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier = amount;
+            default:
+                SwordCraftOnline.logInfo("[Modifier User] Attempted to set player specific combat modifier on super class. " + mod.toString());
+        }
+
+        if(duration != -1) {
+            _setCombatModifier(mod, d, duration);
+        }
+    }
+
+    /**
+     * Multiplies given combat modifier by amount.
+     * @param mod CombatModifier we want to adjust
+     * @param amount Amount to be multiplied by
+     * @param duration Resets value after this time in seconds. If -1 it does not.
+     */
+    public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
+        double d = getCombatModifier(mod);
+
+        setCombatModifier(mod, d * amount, -1);
+        if(duration != -1) {
+            _setCombatModifier(mod, d, duration);
+        }
+    }
+
+    /**
+     * Adds a double value to given combat modifier
+     * @param mod CombatModifier we want to adjust
+     * @param amount Amount to be multiplied by
+     * @param duration Resets value after this time in seconds. If -1 it does not.
+     */
+    public void addCombatModifier(CombatModifier mod, double amount, int duration) {
+        double d = getCombatModifier(mod);
+
+        setCombatModifier(mod, d + amount, -1);
+        if(duration != -1) {
+            _setCombatModifier(mod, d, duration);
+        }
+    }
+
+    /**
+     * Combat modifiers used by both Active Mobs and Players
+     */
+    public enum CombatModifier {
+        /**Critical hit chance of user */
+        CRITICAL_CHANCE, 
+        /**Critical damage multiplier of user */
+        CRITICAL_MULTIPLIER, 
+        /**Parry chance of user */
+        PARRY_CHANCE,
+        /**Parry damage dampener multiplier of user */ 
+        PARRY_MULTIPLIER,
+        /**Additional chance to increase item level on drop */
+        ITEM_LEVEL,
+        /**Additional chance to get more items on drop */ 
+        BONUS_DROP, 
+        /**Additional chance to get more exp on mob kill */
+        BONUS_EXP;
     }
 }
