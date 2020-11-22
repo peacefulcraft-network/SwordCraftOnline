@@ -24,6 +24,19 @@ public class ModifierUser {
     /**Instance of living entity using this class */
     private LivingEntity entity;
 
+    /**
+     * Health attribute of user. 
+     * This is modified instead of max health attribute
+     * TODO: Remove 20 base value and set from data load
+     */
+    private Integer maxHealth = 20;
+
+    /**
+     * Current health of user
+     * TODO: Remove 20 base value
+     */
+    private Integer currHealth = 20;
+
     /**CombatModifier: Chance user lands critical hit */
     protected int criticalChance;
     
@@ -47,6 +60,35 @@ public class ModifierUser {
      * @return Unmodifiable copy of DamageModifiers list
      */
     public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
+
+    /**
+     * Checks users modifiers for match
+     * @param type Type of damage
+     * @param damage FinalDamage from event
+     * @return modified damage
+     */
+    public double checkModifier(ModifierType type, double damage, boolean incoming) {
+        Modifier m = getDamageModifier(type, incoming);
+        if(m == null) { return damage; }
+
+        double dam = m.calculate(damage);
+        return dam;
+    }
+
+    /**
+     * Checks users modifiers for match
+     * @param type Type of damage in string
+     * @param damage FinalDamage from event
+     * @return modified damage
+     */
+    public double checkModifier(String type, double damage, boolean incoming) {
+        try{
+            return checkModifier(ModifierType.valueOf(type), damage, incoming);
+        } catch(IllegalArgumentException ex) {
+            SwordCraftOnline.logInfo("[ModifierUser] IllegalArgumentException thrown in checkModifier method.");
+            return damage;
+        }
+    }
 
     /**
      * Temporarily set value of multiplier to value.
@@ -113,7 +155,7 @@ public class ModifierUser {
 	 * @param m Modifier to be added.
 	 */
 	public void addDamageModifier(Modifier m) { 
-		removeDamageModifier(m);
+		removeDamageModifier(m, m.isIncoming());
 		this.damageModifiers.add(m);
 	}
 
@@ -121,20 +163,20 @@ public class ModifierUser {
 	 * Safely removes modifier of same type from list
 	 * @param m Modifier to be removed
 	 */
-	public void removeDamageModifier(Modifier m) {
-		removeDamageModifier(m.getType());
+	public void removeDamageModifier(Modifier m, boolean incoming) {
+		removeDamageModifier(m.getType(), incoming);
 	}
 
 	/**
 	 * Safely removes modifier of same type from list
 	 * @param type Modifier to be removed
 	 */
-	public void removeDamageModifier(ModifierType type) {
+	public void removeDamageModifier(ModifierType type, boolean incoming) {
 		// If modifier of same type exists we remove
 		Iterator<Modifier> iter = this.damageModifiers.iterator();
 		while(iter.hasNext()) {
 			Modifier mod = iter.next();
-			if(mod.getType().equals(type)) {
+			if(mod.getType().equals(type) && mod.isIncoming() == incoming) {
 				iter.remove();
 			}
 		}
@@ -146,7 +188,7 @@ public class ModifierUser {
 	 * @param type Type to be searched for
 	 * @return Clone of Modifier if found. Null otherwise
 	 */
-	public Modifier getDamageModifier(ModifierType type) {
+	public Modifier getDamageModifier(ModifierType type, boolean incoming) {
 		// If type exists we return
 		for(Modifier m : this.damageModifiers) {
 			if(m.getType().equals(type)) {
@@ -161,8 +203,8 @@ public class ModifierUser {
 	 * @param m Modifier to search for same type
 	 * @return Modifier of type if found. Null otherwise
 	 */
-	public Modifier getDamageModifier(Modifier m) {
-		return getDamageModifier(m.getType());
+	public Modifier getDamageModifier(Modifier m, boolean incoming) {
+		return getDamageModifier(m.getType(), incoming);
     }
     
     /**
@@ -177,10 +219,10 @@ public class ModifierUser {
      * @param type Type of modifier to be removed
      * @param duration Time in seconds for modifier to be removed
      */
-    public void disableModifier(ModifierType type, int duration) {
+    public void disableModifier(ModifierType type, int duration, boolean incoming) {
         // Copying modifier we want and removing it
-        Modifier m = getDamageModifier(type);
-        removeDamageModifier(type);
+        Modifier m = getDamageModifier(type, incoming);
+        removeDamageModifier(type, incoming);
 
         // Adding modifier back after duration in ticks
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
@@ -253,7 +295,6 @@ public class ModifierUser {
             }, duration * 20);
         }
     }
-
 
     /**
      * Adds a double value to a set attribute
@@ -391,5 +432,68 @@ public class ModifierUser {
         BONUS_DROP, 
         /**Additional chance to get more exp on mob kill */
         BONUS_EXP;
+    }
+
+    /**
+     * Gets max health of this user 
+     * @return Integer of max health value
+     */
+    public Integer getMaxHealth() {
+        return this.maxHealth;
+    }
+
+    /**
+     * Gets current health of user
+     * @return Integer of health value
+     */
+    public Integer getHealth() {
+        return this.currHealth;
+    }
+
+    /**
+     * Sets current health of user
+     * @param h Amount to be set
+     */
+    public void setHealth(Integer h) {
+        this.currHealth = h;
+    }
+
+    /**
+     * Sets max health of user.
+     * @param amount Amount we set max health to
+     * @param duration Duration in seconds of change, -1 if no timer
+     */
+    public void setMaxHealth(Integer amount, int duration) {
+        int copy = this.maxHealth;
+
+        this.maxHealth = amount;
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setMaxHealth(copy, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    /**
+     * Converts users custom health values to
+     * their Attribute.MAX_HEALTH scale
+     * @param damage Incoming damage from event
+     * @param set If true, sets users health and living entity health
+     * @return Amount of correct damage to be set on health bar
+     */
+    public Double convertHealth(double damage, boolean set) {
+        // Ratio of current health to max health
+        // Ex: (100-2) / 100 = 0.98
+        double ratio = (this.currHealth - damage) / this.maxHealth;
+        double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
+
+        if(set) {
+            this.currHealth -= (int)damage;
+            getLivingEntity().setHealth(health);
+        }
+
+        return health;
     }
 }
