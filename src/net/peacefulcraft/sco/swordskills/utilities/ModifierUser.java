@@ -21,6 +21,19 @@ public class ModifierUser {
     private List<Modifier> damageModifiers;
 
     private LivingEntity entity;
+
+    /**
+     * Health attribute of user. 
+     * This is modified instead of max health attribute
+     * TODO: Remove 20 base value and set from data load
+     */
+    private Integer maxHealth = 20;
+
+    /**
+     * Current health of user
+     * TODO: Remove 20 base value
+     */
+    private Integer currHealth = 20;
     
     public LivingEntity getLivingEntity() { return this.entity; }
 
@@ -230,5 +243,61 @@ public class ModifierUser {
                 }
             }, duration * 20);
         }
+    }
+
+    /**
+     * Gets max health of this user 
+     * @return Integer of max health value
+     */
+    public Integer getMaxHealth() {
+        return this.maxHealth;
+    }
+
+    /**
+     * Gets current health of user
+     * @return Integer of health value
+     */
+    public Integer getHealth() {
+        return this.currHealth;
+    }
+
+    /**
+     * Sets max health of user.
+     * @param amount Amount we set max health to
+     * @param duration Duration in seconds of change, -1 if no timer
+     */
+    public void setMaxHealth(Integer amount, int duration) {
+        int copy = this.maxHealth;
+
+        this.maxHealth = amount;
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setMaxHealth(copy, -1);
+                }
+            }, duration * 20);
+        }
+    }
+
+    /**
+     * Sets current health of user
+     * @param h Amount to be set
+     */
+    public void setHealth(Integer h) {
+        this.currHealth = h;
+    }
+
+    /**
+     * Converts users custom health values to
+     * their Attribute.MAX_HEALTH scale
+     * @param damage Incoming damage from event
+     * @return Amount of correct damage to be set on health bar
+     */
+    public Double convertHealth(double damage) {
+        // Ratio of current health to max health
+        // Ex: (100-2) / 100 = 0.98
+        double ratio = (this.currHealth - damage) / this.maxHealth;
+
+        return getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
     }
 }
