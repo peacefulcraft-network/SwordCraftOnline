@@ -251,9 +251,11 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(this.uuid);
     }
 
+    /*
     public double getHealth() {
         return getEntity().getHealth();
     }
+    */
 
     /**Call to update health on in display name health bar */
     public void updateHealthBar() {
