@@ -25,7 +25,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
  */
 public abstract class Announcer {
     /**Prefix for SCO */
-    private static final String prefix = ChatColor.DARK_RED + "[" + ChatColor.RED + "SwordCrafOnline" + ChatColor.DARK_RED + "]";
+    private static final String prefix = ChatColor.DARK_RED + "[" + ChatColor.RED + "SwordCraftOnline" + ChatColor.DARK_RED + "]";
         public static String getPrefix() { return prefix; }
 
     /**
