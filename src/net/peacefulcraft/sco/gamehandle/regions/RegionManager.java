@@ -41,7 +41,12 @@ public class RegionManager {
                 MythicConfig mc = new MythicConfig(name, sl.getFile(), sl.getCustomConfig());
                 String file = sl.getFile().getPath();
 
-                Region r = new Region(file, name, mc);
+                Region r = null;
+                if(sl.getCustomConfig().getBoolean(name + ".Farm", false)) {
+                    r = new FarmRegion(file, name, mc);
+                } else {
+                    r = new Region(file, name, mc);
+                }
                 regions.put(name, r);
                 
                 int floor = r.getFloor();
