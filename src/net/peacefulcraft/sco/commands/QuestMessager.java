@@ -17,7 +17,7 @@ public class QuestMessager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("questmessager")) {
-            SCOPlayer s = GameManager.findSCOPlayerByName(args[0]);
+            SCOPlayer s = GameManager.findSCOPlayer(args[0]);
             if(s == null) {
                 SwordCraftOnline.logSevere("Attempted to progress quest of non-existing player: " + args[1]);
             }
