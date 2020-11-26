@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.List;
 
+import org.bukkit.attribute.Attribute;
+
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
@@ -163,10 +165,10 @@ public class Quest {
         if(this.levelReq != 0 && s.getLevel() < this.levelReq) { 
             return false;
         }
-        if(this.armorReq != 0 && s.getArmor() < this.armorReq) {
+        if(this.armorReq != 0 && s.getAttribute(Attribute.GENERIC_ARMOR) < this.armorReq) {
             return false;
         }
-        if(this.speedReq != 0 && s.getMovementSpeed() < this.speedReq) {
+        if(this.speedReq != 0 && s.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) < this.speedReq) {
             return false;
         }
         //TODO: Check sword skill is in player inventory

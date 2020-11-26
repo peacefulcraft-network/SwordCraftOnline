@@ -482,6 +482,7 @@ public class MobManager implements Runnable {
         return ret;
     }
 
+    /**
      * Despawns a group of mobs
      * @param lis List of activemobs to be removed
      */
