@@ -16,3 +16,6 @@ commands:
     party:
       description: all party commands.
       usage: "/<command> [ create | rename | invite | disband | cancelinvite | accept | deny | setleader | leave | name ]"
+    questmessager:
+      description: Main quest messager command
+      usage: "/<command> [player name] [quest name] [response name]"

@@ -257,4 +257,14 @@ public abstract class Announcer {
         }
         
     }
+
+    /**Sends player a title bar message */
+    public static void sendTitle(Player p, String message, String subMessage) {
+        p.sendTitle(message, subMessage, 10, 70, 20);
+    }
+
+    /**@return Square icon */
+    public static String getSquare() {
+        return "■";
+    }
 }

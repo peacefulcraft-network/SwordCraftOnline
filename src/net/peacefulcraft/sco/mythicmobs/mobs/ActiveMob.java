@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Creature;
@@ -14,11 +15,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
 import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
+import net.peacefulcraft.sco.quests.Quest;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -129,6 +132,47 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
     private boolean duringNightwave;
         public boolean duringNightwave() { return this.duringNightwave; }
     
+    /**Active mobs damage "dampener" on successful parry */
+    private double parryMultiplier;
+        public double getParryMultiplier() { return this.parryMultiplier; }
+        public void setParryMultiplier(double num) { this.parryMultiplier = num; }
+
+    /** Perm/Persistent location of mob. Used in quest givers*/
+    private Location permLocation;
+        public Location getPermLocation() { return this.permLocation; }
+        public void setPermLocation(Location l) { this.permLocation = l; }
+
+    /**Marks active mob as quest giver */
+    private Boolean canGiveQuests;
+        public Boolean canGiveQuests() { return this.canGiveQuests; }
+
+    /**Active mobs quest to give to players if it can */
+    private Quest quest = null;
+        public Quest getQuest() { return this.quest; }
+        /**If AM cannot give quest, do nothing */
+        public void setQuest(Quest q) { 
+            if(canGiveQuests && q != null) { 
+                this.quest = q; 
+                getLivingEntity().setCustomName(ChatColor.GREEN + "" + getDisplayName());
+            } else if(canGiveQuests && q == null) {
+                getLivingEntity().setCustomName(ChatColor.WHITE + "" + getDisplayName());
+            }
+        }
+
+    /**Cooldown for quest assignment */
+    private Long questAssignTime;
+        public void setQuestAssignmentTime(Long l) { this.questAssignTime = l; }
+        /**@return True if quest assignment has expired */
+        public boolean checkQuestAssignment() {
+            if(this.questAssignTime != 0 && BukkitAdapter.adapt(getLocation()).getWorld().getTime() - this.questAssignTime < (quest.getExistTime() * 60 * 20)) { return false; }
+            return true;
+        }
+    
+    /**
+     * Initializes active mob instance.
+     * @param e Abstract entity
+     * @param type Mob type read from Mythic Mob
+     */
     public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int level, boolean isNightwave) {
         this.uuid = uuid;
         this.entity = e;
@@ -146,7 +190,9 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
 
         this.swordSkillManager = new SwordSkillManager(this);
 
-        /**Setting combat modifiers to type instance */
+        this.canGiveQuests = type.canGiveQuests();
+      
+        /**Setting combat modifiers to type instance */      
         setCombatModifier(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);
         setCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, type.getCriticalMultiplier(), -1);
         setCombatModifier(CombatModifier.PARRY_CHANCE, type.getParryChance(), -1);

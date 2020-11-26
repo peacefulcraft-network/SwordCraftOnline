@@ -9,6 +9,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.quests.QuestBookManager;
 import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
@@ -120,6 +122,17 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 			return true;
 		}
 
+	private QuestBookManager questBookManager;
+		public QuestBookManager getQuestBookManager() { return questBookManager; }
+
+	/**Players region */
+	private Region r = null;
+		public Region getRegion() { return this.r; }
+		public void setRegion(Region r, boolean silent) { 
+			this.r = r; 
+			if(!silent) { r.sendTitle(this.user); }
+		}
+
 	/**Players level of particle display. Defaulted to full effect */
 	private DisplayType displayType = DisplayType.FULL;
 		public DisplayType getDisplayType() { return this.displayType; }
@@ -146,9 +159,11 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		scopData = new PlayerDataManager(this);
 		
 		swordSkillManager = new SwordSkillManager(this);
+		questBookManager = new QuestBookManager(this);
 		
 		inventoryManager = new InventoryManager(this);
 		inventoryManager.fetchInventory(InventoryType.SWORD_SKILL);
+		inventoryManager.fetchInventory(InventoryType.QUEST_BOOK);
 
 		//TODO: Remove this and replace with loading the wallet/bank from data
 		this.wallet = 1000;

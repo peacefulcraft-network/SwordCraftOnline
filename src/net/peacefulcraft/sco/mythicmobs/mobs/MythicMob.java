@@ -544,6 +544,14 @@ public class MythicMob implements Comparable<MythicMob> {
         public double getParryMultiplier() { return this.parryMultiplier; }
 
     /**
+     * Determines if mob is used to give quests.
+     * If true, mob AI is turned off
+     */
+    private Boolean canGiveQuests;
+        /**@return True if mob can give quests */
+        public Boolean canGiveQuests() { return this.canGiveQuests; }
+
+    /**
      * Determines if mob is herculean level 
      * If true, mob recieves additional bonuses to attributes
      * and has unique name plate
@@ -703,6 +711,19 @@ public class MythicMob implements Comparable<MythicMob> {
         this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
         this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
         this.usesHealthBar = Boolean.valueOf(mc.getBoolean("Options.HealthBar", true));
+
+        /**
+         * Quest options
+         * If mob is a quest giver they cannot move, are safe between reloads, and are invincible
+         */
+        this.canGiveQuests = mc.getBoolean("Options.CanGiveQuests", false);
+        if(this.canGiveQuests) { 
+            this.optionNoAI = true;
+            this.optionPersistent = true;
+            this.optionInvincible = true;
+            this.usesHealthBar = false;
+        }
+
         this.isHerculean = mc.getBoolean("Options.Herculean");
         
         //Boss Bar Handling
