@@ -18,13 +18,15 @@ public class Region {
 
     private MythicConfig config;
 
-    private Integer x1;
+    protected Integer x1;
 
-    private Integer x2;
+    protected Integer x2;
 
-    private Integer z1;
+    protected Integer z1;
 
-    private Integer z2;
+    protected Integer z2;
+
+    protected String world;
 
     /**Name of location that is displayed anywhere */
     private String name;
@@ -33,7 +35,7 @@ public class Region {
     /**Brief description of location */
     private String description;
 
-    private Integer floor;
+    protected Integer floor;
         public Integer getFloor() { return this.floor; }
 
     private Boolean preventPVP;
@@ -58,7 +60,7 @@ public class Region {
     private List<Region> children = new ArrayList<>();
 
     /**Determines if moving between this parent-child border sends title */
-    private Boolean silentParentTransfer;
+    protected Boolean silentParentTransfer;
         public Boolean isSilentParentTransfer() { return silentParentTransfer; }
 
     public Region(String file, String internalName, MythicConfig mc) {
@@ -71,6 +73,7 @@ public class Region {
         this.x2 = config.getInteger("x2", 0);
         this.z1 = config.getInteger("z1", 0);
         this.z2 = config.getInteger("z2", 0);
+        this.world = config.getString("world", "");
 
         this.name = config.getString("Name");
         this.description = config.getString("Description", "");
@@ -96,6 +99,14 @@ public class Region {
         } else if(parent != null) {
             setParent(parent);
         }
+    }
+
+    /**
+     * Checks if region is farm region
+     * @return True if region is farm
+     */
+    public Boolean isFarm() {
+        return false;
     }
 
     /**

@@ -151,6 +151,10 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	/**The last mob related damage of this player */
 	private ModifierUser lastCauseOfDamage = null;
 
+	/**Players chance to get extra crops */
+	private Integer farmingChance = 0;
+		public Integer getFarmingChance() { return farmingChance; }
+
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
 		playerKills = 0;
