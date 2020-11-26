@@ -15,11 +15,14 @@ import net.peacefulcraft.sco.commands.setWaystone;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
+import net.peacefulcraft.sco.gamehandle.listeners.DuelMoveListener;
 import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
+import net.peacefulcraft.sco.gamehandle.listeners.ModifierUserDamageListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionCheckListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionDamageListener;
+import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDamageListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
@@ -31,7 +34,6 @@ import net.peacefulcraft.sco.mythicmobs.listeners.CentipedeDamage;
 import net.peacefulcraft.sco.mythicmobs.listeners.HealthBarUpdate;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
-import net.peacefulcraft.sco.mythicmobs.listeners.MobTarget;
 import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
 import net.peacefulcraft.sco.mythicmobs.spawners.SpawnerManager;
@@ -169,13 +171,15 @@ public class SwordCraftOnline extends JavaPlugin{
 		// Game Handle Listeners
 		getServer().getPluginManager().registerEvents(new JoinGameListener(), this);
 		getServer().getPluginManager().registerEvents(new QuitGameListener(), this);
-		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
 		getServer().getPluginManager().registerEvents(new RegionCheckListener(), this);
 		getServer().getPluginManager().registerEvents(new RegionDamageListener(), this);
+		getServer().getPluginManager().registerEvents(new SCOPlayerDamageListener(), this);
+		getServer().getPluginManager().registerEvents(new EnterDungeon(), this);
+		getServer().getPluginManager().registerEvents(new DuelMoveListener(), this);
+		getServer().getPluginManager().registerEvents(new ModifierUserDamageListener(), this);
 		
 		//Mythicmob listeners
 		getServer().getPluginManager().registerEvents(new MythicMobDeathEvent(), this);
-		getServer().getPluginManager().registerEvents(new MobTarget(), this);
 		getServer().getPluginManager().registerEvents(new MobOptions(), this);
 		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		getServer().getPluginManager().registerEvents(new CentipedeDamage(), this);

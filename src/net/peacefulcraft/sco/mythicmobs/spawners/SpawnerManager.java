@@ -15,7 +15,10 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
@@ -43,9 +46,25 @@ public class SpawnerManager implements Runnable {
     private HashMap<String, ArrayList<ActiveSpawner>> spawnerRegistry = new HashMap<>();
         public Map<String, ArrayList<ActiveSpawner>> getSpawnerRegistry() { return Collections.unmodifiableMap(this.spawnerRegistry); }
 
+    private HashMap<String, ArrayList<ActiveSpawner>> passiveRegistry = new HashMap<>();
+        public Map<String, ArrayList<ActiveSpawner>> getPassiveRegistry() { return Collections.unmodifiableMap(this.passiveRegistry); }
+        public List<ActiveSpawner> getPassiveList() { return this.passiveRegistry.values().stream().flatMap(List::stream).collect(Collectors.toList()); }
+
+    private HashMap<String, ArrayList<ActiveSpawner>> hostileRegistry = new HashMap<>();
+        public Map<String, ArrayList<ActiveSpawner>> getHostileRegistry() { return Collections.unmodifiableMap(this.hostileRegistry); }
+        public List<ActiveSpawner> getHostileList() { return this.hostileRegistry.values().stream().flatMap(List::stream).collect(Collectors.toList()); }
+
     /**Stores values for active spawners registry in one list */
     private List<ActiveSpawner> registryList = new ArrayList<>();
         public List<ActiveSpawner> getRegistryList() { return Collections.unmodifiableList(this.registryList); }
+    
+    /**Determines if nightwave event is active */
+    private boolean isNightwave;
+        public boolean isNightwave() { return this.isNightwave; }
+        public void toggleNightwave() { isNightwave = !isNightwave; }
+
+    private boolean isHighlighting;
+        private void setIsHighlighting(boolean b) { this.isHighlighting = b; }
 
     /**
      * Constructs spawner manager and calls reload sequence.
@@ -57,6 +76,8 @@ public class SpawnerManager implements Runnable {
 
         /**Setting to run spawner task once a second */
         this.spawnerTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 30);
+        this.isNightwave = false;
+        this.isHighlighting = false;
     }
 
     /**Called on plugin reload or individual reload. */
@@ -107,7 +128,7 @@ public class SpawnerManager implements Runnable {
                         Double.parseDouble(String.valueOf(m.get("y"))),
                         Double.parseDouble(String.valueOf(m.get("z"))));
                     
-                    int level = (int) m.get("level");
+                    int level = Integer.valueOf((String)m.get("level"));
                     ActiveSpawner as = setSpawner(name, loc, level, silent);
                     if(as == null) {
                         SwordCraftOnline.logInfo("[Spawner Manager] Error loading: " + name + " for invalid Active Spawner parameter.");
@@ -133,29 +154,34 @@ public class SpawnerManager implements Runnable {
         List<IOLoader<SwordCraftOnline>> spawnerLoaders = IOHandler.getSaveLoad(SwordCraftOnline.getPluginInstance(), spawnerFiles, "Spawners");
 
         for(IOLoader<SwordCraftOnline> s1 : spawnerLoaders) {
-            for(String name : s1.getCustomConfig().getConfigurationSection("").getKeys(false)) {
-                try {
-                    /**Fetching mythic config and file name */
-                    MythicConfig mc = new MythicConfig(name, s1.getFile(), s1.getCustomConfig());
+            loaderLoop:
+                for(String name : s1.getCustomConfig().getConfigurationSection("").getKeys(false)) {
+                    try {
+                        /**Fetching mythic config and file name */
+                        MythicConfig mc = new MythicConfig(name, s1.getFile(), s1.getCustomConfig());
 
-                    /**Fetching mythic mob to be loaded to spawner */
-                    String mmStr = mc.getString("MythicMob");
-                    MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMList().get(mmStr);
-                    if(mmStr == null) {
-                        SwordCraftOnline.logInfo("[Spawner Manager] Error loading file. MythicMob yml value null.");
-                        continue;
-                    } else if(mm == null) {
-                        SwordCraftOnline.logInfo("[Spawner Manager] Error loading file. MythicMob Type null for: " + mmStr);
-                        continue;
-                    } 
+                        /**Fetching mythic mob to be loaded to spawner */
+                        List<String> mmStrList = mc.getStringList("MythicMobs");
+                        List<MythicMob> mobList = new ArrayList<MythicMob>();
+                        for(String mmStr : mmStrList) {
+                            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMList().get(mmStr);
+                            if(mmStr == null) {
+                                SwordCraftOnline.logInfo("[Spawner Manager] Error loading file. MythicMob yml value null in: " + name + ".");
+                                continue loaderLoop;
+                            } else if(mm == null) {
+                                SwordCraftOnline.logInfo("[Spawner Manager] Error loading file. MythicMob Type null for: " + mmStr);
+                                continue loaderLoop;
+                            }
+                            mobList.add(mm);
+                        }
 
-                    Spawner s = new Spawner(name, mm, mc);
-                    /**Loading spawner to spawner registry by mythic mob file name */
-                    this.spawnerList.put(name, s);
-                } catch(NullPointerException e) {
-                    SwordCraftOnline.logInfo("[Spawner Manager] Error loading: " + name);
+                        Spawner s = new Spawner(name, mobList, mc);
+                        /**Loading spawner to spawner registry by mythic mob file name */
+                        this.spawnerList.put(name, s);
+                    } catch(NullPointerException e) {
+                        SwordCraftOnline.logInfo("[Spawner Manager] Error loading: " + name);
+                    }
                 }
-            }
         }
         SwordCraftOnline.logInfo("[Spawner Manager] Loading complete!");
     }
@@ -165,18 +191,45 @@ public class SpawnerManager implements Runnable {
      */
     @Override
     public void run() {
-        /**Triggers a third of active spawners in the map. */
-        for(int i = 0; i < this.registryList.size()/3; i++) {
-            ActiveSpawner as = this.registryList.get(SwordCraftOnline.r.nextInt(this.registryList.size()));
+        if(!this.isNightwave && !GameManager.isDay() && SwordCraftOnline.r.nextInt(199) == 1) {
+            this.isNightwave = true; 
+            Announcer.messageServer(ChatColor.BLACK + "[" + ChatColor.RED + "Nightwave" + ChatColor.BLACK + "]" + ChatColor.RED + " is approaching...", 0);
+        } else if(GameManager.isDay() && this.isNightwave) {
+            this.isNightwave = false;
+        }
+        
+        /**Triggers a third of hostile active spawners in the map. */
+        List<ActiveSpawner> hostiles = getLoadedHostileList();
+        for(int i = 0; i < hostiles.size()/3; i++) {
+            ActiveSpawner as = hostiles.get(SwordCraftOnline.r.nextInt(hostiles.size()));
+            as.trigger();
+        }
+
+        /**Triggers a fourth of passive active spawners in the map */
+        List<ActiveSpawner> passives = getLoadedPassiveList();
+        for(int i = 0; i < passives.size()/4; i++) {
+            ActiveSpawner as = passives.get(SwordCraftOnline.r.nextInt(passives.size()));
             as.trigger();
         }
     }
 
     /**Temporarily highlights all blocks */
     public void highlight() {
+        if(this.isHighlighting) {
+            SwordCraftOnline.logDebug("[Spawner Manager] Spawners are already highlighted!");
+            return;
+        }
+
+        this.isHighlighting = true;
         for(ActiveSpawner as : getRegistryList()) {
             as.highlight();
         }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+			@Override
+			public void run() {
+				setIsHighlighting(false);
+			}
+        }, 200);
     }
 
     /**@return spawner instance. Null if not in list */
@@ -190,10 +243,25 @@ public class SpawnerManager implements Runnable {
 
     /**Used internally to register spawners. Not called as spawn method */
     public ActiveSpawner registerSpawner(ActiveSpawner as) {
-        if(!this.spawnerRegistry.containsKey(as.getSpawner().getName())) {
-            this.spawnerRegistry.put(as.getSpawner().getName(), new ArrayList<>());
+        String name = as.getSpawner().getName();
+        if(!this.spawnerRegistry.containsKey(name)) {
+            this.spawnerRegistry.put(name, new ArrayList<>());
         }
-        this.spawnerRegistry.get(as.getSpawner().getName()).add(as);
+        this.spawnerRegistry.get(name).add(as);
+
+        /**Adding spawner to hostile and passive registrys */
+        if(as.getSpawner().isPassive()) {
+            if(!this.passiveRegistry.containsKey(name)) {
+                this.passiveRegistry.put(name, new ArrayList<>());
+            }
+            this.passiveRegistry.get(name).add(as);
+        } else {
+            if(!this.hostileRegistry.containsKey(name)) {
+                this.hostileRegistry.put(name, new ArrayList<>());
+            }
+            this.hostileRegistry.get(name).add(as);
+        }
+
         updateRegistryList();
         return as;
     }
@@ -207,6 +275,12 @@ public class SpawnerManager implements Runnable {
                 ActiveSpawner as = iter.next();
                 if(as.getLocation().equals(floored)) {
                     iter.remove();
+                    /**Removing from passive and hostile registry */
+                    if(as.getSpawner().isPassive()) {
+                        this.passiveRegistry.get(as.getSpawner().getName()).remove(as);
+                    } else {
+                        this.hostileRegistry.get(as.getSpawner().getName()).remove(as);
+                    }
                     updateRegistryList();
                     save();
                     reload(true);
@@ -228,6 +302,9 @@ public class SpawnerManager implements Runnable {
                 amount++;
             }
         }
+        this.hostileRegistry.clear();
+        this.passiveRegistry.clear();
+
         updateRegistryList();
         return amount;
     }
@@ -257,6 +334,30 @@ public class SpawnerManager implements Runnable {
     private void updateRegistryList() {
         this.registryList = getSpawnerRegistry().values().stream().flatMap(List::stream).collect(Collectors.toList());
     }
+
+    /**
+     * Iterates and finds loaded hostile spawners
+     * @return List of loaded spawners
+     */
+    private List<ActiveSpawner> getLoadedHostileList() {
+        List<ActiveSpawner> ret = new ArrayList<>();
+        for(ActiveSpawner as : getHostileList()) {
+            if(as.isLoaded()) { ret.add(as); }
+        }
+        return ret;
+    }  
+
+    /**
+     * Iterates and finds loaded passive spawners
+     * @return List of loaded spawners
+     */
+    private List<ActiveSpawner> getLoadedPassiveList() {
+        List<ActiveSpawner> ret = new ArrayList<>();
+        for(ActiveSpawner as : getPassiveList()) {
+            if(as.isLoaded()) { ret.add(as); }
+        }
+        return ret;
+    } 
 
     /**
      * Makes list of active spawners

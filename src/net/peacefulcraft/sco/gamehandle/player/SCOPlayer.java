@@ -1,29 +1,31 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
-import org.bukkit.attribute.Attribute;
+import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.quests.QuestBookManager;
+import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.inventories.InventoryBase;
 import net.peacefulcraft.sco.inventories.InventoryManager;
 import net.peacefulcraft.sco.inventories.InventoryType;
-import net.peacefulcraft.sco.quests.QuestBookManager;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
+import net.peacefulcraft.sco.particles.DisplayType;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
-import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
-public class SCOPlayer implements SwordSkillCaster, IDamage
+public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 {
 	private String partyName;
 	private String lastInvite;
@@ -40,6 +42,8 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 	private Player user;
 		public Player getPlayer() { return this.user; }
 		public void linkPlayer(Player p) { this.user = p; }
+		@Override
+		public LivingEntity getLivingEntity() { return (LivingEntity)this.user; }
 	
 	private PlayerDataManager scopData;
 		public PlayerDataManager getData() { return scopData; }
@@ -67,54 +71,23 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		}
 		public void resetExhaustion() { this.exhaustion = 0.0; }
 
-	/**Stores players critical damage chance*/
-	private int criticalChance = 2;
-		public int getCriticalChance() { return this.criticalChance; }
-		public void setCriticalChance(int num) { this.criticalChance = num; }
-		public void addCritical(int num) { this.criticalChance+=num; }
-
-	private double criticalMultiplier = 1.2;
-		public double getCriticalMultiplier() { return this.criticalMultiplier; }
-		public void setCriticalMultiplier(double num) { this.criticalMultiplier = num; }
-
 	private boolean adminOverride = false;
 		public boolean hasOverride() { return this.adminOverride; }
 		public void setAdminOverride(boolean bool) { this.adminOverride = bool; }
 
-	private int parryChance = 0;
-		public int getParryChance() { return this.parryChance; }
-		public void setParryChance(int num) { this.parryChance = num; }
-
-	private double parryMultiplier = 0.95D;
-		public double getParryMultiplier() { return this.parryMultiplier; }
-		public void setParryMultiplier(double num) { this.parryMultiplier = num; }
-
 	/**Additional chance to increase item level on drop */
 	private double bonusLevelMod = 0.0D;
-		public double getLevelMod() { return this.bonusLevelMod; }
-		public void setLevelMod(double d) { this.bonusLevelMod = d; }
 
 	/**Additional chance to get more items on drop */
 	private double bonusDropMod = 0.0D;
-		public double getDropMod() { return this.bonusDropMod; }
-		public void setDropMod(double d) { this.bonusDropMod = d; }
 
 	/**Players exp multiplier */
 	private double expMod = 1.0D;
-		public double getExpMod() { return this.expMod; }
-		public void  setExpMod(double d) { this.expMod = d; }
 
 	/**Players current movement direction */
 	private DirectionalUtil.Movement movement;
 		public DirectionalUtil.Movement getMovement() { return this.movement; }
 		public void setMovement(DirectionalUtil.Movement m) { this.movement = m; }
-
-	/**Players damage modifiers*/
-	private List<Modifier> damageModifiers;
-		public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
-		public void setDamageModifiers(List<Modifier> l) { this.damageModifiers = l; }
-		public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
-		public void removeDamageModifier(Modifier m) { this.damageModifiers.remove(m); }
 
 	/**Players private bank */
 	private int bank;
@@ -159,11 +132,24 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 			this.r = r; 
 			if(!silent) { r.sendTitle(this.user); }
 		}
-	
-	/**Determines if player is marked for a duel or not */
-	private Boolean isInDuel = false;
-		public Boolean isInDuel() { return this.isInDuel; }
-		public void setInDueal(Boolean b) { this.isInDuel = b; }
+
+	/**Players level of particle display. Defaulted to full effect */
+	private DisplayType displayType = DisplayType.FULL;
+		public DisplayType getDisplayType() { return this.displayType; }
+		public void setDisplayType(DisplayType t) { this.displayType = t; }
+
+	/**Determines if player is in duel or not */
+	private Duel duel = null;
+		public void setDuel(Duel d) { this.duel = d; }
+		public Duel getDuel() { return this.duel; }
+
+	/**Players active pet */
+	private MythicPet pet = null;
+		public MythicPet getPet() { return this.pet; }
+		public void setPet(MythicPet pet) { this.pet = pet; }
+
+	/**The last mob related damage of this player */
+	private ModifierUser lastCauseOfDamage = null;
 
 	public SCOPlayer (UUID uuid) {
 		this.uuid = uuid;
@@ -171,8 +157,6 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		floor = 0; //TODO: Load this from scopData
 		
 		scopData = new PlayerDataManager(this);
-
-		this.damageModifiers = new ArrayList<Modifier>();
 		
 		swordSkillManager = new SwordSkillManager(this);
 		questBookManager = new QuestBookManager(this);
@@ -183,6 +167,11 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 
 		//TODO: Remove this and replace with loading the wallet/bank from data
 		this.wallet = 1000;
+	}
+
+	public Boolean isInDuel() {
+		if(this.duel != null) { return true; }
+		return false;
 	}
 
 	/**True if player can perform left click */
@@ -232,117 +221,104 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 	
 	public void setPlayerKills(int red) {
 		this.playerKills = red;
+	}	
+
+	/**
+	 * Gets SCOPlayer current location
+	 * @return Location of player
+	 */
+	public Location getLocation() {
+		return user.getLocation();
 	}
 
-	/**Returns players attack damage attribute. */
-	@Override
-	public double getAttackDamage() { return getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue(); }
 	/**
-	 * Sets players attack damage attribute.
-	 * @param multiply if True attack damage is multiplied by given value. If False damage is set to value.
+	 * Sets players LCOD to modifier user
+	 * @param damager Instance that caused damage
 	 */
+	public void setLastCauseOfDamage(ModifierUser damager) {
+		this.lastCauseOfDamage = damager;
+	}
+
+	/**
+	 * Safely returns last cause of damage
+	 * @return ModifierUser to cause damage, null otherwise
+	 */
+	public ModifierUser getLastCauseOfDamage() {
+		if(lastCauseOfDamage == null) { return null; }
+
+		// Last mob to cause damage is dead
+		if(lastCauseOfDamage instanceof ActiveMob && ((ActiveMob)lastCauseOfDamage).isDead()) {
+			return null;
+		}
+
+		return lastCauseOfDamage;
+	}
+
 	@Override
-	public void setAttackDamage(double mod, boolean multiply) { 
-		if(multiply) {
-			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod); 
+	public double getCombatModifier(CombatModifier mod) {
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                return criticalChance;
+            case CRITICAL_MULTIPLIER:
+                return criticalMultiplier;
+            case PARRY_CHANCE:
+                return parryChance;
+            case PARRY_MULTIPLIER:
+				return parryMultiplier;
+			case ITEM_LEVEL:
+				return this.bonusLevelMod;
+			case BONUS_DROP:
+				return this.bonusDropMod;
+			case BONUS_EXP:
+				return this.expMod;
+            default:
+                return -1;
+        }
+	}
+
+	@Override
+	public void setCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance = (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier = amount;
+            case PARRY_CHANCE:
+                parryChance = (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier = amount;
+			case ITEM_LEVEL:
+				this.bonusLevelMod = amount;
+			case BONUS_DROP:
+				this.bonusDropMod = amount;
+			case BONUS_EXP:
+				this.expMod = amount;
+		}
+		
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
 		}
 	}
 
-	/**Returns players movement speed attribute */
 	@Override
-	public double getMovementSpeed() { return getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue(); }
-	/**
-	 * Sets players movement speed attribute
-	 * @param multiply if True movement speed is multiplied by given value. If False movement speed is set to value.
-	 */
-	@Override
-	public void setMovementSpeed(double mod, boolean multiply) {
-		if(multiply) {
-			getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod * getMovementSpeed());
-		} else {
-			getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod);
+	public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
+
+		this.setCombatModifier(mod, d * amount, -1);
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
 		}
 	}
 
-	/**Returns players max health attribute */
 	@Override
-	public double getMaxHealth() { return getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(); }
-	/**
-	 * Sets players max health attribute
-	 * @param multiply if True max health is multiplied by given value. If False max health is set to value.
-	 */
-	@Override
-	public void setMaxHealth(double mod, boolean multiply) {
-		if(multiply) {
-			getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod * getMaxHealth());
-		} else {
-			getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod);
-		}
-	}
+	public void addCombatModifier(CombatModifier mod, double amount, int duration) {
+		double d = this.getCombatModifier(mod);
 
-	/**Returns players attack speed attribute */
-	@Override
-	public double getAttackSpeed() { return getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).getBaseValue(); }
-	/**
-	 * Sets players attack speed attribute
-	 * @param multiply if True attack speed is multiplied by given value. If False attack speed is set to value.
-	 */
-	@Override
-	public void setAttackSpeed(double mod, boolean multiply) {
-		if(multiply) {
-			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod * getAttackSpeed());
-		} else {
-			getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod);
-		}
-	}
-	
-	/**Returns players knockback resistance attribute */
-	@Override
-	public double getKnockResist() { return getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getBaseValue(); }
-	/**
-	 * Sets players Knockback resistance attribute
-	 * @param multiply if True knockback resist is multiplied by given value. If False knockback resist is set to value.
-	 */
-	@Override
-	public void setKnockResist(double mod, boolean multiply) {
-		if(multiply) {
-			getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod * getKnockResist());
-		} else {
-			getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod);
-		}
-	}
-
-	/**Returns players armor attribute */
-	@Override
-	public double getArmor() { return getPlayer().getAttribute(Attribute.GENERIC_ARMOR).getBaseValue(); }
-	/**
-	 * Sets players armor attribute
-	 * @param multiply if True armor is multiplied by given value. If False armor is set to value.
-	 */
-	@Override
-	public void setArmor(double mod, boolean multiply) {
-		if(multiply) {
-			getPlayer().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod * getKnockResist());
-		} else {
-			getPlayer().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod);
-		}
-	}
-
-	/**Returns players armor toughness attribute */
-	@Override
-	public double getArmorToughness() { return getPlayer().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).getBaseValue(); }
-	/**
-	 * Sets players armor toughness attribute
-	 * @param multiply if True armor toughness is multiplied by given value. If False armor toughness is set to value
-	 */
-	@Override
-	public void setArmorToughness(double mod, boolean multiply) {
-		if(multiply) {
-			getPlayer().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod * getKnockResist());
-		} else {
-			getPlayer().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod);
+		this.setCombatModifier(mod, d + amount, -1);
+		if(duration != -1) {
+			_setCombatModifier(mod, d, duration);
 		}
 	}
 
@@ -351,9 +327,9 @@ public class SCOPlayer implements SwordSkillCaster, IDamage
 		+ ChatColor.GOLD + repeat(40, "-") + '\n';
 		String partyName = ChatColor.GOLD + "Party Name: " + ChatColor.BLUE + getPartyName() + '\n';
 		String playerKills = ChatColor.GOLD + "Player Kills: " + ChatColor.BLUE + getPlayerKills() + '\n';
-		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCriticalChance() + '\n';
-		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCriticalMultiplier() + '\n'; 
-		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getParryChance() + '\n';
+		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_CHANCE) + '\n';
+		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER) + '\n'; 
+		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.PARRY_CHANCE) + '\n';
 		String override = ChatColor.GOLD + "Admin Override: " + ChatColor.BLUE + hasOverride() + '\n';
 		
 		String skills = ChatColor.GOLD + "Active Skills: " + ChatColor.BLUE;

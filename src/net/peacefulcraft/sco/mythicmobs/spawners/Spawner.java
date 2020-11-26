@@ -1,5 +1,8 @@
 package net.peacefulcraft.sco.mythicmobs.spawners;
 
+import java.util.List;
+
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
@@ -9,9 +12,12 @@ public class Spawner {
     private MythicConfig mc;
 
     /**Spawners mob to be spawned */
-    private MythicMob mm;
-        public MythicMob getMythicMob() { return this.mm; }
-        public String getMythicInternal() { return this.mm.getInternalName(); }
+    //private MythicMob mm;
+    //    public MythicMob getMythicMob() { return this.mm; }
+    //    public String getMythicInternal() { return this.mm.getInternalName(); }
+
+    /**List of mobs to be spawned */
+    private List<MythicMob> mobList;
 
     /**Spawners file name */
     private String name;
@@ -57,9 +63,29 @@ public class Spawner {
     private int nearbyBounds;
         public int getNearbyBounds() { return this.nearbyBounds; }
 
-    public Spawner(String name, MythicMob mm, MythicConfig config) {
+    /**Determines if spawner can be converted under nightwave conditions */
+    private boolean allowNightwave;
+        public boolean allowNightwave() { return this.allowNightwave; }
+
+    /**Determines what time of day spawner can be triggered. */
+    private DayCycle dayCycle;
+        public DayCycle getDayCycle() { return this.dayCycle; }
+
+    /**Determines if spawner is spawning passive mobs. */
+    private boolean isPassive;
+        public boolean isPassive() { return this.isPassive; }
+
+    /**Determines if spawner is capable of spawning herculean level monsters */
+    private boolean canSpawnHerculean;
+        public boolean canSpawnHerculean() { return this.canSpawnHerculean; }
+        
+    /**Determines spawners chance to spawn a herculean level monster */
+    private int herculeanChance;
+        public int getHerculeanChance() { return this.herculeanChance; }
+
+    public Spawner(String name, List<MythicMob> mobList, MythicConfig config) {
         this.name = name;
-        this.mm = mm;
+        this.mobList = mobList;
         this.mc = config;
 
         this.size = mc.getInteger("Size", 5);
@@ -74,6 +100,27 @@ public class Spawner {
         this.range = mc.getInteger("Range", 3);
         this.cooldown = mc.getInteger("Cooldown", 7);
         this.nearbyBounds = mc.getInteger("NearbyBounds", 4);
+
+        this.allowNightwave = mc.getBoolean("AllowNightwave", true);
+
+        // New attribute by spawner. Default false
+        this.isPassive = mc.getBoolean("IsPassive", false);
+
+        this.canSpawnHerculean = mc.getBoolean("CanSpawnHerculean", false);
+        this.herculeanChance = mc.getInteger("HerculeanChance", 1000);
+
+        try{
+            String tempCycle = mc.getString("DayCycle", "ALL").toUpperCase();
+            this.dayCycle = DayCycle.valueOf(tempCycle);
+        } catch(IllegalArgumentException ex) {
+            this.dayCycle = DayCycle.ALL;
+        } catch(NullPointerException ex) {
+            this.dayCycle = DayCycle.ALL;
+        }
+    }
+
+    public MythicMob getMythicMob() {
+        return this.mobList.get(SwordCraftOnline.r.nextInt(this.mobList.size()));
     }
 
 }

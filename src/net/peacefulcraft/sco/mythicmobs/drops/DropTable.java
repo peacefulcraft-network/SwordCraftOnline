@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class DropTable {
     private final String fileName;
@@ -40,6 +41,12 @@ public class DropTable {
     private int experience = 0;
         public int getExperience() { return this.experience; }
 
+    private ArrayList<Drop> nightwaveDrops = new ArrayList<Drop>();
+        public boolean hasNightwaveDrops() { return (this.nightwaveDrops.size() > 0); }
+
+    private int nightwaveChance;
+        public int getNightwaveChance() { return this.nightwaveChance; }
+
     /**Reads config file into data structure 
      * Files should come in same name as mob using them.
      * I.e. SkeletonKing uses SkeletonKing
@@ -50,19 +57,26 @@ public class DropTable {
         int totalItems = mc.getInteger("TotalItems", -2);
         this.maxItems = mc.getInteger("MaxItems", totalItems);
         this.minItems = mc.getInteger("MinItems", totalItems);
+        this.nightwaveChance = mc.getInteger("NightwaveChance", 40);
         //this.bonusLevelItems = SwordCraftOnline.r.nextDouble(mc.getInteger("BonusLevelItems", 0));
         /**
          * Reading drops into droptable
          */
-        List<String > strDrops = mc.getStringList("Drops");
+        List<String> strDrops = mc.getStringList("Drops");
         for(String s : strDrops) {
             if(s.contains("Experience")) {
                 this.experience = Integer.valueOf((s.split(" "))[1]);
                 continue;
             }
-            //SwordCraftOnline.logInfo(Banners.get(Banners.DROP_TABLE) + "Loading Drop for: " + s);
             Drop d = new Drop(s);
             this.drops.add(d);
+        }
+
+        /**Reading nightwave specific drops into droptable */
+        List<String> strNightwave = mc.getStringList("Nightwave");
+        for(String s : strNightwave) {
+            Drop d = new Drop(s);
+            this.nightwaveDrops.add(d);
         }
 
         /**
@@ -111,13 +125,23 @@ public class DropTable {
 
             SwordCraftOnline.logInfo("Diff: " + Integer.valueOf(diff) + " Item amount: " + Integer.valueOf(amount));
 
-            Collection<Drop> d = getRandomDrop(amount);
+            Collection<Drop> d = getRandomDrop(amount, this.drops);
             for(Drop drop : d) {
+                /**Design revision: Blocks items containing "once" flag from being repeated */
                 if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
                     continue;
                 }
                 bag.addDrop(drop);
             }
+            /**If server is in nightwave and random(40) equals 2 we inject a nightwave drop */
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                if(this.hasNightwaveDrops()) {
+                    List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                    bag.removeDrop();
+                    bag.addDrop(lis.get(0));
+                }
+            }
+
             return bag;
         } else if(this.minItems > 0) {
             int amount, diff = this.drops.size() - this.minItems;
@@ -126,11 +150,18 @@ public class DropTable {
             } else {
                 amount = this.minItems + amountModifiers;
             }
-            for(Drop drop : getRandomDrop(amount)) {
+            for(Drop drop : getRandomDrop(amount, this.drops)) {
                 if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
                     continue;
                 }
                 bag.addDrop(drop);
+            }
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                if(this.hasNightwaveDrops()) {
+                    List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                    bag.removeDrop();
+                    bag.addDrop(lis.get(0));
+                }
             }
             return bag;
         } else if(this.maxItems > 0) {
@@ -142,6 +173,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
                 if(items >= this.maxItems) {
@@ -155,6 +193,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
             }
@@ -170,15 +215,15 @@ public class DropTable {
         LootBag bag = new LootBag();
 
         //Set bag experience to be multiple of exp bonus
-        bag.setExp((int)(s.getExpMod() * this.experience));
+        bag.setExp((int)(s.getCombatModifier(CombatModifier.BONUS_EXP) * this.experience));
 
         int amountModifiers = 0;
         double bonusLevelMod = SwordCraftOnline.r.nextDouble();
         if(bonusLevelMod != 0.0D) {
             amountModifiers += (int)(s.getLevel() * bonusLevelMod);
         }
-        if(s.getDropMod() != 0.0D) {
-            amountModifiers *= s.getDropMod();
+        if(s.getCombatModifier(CombatModifier.BONUS_DROP) != 0.0D) {
+            amountModifiers *= (int) s.getCombatModifier(CombatModifier.BONUS_DROP);
         }
 
         if(this.minItems > 0 && this.maxItems > 0) {
@@ -189,12 +234,19 @@ public class DropTable {
             } else {
                 amount = this.maxItems + amountModifiers;
             }
-            Collection<Drop> d = getRandomDrop(amount);
+            Collection<Drop> d = getRandomDrop(amount, this.drops);
             for(Drop drop : d) {
                 if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
                     continue;
                 }
                 bag.addDrop(drop);
+            }
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                if(this.hasNightwaveDrops()) {
+                    List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                    bag.removeDrop();
+                    bag.addDrop(lis.get(0));
+                }
             }
             return bag;
         } else if(this.minItems > 0) {
@@ -204,11 +256,18 @@ public class DropTable {
             } else {
                 amount = this.minItems + amountModifiers;
             }
-            for(Drop drop : getRandomDrop(amount)) {
+            for(Drop drop : getRandomDrop(amount, this.drops)) {
                 if(bag.getItems().contains(drop.getItem()) && drop.isOnce()) { 
                     continue;
                 }
                 bag.addDrop(drop);
+            }
+            if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                if(this.hasNightwaveDrops()) {
+                    List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                    bag.removeDrop();
+                    bag.addDrop(lis.get(0));
+                }
             }
             return bag;
         } else if(this.maxItems > 0) {
@@ -220,6 +279,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
                 if(items >= this.maxItems) {
@@ -233,6 +299,13 @@ public class DropTable {
                         continue;
                     }
                     bag.addDrop(drop);
+                    if(SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave() && SwordCraftOnline.r.nextInt(this.nightwaveChance) == 1) {
+                        if(this.hasNightwaveDrops()) {
+                            List<Drop> lis = getRandomDrop(1, this.nightwaveDrops);
+                            bag.removeDrop();
+                            bag.addDrop(lis.get(0));
+                        }
+                    }
                     return bag;
                 }
             }
@@ -241,24 +314,24 @@ public class DropTable {
     }
 
      /**Returns random item from droptable based on weight. */
-     public List<Drop> getRandomDrop(int amount) {
+     private List<Drop> getRandomDrop(int amount, ArrayList<Drop> lis) {
         List<Drop> out = new ArrayList<Drop>();
         for(int j = 0; j < amount; j++) {
             double totalWeight = 0.0D;
-            for(Drop d : this.drops) {
+            for(Drop d : lis) {
                 totalWeight += d.getWeight();
             }
 
             int randomIndex = -1;
             double rand = SwordCraftOnline.r.nextDouble() * totalWeight;
-            for(int i = 0; i < this.drops.size(); ++i) {
-                rand -= this.drops.get(i).getWeight();
+            for(int i = 0; i < lis.size(); ++i) {
+                rand -= lis.get(i).getWeight();
                 if(rand <= 0.0D) {
                     randomIndex = i;
                     break;
                 }
             }
-            Drop temp = this.drops.get(randomIndex).clone();
+            Drop temp = lis.get(randomIndex).clone();
             out.add(temp);
         }
         return out;        
