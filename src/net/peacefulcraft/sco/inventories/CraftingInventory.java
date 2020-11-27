@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.crafting.Recipe;
-import net.peacefulcraft.sco.items.utilityitems.CloseInventorySlot;
 import net.peacefulcraft.sco.items.utilityitems.CraftingBlockedSlot;
+import net.peacefulcraft.sco.items.utilityitems.CraftingInvalidSlot;
 
 public class CraftingInventory extends InventoryBase {
 
@@ -82,6 +82,7 @@ public class CraftingInventory extends InventoryBase {
                 }
             }
         }
+        this.addButton(2, 4, (new CraftingInvalidSlot()).create(1, false, false));
     }
 
     /**
