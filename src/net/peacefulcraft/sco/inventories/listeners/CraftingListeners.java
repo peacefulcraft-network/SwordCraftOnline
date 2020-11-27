@@ -23,6 +23,8 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.crafting.Recipe;
+import net.peacefulcraft.sco.items.utilityitems.CraftingInvalidSlot;
+import net.peacefulcraft.sco.items.utilityitems.CraftingValidSlot;
 
 public class CraftingListeners implements Listener {
     
@@ -49,6 +51,7 @@ public class CraftingListeners implements Listener {
         Recipe result = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(recipe);
         if(result == null) { 
             clearResult(e.getInventory());
+            setValidCraftSlot(e.getInventory(), false);
             return; 
         }
 
@@ -60,13 +63,17 @@ public class CraftingListeners implements Listener {
             giveResult(p, result);
             craftRecipe(e.getInventory(), result);
             clearResult(e.getInventory());
+            setValidCraftSlot(e.getInventory(), false);
         } else {
-            Recipe.logRecipeInfo(result.getResult());
             setResult(e.getInventory(), result);
+            setValidCraftSlot(e.getInventory(), true);
         }
     }
 
     @EventHandler
+    /**
+     * Handles player closing inventory and returns their items
+     */
     public void closeInventory(InventoryCloseEvent e) {
         Player p = (Player)e.getPlayer();
         SCOPlayer s = GameManager.findSCOPlayer(p);
@@ -78,6 +85,9 @@ public class CraftingListeners implements Listener {
     }
 
     @EventHandler
+    /**
+     * Handles when player attempts to open vanilla crafting table
+     */
     public void rightClickTable(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         SCOPlayer s = GameManager.findSCOPlayer(p);
@@ -90,6 +100,14 @@ public class CraftingListeners implements Listener {
 
         new CraftingInventory(s).openInventory();
         e.setCancelled(true);
+    }
+
+    private void setValidCraftSlot(Inventory inv, boolean valid) {
+        if(valid) {
+            inv.setItem(22, (new CraftingValidSlot()).create(1, false, false));
+        } else {
+            inv.setItem(22, (new CraftingInvalidSlot()).create(1, false, false));
+        }
     }
 
     /**
