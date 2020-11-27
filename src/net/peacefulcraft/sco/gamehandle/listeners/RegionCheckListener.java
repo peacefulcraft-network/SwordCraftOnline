@@ -20,6 +20,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.FarmRegion;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 
 public class RegionCheckListener implements Listener {
 
@@ -84,10 +85,12 @@ public class RegionCheckListener implements Listener {
         if(!type.equals(PlayerAnimationType.ARM_SWING)) { return; }
 
         Block block = p.getTargetBlock(null, 4);
-        if(!block.getType().equals(farm.getCropType())) { return; }
+        if(!block.getType().equals(farm.getVanillaCropType())) { return; }
 
-        block.breakNaturally();
+        block.setType(Material.AIR);
+        
         Location loc = block.getLocation().clone();
+        loc.getWorld().dropItemNaturally(loc, ItemIdentifier.generate(farm.getCrop(), 1, false, true));
         
         /**
          * Bonus farming drop chances
@@ -103,7 +106,7 @@ public class RegionCheckListener implements Listener {
         if(SwordCraftOnline.r.nextInt(100) <= chance) { mult++; }
 
         if(mult != 0) {
-            loc.getWorld().dropItemNaturally(loc, new ItemStack(farm.getCropType(), mult));
+            loc.getWorld().dropItemNaturally(loc, ItemIdentifier.generate(farm.getCrop(), mult, false, true));
         }
     }
 }
