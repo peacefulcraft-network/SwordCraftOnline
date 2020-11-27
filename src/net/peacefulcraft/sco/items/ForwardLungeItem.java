@@ -30,22 +30,22 @@ public class ForwardLungeItem extends SkillProvider {
     @Override
     public void setLore() {
         ArrayList<String> lore = SkillProvider.addDesc(this.tier);
-		lore.add(getTierColor(this.tier) + "Powerful forward lunge technique.");
+		lore.add(ItemTier.getTierColor(this.tier) + "Powerful forward lunge technique.");
 		switch(this.tier) {
 		case COMMON:
-            lore.add(getTierColor(this.tier) + "Damage Increased 20% for 2 seconds.");
+            lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 20% for 2 seconds.");
 		break;case UNCOMMON:
-			lore.add(getTierColor(this.tier) + "Damage Increased 30% for 2 seconds.");
+			lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 30% for 2 seconds.");
 		break;case RARE:
-			lore.add(getTierColor(this.tier) + "Damage Increased 40% for 2 seconds.");
+			lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 40% for 2 seconds.");
 		break;case LEGENDARY:
-			lore.add(getTierColor(this.tier) + "Damage Increased 50% for 2 seconds.");
+			lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 50% for 2 seconds.");
 		break;case ETHEREAL:
-            lore.add(getTierColor(this.tier) + "Damage Increased 60% for 2 seconds.");
+            lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 60% for 2 seconds.");
         break;case GODLIKE:
-			lore.add(getTierColor(this.tier) + "Damage Increased 70% for 2 seconds.");
+			lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 70% for 2 seconds.");
         }
-        lore.add(getTierColor(this.tier) + "Cooldown for 15 seconds");
+        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown for 15 seconds");
 		this.setLore(lore);
     }
 

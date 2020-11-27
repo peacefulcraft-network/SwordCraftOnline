@@ -34,26 +34,26 @@ public class CriticalStrikeItem extends SkillProvider{
 	@Override
 	public void setLore() {
 		ArrayList<String> lore = SkillProvider.addDesc(this.tier);
-		lore.add(getTierColor(this.tier) + "A Beginners 3 hit combo.");
+		lore.add(ItemTier.getTierColor(this.tier) + "A Beginners 3 hit combo.");
 		switch(this.tier) {
 		case COMMON:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 3");
-			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
+			lore.add(ItemTier.getTierColor(this.tier) + "Combo Damage: 3");
+			lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 5 seconds");
 		break;case UNCOMMON:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 4");
-			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
+			lore.add(ItemTier.getTierColor(this.tier) + "Combo Damage: 4");
+			lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 5 seconds");
 		break;case RARE:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 5");
-			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
+			lore.add(ItemTier.getTierColor(this.tier) + "Combo Damage: 5");
+			lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 5 seconds");
 		break;case LEGENDARY:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 7");
-			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
+			lore.add(ItemTier.getTierColor(this.tier) + "Combo Damage: 7");
+			lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 5 seconds");
 		break;case ETHEREAL:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 10");
-			lore.add(getTierColor(this.tier) + "Cooldown: 4 seconds");
+			lore.add(ItemTier.getTierColor(this.tier) + "Combo Damage: 10");
+			lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 4 seconds");
 		break;case GODLIKE:
-			lore.add(getTierColor(this.tier) + "Combo Damage: 12");
-			lore.add(getTierColor(this.tier) + "Cooldown: 5 seconds");
+			lore.add(ItemTier.getTierColor(this.tier) + "Combo Damage: 12");
+			lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 5 seconds");
 		}
 		this.setLore(lore);
 	}

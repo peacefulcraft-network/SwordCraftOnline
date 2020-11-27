@@ -36,20 +36,20 @@ public class SerratedBladeItem extends SkillProvider {
     @Override
     public void setLore() {
         ArrayList<String> lore = SkillProvider.addDesc(this.tier);
-		lore.add(getTierColor(this.tier) + "A beginners sword upgrade.");
+		lore.add(ItemTier.getTierColor(this.tier) + "A beginners sword upgrade.");
 		switch(this.tier) {
 		case COMMON:
-			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +1%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Critical Hit Chance: +1%");
 		break;case UNCOMMON:
-			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +2%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Critical Hit Chance: +2%");
 		break;case RARE:
-			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +3%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Critical Hit Chance: +3%");
 		break;case LEGENDARY:
-			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +5%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Critical Hit Chance: +5%");
 		break;case ETHEREAL:
-            lore.add(getTierColor(this.tier) + "Critical Hit Chance: +7%");
+            lore.add(ItemTier.getTierColor(this.tier) + "Critical Hit Chance: +7%");
         break;case GODLIKE:
-			lore.add(getTierColor(this.tier) + "Critical Hit Chance: +10%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Critical Hit Chance: +10%");
 		}
 		this.setLore(lore);
     }

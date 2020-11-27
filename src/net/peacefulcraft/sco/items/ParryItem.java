@@ -33,20 +33,20 @@ public class ParryItem extends SkillProvider {
     @Override
     public void setLore() {
         ArrayList<String> lore = SkillProvider.addDesc(this.tier);
-		lore.add(getTierColor(this.tier) + "A beginners parry technique.");
+		lore.add(ItemTier.getTierColor(this.tier) + "A beginners parry technique.");
 		switch(this.tier) {
 		case COMMON:
-			lore.add(getTierColor(this.tier) + "Parry Chance: +5%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +5%");
 		break;case UNCOMMON:
-			lore.add(getTierColor(this.tier) + "Parry Chance: +7%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +7%");
 		break;case RARE:
-			lore.add(getTierColor(this.tier) + "Parry Chance: +9%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +9%");
 		break;case LEGENDARY:
-			lore.add(getTierColor(this.tier) + "Parry Chance: +11%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +11%");
 		break;case ETHEREAL:
-            lore.add(getTierColor(this.tier) + "Parry Chance: +13%");
+            lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +13%");
         break;case GODLIKE:
-			lore.add(getTierColor(this.tier) + "Parry Chance: +15%");
+			lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +15%");
 		}
 		this.setLore(lore);
     }

@@ -17,8 +17,10 @@ import org.bukkit.entity.Player;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
@@ -68,25 +70,40 @@ public class SCOAdmin implements CommandExecutor {
 				return true;
 			}
 
-			if (args[0].equalsIgnoreCase("generateitem")) {
+			if(args[0].equalsIgnoreCase("give")) {
 				Player p = (Player) sender;
-				// TODO: ITEM VALIDATION
-				// if(!Item.itemExists(args[1])) { return false; }
 
-				// TODO: MAKE UTIL ITEMS SKILLPROVIDERS WITH NO EQUIP ABILITY
-				if (args.length == 2) {
-					// p.getInventory().addItem(Item.giveItem(args[1], null));
-					return true;
-				}
-				if (args.length == 3) {
-					if (!Validator.teirExists(args[2])) {
-						return false;
+				p.getInventory().addItem(ItemIdentifier.generate(args[1], Integer.valueOf(args[2]), false, true));
+				return true;
+			}
+
+			if (args[0].equalsIgnoreCase("inventory")) {
+				if(args[1].equalsIgnoreCase("craft")) {
+					Player p = (Player) sender;
+					SCOPlayer s = GameManager.findSCOPlayer(p);
+
+					try{
+						if(args[2].equalsIgnoreCase("display") || args[2].equalsIgnoreCase("d")) {
+							new CraftingInventory(s, args[3]).openInventory();
+							return true;
+						}
+					} catch (IndexOutOfBoundsException ex) {
+						SwordCraftOnline.logInfo("[SCOAdmin] IndexOutOfBoundsError running command.");
+						new CraftingInventory(s).openInventory();
+						return true;
 					}
-
-					p.getInventory().addItem(Generator.generateItem(args[1], 1, ItemTier.valueOf(args[2])));
+					SwordCraftOnline.logInfo("[SCOAdmin] Hit this end point for some reason.");
+					new CraftingInventory(s).openInventory();
 					return true;
 				}
-				return false;
+			}
+
+			if (args[0].equalsIgnoreCase("crafting")) {
+				if(args[1].equals("reload")) {
+					SwordCraftOnline.getPluginInstance().getCraftingManager().load();
+					return true;
+				}
+				return true;
 			}
 
 			if (args[0].equalsIgnoreCase("playerdata")) {

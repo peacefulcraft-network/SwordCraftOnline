@@ -6,8 +6,10 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.peacefulcraft.sco.items.utilities.Movable;
+
 public class GoldCoin implements ICustomItem {
-    public ItemStack create(Integer amount, Boolean shop) {
+    public ItemStack create(Integer amount, Boolean shop, Boolean movable) {
         ItemStack coin = new ItemStack(Material.GOLD_NUGGET, amount);
         ItemMeta meta = coin.getItemMeta();
         if(shop) {
@@ -22,6 +24,6 @@ public class GoldCoin implements ICustomItem {
 
         coin.setItemMeta(meta);
 
-        return coin;
+        return Movable.setMovable(coin, movable);
     }
 }

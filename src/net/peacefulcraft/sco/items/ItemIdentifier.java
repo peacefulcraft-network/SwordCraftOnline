@@ -26,16 +26,16 @@ public class ItemIdentifier {
     }
 
     public static ItemStack generate(String name) {
-        return generate(name, 1, false);
+        return generate(name, 1, false, true);
     }
 
-    public static ItemStack generate(String name, Integer amount, Boolean shop) {
+    public static ItemStack generate(String name, Integer amount, Boolean shop, Boolean movable) {
         try {
             name = name.replaceAll(" ", "");
             Class<?> clazz = Class.forName("net.peacefulcraft.sco.items.customitems." + name);
-            Method method = clazz.getMethod("create", Integer.class, Boolean.class);
+            Method method = clazz.getMethod("create", Integer.class, Boolean.class, Boolean.class);
             
-            return (ItemStack) method.invoke(clazz.cast(clazz.newInstance()), amount, shop);
+            return (ItemStack) method.invoke(clazz.cast(clazz.newInstance()), amount, shop, movable);
         } catch (ClassNotFoundException e) {
             SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no corresponding class was found in net.peacefulcraft.sco.items.customitems");
         } catch (NoSuchMethodException e) {
