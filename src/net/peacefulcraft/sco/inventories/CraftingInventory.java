@@ -82,7 +82,6 @@ public class CraftingInventory extends InventoryBase {
                 }
             }
         }
-        this.addButton(5, 4, (new CloseInventorySlot()).create(1, false, false));
     }
 
     /**
