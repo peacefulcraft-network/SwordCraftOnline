@@ -3,12 +3,14 @@ package net.peacefulcraft.sco.inventories.listeners;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,6 +18,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.crafting.Recipe;
 
 public class CraftingListeners implements Listener {
     
@@ -39,8 +42,11 @@ public class CraftingListeners implements Listener {
 
         // Checking for a valid recipe and placing result in inventory
         HashMap<Integer, ItemStack> recipe = getRecipe(e.getInventory());
-        HashMap<Integer, ItemStack> result = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(recipe);
-        if(result == null || result.isEmpty()) { return; }
+        Recipe result = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(recipe);
+        if(result == null) { 
+            clearResult(e.getInventory());
+            return; 
+        }
 
         // Player hit result
         // Clear out recipe table and place items into inventory/floor
@@ -48,10 +54,23 @@ public class CraftingListeners implements Listener {
             // Cancel event to prevent item pickup
             e.setCancelled(true);
             giveResult(p, result);
-            clearRecipe(e.getInventory());
+            craftRecipe(e.getInventory(), result);
+            clearResult(e.getInventory());
         } else {
+            Recipe.logRecipeInfo(result.getResult());
             setResult(e.getInventory(), result);
         }
+    }
+
+    @EventHandler
+    public void closeInventory(InventoryCloseEvent e) {
+        Player p = (Player)e.getPlayer();
+        SCOPlayer s = GameManager.findSCOPlayer(p);
+        if(s == null) { return; }
+
+        if(!e.getView().getTitle().equalsIgnoreCase("Crafting Table")) { return; }
+
+        clearRecipe(e.getInventory(), p);
     }
 
     /**
@@ -97,12 +116,54 @@ public class CraftingListeners implements Listener {
 
     /**
      * Clears recipe slots of inventory
+     * dumps items into players inventory or ground
      */
-    private void clearRecipe(Inventory inv) {
+    private void clearRecipe(Inventory inv, Player p) {
+        ArrayList<ItemStack> leftovers = new ArrayList<>();
         for(int row = 1; row <= 3; row++) {
             for(int col = 1; col <= 3; col++) {
-                inv.clear(row * 9 + col);
+                ItemStack item = inv.getItem(row * 9 + col);
+                if(item == null || item.getType().equals(Material.AIR)) { continue; }
+
+                // Adding items to inv or leftover
+                HashMap<Integer,ItemStack> temp = p.getInventory().addItem(item);
+                for(ItemStack i : temp.values()) {
+                    leftovers.add(i);
+                }
             } 
+        }
+
+        // Dropping item at player
+        for(ItemStack item : leftovers) {
+            p.getLocation().getWorld().dropItemNaturally(p.getLocation(), item);
+        }
+    }
+
+    /**
+     * Removes necessary recipe components from recipe slots
+     * Subtracting from total amount per slot or clearing slot
+     */
+    private void craftRecipe(Inventory inv, Recipe r) {
+        int i = 0;
+        Map<Integer, ItemStack> recipe = r.getRecipe();
+
+        for(int row = 1; row <= 3; row++) {
+            for(int col = 1; col <= 3; col++) {
+                ItemStack item = inv.getItem(row * 9 + col);
+                if(item == null || item.getType().equals(Material.AIR)) {
+                    i++;
+                    continue;
+                }
+
+                // Subtract / remove logic
+                int amount = recipe.get(i).getAmount();
+                if(item.getAmount() - amount == 0) {
+                    inv.clear(row * 9 + col);
+                } else {
+                    item.setAmount(item.getAmount() - amount);
+                }
+                i++;
+            }
         }
     }
 
@@ -110,7 +171,8 @@ public class CraftingListeners implements Listener {
      * Helper method
      * Sets resulting crafting in inventory
      */
-    private void setResult(Inventory inv, HashMap<Integer, ItemStack> result) {
+    private void setResult(Inventory inv, Recipe recipe) {
+        Map<Integer, ItemStack> result = recipe.getResult();
         int i = 0;
         for(int row = 1; row <= 3; row++) {
             for(int col = 5; col <= 7; col++) {
@@ -126,9 +188,21 @@ public class CraftingListeners implements Listener {
     }
 
     /**
+     * Clears result slots
+     */
+    private void clearResult(Inventory inv) {
+        for(int row = 1; row <= 3; row++) {
+            for(int col = 5; col <= 7; col++) {
+                inv.clear(row * 9 + col);
+            }
+        }
+    }
+
+    /**
      * Gives player result or drops it on the ground
      */
-    private void giveResult(Player p, HashMap<Integer, ItemStack> result) {
+    private void giveResult(Player p, Recipe recipe) {
+        Map<Integer, ItemStack> result = recipe.getResult();
         List<ItemStack> leftovers = new ArrayList<>();
         for(ItemStack item : result.values()) {
             HashMap<Integer, ItemStack> temp = p.getInventory().addItem(item);

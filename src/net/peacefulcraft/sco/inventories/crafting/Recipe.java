@@ -1,7 +1,9 @@
 package net.peacefulcraft.sco.inventories.crafting;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -22,6 +24,7 @@ public class Recipe {
      * Actual recipe of craft
      */
     private HashMap<Integer, ItemStack> recipe;
+        public Map<Integer, ItemStack> getRecipe() { return Collections.unmodifiableMap(this.recipe); }
 
     /**
      * Immovable recipe used to display
@@ -33,6 +36,7 @@ public class Recipe {
      * Resulting craft if recipe matches
      */
     private HashMap<Integer, ItemStack> result;
+        public Map<Integer, ItemStack> getResult() { return Collections.unmodifiableMap(this.result); }
 
     /**
      * Immovable result used to display
@@ -67,6 +71,7 @@ public class Recipe {
             } else {
                 String sSlot = StringUtils.substringBetween(s, "slot{", "}");
                 Integer slot = Integer.valueOf(sSlot);
+                //SwordCraftOnline.logInfo("[Recipe] Loaded Item: " + item.getItemMeta().getDisplayName() + ", Slot: " + slot);
                 this.recipe.put(slot, item);
 
                 // Adding to display
@@ -85,7 +90,7 @@ public class Recipe {
             } else {
                 String sSlot = StringUtils.substringBetween(s, "slot{", "}");
                 Integer slot = Integer.valueOf(sSlot);
-                this.recipe.put(slot, item);
+                this.result.put(slot, item);
 
                 // Adding to display
                 ItemStack dis = parseString(s, false);
@@ -106,19 +111,58 @@ public class Recipe {
     /**
      * Validates recipe against input hashmap
      */
-    public HashMap<Integer, ItemStack> checkRecipe(HashMap<Integer, ItemStack> recipe) {
-        if(this.isInvalid) { return null; }
+    public boolean checkRecipe(HashMap<Integer, ItemStack> input) {
+        if(this.isInvalid || input == null || input.isEmpty()) { 
+            return false; 
+        }
 
         for(Integer i : recipe.keySet()) {
             ItemStack recipeItem = this.recipe.get(i);
-            ItemStack inputItem = recipe.get(i);
+            ItemStack inputItem = input.get(i);
 
-            if(!recipeItem.getType().equals(inputItem.getType())) { return null; }
-            if(recipeItem.getAmount() != inputItem.getAmount()) { return null; }
+            // Catching any null variables
+            if((recipeItem == null && inputItem != null) || recipeItem != null && inputItem == null) {
+                return false;
+            } 
+            // Both items null, we skip
+            if(recipeItem == null && inputItem == null) {
+                continue;
+            }
+
+            if(!recipeItem.getType().equals(inputItem.getType())) { 
+                SwordCraftOnline.logInfo("[Recipe] types don't match in slot: " + i);
+                return false; 
+            }
+            if(recipeItem.getAmount() > inputItem.getAmount()) {
+                SwordCraftOnline.logInfo("[Recipe] Not enough item in slot: " + i);
+                return false; 
+            }
+            if(!recipeItem.getItemMeta().getDisplayName().equalsIgnoreCase(inputItem.getItemMeta().getDisplayName())) { 
+                SwordCraftOnline.logInfo("[Recipe] names don't match in slot: " + i);
+                return false; 
+            }
             //TODO: Compare rarities of custom items
         }
 
-        return this.result;
+        return true;
+    }
+
+    public static void logRecipeInfo(HashMap<Integer, ItemStack> info) {
+        String s = "";
+        for(Integer i : info.keySet()) {
+            ItemStack item = info.get(i);
+            s += "Slot: " + i + ", Item: " + item.getItemMeta().getDisplayName() + ", Amount: " + item.getAmount() + "\n"; 
+        }
+        SwordCraftOnline.logInfo("[Recipe] Info: \n" + s);
+    }
+
+    public static void logRecipeInfo(Map<Integer, ItemStack> info) {
+        String s = "";
+        for(Integer i : info.keySet()) {
+            ItemStack item = info.get(i);
+            s += "Slot: " + i + ", Item: " + item.getItemMeta().getDisplayName() + ", Amount: " + item.getAmount() + "\n"; 
+        }
+        SwordCraftOnline.logInfo("[Recipe] Info: \n" + s);
     }
 
 }

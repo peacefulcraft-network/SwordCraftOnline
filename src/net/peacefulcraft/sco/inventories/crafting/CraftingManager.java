@@ -37,6 +37,9 @@ public class CraftingManager {
                     MythicConfig mc = new MythicConfig(name, sl.getFile(), sl.getCustomConfig());
 
                     Recipe r = new Recipe(name, mc);
+                    if(name == null || name.equalsIgnoreCase("") || name.isEmpty() || r.getName().equalsIgnoreCase("") || r.getName().isEmpty()) {
+                        continue;
+                    }
                     this.recipes.put(r.getName(), r);
 
                 } catch(Exception ex) {
@@ -53,12 +56,11 @@ public class CraftingManager {
      * @param recipe slotted items in crafting table
      * @return Map of resulting craft, null if invalid craft
      */
-    public HashMap<Integer, ItemStack> checkRecipe(HashMap<Integer, ItemStack> recipe) {
-        
+    public Recipe checkRecipe(HashMap<Integer, ItemStack> recipe) {
         for(Recipe r : this.recipes.values()) {
-            HashMap<Integer, ItemStack> result = r.checkRecipe(recipe);
-            if(result == null) { continue; }
-            return result;
+            boolean result = r.checkRecipe(recipe);
+            if(!result) { continue; }
+            return r;
         }
         return null;
     }
