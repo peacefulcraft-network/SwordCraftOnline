@@ -94,10 +94,29 @@ public class SCOAdmin implements CommandExecutor {
 				if(args[1].equalsIgnoreCase("craft")) {
 					Player p = (Player) sender;
 					SCOPlayer s = GameManager.findSCOPlayer(p);
-					
+
+					try{
+						if(args[2].equalsIgnoreCase("display") || args[2].equalsIgnoreCase("d")) {
+							new CraftingInventory(s, args[3]).openInventory();
+							return true;
+						}
+					} catch (IndexOutOfBoundsException ex) {
+						SwordCraftOnline.logInfo("[SCOAdmin] IndexOutOfBoundsError running command.");
+						new CraftingInventory(s).openInventory();
+						return true;
+					}
+					SwordCraftOnline.logInfo("[SCOAdmin] Hit this end point for some reason.");
 					new CraftingInventory(s).openInventory();
 					return true;
 				}
+			}
+
+			if (args[0].equalsIgnoreCase("crafting")) {
+				if(args[1].equals("reload")) {
+					SwordCraftOnline.getPluginInstance().getCraftingManager().load();
+					return true;
+				}
+				return true;
 			}
 
 			if (args[0].equalsIgnoreCase("playerdata")) {

@@ -62,4 +62,13 @@ public class CraftingManager {
         }
         return null;
     }
+
+    /**
+     * Gets a recipe from name
+     * @param name Name of recipe
+     * @return Recipe or null
+     */
+    public Recipe getRecipe(String name) {
+        return this.recipes.get(name);
+    }
 }

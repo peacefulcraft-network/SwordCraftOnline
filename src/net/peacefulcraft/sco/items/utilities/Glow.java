@@ -12,7 +12,7 @@ public class Glow {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
 
-        item.addEnchantment(Enchantment.DEPTH_STRIDER, 1);
+        item.addUnsafeEnchantment(Enchantment.LUCK, 1);
         return item;
     }
 }
