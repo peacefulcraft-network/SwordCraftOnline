@@ -81,7 +81,7 @@ public abstract class SkillProvider{
 	public ItemStack getItem() {
 		ItemStack item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(getTierColor(this.tier) + this.name);
+		meta.setDisplayName(ItemTier.getTierColor(this.tier) + this.name);
 		meta.setLore(this.lore);
 		item.setItemMeta(meta);
 		
@@ -119,41 +119,18 @@ public abstract class SkillProvider{
 		ArrayList<String> desc = new ArrayList<String>();
 		switch(tier) {
 		case COMMON:
-			desc.add(getTierColor(tier) + "Common Sword Skill");
+			desc.add(ItemTier.getTierColor(tier) + "Common Sword Skill");
 		break;case UNCOMMON:
-			desc.add(getTierColor(tier) + "Uncommon Sword Skill");
+			desc.add(ItemTier.getTierColor(tier) + "Uncommon Sword Skill");
 		break;case RARE:
-			desc.add(getTierColor(tier) + "Rare Sword Skill");
+			desc.add(ItemTier.getTierColor(tier) + "Rare Sword Skill");
 		break;case LEGENDARY:
-			desc.add(getTierColor(tier) + "Legendary Sword Skill");
+			desc.add(ItemTier.getTierColor(tier) + "Legendary Sword Skill");
 		break;case ETHEREAL:
-			desc.add(getTierColor(tier) + "Mastery Sword Skill");
+			desc.add(ItemTier.getTierColor(tier) + "Mastery Sword Skill");
 		break;case GODLIKE:
-			desc.add(getTierColor(tier) + "Godlike Sword Skill");
+			desc.add(ItemTier.getTierColor(tier) + "Godlike Sword Skill");
 		}
 		return desc;
-	}
-
-	public static ChatColor getTierColor(String tier) {
-		return getTierColor(ItemTier.valueOf(tier));
-	}
-	
-	public static ChatColor getTierColor(ItemTier tier) {
-		switch(tier) {
-		case COMMON:
-			return ChatColor.WHITE;
-		case UNCOMMON:
-			return ChatColor.GREEN;
-		case RARE:
-			return ChatColor.BLUE;
-		case LEGENDARY:
-			return ChatColor.LIGHT_PURPLE;
-		case ETHEREAL:
-			return ChatColor.AQUA;
-		case GODLIKE:
-			return ChatColor.GOLD;
-		default:
-			return ChatColor.WHITE;
-		}
 	}
 }
