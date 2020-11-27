@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.items.utilities;
+package net.peacefulcraft.sco.items.utilityitems;
 
 import java.util.ArrayList;
 
@@ -7,13 +7,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.items.customitems.ICustomItem;
+import net.peacefulcraft.sco.items.utilities.Movable;
 
-public class UnlockSlot
+public class UnlockSlot implements ICustomItem
 {
-
-	public ItemStack create()
-	{
-		ItemStack unlockSlot = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
+	@Override
+	public ItemStack create(Integer amount, Boolean shop, Boolean movable) {
+		ItemStack unlockSlot = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, amount);
 		ItemMeta meta = unlockSlot.getItemMeta();
 		meta.setDisplayName(ChatColor.GOLD + "Locked Tome Page");
 		
@@ -23,7 +24,7 @@ public class UnlockSlot
 		
 		unlockSlot.setItemMeta(meta);
 		
-		return unlockSlot;
+		return Movable.setMovable(unlockSlot, movable);
 	}
 
 }

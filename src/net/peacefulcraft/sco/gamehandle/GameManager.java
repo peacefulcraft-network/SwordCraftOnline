@@ -15,7 +15,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
-import net.peacefulcraft.sco.items.utilities.SwordSkillTome;
+import net.peacefulcraft.sco.items.utilityitems.SwordSkillTome;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
@@ -49,7 +49,7 @@ public class GameManager {
 		s.linkPlayer(p);
 		players.put(p.getUniqueId(), s);
 
-		p.getInventory().setItem(8, (new SwordSkillTome().create()));
+		p.getInventory().setItem(8, (new SwordSkillTome().create(1, false, true)));
 		p.sendMessage("You have joined " + ChatColor.BLUE + "SwordCraftOnline");
 
 		if(Teleports.getSpawn() == null) {
@@ -74,7 +74,7 @@ public class GameManager {
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
 
-		p.getInventory().clear(p.getInventory().first((new SwordSkillTome().create())));
+		p.getInventory().clear(p.getInventory().first((new SwordSkillTome().create(1, false, true))));
 
 		p.sendMessage("You have left " + ChatColor.BLUE + "SwordCraftOnline");
 	}

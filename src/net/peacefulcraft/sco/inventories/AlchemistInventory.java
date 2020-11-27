@@ -10,7 +10,7 @@ public class AlchemistInventory extends InventoryBase implements Listener {
     public AlchemistInventory(SCOPlayer s) {
         super(s.getPlayer(), InventoryType.MERCHANT);
         this.inventory = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, 27, "Alchemist Shop");
-        this.addButton(2, 2, (new GoldCoin()).create(1, true));
+        this.addButton(2, 2, (new GoldCoin()).create(1, true, false));
     }
 
     @Override

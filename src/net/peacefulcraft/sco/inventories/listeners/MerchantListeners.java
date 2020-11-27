@@ -59,7 +59,7 @@ public class MerchantListeners implements Listener {
             s.getPlayer().sendMessage(alchemistTag + " Seems you don't have enough money for my wares... Come back with more coin...");
             return;
         } 
-        ItemStack bought = ItemIdentifier.generate(split[0], Integer.valueOf(1), Boolean.valueOf(false));
+        ItemStack bought = ItemIdentifier.generate(split[0], Integer.valueOf(1), Boolean.valueOf(false), Boolean.valueOf(true));
         if(bought == null || bought.getType().equals(Material.AIR)) { return; }
 
         if(!(s.getPlayer().getInventory().addItem(bought).isEmpty())) {

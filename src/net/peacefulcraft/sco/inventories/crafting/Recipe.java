@@ -72,7 +72,7 @@ public class Recipe {
         String sAmount = StringUtils.substringBetween(s, "amount{", "}");
         Integer amount = Integer.valueOf(sAmount);
 
-        ItemStack item = ItemIdentifier.generate(sItem, amount, false);
+        ItemStack item = ItemIdentifier.generate(sItem, amount, false, true);
         return item;
     }
 

@@ -1,4 +1,4 @@
-package net.peacefulcraft.sco.items.utilities;
+package net.peacefulcraft.sco.items.utilityitems;
 
 import java.util.ArrayList;
 
@@ -7,13 +7,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.items.customitems.ICustomItem;
+import net.peacefulcraft.sco.items.utilities.Movable;
 
-public class SwordSkillTome
+public class SwordSkillTome implements ICustomItem
 {
 
-	public ItemStack create()
-	{
-		ItemStack tome = new ItemStack(Material.BOOK, 1);
+	@Override
+	public ItemStack create(Integer amount, Boolean shop, Boolean movable) {
+		ItemStack tome = new ItemStack(Material.BOOK, amount);
 		ItemMeta meta = tome.getItemMeta();
 		meta.setDisplayName(ChatColor.GOLD + "Sword Skill Tome");
 		
@@ -23,7 +25,7 @@ public class SwordSkillTome
 		
 		tome.setItemMeta(meta);
 		
-		return tome;
+		return Movable.setMovable(tome, movable);
 	}
 
 }

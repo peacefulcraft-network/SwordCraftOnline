@@ -7,10 +7,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.items.utilities.Movable;
 
 public class TeleportCrystal implements ICustomItem
 {
-	public ItemStack create(Integer amount, Boolean shop)
+	public ItemStack create(Integer amount, Boolean shop, Boolean movable)
 	{
 		ItemStack crystal = new ItemStack(Material.DIAMOND, amount);
 		ItemMeta meta = crystal.getItemMeta();
@@ -26,6 +27,6 @@ public class TeleportCrystal implements ICustomItem
 		
 		crystal.setItemMeta(meta);
 		
-		return crystal;
+		return Movable.setMovable(crystal, movable);
 	}
 }

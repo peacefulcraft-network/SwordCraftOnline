@@ -40,7 +40,7 @@ public class GatherQuestStep extends QuestStep {
             try {
                 int amount = Integer.valueOf(split[1]);
 
-                ItemStack item = ItemIdentifier.generate(split[0], 1, false);
+                ItemStack item = ItemIdentifier.generate(split[0], 1, false, true);
                 if (item.getType().equals(Material.FIRE)) {
                     this.logInfo("Invalid Item field ");
                     return;
