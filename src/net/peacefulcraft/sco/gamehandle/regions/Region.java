@@ -29,7 +29,7 @@ public class Region {
     protected String world;
 
     /**Name of location that is displayed anywhere */
-    private String name;
+    protected String name;
         public String getName() { return this.name; }
 
     /**Brief description of location */

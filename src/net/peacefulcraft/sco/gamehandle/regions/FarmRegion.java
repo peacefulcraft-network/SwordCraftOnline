@@ -9,6 +9,7 @@ import org.bukkit.block.data.Ageable;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 
 public class FarmRegion extends Region implements Runnable {
@@ -19,8 +20,14 @@ public class FarmRegion extends Region implements Runnable {
 
     private ArrayList<Location> farmland = new ArrayList<>();
 
-    private Material crop;
-        public Material getCropType() { return crop; }
+    /**
+     * Farms crop to drop.
+     */
+    private String crop;
+        public String getCrop() { return this.crop; }
+
+    private Material vanillaCrop;
+        public Material getVanillaCropType() { return vanillaCrop; }
 
     /**
      * Represetns 1/n amount of farmland we check to replant each cycle
@@ -35,7 +42,11 @@ public class FarmRegion extends Region implements Runnable {
 
         initializeFarmland();
 
-        this.crop = Material.valueOf(mc.getString("Crop", "Wheat").toUpperCase());
+        this.crop = mc.getString("Crop", "AincradianWheat");
+        if(!ItemIdentifier.itemExists(this.crop)) {
+            this.crop = "AincradianWheat";
+            SwordCraftOnline.logInfo("[FarmRegion] Invalid crop drop type in: " + name);
+        }
     }
 
     @Override
@@ -76,7 +87,7 @@ public class FarmRegion extends Region implements Runnable {
             Material upType = up.getBlock().getType();
 
             if(upType.equals(Material.AIR) || upType.equals(Material.CAVE_AIR) || upType.equals(null)) {
-                up.getBlock().setType(crop);
+                up.getBlock().setType(vanillaCrop);
 
                 Ageable age = (Ageable) up.getBlock().getBlockData();
                 age.setAge(0);
