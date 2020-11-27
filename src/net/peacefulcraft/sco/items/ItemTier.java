@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.items;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 
 public enum ItemTier
@@ -61,5 +63,31 @@ public enum ItemTier
 		} catch(IllegalArgumentException ex) {
 			return ChatColor.WHITE;
 		}
+	}
+
+	/**
+	 * Creates base description for item based on tier
+	 * For use on ICustomItems not Sword Skills
+	 * @param tier Tier of item
+	 * @return ArrayList of strings for description of item
+	 */
+	public static ArrayList<String> addDesc(ItemTier tier) {
+		ArrayList<String> desc = new ArrayList<>();
+		ChatColor color = ItemTier.getTierColor(tier);
+		switch(tier) {
+		case COMMON:
+			desc.add(color + "Common Item");
+		break;case UNCOMMON:
+			desc.add(color + "Uncommon Item");
+		break;case RARE:
+			desc.add(color + "Rare Item");
+		break;case LEGENDARY:
+			desc.add(color + "Legendary Item");
+		break;case ETHEREAL:
+			desc.add(color + "Ethereal Item");
+		break;case GODLIKE:
+			desc.add(color + "Godlike Item");
+		}
+		return desc;
 	}
 }
