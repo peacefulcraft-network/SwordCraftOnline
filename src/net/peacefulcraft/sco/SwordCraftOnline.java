@@ -25,6 +25,8 @@ import net.peacefulcraft.sco.gamehandle.listeners.RegionDamageListener;
 import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDamageListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
+import net.peacefulcraft.sco.inventories.crafting.CraftingManager;
+import net.peacefulcraft.sco.inventories.listeners.CraftingListeners;
 import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
@@ -98,6 +100,9 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	private RegionManager regionManager;
 		public RegionManager getRegionManager() { return this.regionManager; }
+
+	private CraftingManager craftingManager;
+		public CraftingManager getCraftingManager() { return this.craftingManager; }
 	
 	public SwordCraftOnline() {
 
@@ -130,6 +135,8 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		this.regionManager = new RegionManager();
 		this.questManager = new QuestManager();
+
+		this.craftingManager = new CraftingManager();
 
 		effectManager = new EffectManager(this);
 		
@@ -188,6 +195,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		// Register Menu Opener
 		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
 		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
+		getServer().getPluginManager().registerEvents(new CraftingListeners(), this);
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);

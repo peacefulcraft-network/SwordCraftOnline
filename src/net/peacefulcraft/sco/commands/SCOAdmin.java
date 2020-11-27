@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemTier;
@@ -87,6 +88,16 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 				}
 				return false;
+			}
+
+			if (args[0].equalsIgnoreCase("inventory")) {
+				if(args[1].equalsIgnoreCase("craft")) {
+					Player p = (Player) sender;
+					SCOPlayer s = GameManager.findSCOPlayer(p);
+					
+					new CraftingInventory(s).openInventory();
+					return true;
+				}
 			}
 
 			if (args[0].equalsIgnoreCase("playerdata")) {
