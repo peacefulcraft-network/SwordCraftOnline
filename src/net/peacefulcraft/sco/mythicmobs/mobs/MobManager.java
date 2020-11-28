@@ -28,6 +28,8 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
@@ -368,6 +370,18 @@ public class MobManager implements Runnable {
     public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level, List<SpawnFields> fields) {
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
+            
+            // Checking region flags
+            Region r = RegionManager.getRegion(BukkitAdapter.adapt(loc));
+            if(r != null) {
+                if(MythicEntity.isPassive(mm.getStrMobType()) && r.doesPreventPassive()) {
+                    return null;
+                }
+                if(!MythicEntity.isPassive(mm.getStrMobType()) && r.doesPreventHostile()) {
+                    return null;
+                }
+            }
+
             //If mob is hostile and gamemode peaceful we abort spawn
             if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL) 
                 && !MythicEntity.isPassive(mm.getStrMobType())) {
