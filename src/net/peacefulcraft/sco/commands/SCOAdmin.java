@@ -18,6 +18,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
+import net.peacefulcraft.sco.inventories.InfusionInventory;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
@@ -94,6 +95,13 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					SwordCraftOnline.logInfo("[SCOAdmin] Hit this end point for some reason.");
 					new CraftingInventory(s).openInventory();
+					return true;
+				}
+				if(args[1].equalsIgnoreCase("infusion")) {
+					Player p = (Player) sender;
+					SCOPlayer s = GameManager.findSCOPlayer(p);
+
+					new InfusionInventory(s).openInventory();
 					return true;
 				}
 			}
