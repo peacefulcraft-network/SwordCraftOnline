@@ -7,7 +7,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.peacefulcraft.sco.items.customitems.ICustomItem;
 import net.peacefulcraft.sco.items.utilities.Movable;
 
-public class CraftingBlockedSlot implements ICustomItem {
+public class BlackSlot implements ICustomItem {
 
     @Override
     public ItemStack create(Integer amount, Boolean shop, Boolean movable) {

@@ -7,12 +7,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.peacefulcraft.sco.items.customitems.ICustomItem;
 import net.peacefulcraft.sco.items.utilities.Movable;
 
-public class CraftingInvalidSlot implements ICustomItem {
+public class BlueSlot implements ICustomItem {
 
     @Override
     public ItemStack create(Integer amount, Boolean shop, Boolean movable) {
-        ItemStack slot = new ItemStack(Material.RED_STAINED_GLASS_PANE, amount);
+        ItemStack slot = new ItemStack(Material.BLUE_STAINED_GLASS_PANE, amount);
         ItemMeta meta = slot.getItemMeta();
+
         meta.setDisplayName(" ");
 
         slot.setItemMeta(meta);
