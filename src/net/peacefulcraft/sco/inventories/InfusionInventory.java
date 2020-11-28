@@ -2,7 +2,8 @@ package net.peacefulcraft.sco.inventories;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.items.utilityitems.CraftingBlockedSlot;
+import net.peacefulcraft.sco.items.utilityitems.BlackSlot;
+import net.peacefulcraft.sco.items.utilityitems.BlueSlot;
 
 public class InfusionInventory extends InventoryBase {
 
@@ -36,8 +37,13 @@ public class InfusionInventory extends InventoryBase {
     private void setBlockers() {
         for(int row = 0; row <= 5; row++) {
             for(int col = 0; col <= 8; col++) {
-                if(row == 0 || row >= 4 || col == 0 || (col >= 4 && (row != 3 && col != 6))) {
-                    this.addButton(row, col, (new CraftingBlockedSlot()).create(1, false, false));
+                // Black locked slots
+                if(row == 0 || row >= 4 || ((row < 4 && row > 0) && (col == 0 || col == 8 || col == 4))) {
+                    this.addButton(row, col, (new BlackSlot()).create(1, false, false));
+                }
+                // Blue locked slots
+                if(((row == 1 || row == 3) && (col >= 5 && col <= 7)) || (row == 2 && (col == 5 || col == 7))) {
+                    this.addButton(row, col, (new BlueSlot()).create(1, false, false));
                 }
             }
         }

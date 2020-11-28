@@ -23,8 +23,8 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.crafting.Recipe;
-import net.peacefulcraft.sco.items.utilityitems.CraftingInvalidSlot;
-import net.peacefulcraft.sco.items.utilityitems.CraftingValidSlot;
+import net.peacefulcraft.sco.items.utilityitems.RedSlot;
+import net.peacefulcraft.sco.items.utilityitems.GreenSlot;
 
 public class CraftingListeners implements Listener {
     
@@ -104,9 +104,9 @@ public class CraftingListeners implements Listener {
 
     private void setValidCraftSlot(Inventory inv, boolean valid) {
         if(valid) {
-            inv.setItem(22, (new CraftingValidSlot()).create(1, false, false));
+            inv.setItem(22, (new GreenSlot()).create(1, false, false));
         } else {
-            inv.setItem(22, (new CraftingInvalidSlot()).create(1, false, false));
+            inv.setItem(22, (new RedSlot()).create(1, false, false));
         }
     }
 

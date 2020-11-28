@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.crafting.Recipe;
-import net.peacefulcraft.sco.items.utilityitems.CraftingBlockedSlot;
-import net.peacefulcraft.sco.items.utilityitems.CraftingInvalidSlot;
+import net.peacefulcraft.sco.items.utilityitems.BlackSlot;
+import net.peacefulcraft.sco.items.utilityitems.RedSlot;
 
 public class CraftingInventory extends InventoryBase {
 
@@ -78,11 +78,11 @@ public class CraftingInventory extends InventoryBase {
         for(int row = 0; row <= 5; row++) {
             for(int col = 0; col <= 8; col++) {
                 if(row == 0 || row >= 4 || ((row < 4 && row > 0) && (col == 0 || col == 8 || col == 4))) {
-                    this.addButton(row, col, (new CraftingBlockedSlot()).create(1, false, false));
+                    this.addButton(row, col, (new BlackSlot()).create(1, false, false));
                 }
             }
         }
-        this.addButton(2, 4, (new CraftingInvalidSlot()).create(1, false, false));
+        this.addButton(2, 4, (new RedSlot()).create(1, false, false));
     }
 
     /**
