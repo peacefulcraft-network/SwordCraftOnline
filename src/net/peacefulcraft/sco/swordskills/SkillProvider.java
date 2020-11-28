@@ -90,6 +90,7 @@ public abstract class SkillProvider{
 		nbti.setInteger("skill_level", level);
 		nbti.setBoolean("movable", true);
 		nbti.setBoolean("dropable", false);
+		nbti.setBoolean("sword_skill", true);
 		return nbti.getItem();
 	}
 
