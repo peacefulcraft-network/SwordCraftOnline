@@ -3,7 +3,6 @@ package net.peacefulcraft.sco.inventories;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -11,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.nbtapi.NBTItem;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
@@ -98,11 +98,17 @@ public interface SCOInventory {
       } else {
         ItemStack item = inventory.getItem(i);
         NBTItem nbti = new NBTItem(item);
-        items.add(ItemIdentifier.generateIdentifier(
-          nbti.getString("identifier"),
-          ItemTier.valueOf(nbti.getString("tier").toUpperCase()),
-          item.getAmount())
-        );
+
+        try {
+          items.add(ItemIdentifier.generateIdentifier(
+            nbti.getString("identifier"),
+            ItemTier.valueOf(nbti.getString("tier").toUpperCase()),
+            item.getAmount())
+          );
+        } catch(Exception ex) {
+          SwordCraftOnline.logWarning("Unable to generate item identifier for item " + item.getItemMeta().getDisplayName() + ". It will not be saved to the inventory.");
+          items.add(ItemIdentifier.generateIdentifier("Air", ItemTier.COMMON, 1));
+        }
 
         if (items.get(i) instanceof CustomDataHolder) {
           ((CustomDataHolder) items.get(i)).parseCustomItemData(item);
