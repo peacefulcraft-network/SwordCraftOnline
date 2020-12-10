@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.bukkit.entity.Player;
 
@@ -20,27 +24,39 @@ import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
-	
+
 	private static HashMap<UUID, SCOPlayer> players;
-		public static HashMap<UUID, SCOPlayer> getPlayers(){ return players; }
-		
+
+	public static HashMap<UUID, SCOPlayer> getPlayers() {
+		return players;
+	}
+
 	public GameManager() {
 		preProcessedPlayers = new HashMap<UUID, SCOPlayer>();
 		players = new HashMap<UUID, SCOPlayer>();
 	}
-	
+
 	/**
 	 * WARNING: This method should be invoked asynchronously. It performs serveral
-	 * blocking MySQL queries that will cause server hangs if invoked on the main thread.
+	 * blocking MySQL queries that will cause server hangs if invoked on the main
+	 * thread.
 	 * @param uuid
 	 * @param playerRegistryId
 	 */
-	public void preProcessPlayerJoin(UUID uuid, long playerRegistryId) {
-		if(findSCOPlayerByUUID(uuid) != null)
+	public void preProcessPlayerJoin(UUID uuid, long playerRegistryId) throws RuntimeException {
+		if (findSCOPlayerByUUID(uuid) != null)
 			throw new RuntimeException("Command executor is already in SCO");
-		
-		SCOPlayer s = new SCOPlayer(uuid, playerRegistryId);
-		preProcessedPlayers.put(uuid, s);
+
+		try {
+			SCOPlayer s = new SCOPlayer(uuid, playerRegistryId);
+			preProcessedPlayers.put(uuid, s);
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			e.printStackTrace();
+			if (e.getCause() != null) {
+				e.getCause().printStackTrace();
+			}
+			throw new RuntimeException("An error occured while processing player " + uuid + " | " + playerRegistryId + "'s SCOPlayer initialization sequence.");
+		}
 	}
 	
 	public void processPlayerJoin(Player p) {
@@ -53,7 +69,14 @@ public class GameManager {
 			p.kickPlayer("[SCO] Database error. Unable to load profile from registry");
 			return;
 		}
-		s.linkPlayer(p);
+		try {
+			s.linkPlayer(p);
+		} catch (RuntimeException ex) {
+			p.kickPlayer("[SCO] Database error occured while loading inventories.");
+			ex.printStackTrace();
+			return;
+		} 
+
 		players.put(p.getUniqueId(), s);
 
 		p.getInventory().setItem(8, ItemIdentifier.generateItem("SwordSkillTome", ItemTier.COMMON, 1));

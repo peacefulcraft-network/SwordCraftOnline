@@ -3,13 +3,19 @@ package net.peacefulcraft.sco.gamehandle.player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.PlayerInventory;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
@@ -120,7 +126,16 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
 		public void removeDamageModifier(Modifier m) { this.damageModifiers.remove(m); }
 
-	public SCOPlayer (UUID uuid, long playerRegistryId) {
+	/**
+	 * Loads all of an SCO Player's data.
+	 * This method performs several long-running, blocking tasks. Do not run this method on the main Bukkit thread.
+	 * @param uuid
+	 * @param playerRegistryId
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
+	public SCOPlayer (UUID uuid, long playerRegistryId) throws InterruptedException, ExecutionException, TimeoutException {
 		this.uuid = uuid;
 		this.playerRegistryId = playerRegistryId;
 		playerKills = 0;
@@ -133,31 +148,36 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		swordSkillManager = new SwordSkillManager(this);
 
 		InventoryRegistryLookupTask inventoriesLookup = new InventoryRegistryLookupTask(playerRegistryId);
-		inventoriesLookup.fetchInventoryIds().thenAcceptAsync((inventoryTypeIdMap) -> {
-			// Load the Player's Inventory
-			if (inventoryTypeIdMap.containsKey(InventoryType.PLAYER)) {
-				this.playerInventory = new PlayerInventory(inventoryTypeIdMap.get(InventoryType.PLAYER));
-			} else {
-				// Create a new Inventory if one does not exist already
-				new InventorySaveTask(this.playerRegistryId, InventoryType.PLAYER, new ItemIdentifier [0]).saveInventory()
-					.thenAcceptAsync((inventoryId) -> {
-						this.playerInventory = new PlayerInventory(inventoryId);
-					});
-			}
+		Map<InventoryType, Long> inventoryTypeIdMap = inventoriesLookup.fetchInventoryIds().get();
+		// Load the Player's Inventory
+		if (inventoryTypeIdMap.containsKey(InventoryType.PLAYER)) {
+			this.playerInventory = new PlayerInventory(inventoryTypeIdMap.get(InventoryType.PLAYER));
+		} else {
+			// Create a new Inventory if one does not exist already
+			Long inventoryId = new InventorySaveTask(this.playerRegistryId, InventoryType.PLAYER, new ItemIdentifier [36]).saveInventory().get();
+			this.playerInventory = new PlayerInventory(inventoryId);
+		}
 
-			// Load the SwordSkillInventory
-			if (inventoryTypeIdMap.containsKey(InventoryType.SWORD_SKILL)) {
-				this.swordSkillInventory = new SwordSkillInventory(inventoryTypeIdMap.get(InventoryType.PLAYER));
-			} else {
-				// Create a new Inventory if one does not exist already
-				new InventorySaveTask(this.playerRegistryId, InventoryType.SWORD_SKILL, new ItemIdentifier [0]).saveInventory()
-					.thenAcceptAsync((inventoryId) -> {
-						this.swordSkillInventory = new SwordSkillInventory(inventoryId);
-					});
-			}
-		});
+		// Load the SwordSkillInventory
+		if (inventoryTypeIdMap.containsKey(InventoryType.SWORD_SKILL)) {
+			this.swordSkillInventory = new SwordSkillInventory(inventoryTypeIdMap.get(InventoryType.SWORD_SKILL));
+		} else {
+			// Create a new Inventory if one does not exist already
+			Long inventoryId = new InventorySaveTask(this.playerRegistryId, InventoryType.SWORD_SKILL, new ItemIdentifier [9]).saveInventory().get();
+			this.swordSkillInventory = new SwordSkillInventory(inventoryId);
+		}
+
+		CompletableFuture.allOf(
+			this.playerInventory.inventoryLoadPromise(),
+			this.swordSkillInventory.inventoryReadyPromise()
+		).get(10, TimeUnit.SECONDS);
 	}
 
+	/**
+	 * Ties a Bukkit Player to this SCOPlayer Object. The SCOPlayer must have finished
+	 * initalizing it's inventory objects.
+	 * @param p The Player to bind
+	 */
 	public void linkPlayer(Player p) {
 		this.user = p;
 		this.playerInventory.bindInventory(p.getInventory());

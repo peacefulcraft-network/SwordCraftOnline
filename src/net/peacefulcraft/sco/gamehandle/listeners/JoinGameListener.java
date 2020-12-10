@@ -23,6 +23,7 @@ public class JoinGameListener implements Listener
 			SwordCraftOnline.getGameManager().preProcessPlayerJoin(e.getUniqueId(), playerRegistryId);
 		} catch(Exception ex) {
 			ex.printStackTrace();
+			SwordCraftOnline.logSevere(ex.getMessage());
 			e.setLoginResult(Result.KICK_OTHER);
 			e.setKickMessage("A database error occured while loading your user profile. Please try again. If the issue persists, contact an administrator.");
 		}

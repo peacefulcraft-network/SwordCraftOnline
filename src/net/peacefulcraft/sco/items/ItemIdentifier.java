@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
@@ -95,7 +96,7 @@ public interface ItemIdentifier {
     try {
       name = name.replaceAll(" ", "");
       Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
-      Class<?> params[] = new Class[] { ItemTier.class, int.class };
+      Class<?> params[] = new Class[] { ItemTier.class, Integer.class };
       Constructor<?> constructor = clas.getConstructor(params);
     
       ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
@@ -146,6 +147,16 @@ public interface ItemIdentifier {
   public static ItemStack generateItem(String name, ItemTier tier, int amount, JsonObject data) throws RuntimeException {
     ItemIdentifier itemIdentifier = ItemIdentifier.generateIdentifier(name, tier, amount);
     ItemStack item = new ItemStack(itemIdentifier.getMaterial(), amount);
+
+    // Bad things happen if you try to give NBTI air
+    if (itemIdentifier.getMaterial() == Material.AIR) {
+      return item;
+    }
+
+    ItemMeta itemMeta = item.getItemMeta();
+    itemMeta.setDisplayName(itemIdentifier.getName());
+    itemMeta.setLore(itemIdentifier.getLore());
+    item.setItemMeta(itemMeta);
 
     if (data != null && itemIdentifier instanceof CustomDataHolder) {
       item = ((CustomDataHolder) itemIdentifier).applyCustomItemData(item, data);

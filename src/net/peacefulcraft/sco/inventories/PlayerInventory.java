@@ -22,13 +22,9 @@ public class PlayerInventory implements SCOInventory {
 
   /** Used for tracking when inventory item list is retrieved (internal) */
   private CompletableFuture<List<ItemIdentifier>> inventoryLoadPromise;
-
-  /** Used for tracking when inventory is ready for player to use / sco actions to occur */
-  private CompletableFuture<Void> inventoryReadyPromise;
-    public CompletableFuture<Void> inventoryReadyPromise() { return this.inventoryReadyPromise; }
+    public CompletableFuture<List<ItemIdentifier>> inventoryLoadPromise() { return this.inventoryLoadPromise; }
 
   private Inventory inventory;
-
   /**
    * Initialize the inventory by the inventories' registry Id. Player's Inventory
    * instance must be bound later on before full initialization is complete.
@@ -37,8 +33,8 @@ public class PlayerInventory implements SCOInventory {
    */
   public PlayerInventory(long inventoryId) {
     this.inventoryId = inventoryId;
-    this.inventoryReadyPromise = new CompletableFuture<Void>();
 
+    SwordCraftOnline.logDebug("Starting content fetch for PlayerInventory " + inventoryId);
     InventoryLoadTask task = new InventoryLoadTask(inventoryId);
     this.inventoryLoadPromise = task.fetchInventory();
   }
@@ -51,12 +47,13 @@ public class PlayerInventory implements SCOInventory {
    *         in the requetsted inventory. This is the same CompletableFuture that is returned by
    *         PlayerInventory.inventoryReadyPromise().
    */
-  public CompletableFuture<Void> bindInventory(Inventory inventory) {
+  public void bindInventory(Inventory inventory) {
     this.inventory = inventory;
 
     this.inventoryLoadPromise.thenAcceptAsync((items) -> {
       // Get back on the Bukkit thread before we touch the inventory
       Bukkit.getScheduler().runTask(SwordCraftOnline.getPluginInstance(), () -> {
+        SwordCraftOnline.logDebug("Generating PlayerInventory " + inventoryId);
         for(int i=0; i<items.size(); i++) {
           ItemIdentifier itemIdentifier = items.get(i);
           ItemStack item = null;
@@ -70,16 +67,8 @@ public class PlayerInventory implements SCOInventory {
 
           inventory.setItem(i, item);
         }
-
-        // Indicate to any tasks waiting for this to complete that we've completed.
-        this.inventoryReadyPromise.complete(null);
       });
     });
-
-    // Don't hold this in memory. We don't need it anymore.
-    this.inventoryLoadPromise = null;
-
-    return inventoryReadyPromise;
   }
 
   @Override
@@ -89,10 +78,6 @@ public class PlayerInventory implements SCOInventory {
 
   @Override
   public void openInventory(SCOPlayer s) {
-    if (!this.inventoryReadyPromise.isDone()) {
-			throw new RuntimeException("Attempted to open Sword Skill Inventory " + this.inventoryId + " before it completed initializing.");
-    }
-
     s.getPlayer().openInventory(this.inventory);
   }
 
