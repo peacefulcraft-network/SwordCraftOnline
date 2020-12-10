@@ -168,6 +168,6 @@ public interface ItemIdentifier {
     nbti.setString("identifier", name.replaceAll(" ", ""));
     nbti.setString("tier", tier.toString());
 
-    return item;
+    return nbti.getItem();
   }
 }

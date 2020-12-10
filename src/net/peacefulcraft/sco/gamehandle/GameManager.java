@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.bukkit.entity.Player;

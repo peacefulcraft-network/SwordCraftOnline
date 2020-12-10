@@ -2,15 +2,22 @@ package net.peacefulcraft.sco.inventories.listeners;
 
 import java.util.HashMap;
 
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.InventoryView;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SCOInventory;
 
 public class InventoryListeners implements Listener {
@@ -31,16 +38,6 @@ public class InventoryListeners implements Listener {
   }
 
   /**
-   * Register when a player opens their personel Inventory.
-   * For any inventory that is not the Player.getInventory() instance,
-   * use onInventoryOpen(InventoryView, SCOInventory)
-   */
-  @EventHandler
-  public void onInventoryOpen(InventoryOpenEvent ev) {
-    // TODO: Get SCOInventory instance from player's SCOPlayer object
-  }
-
-  /**
    * Register when a player opens any SCOInventory
    * @param view The InventoryView instance created when the Inventory was opened.
    * @param inventory The SCOInventory instance for the opened Inventory
@@ -55,6 +52,9 @@ public class InventoryListeners implements Listener {
    */
   @EventHandler
   public void onInventoryClick(InventoryClickEvent ev) {
+    SCOPlayer s = GameManager.findSCOPlayer((Player) ev.getView().getPlayer());
+    registerPlayerInventoryView(s, ev.getView());
+
     SCOInventory inventory = this.activeViews.get(ev.getView());
     if (inventory == null) { return; }
 
@@ -67,6 +67,9 @@ public class InventoryListeners implements Listener {
    */
   @EventHandler
   public void onInventoryDrag(InventoryDragEvent ev) {
+    SCOPlayer s = GameManager.findSCOPlayer((Player) ev.getView().getPlayer());
+    registerPlayerInventoryView(s, ev.getView());
+
     SCOInventory inventory = this.activeViews.get(ev.getView());
     if (inventory == null) { return; }
 
@@ -79,6 +82,38 @@ public class InventoryListeners implements Listener {
    */
   @EventHandler
   public void onInventoryClose(InventoryCloseEvent ev) {
-    this.activeViews.remove(ev.getView());
+    SCOInventory si = this.activeViews.remove(ev.getView());
+    if (si != null) {
+      si.onInventoryClose(ev);
+    }
+  }
+
+  /**
+   * Triggers inventory saving when items are picked up off the floor
+   */
+  @EventHandler
+  public void onEntityPickupItem(EntityPickupItemEvent ev) {
+    if (ev.getEntityType() == EntityType.PLAYER) {
+      GameManager.findSCOPlayer((Player) ev.getEntity()).getPlayerInventory().saveInventory();
+    }
+  }
+
+  /**
+   * Triggers inventory saving when player drops items
+   */
+  @EventHandler
+  public void onPlayerDropItemEvent(PlayerDropItemEvent ev) {
+    GameManager.findSCOPlayer(ev.getPlayer()).getPlayerInventory().saveInventory();
+  }
+
+  /**
+   * Check if there is already a registered view for a player's personal inventory being open.
+   * @param s The SCOPlayer in question
+   * @param v The inventory view in question
+   */
+  private void registerPlayerInventoryView(SCOPlayer s, InventoryView v) {
+    if ((v.getType() == InventoryType.CRAFTING || v.getType() == InventoryType.CREATIVE) && !this.activeViews.containsKey(v)) {
+      this.onInventoryOpen(v, s.getPlayerInventory());
+    }
   }
 }

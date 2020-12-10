@@ -18,7 +18,6 @@ import net.peacefulcraft.sco.gamehandle.listeners.EnterDungeon;
 import net.peacefulcraft.sco.gamehandle.listeners.JoinGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.InventoryListeners;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
@@ -73,6 +72,9 @@ public class SwordCraftOnline extends JavaPlugin{
 
 	private static EffectManager effectManager;
 		public static EffectManager getEffectManager() { return effectManager; }
+
+	private static InventoryListeners inventoryListeners;
+		public static InventoryListeners getInventoryListeners() { return inventoryListeners; }
 	
 	public SwordCraftOnline() {
 
@@ -161,7 +163,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new AbilityPlayerRespawnListener(), this);
 
 		// Register Inventory Listeners
-		getServer().getPluginManager().registerEvents(new InventoryListeners(), this);
+		inventoryListeners = new InventoryListeners();
+		getServer().getPluginManager().registerEvents(inventoryListeners, this);
 	}
 
 	public static void logDebug(String debug) {

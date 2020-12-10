@@ -15,14 +15,15 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
+import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 
 public class SwordSkillInventory implements SCOInventory {
 
-	private long inventoryId;
-
-	public long getInventoryId() {
-		return inventoryId;
-	}
+	private SCOPlayer s;
+		public SCOPlayer getSCOPlayer() { return s; }
+	
+	private Long inventoryId;
+		public Long getInventoryId() { return inventoryId; }
 
 	private CompletableFuture<Void> inventoryReadyPromise;
 
@@ -32,7 +33,8 @@ public class SwordSkillInventory implements SCOInventory {
 
 	private Inventory inventory;
 
-	public SwordSkillInventory(Long inventoryId) {
+	public SwordSkillInventory(SCOPlayer s, Long inventoryId) {
+		this.s = s;
 		this.inventoryId = inventoryId;
 
 		this.inventoryReadyPromise = CompletableFuture.runAsync(() -> {
@@ -75,7 +77,7 @@ public class SwordSkillInventory implements SCOInventory {
 			throw new RuntimeException(
 					"Attempted to open Sword Skill Inventory " + this.inventoryId + " before it completed initializing.");
 		}
-
+		SwordCraftOnline.getInventoryListeners().onInventoryOpen(s.getPlayer().openInventory(this.inventory), this);
 	}
 
 	@Override
@@ -111,12 +113,15 @@ public class SwordSkillInventory implements SCOInventory {
 
 	@Override
 	public void onInventoryClose(InventoryCloseEvent ev) {
-		// TODO Auto-generated method stub
+		(new InventorySaveTask(this.inventoryId, this.s.getPlayerRegistryId(), InventoryType.SWORD_SKILL, this.generateItemIdentifiers()))
+		.saveInventory()
+		.thenAccept((inventoryId) -> {
+			SwordCraftOnline.logDebug("Inventory " + this.inventoryId + " saved succesfully");
+		});
 	}
 
 	@Override
 	public List<ItemIdentifier> generateItemIdentifiers() {
-		// TODO Auto-generated method stub
-		return null;
+		return SCOInventory.generateItemIdentifiers(this.inventory);
 	}
 }

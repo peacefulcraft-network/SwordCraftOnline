@@ -14,8 +14,12 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
+import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 
 public class PlayerInventory implements SCOInventory {
+
+  private SCOPlayer s;
+    public SCOPlayer getSCOPlayer() { return s; }
 
   private long inventoryId;
     public long getInventoryId() { return this.inventoryId; }
@@ -29,9 +33,11 @@ public class PlayerInventory implements SCOInventory {
    * Initialize the inventory by the inventories' registry Id. Player's Inventory
    * instance must be bound later on before full initialization is complete.
    * 
+   * @param s SCOPlayer to which the invnetory belongs
    * @param inventoryId Inventory registry id of the inventory to load
    */
-  public PlayerInventory(long inventoryId) {
+  public PlayerInventory(SCOPlayer s, long inventoryId) {
+    this.s = s;
     this.inventoryId = inventoryId;
 
     SwordCraftOnline.logDebug("Starting content fetch for PlayerInventory " + inventoryId);
@@ -112,13 +118,20 @@ public class PlayerInventory implements SCOInventory {
 
   @Override
   public void onInventoryClose(InventoryCloseEvent ev) {
-    // TODO Auto-generated method stub
+    this.saveInventory();
+  }
+
+  public void saveInventory() {
+    (new InventorySaveTask(this.inventoryId, this.s.getPlayerRegistryId(), InventoryType.PLAYER, this.generateItemIdentifiers()))
+      .saveInventory()
+      .thenAccept((inventoryId) -> {
+        SwordCraftOnline.logDebug("Inventory " + this.inventoryId + " saved succesfully");
+      });
   }
 
   @Override
   public List<ItemIdentifier> generateItemIdentifiers() {
-    // TODO Auto-generated method stub
-    return null;
+    return SCOInventory.generateItemIdentifiers(this.inventory);
   }
   
 }

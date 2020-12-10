@@ -15,11 +15,10 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.PlayerInventory;
+import net.peacefulcraft.sco.inventories.SCOInventory;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.storage.tasks.InventoryRegistryLookupTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
@@ -151,20 +150,20 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 		Map<InventoryType, Long> inventoryTypeIdMap = inventoriesLookup.fetchInventoryIds().get();
 		// Load the Player's Inventory
 		if (inventoryTypeIdMap.containsKey(InventoryType.PLAYER)) {
-			this.playerInventory = new PlayerInventory(inventoryTypeIdMap.get(InventoryType.PLAYER));
+			this.playerInventory = new PlayerInventory(this, inventoryTypeIdMap.get(InventoryType.PLAYER));
 		} else {
 			// Create a new Inventory if one does not exist already
-			Long inventoryId = new InventorySaveTask(this.playerRegistryId, InventoryType.PLAYER, new ItemIdentifier [36]).saveInventory().get();
-			this.playerInventory = new PlayerInventory(inventoryId);
+			Long inventoryId = new InventorySaveTask(-1, this.playerRegistryId, InventoryType.PLAYER, SCOInventory.generateEmptyIdentifierList(36)).saveInventory().get();
+			this.playerInventory = new PlayerInventory(this, inventoryId);
 		}
 
 		// Load the SwordSkillInventory
 		if (inventoryTypeIdMap.containsKey(InventoryType.SWORD_SKILL)) {
-			this.swordSkillInventory = new SwordSkillInventory(inventoryTypeIdMap.get(InventoryType.SWORD_SKILL));
+			this.swordSkillInventory = new SwordSkillInventory(this, inventoryTypeIdMap.get(InventoryType.SWORD_SKILL));
 		} else {
 			// Create a new Inventory if one does not exist already
-			Long inventoryId = new InventorySaveTask(this.playerRegistryId, InventoryType.SWORD_SKILL, new ItemIdentifier [9]).saveInventory().get();
-			this.swordSkillInventory = new SwordSkillInventory(inventoryId);
+			Long inventoryId = new InventorySaveTask(-1, this.playerRegistryId, InventoryType.SWORD_SKILL, SCOInventory.generateEmptyIdentifierList(9)).saveInventory().get();
+			this.swordSkillInventory = new SwordSkillInventory(this, inventoryId);
 		}
 
 		CompletableFuture.allOf(

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -18,20 +19,7 @@ public class InventorySaveTask  {
   private long inventoryId;
   private long ownerId;
   private InventoryType type;
-  private ItemIdentifier[] items;
-
-  /**
-   * Used for creating new Inventories in the database
-   * @param ownerId The registry id of the inventory owner
-   * @param items The list of items in the inventory
-   * @param itemQuantities Array with item slot quantities with indexes matching those of items[] param
-   */
-  public InventorySaveTask(long ownerId, InventoryType type, ItemIdentifier[] items) {
-    this.ownerId = 0;
-    this.ownerId = ownerId;
-    this.type = type;
-    this.items = items;
-  }
+  private List<ItemIdentifier> items;
 
   /**
    * Used for saving existing inventories
@@ -40,7 +28,7 @@ public class InventorySaveTask  {
    * @param items The list of items in the inventory
    * @param itemQuantities Array with item slot quantities with indexes matching those of items[] param
    */
-  public InventorySaveTask(long inventoryId, long ownerId, InventoryType type, ItemIdentifier[] items) {
+  public InventorySaveTask(long inventoryId, long ownerId, InventoryType type, List<ItemIdentifier> items) {
     this.inventoryId = inventoryId;
     this.ownerId = ownerId;
     this.type = type;
@@ -61,14 +49,14 @@ public class InventorySaveTask  {
   
         if (this.inventoryId > 0) {
           PreparedStatement stmt_update = con.prepareStatement("UPDATE `inventory` SET `size`=? WHERE `id`=?");
-          stmt_update.setLong(1, items.length);
+          stmt_update.setLong(1, items.size());
           stmt_update.setLong(2, inventoryId);
           stmt_update.executeUpdate();
           stmt_update.close();
         } else {
           PreparedStatement stmt_insert_inventory = con.prepareStatement("INSERT INTO `inventory`(type, size, player_id) VALUES(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
           stmt_insert_inventory.setString(1, type.toString());
-          stmt_insert_inventory.setInt(2, items.length);
+          stmt_insert_inventory.setInt(2, items.size());
           stmt_insert_inventory.setLong(3, ownerId);
           stmt_insert_inventory.executeUpdate();
   
@@ -83,6 +71,8 @@ public class InventorySaveTask  {
         PreparedStatement stmt_insert_item = con.prepareStatement(
           "INSERT INTO `inventory_item` VALUES(?, ?, ?, ?, ?, ?) " + 
           "ON DUPLICATE KEY UPDATE " +
+          "`inventory_id`=VALUES(inventory_id)," +
+          "`slot`=VALUES(slot)," +
           "`item_identifier`= VALUES(item_identifier)," +
           "`tier`=VALUES(tier)," +
           "`quantity`=VALUES(quantity)," +
@@ -90,19 +80,19 @@ public class InventorySaveTask  {
         );
         PreparedStatement stmt_delete_item = con.prepareStatement("DELETE FROM `inventory_item` WHERE `inventory_id`=? AND `slot`=?");
   
-        for(int i=0; i<items.length; i++) {
-          if (items[i] == null) {
+        for(int i=0; i<items.size(); i++) {
+          if (items.get(i).getName().equalsIgnoreCase("Air")) {
             stmt_delete_item.setLong(1, this.inventoryId);
             stmt_delete_item.setInt(2, i);
             stmt_delete_item.executeUpdate();
           } else {
             stmt_insert_item.setLong(1, this.inventoryId);
             stmt_insert_item.setInt(2, i);
-            stmt_insert_item.setString(3, items[i].getClass().getSimpleName());
-            stmt_insert_item.setString(4, items[i].getTier().toString().toUpperCase());
-            stmt_insert_item.setInt(5, items[i].getQuantity());
-            if (items[i] instanceof CustomDataHolder) {
-              stmt_insert_item.setString(6, ((CustomDataHolder) items[i]).getCustomData().toString());
+            stmt_insert_item.setString(3, items.get(i).getClass().getSimpleName().replaceAll("Item", ""));
+            stmt_insert_item.setString(4, items.get(i).getTier().toString().toUpperCase());
+            stmt_insert_item.setInt(5, items.get(i).getQuantity());
+            if (items.get(i) instanceof CustomDataHolder) {
+              stmt_insert_item.setString(6, ((CustomDataHolder) items.get(i)).getCustomData().toString());
             } else {
               stmt_insert_item.setString(6, "{}");
             }
@@ -111,6 +101,8 @@ public class InventorySaveTask  {
           }
         }
   
+        stmt_insert_item.close();
+        stmt_delete_item.close();
         con.commit();
         return this.inventoryId;
 
