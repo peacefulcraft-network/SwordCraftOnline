@@ -4,6 +4,8 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.utilityitems.BlackSlot;
 import net.peacefulcraft.sco.items.utilityitems.BlueSlot;
+import net.peacefulcraft.sco.items.utilityitems.InfusionStartSlot;
+import net.peacefulcraft.sco.items.utilityitems.RedSlot;
 
 public class InfusionInventory extends InventoryBase {
 
@@ -42,10 +44,14 @@ public class InfusionInventory extends InventoryBase {
                     this.addButton(row, col, (new BlackSlot()).create(1, false, false));
                 }
                 // Blue locked slots
-                if(((row == 1 || row == 3) && (col >= 5 && col <= 7)) || (row == 2 && (col == 5 || col == 7))) {
+                if(row == 5) {
                     this.addButton(row, col, (new BlueSlot()).create(1, false, false));
                 }
             }
         }
+        // Places start button and indicator buttons
+        this.addButton(2, 4, (new InfusionStartSlot()).create(1, false, false));
+        this.addButton(1, 4, (new RedSlot()).create(1, false, false));
+        this.addButton(3, 4, (new RedSlot()).create(1, false, false));
     }
 }
