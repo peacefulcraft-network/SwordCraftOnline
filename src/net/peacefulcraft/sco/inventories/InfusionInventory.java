@@ -39,13 +39,19 @@ public class InfusionInventory extends InventoryBase {
     private void setBlockers() {
         for(int row = 0; row <= 5; row++) {
             for(int col = 0; col <= 8; col++) {
-                // Black locked slots
-                if(row == 0 || row >= 4 || ((row < 4 && row > 0) && (col == 0 || col == 8 || col == 4))) {
+                // Broke statements into different lines b\c I got annoyed.
+                // Leaves 1 catalyst slot in row 1.
+                // 3 component slots in row 3
+                if(row == 0 || row == 5) {
                     this.addButton(row, col, (new BlackSlot()).create(1, false, false));
-                }
-                // Blue locked slots
-                if(row == 5) {
-                    this.addButton(row, col, (new BlueSlot()).create(1, false, false));
+                } else if(row == 1 && (col <= 1 || col == 3 || col == 4 || col == 8)) {
+                    this.addButton(row, col, (new BlackSlot()).create(1, false, false));
+                } else if(row == 2 && (col <= 4 || col == 8)) {
+                    this.addButton(row, col, (new BlackSlot()).create(1, false, false));
+                } else if(row == 3 && (col == 0 || col == 4 || col == 8)) {
+                    this.addButton(row, col, (new BlackSlot()).create(1, false, false));
+                } else if(row == 5 || (row == 4 && (col == 0 || col >= 4)))  {
+                    this.addButton(row, col, (new BlackSlot()).create(1, false, false));
                 }
             }
         }
