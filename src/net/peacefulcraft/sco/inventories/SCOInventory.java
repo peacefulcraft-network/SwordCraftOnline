@@ -1,20 +1,14 @@
 package net.peacefulcraft.sco.inventories;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.items.ItemTier;
 
 public interface SCOInventory {
   
@@ -69,53 +63,4 @@ public interface SCOInventory {
    * @param ev The coresponding InvnetoryCloseEvent
    */
   public abstract void onInventoryClose(InventoryCloseEvent ev);
-
-  /**
-   * Generates a List of Air items
-   * @param size Number of items to generate (%9=0)
-   * @return The list of air items
-   */
-  public static List<ItemIdentifier> generateEmptyIdentifierList(int size) {
-    size = (size % 9) * 9;
-    List<ItemIdentifier> items = new ArrayList<ItemIdentifier>(size);
-    ItemIdentifier air = ItemIdentifier.generateIdentifier("Air", ItemTier.COMMON, 1);
-    for(int i=0; i<size; i++) {
-      items.add(air);
-    }
-    return items;
-  }
-
-  /**
-   * Generate a List of ItemIdentifiers from the contents of the given inventory
-   * @param inventory Inventory from which to generate item identifiers
-   * @return A list of ItemIdentifires for the contents of the inventory
-   */
-  public static List<ItemIdentifier> generateItemIdentifiers(Inventory inventory) {
-    ArrayList<ItemIdentifier> items = new ArrayList<ItemIdentifier>();
-    for(int i=0; i<inventory.getSize(); i++) {
-      if (inventory.getItem(i) == null) {
-        items.add(ItemIdentifier.generateIdentifier("Air", ItemTier.COMMON, 1));
-      } else {
-        ItemStack item = inventory.getItem(i);
-        NBTItem nbti = new NBTItem(item);
-
-        try {
-          items.add(ItemIdentifier.generateIdentifier(
-            nbti.getString("identifier"),
-            ItemTier.valueOf(nbti.getString("tier").toUpperCase()),
-            item.getAmount())
-          );
-        } catch(Exception ex) {
-          SwordCraftOnline.logWarning("Unable to generate item identifier for item " + item.getItemMeta().getDisplayName() + ". It will not be saved to the inventory.");
-          items.add(ItemIdentifier.generateIdentifier("Air", ItemTier.COMMON, 1));
-        }
-
-        if (items.get(i) instanceof CustomDataHolder) {
-          ((CustomDataHolder) items.get(i)).parseCustomItemData(item);
-        }
-      }
-    }
-
-    return items;
-  }
 }

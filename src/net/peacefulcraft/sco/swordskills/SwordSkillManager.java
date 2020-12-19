@@ -8,6 +8,7 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.SCOInventory;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
@@ -138,7 +139,7 @@ public class SwordSkillManager
 	 * Unregisters all of a player's SwordSkills, then re-registers a new
 	 * set of abilities based off of what is currently in the player's SwordSkill Inventory
 	 */
-	public void syncSkillInventory(SwordSkillInventory inv) {
+	public void syncSkillInventory(SCOInventory inv) {
 		unregisterAllSkills();
 		for(ItemIdentifier identifier : inv.generateItemIdentifiers()) {
 			if (identifier instanceof SwordSkillProvider) {

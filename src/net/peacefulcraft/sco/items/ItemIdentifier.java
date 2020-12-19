@@ -127,6 +127,14 @@ public interface ItemIdentifier {
     throw new RuntimeException("Failed to generate ItemIdentifier with requested scope " + name + " " + tier.toString());
   }
 
+  public static ItemStack generateItem(ItemIdentifier item) throws RuntimeException {
+    if (item instanceof CustomDataHolder) {
+      return ItemIdentifier.generateItem(item.getName(), item.getTier(), item.getQuantity(), ((CustomDataHolder) item).getCustomData());
+    } else {
+      return ItemIdentifier.generateItem(item.getName(), item.getTier(), item.getQuantity());
+    }
+  }
+
   /**
    * Generates the requested item as an ItemStack
    * @param name The name/class of the item.

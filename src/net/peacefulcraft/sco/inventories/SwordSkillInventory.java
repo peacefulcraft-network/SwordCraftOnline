@@ -1,6 +1,5 @@
 package net.peacefulcraft.sco.inventories;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
@@ -8,56 +7,46 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.items.CustomDataHolder;
-import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
+import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 
-public class SwordSkillInventory implements SCOInventory {
+/**
+ * Persistent Sword Skill Inventory
+ * Loads contents from database using provided information.
+ * Automatically saves contents back to database on close.
+ */
+public class SwordSkillInventory extends BukkitInventoryBase {
 
-	private SCOPlayer s;
-		public SCOPlayer getSCOPlayer() { return s; }
+	protected SwordSkillCaster s;
+		public SwordSkillCaster getInventoryHolder() { return s; }
 	
-	private Long inventoryId;
+	protected Long inventoryId;
 		public Long getInventoryId() { return inventoryId; }
+	protected Long ownerId;
+		public Long getOwnerId() { return ownerId; }
 
-	private CompletableFuture<Void> inventoryReadyPromise;
+	protected CompletableFuture<Void> inventoryReadyPromise;
 
 	public CompletableFuture<Void> inventoryReadyPromise() {
 		return this.inventoryReadyPromise;
 	}
 
-	private Inventory inventory;
+	protected Inventory inventory;
 
-	public SwordSkillInventory(SCOPlayer s, Long inventoryId) {
+	public SwordSkillInventory(SwordSkillCaster s, Long inventoryId, Long ownerId) {
 		this.s = s;
 		this.inventoryId = inventoryId;
+		this.ownerId = ownerId;
 
 		this.inventoryReadyPromise = CompletableFuture.runAsync(() -> {
 			new InventoryLoadTask(inventoryId).fetchInventory().thenAcceptAsync((items) -> {
 				// Get back on Bukkit's thread before we touch MC Inventories
 				Bukkit.getScheduler().runTask(SwordCraftOnline.getPluginInstance(), () -> {
 					this.inventory = Bukkit.getServer().createInventory(null, items.size(), "Sword Skill Inventory");
-
-					for (int i = 0; i < items.size(); i++) {
-						ItemIdentifier itemIdentifier = items.get(i);
-						ItemStack item = null;
-
-						if (itemIdentifier instanceof CustomDataHolder) {
-							CustomDataHolder customDataItem = (CustomDataHolder) itemIdentifier;
-							item = ItemIdentifier.generateItem(itemIdentifier.getName(), itemIdentifier.getTier(),
-									itemIdentifier.getQuantity(), customDataItem.getCustomData());
-						} else {
-							item = ItemIdentifier.generateItem(itemIdentifier.getName(), itemIdentifier.getTier(),
-									itemIdentifier.getQuantity());
-						}
-
-						inventory.setItem(i, item);
-					}
 
 					// Indicate to any tasks waiting for this to complete that we've completed.
 					this.inventoryReadyPromise.complete(null);
@@ -113,17 +102,12 @@ public class SwordSkillInventory implements SCOInventory {
 
 	@Override
 	public void onInventoryClose(InventoryCloseEvent ev) {
-		(new InventorySaveTask(this.inventoryId, this.s.getPlayerRegistryId(), InventoryType.SWORD_SKILL, this.generateItemIdentifiers()))
+		(new InventorySaveTask(this.inventoryId, this.ownerId, InventoryType.SWORD_SKILL, this.generateItemIdentifiers()))
 		.saveInventory()
 		.thenAccept((inventoryId) -> {
 			SwordCraftOnline.logDebug("Inventory " + this.inventoryId + " saved succesfully");
 		});
 
 		this.s.getSwordSkillManager().syncSkillInventory(this);
-	}
-
-	@Override
-	public List<ItemIdentifier> generateItemIdentifiers() {
-		return SCOInventory.generateItemIdentifiers(this.inventory);
 	}
 }

@@ -16,7 +16,7 @@ import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 
-public class PlayerInventory implements SCOInventory {
+public class PlayerInventory extends BukkitInventoryBase {
 
   private SCOPlayer s;
     public SCOPlayer getSCOPlayer() { return s; }
@@ -127,11 +127,5 @@ public class PlayerInventory implements SCOInventory {
       .thenAccept((inventoryId) -> {
         SwordCraftOnline.logDebug("Inventory " + this.inventoryId + " saved succesfully");
       });
-  }
-
-  @Override
-  public List<ItemIdentifier> generateItemIdentifiers() {
-    return SCOInventory.generateItemIdentifiers(this.inventory);
-  }
-  
+  }  
 }
