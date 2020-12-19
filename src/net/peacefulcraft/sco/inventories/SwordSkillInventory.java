@@ -118,6 +118,8 @@ public class SwordSkillInventory implements SCOInventory {
 		.thenAccept((inventoryId) -> {
 			SwordCraftOnline.logDebug("Inventory " + this.inventoryId + " saved succesfully");
 		});
+
+		this.s.getSwordSkillManager().syncSkillInventory(this);
 	}
 
 	@Override

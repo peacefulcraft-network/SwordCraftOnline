@@ -173,13 +173,14 @@ public class SCOPlayer implements SwordSkillCaster, IDamage, IDamageModifier
 	}
 
 	/**
-	 * Ties a Bukkit Player to this SCOPlayer Object. The SCOPlayer must have finished
-	 * initalizing it's inventory objects.
+	 * Ties a Bukkit Player to this SCOPlayer Object and initializes their SwordSkills. 
+	 * The SCOPlayer must have finished initalizing it's inventory objects.
 	 * @param p The Player to bind
 	 */
 	public void linkPlayer(Player p) {
 		this.user = p;
 		this.playerInventory.bindInventory(p.getInventory());
+		this.swordSkillManager.syncSkillInventory(this.swordSkillInventory);
 	}
 
 	/**True if player can perform left click */
