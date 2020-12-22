@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.inventories;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -17,7 +18,10 @@ import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 public class EphemeralSwordSkillInventory extends BukkitInventoryBase {
 
 	private SwordSkillCaster s;
-		public SwordSkillCaster getInventoryHolder() { return s; }
+
+	public SwordSkillCaster getInventoryHolder() {
+		return s;
+	}
 
 	public EphemeralSwordSkillInventory(SwordSkillCaster s, Long inventoryId, List<SwordSkillProvider> swordSkills) {
 
@@ -55,25 +59,25 @@ public class EphemeralSwordSkillInventory extends BukkitInventoryBase {
 	}
 
 	@Override
-	public void onClickThisInventory(InventoryClickEvent ev) {
+	public void onClickThisInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onClickThatInventory(InventoryClickEvent ev) {
+	public void onClickThatInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onThisInventoryDrag(InventoryDragEvent ev) {
+	public void onThisInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onThatInventoryDrag(InventoryDragEvent ev) {
+	public void onThatInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
 		// TODO Auto-generated method stub
 
 	}

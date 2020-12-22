@@ -19,6 +19,7 @@ import net.peacefulcraft.sco.items.ItemTier;
  */
 public abstract class BukkitInventoryBase implements SCOInventory {
 	protected Inventory inventory;
+		public Inventory getInventory() { return this.inventory; }
 
 	/**
 	 * Sets the inventories contents to the items in the item list. Does not clear

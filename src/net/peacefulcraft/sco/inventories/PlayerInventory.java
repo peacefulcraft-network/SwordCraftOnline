@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.inventories;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
@@ -93,25 +94,25 @@ public class PlayerInventory extends BukkitInventoryBase {
   }
 
   @Override
-  public void onClickThisInventory(InventoryClickEvent ev) {
+  public void onClickThisInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void onClickThatInventory(InventoryClickEvent ev) {
+  public void onClickThatInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void onThisInventoryDrag(InventoryDragEvent ev) {
+  public void onThisInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void onThatInventoryDrag(InventoryDragEvent ev) {
+  public void onThatInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
     // TODO Auto-generated method stub
 
   }
