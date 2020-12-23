@@ -23,8 +23,10 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.crafting.Recipe;
-import net.peacefulcraft.sco.items.utilityitems.CraftingInvalidSlot;
-import net.peacefulcraft.sco.items.utilityitems.CraftingValidSlot;
+import net.peacefulcraft.sco.items.CraftingInvalidSlotItem;
+import net.peacefulcraft.sco.items.CraftingValidSlotItem;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 
 public class CraftingListeners implements Listener {
     
@@ -47,7 +49,7 @@ public class CraftingListeners implements Listener {
         boolean hitResult = checkResultSlot(e.getSlot());
 
         // Checking for a valid recipe and placing result in inventory
-        HashMap<Integer, ItemStack> recipe = getRecipe(e.getInventory());
+        HashMap<Integer, ItemIdentifier> recipe = getRecipe(e.getInventory());
         Recipe result = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(recipe);
         if(result == null) { 
             clearResult(e.getInventory());
@@ -60,7 +62,7 @@ public class CraftingListeners implements Listener {
         if(hitResult) {
             // Cancel event to prevent item pickup
             e.setCancelled(true);
-            giveResult(p, result);
+            giveResult(s, result);
             craftRecipe(e.getInventory(), result);
             clearResult(e.getInventory());
             setValidCraftSlot(e.getInventory(), false);
@@ -98,15 +100,15 @@ public class CraftingListeners implements Listener {
         Block b = e.getClickedBlock();
         if(!b.getType().equals(Material.CRAFTING_TABLE)) { return; }
 
-        new CraftingInventory(s).openInventory();
+        new CraftingInventory(s).openInventory(s);
         e.setCancelled(true);
     }
 
     private void setValidCraftSlot(Inventory inv, boolean valid) {
         if(valid) {
-            inv.setItem(22, (new CraftingValidSlot()).create(1, false, false));
+            inv.setItem(22, ItemIdentifier.generateItem(new CraftingValidSlotItem(ItemTier.COMMON, 1)));
         } else {
-            inv.setItem(22, (new CraftingInvalidSlot()).create(1, false, false));
+            inv.setItem(22, ItemIdentifier.generateItem(new CraftingInvalidSlotItem(ItemTier.COMMON, 1)));
         }
     }
 
@@ -133,14 +135,14 @@ public class CraftingListeners implements Listener {
      * Helper method
      * Fetches crafting slot items
      */
-    private HashMap<Integer, ItemStack> getRecipe(Inventory inv) {
+    private HashMap<Integer, ItemIdentifier> getRecipe(Inventory inv) {
         int i = 0;
-        HashMap<Integer, ItemStack> out = new HashMap<>();
+        HashMap<Integer, ItemIdentifier> out = new HashMap<>();
 
         for(int row = 1; row <= 3; row++) {
             for(int col = 1; col <= 3; col++) {
-                ItemStack item = inv.getItem(row * 9 + col);
-                if(item == null || item.getType().equals(Material.AIR)) { 
+                ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(inv.getItem(row * 9 + col));
+                if(item == null || item.getMaterial() == Material.AIR) { 
                     i++;
                     continue; 
                 }
@@ -182,7 +184,7 @@ public class CraftingListeners implements Listener {
      */
     private void craftRecipe(Inventory inv, Recipe r) {
         int i = 0;
-        Map<Integer, ItemStack> recipe = r.getRecipe();
+        Map<Integer, ItemIdentifier> recipe = r.getRecipe();
 
         for(int row = 1; row <= 3; row++) {
             for(int col = 1; col <= 3; col++) {
@@ -193,7 +195,7 @@ public class CraftingListeners implements Listener {
                 }
 
                 // Subtract / remove logic
-                int amount = recipe.get(i).getAmount();
+                int amount = recipe.get(i).getQuantity();
                 if(item.getAmount() - amount == 0) {
                     inv.clear(row * 9 + col);
                 } else {
@@ -209,16 +211,16 @@ public class CraftingListeners implements Listener {
      * Sets resulting crafting in inventory
      */
     private void setResult(Inventory inv, Recipe recipe) {
-        Map<Integer, ItemStack> result = recipe.getResult();
+        Map<Integer, ItemIdentifier> result = recipe.getResult();
         int i = 0;
         for(int row = 1; row <= 3; row++) {
             for(int col = 5; col <= 7; col++) {
-                ItemStack item = result.get(i);
+                ItemIdentifier item = result.get(i);
                 if(item == null) { 
                     i++;
                     continue;
                 }
-                inv.setItem(row * 9 + col, item);
+                inv.setItem(row * 9 + col, ItemIdentifier.generateItem(item));
                 i++;
             }
         }
@@ -238,18 +240,18 @@ public class CraftingListeners implements Listener {
     /**
      * Gives player result or drops it on the ground
      */
-    private void giveResult(Player p, Recipe recipe) {
-        Map<Integer, ItemStack> result = recipe.getResult();
-        List<ItemStack> leftovers = new ArrayList<>();
-        for(ItemStack item : result.values()) {
-            HashMap<Integer, ItemStack> temp = p.getInventory().addItem(item);
-            for(ItemStack i : temp.values()) {
+    private void giveResult(SCOPlayer s, Recipe recipe) {
+        Map<Integer, ItemIdentifier> result = recipe.getResult();
+        List<ItemIdentifier> leftovers = new ArrayList<>();
+        for(ItemIdentifier item : result.values()) {
+            HashMap<Integer, ItemIdentifier> temp = s.getPlayerInventory().addItem(item);
+            for(ItemIdentifier i : temp.values()) {
                 leftovers.add(i);
             }
         }
 
-        for(ItemStack item : leftovers) {
-            p.getLocation().getWorld().dropItemNaturally(p.getLocation(), item);
+        for(ItemIdentifier item : leftovers) {
+            s.getPlayer().getLocation().getWorld().dropItemNaturally(s.getPlayer().getLocation(), ItemIdentifier.generateItem(item));
         }
     }
 }

@@ -4,9 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.inventory.ItemStack;
-
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
@@ -56,7 +55,7 @@ public class CraftingManager {
      * @param recipe slotted items in crafting table
      * @return Map of resulting craft, null if invalid craft
      */
-    public Recipe checkRecipe(HashMap<Integer, ItemStack> recipe) {
+    public Recipe checkRecipe(HashMap<Integer, ItemIdentifier> recipe) {
         for(Recipe r : this.recipes.values()) {
             boolean result = r.checkRecipe(recipe);
             if(!result) { continue; }

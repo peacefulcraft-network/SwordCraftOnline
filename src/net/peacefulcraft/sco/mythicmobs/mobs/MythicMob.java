@@ -53,7 +53,6 @@ import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 import net.peacefulcraft.sco.particles.effect.SmokeEffect;
-import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
@@ -961,7 +960,7 @@ public class MythicMob implements Comparable<MythicMob> {
      */
     public ActiveMob applySkills(ActiveMob am) {
         for(String s : this.skills) {
-            Generator.readSkill(s, am);
+            // TODO: Generator.readSkill(s, am);
         }
         return am;
     }

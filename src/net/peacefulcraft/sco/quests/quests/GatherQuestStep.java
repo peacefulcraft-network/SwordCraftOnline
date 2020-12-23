@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.quests.QuestStep;
@@ -40,7 +41,7 @@ public class GatherQuestStep extends QuestStep {
             try {
                 int amount = Integer.valueOf(split[1]);
 
-                ItemStack item = ItemIdentifier.generate(split[0], 1, false, true);
+                ItemStack item = ItemIdentifier.generateItem(split[0], ItemTier.COMMON, 1);
                 if (item.getType().equals(Material.FIRE)) {
                     this.logInfo("Invalid Item field ");
                     return;

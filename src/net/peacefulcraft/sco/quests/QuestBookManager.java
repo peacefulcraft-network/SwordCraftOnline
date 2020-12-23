@@ -13,8 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventories.InventoryBase;
-import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.inventories.QuestBookInventory;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
 
 public class QuestBookManager {
@@ -108,7 +107,7 @@ public class QuestBookManager {
                 completeQuest(aq);
             } else {
                 //If quest was not completed we want to update item in their inventory
-                InventoryBase base = s.getInventory(InventoryType.QUEST_BOOK);
+                QuestBookInventory base = s.getQuestBookInventory();
                 Inventory inv = base.getInventory();
                 for(ItemStack i : inv.getContents()) {
                     String name = ChatColor.stripColor(i.getItemMeta().getDisplayName());

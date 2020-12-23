@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 public class AbilityClickListener implements Listener
 {
@@ -17,11 +17,11 @@ public class AbilityClickListener implements Listener
 		SwordSkillManager executor = SwordCraftOnline.getGameManager().findSCOPlayer(ev.getPlayer()).getSwordSkillManager();
 
 		if(ev.getAction().equals(Action.LEFT_CLICK_AIR) || ev.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-			executor.abilityExecuteLoop(SwordSkillType.PLAYER_INTERACT_LEFT_CLICK, ev);
+			executor.abilityExecuteLoop(SwordSkillTrigger.PLAYER_INTERACT_LEFT_CLICK, ev);
 		} else {
-			executor.abilityExecuteLoop(SwordSkillType.PLAYER_INTERACT_RIGHT_CLICK, ev);
+			executor.abilityExecuteLoop(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK, ev);
 		}
 
-		executor.abilityExecuteLoop(SwordSkillType.PLAYER_INTERACT, ev);
+		executor.abilityExecuteLoop(SwordSkillTrigger.PLAYER_INTERACT, ev);
 	}
 }
