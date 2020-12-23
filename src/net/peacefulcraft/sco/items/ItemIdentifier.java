@@ -182,6 +182,10 @@ public interface ItemIdentifier {
     nbti.setString("identifier", name.replaceAll(" ", ""));
     nbti.setString("tier", tier.toString());
 
+    if (itemIdentifier instanceof EphemeralAttributeHolder) {
+      ((EphemeralAttributeHolder) itemIdentifier).applyEphemeralAttributes(item);
+    }
+
     return nbti.getItem();
   }
 
@@ -210,6 +214,10 @@ public interface ItemIdentifier {
           ItemIdentifier identifier = ItemIdentifier.generateIdentifier(name, tier, item.getAmount());
           if (identifier instanceof CustomDataHolder) {
             ((CustomDataHolder) identifier).parseCustomItemData(item);
+          }
+
+          if (identifier instanceof EphemeralAttributeHolder) {
+            ((EphemeralAttributeHolder) identifier).parseEphemeralAttributes(item);
           }
 
           return identifier;

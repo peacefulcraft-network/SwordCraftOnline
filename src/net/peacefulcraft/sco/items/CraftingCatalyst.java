@@ -3,11 +3,16 @@ package net.peacefulcraft.sco.items;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
-public class CraftingCatalyst implements ItemIdentifier {
+import net.peacefulcraft.sco.items.utilities.Glow;
+
+public class CraftingCatalyst implements EphemeralAttributeHolder, ItemIdentifier {
 
     @Override
-    public String getName() { return "Crafting Catalyst"; }
+    public String getName() {
+        return "Crafting Catalyst";
+    }
 
     @Override
     public ArrayList<String> getLore() {
@@ -15,30 +20,55 @@ public class CraftingCatalyst implements ItemIdentifier {
         desc.add(ItemTier.getTierColor(ItemTier.UNCOMMON) + "Contains immense energy used to combine crafts.");
         return desc;
     }
-    
+
     @Override
-    public Material getMaterial() { return Material.NETHER_STAR; }
+    public Material getMaterial() {
+        return Material.NETHER_STAR;
+    }
 
     private Integer quantity;
-        @Override
-        public Integer getQuantity() { return this.quantity; }
-
-        @Override
-        public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
     @Override
-    public ItemTier[] getAllowedTiers() { return new ItemTier[] { ItemTier.UNCOMMON }; }
+    public Integer getQuantity() {
+        return this.quantity;
+    }
 
     @Override
-    public ItemTier getTier() { return ItemTier.UNCOMMON; }
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     @Override
-    public boolean isDroppable() { return false; }
+    public ItemTier[] getAllowedTiers() {
+        return new ItemTier[] { ItemTier.UNCOMMON };
+    }
 
     @Override
-    public boolean isMovable() { return true; }
- 
+    public ItemTier getTier() {
+        return ItemTier.UNCOMMON;
+    }
+
+    @Override
+    public boolean isDroppable() {
+        return false;
+    }
+
+    @Override
+    public boolean isMovable() {
+        return true;
+    }
+
     public CraftingCatalyst(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public void applyEphemeralAttributes(ItemStack item) {
+        Glow.addGlow(item);
+    }
+
+    @Override
+    public void parseEphemeralAttributes(ItemStack item) {
+        // Attributes for effect based only. Nothing to do
     }
 }
