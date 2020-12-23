@@ -72,8 +72,47 @@ public class PlayerInventory extends BukkitInventoryBase {
 
           inventory.setItem(i, item);
         }
+        s.getPlayer().updateInventory();
       });
     });
+  }
+
+  @Override
+  public void setInventoryContents(List<ItemIdentifier> items) {
+    super.setInventoryContents(items);
+    s.getPlayer().updateInventory();
+  }
+
+  @Override
+  public void setInventorySlots(HashMap<Integer, ItemIdentifier> items) {
+    super.setInventorySlots(items);
+    s.getPlayer().updateInventory();
+  }
+
+  @Override
+  public HashMap<Integer, ItemIdentifier> addItem(ItemIdentifier item) {
+    HashMap<Integer, ItemIdentifier> leftovers =  super.addItem(item);
+    s.getPlayer().updateInventory();
+    return leftovers;
+  }
+
+  @Override
+  public void setItem(Integer slot, ItemIdentifier item) {
+    super.setItem(slot, item);
+    s.getPlayer().updateInventory();
+  }
+
+  @Override
+  public void removeItem(ItemStack item) {
+    super.removeItem(item);
+    s.getPlayer().updateInventory();
+  }
+
+  @Override
+  public ItemIdentifier removeItem(int index) {
+    ItemIdentifier removed = super.removeItem(index);
+    s.getPlayer().updateInventory();
+    return removed;
   }
 
   @Override
