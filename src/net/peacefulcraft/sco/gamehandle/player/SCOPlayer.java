@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +20,8 @@ import net.peacefulcraft.sco.inventories.PlayerInventory;
 import net.peacefulcraft.sco.inventories.QuestBookInventory;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.inventories.utilities.EmptyIdentifierGenerator;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.quests.QuestBookManager;
 import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
@@ -200,7 +203,9 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 			this.playerInventory = new PlayerInventory(this, inventoryTypeIdMap.get(InventoryType.PLAYER));
 		} else {
 			// Create a new Inventory if one does not exist already
-			Long inventoryId = new InventorySaveTask(-1, this.playerRegistryId, InventoryType.PLAYER, EmptyIdentifierGenerator.generateEmptyIdentifierList(36)).saveInventory().get();
+			List<ItemIdentifier> startingItems = EmptyIdentifierGenerator.generateEmptyIdentifierList(36);
+			startingItems.set(8, ItemIdentifier.generateIdentifier("SwordSkillTome", ItemTier.COMMON, 1));
+			Long inventoryId = new InventorySaveTask(-1, this.playerRegistryId, InventoryType.PLAYER, startingItems).saveInventory().get();
 			this.playerInventory = new PlayerInventory(this, inventoryId);
 		}
 

@@ -38,7 +38,7 @@ public class SwordSkillTomeItem implements ItemIdentifier {
   public boolean isDroppable() { return false; }
 
   @Override
-  public boolean isMovable() { return false; }
+  public boolean isMovable() { return true; }
   
   public SwordSkillTomeItem(ItemTier tier, Integer quantity) {
     // Tier is static so it is just there for static constructor invocation in ItemIdentifier
