@@ -1,13 +1,10 @@
-package net.peacefulcraft.sco.items.utilityitems;
+package net.peacefulcraft.sco.items;
 
 import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.items.ItemTier;
-
-public class CraftingValidSlot implements ItemIdentifier {
+public class CraftingBlockedSlotItem implements ItemIdentifier {
 
     @Override
     public String getName() { return ""; }
@@ -16,7 +13,7 @@ public class CraftingValidSlot implements ItemIdentifier {
     public ArrayList<String> getLore() { return new ArrayList<String>(); }
 
     @Override
-    public Material getMaterial() { return Material.GREEN_STAINED_GLASS_PANE; }
+    public Material getMaterial() { return Material.BLACK_STAINED_GLASS_PANE; }
 
     private Integer quantity;
         @Override
@@ -35,9 +32,9 @@ public class CraftingValidSlot implements ItemIdentifier {
     public boolean isDroppable() { return false; }
 
     @Override
-    public boolean isMovable() { return true; }
+    public boolean isMovable() { return false; }
 
-    public CraftingValidSlot(ItemTier tier, Integer quantity) {
+    public CraftingBlockedSlotItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
-    }
+    }   
 }

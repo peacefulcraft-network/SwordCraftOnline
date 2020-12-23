@@ -1,13 +1,10 @@
-package net.peacefulcraft.sco.items.utilityitems;
+package net.peacefulcraft.sco.items;
 
 import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.items.ItemTier;
-
-public class BlockedSlot implements ItemIdentifier {
+public class BlockedSlotItem implements ItemIdentifier {
 
 	@Override
 	public String getName() { return ""; }
@@ -37,7 +34,7 @@ public class BlockedSlot implements ItemIdentifier {
 	@Override
 	public boolean isMovable() { return false; }
 
-	public BlockedSlot(ItemTier tier, Integer quantity) {
+	public BlockedSlotItem(ItemTier tier, Integer quantity) {
 		this.quantity = quantity;
 	}
 }

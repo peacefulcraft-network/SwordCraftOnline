@@ -1,11 +1,8 @@
-package net.peacefulcraft.sco.items.customitems;
+package net.peacefulcraft.sco.items;
 
 import java.util.ArrayList;
 
 import org.bukkit.Material;
-
-import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.items.ItemTier;
 
 public class InfusedAincradianWheat implements ItemIdentifier {
 

@@ -10,9 +10,9 @@ import org.bukkit.inventory.Inventory;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.crafting.Recipe;
+import net.peacefulcraft.sco.items.CraftingBlockedSlotItem;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.utilityitems.CraftingBlockedSlot;
 
 public class CraftingInventory extends BukkitInventoryBase {
 
@@ -57,7 +57,7 @@ public class CraftingInventory extends BukkitInventoryBase {
      * Initializes the blocked slots in inventory
      */
     private void setBlockers() {
-        CraftingBlockedSlot blocker = new CraftingBlockedSlot(ItemTier.COMMON, 1);
+        CraftingBlockedSlotItem blocker = new CraftingBlockedSlotItem(ItemTier.COMMON, 1);
         for (int row = 0; row <= 5; row++) {
             for (int col = 0; col <= 8; col++) {
                 if (row == 0 || row >= 4 || ((row < 4 && row > 0) && (col == 0 || col == 8 || col == 4))) {

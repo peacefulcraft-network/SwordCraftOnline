@@ -23,10 +23,10 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.crafting.Recipe;
+import net.peacefulcraft.sco.items.CraftingInvalidSlotItem;
+import net.peacefulcraft.sco.items.CraftingValidSlotItem;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.utilityitems.CraftingInvalidSlot;
-import net.peacefulcraft.sco.items.utilityitems.CraftingValidSlot;
 
 public class CraftingListeners implements Listener {
     
@@ -106,9 +106,9 @@ public class CraftingListeners implements Listener {
 
     private void setValidCraftSlot(Inventory inv, boolean valid) {
         if(valid) {
-            inv.setItem(22, ItemIdentifier.generateItem(new CraftingValidSlot(ItemTier.COMMON, 1)));
+            inv.setItem(22, ItemIdentifier.generateItem(new CraftingValidSlotItem(ItemTier.COMMON, 1)));
         } else {
-            inv.setItem(22, ItemIdentifier.generateItem(new CraftingInvalidSlot(ItemTier.COMMON, 1)));
+            inv.setItem(22, ItemIdentifier.generateItem(new CraftingInvalidSlotItem(ItemTier.COMMON, 1)));
         }
     }
 
