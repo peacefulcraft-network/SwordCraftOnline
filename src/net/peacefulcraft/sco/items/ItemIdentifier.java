@@ -82,7 +82,12 @@ public interface ItemIdentifier {
       Class.forName("net.peacefulcraft.sco.items." + name);
       return true;
     } catch (ClassNotFoundException ex) {
-      return false;
+      try {
+        Class.forName("net.peacefulcraft.sco.items." + name +"Item");
+        return true;
+      } catch(ClassNotFoundException ex1) {
+        return false;
+      }
     }
   }
 
