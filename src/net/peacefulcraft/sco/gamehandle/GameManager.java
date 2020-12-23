@@ -69,6 +69,8 @@ public class GameManager {
 		}
 		try {
 			s.linkPlayer(p);
+			// Register the Player's personal inventory with the InventoryEvent routing system
+			SwordCraftOnline.getInventoryListeners().registerPlayerInventoryView(s, p.getOpenInventory());
 		} catch (RuntimeException ex) {
 			p.kickPlayer("[SCO] Database error occured while loading inventories.");
 			ex.printStackTrace();
@@ -99,6 +101,9 @@ public class GameManager {
 			throw new RuntimeException("Command executor is not playing SCO");
 		}
 		
+		// Unregister the Player's personal inventory from the InventoryEvent routing system
+		SwordCraftOnline.getInventoryListeners().unregisterPlayerInventoryView(s, p.getOpenInventory());
+
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
 

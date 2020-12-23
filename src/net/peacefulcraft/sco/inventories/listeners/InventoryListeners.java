@@ -66,28 +66,35 @@ public class InventoryListeners implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onInventoryClick(InventoryClickEvent ev) {
     SCOPlayer s = GameManager.findSCOPlayer((Player) ev.getView().getPlayer());
-    registerPlayerInventoryView(s, ev.getView());
 
     ItemStack clickedItem = ev.getCurrentItem();
     ItemStack cursorItem = ev.getCursor();
     ItemIdentifier clickedItemId = this.resolveItemIdentifier(clickedItem);
     ItemIdentifier cursorItemId = this.resolveItemIdentifier(cursorItem);
 
-    if (!clickedItemId.isMovable() || !cursorItemId.isMovable()) {
-      ev.setCancelled(true);
-    }
+    // Ignore vanilla items
+    if (clickedItemId == null && cursorItemId == null) { return; }
+
+    // Prevent static items from being moved
+    if (!clickedItemId.isMovable() || !cursorItemId.isMovable()) { ev.setCancelled(true); }
     
+    // Route and dispatch event to the inventory
     SCOInventory thisInventory;
     SCOInventory thatInventory;
-    if (ev.getInventory() == ev.getView().getBottomInventory()) {
+    if (ev.getClickedInventory() == ev.getView().getBottomInventory()) {
       thisInventory = this.inventoryMap.get(ev.getView().getBottomInventory());
       thatInventory = this.inventoryMap.get(ev.getView().getTopInventory());
     } else {
       thisInventory = this.inventoryMap.get(ev.getView().getTopInventory());
       thatInventory = this.inventoryMap.get(ev.getView().getBottomInventory());
     }
+
+    SwordCraftOnline.logDebug("Resolved this inventory to " + ((thisInventory == null) ? "null" : thisInventory.getInventory().getType()) + " and that inventory to " + ((thatInventory == null) ? "null" : thatInventory.getInventory().getType()));
+
     thisInventory.onClickThisInventory(ev, cursorItemId, clickedItemId);
-    thatInventory.onClickThatInventory(ev, cursorItemId, clickedItemId);
+    if (thatInventory != null) {
+      thatInventory.onClickThatInventory(ev, cursorItemId, clickedItemId);
+    }
   }
 
   /**
@@ -98,7 +105,6 @@ public class InventoryListeners implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onInventoryDrag(InventoryDragEvent ev) {
     SCOPlayer s = GameManager.findSCOPlayer((Player) ev.getView().getPlayer());
-    registerPlayerInventoryView(s, ev.getView());
 
     HashMap<Integer, ItemIdentifier> itemIdentifiers = new HashMap<Integer, ItemIdentifier>();
     for(Entry<Integer, ItemStack> slot : ev.getNewItems().entrySet()) {
@@ -119,7 +125,9 @@ public class InventoryListeners implements Listener {
     }
 
     thisInventory.onThisInventoryDrag(ev, itemIdentifiers);
-    thatInventory.onThatInventoryDrag(ev, itemIdentifiers);
+    if (thatInventory != null) {
+      thatInventory.onThatInventoryDrag(ev, itemIdentifiers);
+    }
   }
 
   /**
@@ -165,14 +173,23 @@ public class InventoryListeners implements Listener {
   }
 
   /**
-   * Check if there is already a registered view for a player's personal inventory being open.
+   * Register the player's personal Inventory view. Called when player is joined to SCO
    * @param s The SCOPlayer in question
    * @param v The inventory view in question
    */
-  private void registerPlayerInventoryView(SCOPlayer s, InventoryView v) {
-    if ((v.getType() == InventoryType.CRAFTING || v.getType() == InventoryType.CREATIVE) && !this.activeViews.containsKey(v)) {
-      this.onInventoryOpen(v, s.getPlayerInventory());
-    }
+  public void registerPlayerInventoryView(SCOPlayer s, InventoryView v) {
+    this.activeViews.put(v, true);
+    this.inventoryMap.put(s.getPlayerInventory().getInventory(), s.getPlayerInventory());
+  }
+
+  /**
+   * Unregisters a player's personal Inventory view. Called when a player leaves SCO.
+   * @param s The SCOPlayer in question
+   * @param v The inventory view in question
+   */
+  public void unregisterPlayerInventoryView(SCOPlayer s, InventoryView v) {
+    this.activeViews.remove(v);
+    this.inventoryMap.remove(s.getPlayerInventory().getInventory());
   }
 
   private ItemIdentifier resolveItemIdentifier(ItemStack item) {
