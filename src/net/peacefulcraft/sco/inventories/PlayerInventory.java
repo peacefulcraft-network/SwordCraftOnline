@@ -28,8 +28,6 @@ public class PlayerInventory extends BukkitInventoryBase {
   /** Used for tracking when inventory item list is retrieved (internal) */
   private CompletableFuture<List<ItemIdentifier>> inventoryLoadPromise;
     public CompletableFuture<List<ItemIdentifier>> inventoryLoadPromise() { return this.inventoryLoadPromise; }
-
-  private Inventory inventory;
   /**
    * Initialize the inventory by the inventories' registry Id. Player's Inventory
    * instance must be bound later on before full initialization is complete.

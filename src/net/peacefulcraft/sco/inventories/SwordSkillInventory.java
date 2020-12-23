@@ -46,8 +46,6 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 		return this.inventoryReadyPromise;
 	}
 
-	protected Inventory inventory;
-
 	public SwordSkillInventory(SwordSkillCaster s, Long inventoryId, Long ownerId) {
 		this.s = s;
 		this.inventoryId = inventoryId;
