@@ -14,7 +14,6 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -65,8 +64,6 @@ public class InventoryListeners implements Listener {
    */
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onInventoryClick(InventoryClickEvent ev) {
-    SCOPlayer s = GameManager.findSCOPlayer((Player) ev.getView().getPlayer());
-
     ItemStack clickedItem = ev.getCurrentItem();
     ItemStack cursorItem = ev.getCursor();
     ItemIdentifier clickedItemId = this.resolveItemIdentifier(clickedItem);
@@ -104,8 +101,6 @@ public class InventoryListeners implements Listener {
    */
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onInventoryDrag(InventoryDragEvent ev) {
-    SCOPlayer s = GameManager.findSCOPlayer((Player) ev.getView().getPlayer());
-
     HashMap<Integer, ItemIdentifier> itemIdentifiers = new HashMap<Integer, ItemIdentifier>();
     for(Entry<Integer, ItemStack> slot : ev.getNewItems().entrySet()) {
       ItemIdentifier itemId = this.resolveItemIdentifier(slot.getValue());
