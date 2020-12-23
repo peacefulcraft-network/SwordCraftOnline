@@ -44,12 +44,16 @@ public class AirItem implements ItemIdentifier {
 
 	@Override
 	public boolean isDroppable() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isMovable() {
-		return false;
+		/**
+		 * Air needs to be movable so when the player clicks on an empty slot to put
+		 * an item into it, the operation doesn't get cancled from air click event.
+		 */
+		return true;
 	}
 	
 }
