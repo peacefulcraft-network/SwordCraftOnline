@@ -20,6 +20,7 @@ import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.drops.Conditions;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
 public class MythicMobDeathEvent implements Listener {    
@@ -39,9 +40,19 @@ public class MythicMobDeathEvent implements Listener {
             }
         }
 
+        //Mob isn't registered we don't care
+        //Mob is marked dead already. We don't care
+        ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(ent.getUniqueId());
+        if(am == null) { return; }
+        if(am.isDead()) { return;}
+
         if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
-            
-            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
+        
+            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().searchMMDisplay(ent.getName());
+            if(mm.getDropTable() == null) { 
+                SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(ent.getUniqueId());
+                return; 
+            }
 
             if(ent.getLastDamageCause() instanceof Player) {
                 Player p = (Player) ent.getLastDamageCause();

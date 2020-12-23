@@ -4,20 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Color;
+import org.bukkit.entity.Horse.Style;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Rabbit;
@@ -25,10 +30,10 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.TropicalFish;
-import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Horse.Color;
-import org.bukkit.entity.Horse.Style;
 import org.bukkit.entity.TropicalFish.Pattern;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
+import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -42,19 +47,18 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarColor;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBarStyle;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
 import net.peacefulcraft.sco.mythicmobs.drops.DropTable;
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
-import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
+import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
+import net.peacefulcraft.sco.particles.effect.SmokeEffect;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
  * Holds custom mob data read from YML in mob mananger.
  */
-public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
+public class MythicMob implements Comparable<MythicMob> {
     /**File name */
     private String file;
         /**Returns String of mob file name */
@@ -358,11 +362,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
 
     private Boolean digOutOfGround = Boolean.valueOf(false);
         public boolean getDigOutOfGround() { return this.digOutOfGround; }
-
-    /**Mob uses health bar */
-    private Boolean usesHealthBar = Boolean.valueOf(false);
-        /**Returns usesHealthBar */
-        public boolean getUsesHealthBar() { return this.usesHealthBar; }
     
     protected double spawnVelocityX;
 
@@ -387,6 +386,9 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
 
     protected boolean spawnVelocityZRange = false;
         public boolean isSpawnVelocityZRange() { return this.spawnVelocityZRange; }
+
+    protected String villagerType;
+        public String getVillagerType() { return this.villagerType; }
 
     /**Is mob disguised as player */
     private boolean fakePlayer = false;
@@ -494,9 +496,15 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     private List<String> potionEffects;
         public List<String> getPotionEffects() { return this.potionEffects; }
 
+    private boolean isShowingBottom;
+        public boolean isShowingBottom() { return this.isShowingBottom; }
+
     protected List<String> killMessages;
 
     public String disguise;
+
+    private boolean isPassive;
+        public boolean isPassive() { return this.isPassive; }
 
     /**Stores factions to target */
     protected List<String> factionTargets;
@@ -510,6 +518,57 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         /**Returns list of mobs skills */
         public List<String> getSkills() { return this.skills; }
 
+    /**Determines if mob has displayed health bar */
+    private Boolean usesHealthBar;
+        public Boolean usesHealthBar() { return this.usesHealthBar; }
+
+    /**Stores mobs base critical chance */
+    private int criticalChance;
+        /**Returns mobs base critical chance */
+        public int getCriticalChance() { return this.criticalChance; }
+
+    /**Stores mobs base critical multiplier */
+    private double criticalMultiplier;
+        /**Returns mobs base critical multiplier */
+        public double getCriticalMultiplier() { return this.criticalMultiplier; }
+
+    /**Stores mobs base parry chance */
+    private int parryChance;
+        /**Returns mobs base parry chance */
+        public int getParryChance() { return this.parryChance; }
+    
+    /**Stores mobs base parry damage multiplier */
+    private double parryMultiplier;
+        /**Returns mobs base parry damage multiplier */
+        public double getParryMultiplier() { return this.parryMultiplier; }
+
+    /**
+     * Determines if mob is used to give quests.
+     * If true, mob AI is turned off
+     */
+    private Boolean canGiveQuests;
+        /**@return True if mob can give quests */
+        public Boolean canGiveQuests() { return this.canGiveQuests; }
+
+    /**
+     * Determines if mob is herculean level 
+     * If true, mob recieves additional bonuses to attributes
+     * and has unique name plate
+     */
+    private Boolean isHerculean;
+        /**Returns true if mob is herculean */
+        public Boolean isHerculean() { return this.isHerculean; }
+        /**Sets mobs herculean field */
+        public void setHerculean(Boolean b) { this.isHerculean = b; }
+
+    /**
+     * Determines if mob can be spawned outside of boss interface
+     * Should only be used on boss mobs in a dungeon
+     */
+    private Boolean isBossLocked;
+        /**@return True if mob is boss locked */
+        public Boolean isBossLocked() { return this.isBossLocked; }
+
     /**
      * Constructor and decoder for MythicMobs
      * @param file MM file i.e. SkeletonKing.yml
@@ -519,8 +578,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.config = mc;
         this.file = file;
         this.internalName = internalName;
-
-        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Loading Mythic Mob: " + this.internalName);
 
         this.strMobType = mc.getString("Type", this.strMobType);
         this.strMobType = mc.getString("MobType", this.strMobType);
@@ -547,9 +604,15 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         if(strDisplayName != null) {
             this.displayName = strDisplayName;
         }
+
+        try{
+            this.isPassive = MythicEntity.isPassive(MythicEntityType.valueOf(this.strMobType));
+        } catch(Exception ex) {
+            this.isPassive = true;
+        }
         
         //Handling extra mob effects
-        this.health = mc.getDouble("Health");
+        this.health = mc.getDouble("Health", 0.0D);
         this.damage = mc.getDouble("Damage", -1.0D);
         this.armor = mc.getDouble("Armor");
         this.armor = mc.getDouble("Armour", this.armor);
@@ -560,9 +623,17 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         String rider = mc.getString("Rider", null);
         rider = mc.getString("Passenger", rider);
         this.rider = Optional.ofNullable(rider);
+        
+        //Combat mechanics
+        this.criticalChance = mc.getInteger("CriticalChance", 2);
+        this.criticalChance = mc.getInteger("CritChance", this.criticalChance);
+        this.criticalMultiplier = mc.getDouble("CriticalMultiplier", 1.2D);
+        this.criticalMultiplier = mc.getDouble("CritMultiplier", this.criticalMultiplier);
+        this.parryChance = mc.getInteger("ParryChance", 0);
+        this.parryMultiplier = mc.getDouble("ParryMutliplier", 0.95D);
 
         //Options handling
-        this.optionDespawn = mc.getBoolean("Despawn");
+        this.optionDespawn = mc.getBoolean("Despawn", true);
         this.optionDespawn = mc.getBoolean("Options.Despawn", this.optionDespawn);
         this.optionPersistent = mc.getBoolean("Persistent", false);
         this.optionPersistent = mc.getBoolean("Options.Persistent", this.optionPersistent);
@@ -570,7 +641,6 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.attrMovementSpeed = mc.getDouble("Options.MovementSpeed", 0.0D);
         this.attrKnockbackResist = mc.getDouble("Options.KnockbackResistance", 0.0D);
         this.attrFollowRange = mc.getDouble("Options.FollowRange", 0.0D);
-        this.attrAttackSpeed = mc.getDouble("Options.AttackSpeed", 0.0D);
         this.optionGlowing = mc.getBoolean("Options.Glowing", false);
         this.optionCollidable = mc.getBoolean("Options.Collidable", true);
         this.optionNoGravity = mc.getBoolean("Options.NoGravity", false);
@@ -606,6 +676,7 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.tropicalFishPatternColor = mc.getString("Options.PatternColor", "yellow");
         //Slime options
         this.slimeSize = mc.getInteger("Options.SlimeSize", 8);
+        this.preventSlimeSplit = mc.getBoolean("Options.PreventSlimeSplit", true);
         //Ageable option
         this.isAdult = mc.getBoolean("Options.Adult", true);
         this.ageLock = mc.getBoolean("Options.AgeLock", false);
@@ -614,39 +685,15 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         //Anger options
         this.angry = mc.getBoolean("Options.Angry", false);
         //PotionEffect handling
-        this.potionEffects = mc.getStringList("PotionEffects");
-        
-        //Boss Bar Handling
-        this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
-        this.bossBarTitle = mc.getString("BossBar.Title", (this.displayName == null) ? null : this.displayName.toString());
-        this.bossBarRange = mc.getInteger("BossBar.Range", 64);
-        this.bossBarRangeSq = (int)Math.pow(this.bossBarRange, 2.0D);
-        String bossBarColor = mc.getString("BossBar.Color", "WHITE");
-        String bossBarStyle = mc.getString("BossBar.Style", "SOLID");
-        try {
-            this.bossBarColor = AbstractBarColor.getBarColor(bossBarColor);
-        } catch (Exception ex) {
-            this.bossBarColor = AbstractBarColor.getBarColor("WHITE");
+        this.potionEffects = mc.getStringList("Options.PotionEffects");
+        //Villager options
+        if(this.strMobType.equalsIgnoreCase("Villager")) {
+            this.villagerType = mc.getString("Options.VillagerType");
         }
-        try {
-            this.bossBarStyle = AbstractBarStyle.getBarStyle(bossBarStyle);
-        } catch (Exception ex) {
-            this.bossBarStyle = AbstractBarStyle.getBarStyle("SOLID");
-        }
-        this.bossBarCreateFog = mc.getBoolean("BossBar.CreateFog", false);
-        this.bossBarDarkenSky = mc.getBoolean("BossBar.DarkenSky", false);
-        this.bossBarPlayMusic = mc.getBoolean("BossBar.PlayMusic", false);
-        this.usesHealthBar = Boolean.valueOf(mc.getBoolean("HealthBar.Enabled", false));
+        //Ender crystal options
+        this.isShowingBottom = mc.getBoolean("Options.ShowingBottom", false);
 
-        //Mob Skill handling
-        //TODO: Load sword skills from naming convetion and apply to mob.
-        this.skills = mc.getStringList("Skills");
-
-        //Loading mob faction details.
-        this.faction = mc.getString("Faction", null);
-        this.factionTargets = mc.getStringList("Target");
-
-        //Options
+        //More Options
         this.maxAttackRange = mc.getInteger("Options.MaxAttackRange", 64);
         this.maxAttackableRange = mc.getInteger("Options.MaxCombatRange", 256);
         this.maxAttackableRange = mc.getInteger("Options.MaxAttackableRange", this.maxAttackableRange);
@@ -662,20 +709,75 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.preventItemPickup = Boolean.valueOf(mc.getBoolean("Options.PreventItemPickup", false));
         this.preventMobKillDrops = Boolean.valueOf(mc.getBoolean("Options.PreventMobKillDrops", false));
         this.passthroughDamage = Boolean.valueOf(mc.getBoolean("Options.PassthroughDamage", false));
+        this.usesHealthBar = Boolean.valueOf(mc.getBoolean("Options.HealthBar", true));
+
+        /**
+         * Quest options
+         * If mob is a quest giver they cannot move, are safe between reloads, and are invincible
+         */
+        this.canGiveQuests = mc.getBoolean("Options.CanGiveQuests", false);
+        if(this.canGiveQuests) { 
+            this.optionNoAI = true;
+            this.optionPersistent = true;
+            this.optionInvincible = true;
+            this.usesHealthBar = false;
+        }
+
+        this.isHerculean = mc.getBoolean("Options.Herculean");
+        
+        //Boss Bar Handling
+        this.useBossBar = mc.getBoolean("BossBar.Enabled", false);
+        this.bossBarTitle = mc.getString("BossBar.Title", (this.displayName == null) ? null : this.displayName.toString());
+        this.bossBarRange = mc.getInteger("BossBar.Range", 64);
+        this.bossBarRangeSq = (int)Math.pow(this.bossBarRange, 2.0D);
+        String bossBarColor = mc.getString("BossBar.Color", "WHITE");
+        String bossBarStyle = mc.getString("BossBar.Style", "SOLID");
+        try {
+            this.bossBarColor = BarColor.valueOf(bossBarColor);
+        } catch (Exception ex) {
+            this.bossBarColor = BarColor.WHITE;
+        }
+        try {
+            this.bossBarStyle = BarStyle.valueOf(bossBarStyle);
+        } catch (Exception ex) {
+            this.bossBarStyle = BarStyle.SOLID;
+        }
+        this.bossBarCreateFog = mc.getBoolean("BossBar.CreateFog", false);
+        this.bossBarDarkenSky = mc.getBoolean("BossBar.DarkenSky", false);
+        this.bossBarPlayMusic = mc.getBoolean("BossBar.PlayMusic", false);
+
+        //Boss Mob Handling
+        this.isBossLocked = mc.getBoolean("Boss.IsBossLocked", false);
+        
+
+        //Mob Skill handling
+        //TODO: Load sword skills from naming convetion and apply to mob.
+        this.skills = mc.getStringList("Skills");
+
+        //Loading mob faction details.
+        this.faction = mc.getString("Faction", null);
+        this.factionTargets = mc.getStringList("Target");
+        
         this.aiGSelectors = mc.getStringList("AIGoalSelectors");
         this.aiTSelectors = mc.getStringList("AITargetSelectors");
 
         //Drops, droptables, killmessages
         this.drops = mc.getStringList("Drops");
-        /**Passing to drop table constructor.
+        /**
+         * Passing to drop table constructor.
          * FILE NAMES SHOULD MATCH.
          */
-        if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(this.drops.get(0))) {
-            //Check if Custom drop table loaded from file.
-            this.dropTable = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(this.drops.get(0));
-        } else {
-            this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+        try {
+            if(SwordCraftOnline.getPluginInstance().getDropManager().isInDropTable(this.drops.get(0))) {
+                //Check if Custom drop table loaded from file.
+                this.dropTable = SwordCraftOnline.getPluginInstance().getDropManager().getDropTable(this.drops.get(0));
+            } else {
+                this.dropTable = new DropTable(this.file, "Mob:" + this.internalName, this.drops);
+            }
+        } catch(IndexOutOfBoundsException ex) {
+            this.dropTable = null;
         }
+
         this.equipment = mc.getStringList("Equipment");
         List<String> killMessages = mc.getStringList("KillMessages");
         if(killMessages != null && killMessages.size() > 0) {
@@ -696,29 +798,28 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         this.lvlModAttackSpeed = mc.getDouble("LevelModifiers.AttackSpeed", -1.0D);
         try {
             if(this.lvlModDamage < 0.0D) {
-                //TODO: Adjust to be edited from main config?
-                this.lvlModDamage = this.damage * 2.0D;
+                this.lvlModDamage = this.damage / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
         try {
             if(this.lvlModHealth < 0.0D) {
-                this.lvlModHealth = this.health * 2.0D;
+                this.lvlModHealth = this.health / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
         try {
             if(this.lvlModArmor < 0.0D) {
-                this.lvlModArmor = this.armor * 2.0D;
+                this.lvlModArmor = this.armor / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
         try {
             if(this.lvlModKBR < 0.0D) {
-                this.lvlModKBR = 1.0D;
+                this.lvlModKBR = this.attrKnockbackResist / 5.0D;
             }
         } catch(Exception ex) {
             ex.printStackTrace();
@@ -729,8 +830,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         String strSpawnVelocityX = mc.getString("SpawnModifiers.VelocityX", "0");
         String strSpawnVelocityY = mc.getString("SpawnModifiers.VelocityY", "0");
         String strSpawnVelocityZ = mc.getString("SpawnModifiers.VelocityZ", "0");
-        if(strSpawnVelocityX.contains("to")) {
-            String[] split = strSpawnVelocityX.split("to");
+        if(strSpawnVelocityX.contains("-")) {
+            String[] split = strSpawnVelocityX.split("-");
             try {
                 this.spawnVelocityX = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityXMax = Double.valueOf(split[1]).doubleValue();
@@ -747,8 +848,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                 SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid X Velocity Modifier.");
             }
         }
-        if(strSpawnVelocityY.contains("to")) {
-            String[] split = strSpawnVelocityY.split("to");
+        if(strSpawnVelocityY.contains("-")) {
+            String[] split = strSpawnVelocityY.split("-");
             try {
                 this.spawnVelocityY = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityYMax = Double.valueOf(split[1]).doubleValue();
@@ -765,8 +866,8 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                 SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Invalid Y Velocity Modifier.");
             }
         }
-        if(strSpawnVelocityZ.contains("to")) {
-            String[] split = strSpawnVelocityZ.split("to");
+        if(strSpawnVelocityZ.contains("-")) {
+            String[] split = strSpawnVelocityZ.split("-");
             try {
                 this.spawnVelocityZ = Double.valueOf(split[0]).doubleValue();
                 this.spawnVelocityZMax = Double.valueOf(split[1]).doubleValue();
@@ -800,14 +901,57 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
         } else {
             return null;
         }
-        ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level);
+        boolean nightwave = SwordCraftOnline.getPluginInstance().getSpawnerManager().isNightwave();
+        if(nightwave) { level *= 2; }
+
+        if(this.isHerculean) { level += 10; }
+
+        ActiveMob am = new ActiveMob(e.getUniqueId(), BukkitAdapter.adapt(e), this, level, nightwave);
         SwordCraftOnline.getPluginInstance().getMobManager().registerActiveMob(am);
         
         //Applying all options.
+        applyHerculeanEffects();
         am = applySkills(am);
         am = applyMobOptions(am, level);
         am = applyMobVolatileOptions(am);
         am = applySpawnModifiers(am);
+        am = applyDisplayName(am, level);
+
+        if(am.duringNightwave()) {
+            SmokeEffect effect = (SmokeEffect)SwordCraftOnline.getEffectManager().getEffectByClassName("Smoke");
+            effect.setEntity(e);
+            effect.particles = 20;
+            effect.start();
+        }
+
+        return am;
+    }
+
+    /**Mob options modified if mob is herculean level */
+    public void applyHerculeanEffects() {
+        if(this.isHerculean) {
+            this.damage *= 1.5;
+            this.armor *= 2;
+            this.attrAttackSpeed *= 1.2;
+        }
+    }
+
+    /**Applies any name modifiers. Color, healthbar, etc. */
+    public ActiveMob applyDisplayName(ActiveMob am, int level) {
+        if(!SwordCraftOnline.getSCOConfig().healthBarEnabled()) { return am; }
+        if(!this.usesHealthBar) { return am; }
+
+        Entity e = am.getEntity().getBukkitEntity();
+        if(am.getEntity().isLiving()) {
+            am.setHealthBar(new HealthBar(am));
+            LivingEntity asLiving = (LivingEntity)e;
+            
+            String name = "";
+            if(getDisplayName() != null) {
+                name = getDisplayName();
+            }
+            asLiving.setCustomName(getDisplayColor(level) + "" + name + am.getHealthBar().getHealthBar());
+        }
         return am;
     }
 
@@ -863,11 +1007,13 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
                     health += this.lvlModHealth * (level - 1);
                 }
                 try {
-                    double fhealth = Math.ceil(health);
+                    double fhealth = Math.floor(health);
                     asLiving.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(fhealth);
                     asLiving.setHealth(fhealth);
                 } catch(IllegalArgumentException ex) {
-                    ex.printStackTrace();
+                    SwordCraftOnline.logWarning("Illegal health argument in: " + this.internalName);
+                    asLiving.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2048);
+                    asLiving.setHealth(2048);
                 }
             }
 
@@ -1073,6 +1219,23 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
             if(getDisplayName() != null) {
                 asLiving.setCustomName(am.getDisplayName());
             }
+            /**
+             * Ender crystal options
+             */
+            if(e instanceof EnderCrystal) {
+                ((EnderCrystal)e).setShowingBottom(this.isShowingBottom);
+            }
+
+            //If villager has profession set it. If not nitwit
+            if(e instanceof Villager) {
+                if((!this.villagerType.isEmpty())) {
+                    try {
+                        ((Villager)e).setProfession(Profession.valueOf(this.villagerType));
+                    } catch(IllegalArgumentException ex) {
+                        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Attempted to load invalid villager modifier.");
+                    }
+                }
+            }
         }
 
         if(this.optionInvincible) { e.setInvulnerable(true); }
@@ -1156,16 +1319,21 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
     }
 
     /**Gets boss bar from config */
-    public Optional<AbstractBossBar> getBossBar() {
+    public Optional<BossBar> getBossBar() {
         if(!this.useBossBar) {
             return Optional.empty();
         }
-        AbstractBossBar bar = SwordCraftOnline.getPluginInstance().server().createBossBar(" ", this.bossBarColor, this.bossBarStyle);
-        bar.setProgress(1.0D);
-        if(this.bossBarCreateFog) { bar.setCreateFog(true); }
-        if(this.bossBarDarkenSky) { bar.setDarkenSky(true); }
-        if(this.bossBarPlayMusic) { bar.setPlayBossMusic(true); }
-        return Optional.of(bar);
+        try{
+            BossBar bar = Bukkit.getServer().createBossBar(" ", this.bossBarColor, this.bossBarStyle);
+            bar.setProgress(1.0D);
+            if(this.bossBarCreateFog) { bar.addFlag(BarFlag.CREATE_FOG); }
+            if(this.bossBarDarkenSky) { bar.addFlag(BarFlag.DARKEN_SKY); }
+            if(this.bossBarPlayMusic) { bar.addFlag(BarFlag.PLAY_BOSS_MUSIC); }
+            return Optional.of(bar);
+        } catch(NullPointerException ex) {
+            SwordCraftOnline.logWarning("Attempted to load invalid boss bar on " + this.internalName);
+        }
+        return Optional.empty();
     }
 
     public String getBossBarTitle() {
@@ -1309,5 +1477,29 @@ public class MythicMob implements Comparable<MythicMob>, IDamageModifier {
 
     public boolean getShowNameOnDamaged() {
         return this.showNameOnDamage;
+    }
+
+    /**Converts level to chat color */
+    public ChatColor getDisplayColor(int level) {
+        //If mob is herculean we disregard level
+        if(this.isHerculean) {
+            return ChatColor.DARK_PURPLE;
+        }
+        
+        if(level > 0 && level <= 24) {
+            return ChatColor.WHITE; 
+        } else if(level >= 25  && level <= 49) {
+            return ChatColor.GREEN;
+        } else if(level >= 50 && level <= 74) {
+            return ChatColor.BLUE;
+        } else if(level >= 75 && level <= 99) {
+            return ChatColor.LIGHT_PURPLE;
+        } else if(level >= 100 && level <= 149) {
+            return ChatColor.AQUA;
+        } else if(level >= 150) {
+            return ChatColor.GOLD;
+        } else {
+            return ChatColor.WHITE;
+        }
     }
 }

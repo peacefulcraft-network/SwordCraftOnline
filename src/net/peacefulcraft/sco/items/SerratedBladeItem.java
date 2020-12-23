@@ -14,66 +14,15 @@ import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 /**
  * Common Serrated Blade - Quartz Increases players critical hit chance.
  */
 public class SerratedBladeItem implements SwordSkillProvider {
 
-  private int increase;
-
-  private Integer quantity;
-    @Override
-    public Integer getQuantity() {
-      return quantity;
-    }
-    @Override
-    public void setQuantity(Integer quantity) {
-      this.quantity = quantity;
-    }
-
-  private ItemTier tier;
-    @Override
-    public ItemTier[] getAllowedTiers() {
-      return new ItemTier[] {
-          ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE,
-          ItemTier.LEGENDARY, ItemTier.ETHEREAL, ItemTier.GODLIKE
-        };
-    }
-    @Override
-    public ItemTier getTier() {
-      return tier;
-    }
-
-  private int level;
-    @Override
-    public Integer[] getAllowedLevels() {
-      return new Integer[] { 1 };
-    }
-    @Override
-    public Integer getLevel() {
-      return level;
-    }
-
-  public SerratedBladeItem(ItemTier tier, Integer level) {
-    this.tier = tier;
-    this.level = level;
-  }
-
   @Override
-  public SwordSkillType getType() {
-    return SwordSkillType.PASSIVE;
-  }
-
-  @Override
-  public Material getMaterial() {
-    return Material.FLINT;
-  }
-
-  @Override
-  public String getName() {
-    return "Serrated Blade";
-  }
+  public String getName() { return "Serrated Blade"; }
 
   @Override
   public ArrayList<String> getLore() {
@@ -104,19 +53,57 @@ public class SerratedBladeItem implements SwordSkillProvider {
   }
 
   @Override
-  public boolean isDroppable() {
-    return false;
+  public Material getMaterial() { return Material.FLINT; }
+
+  private Integer quantity;
+    @Override
+    public Integer getQuantity() { return quantity; }
+    
+    @Override
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+  private ItemTier tier;
+    @Override
+    public ItemTier[] getAllowedTiers() {
+      return new ItemTier[] {
+          ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE,
+          ItemTier.LEGENDARY, ItemTier.ETHEREAL, ItemTier.GODLIKE
+        };
+    }
+    
+    @Override
+    public ItemTier getTier() { return tier; }
+
+  private int level;
+    @Override
+    public Integer[] getAllowedLevels() { return new Integer[] { 1 }; }
+    
+    @Override
+    public Integer getLevel() { return level; }
+
+    @Override
+    public void setLevel(Integer level) { this.level = level; }
+
+  @Override
+  public boolean isDroppable() { return false; }
+
+  @Override
+  public boolean isMovable() { return true; }
+
+  private int increase;
+
+  public SerratedBladeItem(ItemTier tier, Integer level) {
+    this.tier = tier;
+    this.level = level;
   }
 
   @Override
-  public boolean isMovable() {
-    return true;
-  }
+  public SwordSkillType getType() { return SwordSkillType.PASSIVE; }
 
   @Override
   public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
     SCOPlayer sp = caster.getSwordSkillManager().getSCOPlayer();
-    sp.setCriticalChance(sp.getCriticalChance() + this.increase);
+    sp.addCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
     switch (this.tier) {
       case UNCOMMON:
         return new SerratedBladeSkill(caster, this, 2);

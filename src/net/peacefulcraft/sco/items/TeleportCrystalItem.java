@@ -7,30 +7,9 @@ import org.bukkit.Material;
 import net.md_5.bungee.api.ChatColor;
 
 public class TeleportCrystalItem implements ItemIdentifier {
-  private Integer quantity;
-    @Override
-    public Integer getQuantity() {
-      return quantity;
-    }
-    @Override
-    public void setQuantity(Integer quantity) {
-      this.quantity = quantity;
-    }
-
-  public TeleportCrystalItem(ItemTier tier, Integer quantity) {
-    // Tier is static so it is just there for static constructor invocation in ItemIdentifier
-    this.quantity = quantity;
-  }
-  
-  @Override
-  public Material getMaterial() {
-    return Material.DIAMOND;
-  }
 
   @Override
-  public String getName() {
-    return "Teleport Crystal";
-  }
+  public String getName() { return "Teleport Crystal"; }
 
   @Override
   public ArrayList<String> getLore() {
@@ -40,22 +19,30 @@ public class TeleportCrystalItem implements ItemIdentifier {
   }
 
   @Override
-  public boolean isDroppable() {
-    return false;
-  }
+  public Material getMaterial() { return Material.DIAMOND; }
+
+  private Integer quantity;
+    @Override
+    public Integer getQuantity() { return quantity; }
+
+    @Override
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
   @Override
-  public boolean isMovable() {
-    return true;
-  }
+  public ItemTier[] getAllowedTiers() { return new ItemTier[] { ItemTier.COMMON }; }
 
   @Override
-  public ItemTier[] getAllowedTiers() {
-    return new ItemTier[] { ItemTier.COMMON };
-  }
+  public ItemTier getTier() { return ItemTier.COMMON; }
 
   @Override
-  public ItemTier getTier() {
-    return ItemTier.COMMON;
+  public boolean isDroppable() { return false; }
+
+  @Override
+  public boolean isMovable() { return true; }
+
+  public TeleportCrystalItem(ItemTier tier, Integer quantity) {
+    // Tier is static so it is just there for static constructor invocation in ItemIdentifier
+    this.quantity = quantity;
   }
+
 }

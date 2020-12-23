@@ -1,7 +1,9 @@
 package net.peacefulcraft.sco.particles;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -11,7 +13,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.particles.util.DynamicLocation;
 
 public abstract class Effect implements Runnable {
@@ -192,6 +195,11 @@ public abstract class Effect implements Runnable {
     public boolean disappearWithTargetEntity = false;
 
     private boolean done = false;
+
+    /**
+     * Used to track reduced effects
+     */
+    private HashMap<UUID, SCOPlayer> reducedEffectMap = new HashMap<>();
 
     public Effect(EffectManager effectManager) {
         if (effectManager == null) {
@@ -425,6 +433,28 @@ public abstract class Effect implements Runnable {
             targetPlayers = new ArrayList<Player>();
             targetPlayers.add(targetPlayer);
         }
+
+        //Logic to display limited or no particles on player
+        for(Player p : targetPlayers) {
+            SCOPlayer s = GameManager.findSCOPlayer(p);
+            //If player is not in the game we don't send packets to them
+            if(s == null) { targetPlayers.remove(p); }
+            //If player displaytype is none we don't send packets to them
+            if(s.getDisplayType().equals(DisplayType.NONE)) { targetPlayers.remove(p); }
+            //If player displaytype is reduced we record them and send every other particle effect
+            if(s.getDisplayType().equals(DisplayType.REDUCED)) {
+                UUID id = p.getUniqueId();
+                //DisplayType reduced is not in map, remove from effect.
+                if(reducedEffectMap.get(id) == null) {
+                    reducedEffectMap.put(id, s);
+                    targetPlayers.remove(p);
+                } else {
+                    //Remove from effect map and allow effect to be played
+                    reducedEffectMap.remove(id);
+                }
+            }
+        }
+
         effectManager.display(particle, location, particleOffsetX, particleOffsetY, particleOffsetZ, speed, amount,
                 particleSize, color, material, materialData, visibleRange, targetPlayers);
     }

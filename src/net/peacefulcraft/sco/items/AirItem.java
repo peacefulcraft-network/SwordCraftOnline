@@ -6,46 +6,29 @@ import org.bukkit.Material;
 
 public class AirItem implements ItemIdentifier {
 
-	public AirItem(ItemTier tier, Integer quantity) {}
+	@Override
+	public String getName() { return ""; }
 
 	@Override
-	public Material getMaterial() {
-		return Material.AIR;
-	}
+	public ArrayList<String> getLore() { return new ArrayList<String>(); }
 
 	@Override
-	public ItemTier[] getAllowedTiers() {
-		return new ItemTier[] { ItemTier.COMMON };
-	}
+	public Material getMaterial() { return Material.AIR; }
 
 	@Override
-	public ItemTier getTier() {
-		return ItemTier.COMMON;
-	}
+	public Integer getQuantity() { return 1; }
 
 	@Override
-	public String getName() {
-		return "Air";
-	}
+	public void setQuantity(Integer quantity) {}
 
 	@Override
-	public ArrayList<String> getLore() {
-		return new ArrayList<String>();
-	}
+	public ItemTier[] getAllowedTiers() { return new ItemTier[] { ItemTier.COMMON }; }
 
 	@Override
-	public Integer getQuantity() {
-		return 1;
-	}
+	public ItemTier getTier() { return ItemTier.COMMON; }
 
 	@Override
-	public void setQuantity(Integer quantity) {
-	}
-
-	@Override
-	public boolean isDroppable() {
-		return true;
-	}
+	public boolean isDroppable() { return true; }
 
 	@Override
 	public boolean isMovable() {
@@ -55,5 +38,6 @@ public class AirItem implements ItemIdentifier {
 		 */
 		return true;
 	}
-	
+
+	public AirItem(ItemTier tier, Integer quantity) {}
 }

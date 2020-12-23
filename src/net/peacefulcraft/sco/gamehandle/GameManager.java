@@ -1,13 +1,16 @@
 package net.peacefulcraft.sco.gamehandle;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
@@ -16,9 +19,6 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
@@ -42,7 +42,7 @@ public class GameManager {
 	 * @param playerRegistryId
 	 */
 	public void preProcessPlayerJoin(UUID uuid, long playerRegistryId) throws RuntimeException {
-		if (findSCOPlayerByUUID(uuid) != null)
+		if (players.containsKey(uuid))
 			throw new RuntimeException("Command executor is already in SCO");
 
 		try {
@@ -111,14 +111,10 @@ public class GameManager {
 	}
 	
 	public static SCOPlayer findSCOPlayer(Player p) {
-		return findSCOPlayerByUUID(p.getUniqueId());
+		return players.get(p.getUniqueId());
 	}
 	
-	public static SCOPlayer findSCOPlayerByUUID(UUID uuid) {
-		return players.get(uuid);
-	}
-	
-	public static SCOPlayer findSCOPlayerByName(String name) {
+	public static SCOPlayer findSCOPlayer(String name) {
 		for(SCOPlayer p : players.values()) {
 			if(p.getName().equalsIgnoreCase(name)) {
 				return p;
@@ -127,17 +123,32 @@ public class GameManager {
 		return null;
 	}
 
-	public Set<AbstractPlayer> getPlayersInRangeSq(AbstractLocation location, int rangeSq) {
-		Set<AbstractPlayer> inRange = new HashSet<>();
+	public static List<SCOPlayer> findSCOPlayers(List<Player> lis) {
+        List<SCOPlayer> output = new ArrayList<>();
+        for(Player p : lis) {
+            SCOPlayer s = GameManager.findSCOPlayer(p);
+			if(s == null) { continue; }
+			output.add(s);
+		}
+		return output;
+    }
+
+	public Set<Player> getPlayersInRangeSq(Location location, int rangeSq) {
+		Set<Player> inRange = new HashSet<>();
 		try {
 			for(SCOPlayer s : players.values()) {
-				if(s.getPlayer().getLocation().distanceSquared(BukkitAdapter.adapt(location)) <= rangeSq) {
-					inRange.add(BukkitAdapter.adapt(s.getPlayer()));
+				if(s.getPlayer().getLocation().distanceSquared(location) <= rangeSq) {
+					inRange.add(s.getPlayer());
 				}
 			}
 			return inRange;
 		} catch(Exception ex) {
 			return Collections.emptySet();
 		}
+	}
+
+	public static boolean isDay() {
+		long time = SwordCraftOnline.getPluginInstance().getServer().getWorld("SwordCraftOnline").getTime();
+		return time < 12300 || time > 23850;
 	}
 }

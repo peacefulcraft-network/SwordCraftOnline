@@ -26,6 +26,11 @@ public interface SwordSkillProvider extends ItemIdentifier, CustomDataHolder {
   public abstract Integer getLevel();
 
   /**
+   * @param level Sword skill level
+   */
+  public abstract void setLevel(Integer level);
+
+  /**
    * Intantiates the associated SwordSkill and registers it to the casters SwordSkillManager.
    * @return The registered SwordSkill.
    */

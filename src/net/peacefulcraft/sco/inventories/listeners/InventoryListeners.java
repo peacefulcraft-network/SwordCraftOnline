@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,15 +18,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SCOInventory;
-import net.peacefulcraft.sco.items.AirItem;
-import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.items.ItemTier;
 
 public class InventoryListeners implements Listener {
   
@@ -66,8 +61,8 @@ public class InventoryListeners implements Listener {
   public void onInventoryClick(InventoryClickEvent ev) {
     ItemStack clickedItem = ev.getCurrentItem();
     ItemStack cursorItem = ev.getCursor();
-    ItemIdentifier clickedItemId = this.resolveItemIdentifier(clickedItem);
-    ItemIdentifier cursorItemId = this.resolveItemIdentifier(cursorItem);
+    ItemIdentifier clickedItemId = ItemIdentifier.resolveItemIdentifier(clickedItem);
+    ItemIdentifier cursorItemId = ItemIdentifier.resolveItemIdentifier(cursorItem);
 
     // Ignore vanilla items
     if (clickedItemId == null && cursorItemId == null) { return; }
@@ -103,7 +98,7 @@ public class InventoryListeners implements Listener {
   public void onInventoryDrag(InventoryDragEvent ev) {
     HashMap<Integer, ItemIdentifier> itemIdentifiers = new HashMap<Integer, ItemIdentifier>();
     for(Entry<Integer, ItemStack> slot : ev.getNewItems().entrySet()) {
-      ItemIdentifier itemId = this.resolveItemIdentifier(slot.getValue());
+      ItemIdentifier itemId = ItemIdentifier.resolveItemIdentifier(slot.getValue());
       itemIdentifiers.put(slot.getKey(), itemId);
 
       if (!itemId.isMovable()) { ev.setCancelled(true); }
@@ -156,7 +151,7 @@ public class InventoryListeners implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPlayerDropItemEvent(PlayerDropItemEvent ev) {
 
-    ItemIdentifier itemId = this.resolveItemIdentifier(ev.getItemDrop().getItemStack());
+    ItemIdentifier itemId = ItemIdentifier.resolveItemIdentifier(ev.getItemDrop().getItemStack());
     if (!itemId.isDroppable()) {
       ev.setCancelled(true);
       return;
@@ -185,40 +180,5 @@ public class InventoryListeners implements Listener {
   public void unregisterPlayerInventoryView(SCOPlayer s, InventoryView v) {
     this.activeViews.remove(v);
     this.inventoryMap.remove(s.getPlayerInventory().getInventory());
-  }
-
-  private ItemIdentifier resolveItemIdentifier(ItemStack item) {
-    if (item != null && item.getType() != Material.AIR) {
-      NBTItem nbti = new NBTItem(item);
-      if (nbti.hasKey("identifier")){
-        if (ItemIdentifier.itemExists(nbti.getString("identifier"))) {
-          String name = nbti.getString("identifier");
-          ItemTier tier = ItemTier.COMMON;
-          if (nbti.hasKey("tier")) {
-            try {
-              tier = ItemTier.valueOf(nbti.getString("tier"));
-            } catch(IllegalArgumentException ex) {
-              SwordCraftOnline.logWarning("Item " + name + " had invalid ItemTier " + nbti.getString("tier") + " falling back to COMMON");
-            }
-          } else {
-            SwordCraftOnline.logWarning("Item " + name + " has no ItemTier encoded. Assuming COMMON");
-          }
-
-          ItemIdentifier identifier = ItemIdentifier.generateIdentifier(name, tier, item.getAmount());
-          if (identifier instanceof CustomDataHolder) {
-            ((CustomDataHolder) identifier).parseCustomItemData(item);
-          }
-
-          return identifier;
-
-        } else {
-          SwordCraftOnline.logWarning("Found unregonizable item with identifier " + nbti.getString("identifier"));
-        }
-      } else {
-        SwordCraftOnline.logWarning("Found unrecognizable item of material " + item.getType() + " and display name " + item.getItemMeta().getDisplayName());
-      }
-    }
-
-    return new AirItem(ItemTier.COMMON, 0);
   }
 }

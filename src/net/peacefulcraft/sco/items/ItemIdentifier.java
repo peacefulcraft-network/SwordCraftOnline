@@ -19,6 +19,19 @@ import net.peacefulcraft.sco.SwordCraftOnline;
  */
 public interface ItemIdentifier {
 
+    /**
+   * @return The name of the item. Should be the name of the ItemIdentifier class
+   *         with appropriate spacing. Spaces are .replaceAll()'d to match items
+   *         in game with their ItemIdentifier class.
+   */
+  public abstract String getName();
+
+
+  /**
+   * @return The lore to be applied to the item.
+   */
+  public abstract ArrayList<String> getLore();
+
   /**
    * @return The Minecraft Material for the item.
    */
@@ -33,18 +46,6 @@ public interface ItemIdentifier {
    * @return Sword Skill ItemTier
    */
   public abstract ItemTier getTier();
-
-  /**
-   * @return The name of the item. Should be the name of the ItemIdentifier class
-   *         with appropriate spacing. Spaces are .replaceAll()'d to match items
-   *         in game with their ItemIdentifier class.
-   */
-  public abstract String getName();
-
-  /**
-   * @return The lore to be applied to the item.
-   */
-  public abstract ArrayList<String> getLore();
 
   /**
    * @return The number of items this identifier represents
@@ -182,5 +183,45 @@ public interface ItemIdentifier {
     nbti.setString("tier", tier.toString());
 
     return nbti.getItem();
+  }
+
+  /**
+   * Translate an ItemStack to it's item identifier with custom data parsed out of the item.
+   * @param item The ItemStack to pasre
+   * @return The coresponding ItemIdentifier with NBT values read from the ItemStack. Returns AirItem if unresolvable.
+   */
+  public static ItemIdentifier resolveItemIdentifier(ItemStack item) {
+    if (item != null && item.getType() != Material.AIR) {
+      NBTItem nbti = new NBTItem(item);
+      if (nbti.hasKey("identifier")){
+        if (ItemIdentifier.itemExists(nbti.getString("identifier"))) {
+          String name = nbti.getString("identifier");
+          ItemTier tier = ItemTier.COMMON;
+          if (nbti.hasKey("tier")) {
+            try {
+              tier = ItemTier.valueOf(nbti.getString("tier"));
+            } catch(IllegalArgumentException ex) {
+              SwordCraftOnline.logWarning("Item " + name + " had invalid ItemTier " + nbti.getString("tier") + " falling back to COMMON");
+            }
+          } else {
+            SwordCraftOnline.logWarning("Item " + name + " has no ItemTier encoded. Assuming COMMON");
+          }
+
+          ItemIdentifier identifier = ItemIdentifier.generateIdentifier(name, tier, item.getAmount());
+          if (identifier instanceof CustomDataHolder) {
+            ((CustomDataHolder) identifier).parseCustomItemData(item);
+          }
+
+          return identifier;
+
+        } else {
+          SwordCraftOnline.logWarning("Found unregonizable item with identifier " + nbti.getString("identifier"));
+        }
+      } else {
+        SwordCraftOnline.logWarning("Found unrecognizable item of material " + item.getType() + " and display name " + item.getItemMeta().getDisplayName());
+      }
+    }
+
+    return new AirItem(ItemTier.COMMON, 0);
   }
 }

@@ -6,30 +6,8 @@ import org.bukkit.Material;
 
 public class GoldCoinItem implements ItemIdentifier {
 
-  private Integer quantity;
-    @Override
-    public Integer getQuantity() {
-      return quantity;
-    }
-    @Override
-    public void setQuantity(Integer quantity) {
-      this.quantity = quantity;
-    }
-
-  public GoldCoinItem(ItemTier tier, Integer quantity) {
-    // Tier is static so it is just there for static constructor invocation in ItemIdentifier
-    this.quantity = quantity;
-  }
-
   @Override
-  public Material getMaterial() {
-    return Material.GOLD_NUGGET;
-  }
-
-  @Override
-  public String getName() {
-    return "Gold Coin";
-  }
+  public String getName() { return "Gold Coin"; }
 
   @Override
   public ArrayList<String> getLore() {
@@ -39,22 +17,29 @@ public class GoldCoinItem implements ItemIdentifier {
   }
 
   @Override
-  public boolean isDroppable() {
-    return false;
-  }
+  public Material getMaterial() { return Material.GOLD_NUGGET; }
 
   @Override
-  public boolean isMovable() {
-    return true;
-  }
+  public ItemTier[] getAllowedTiers() { return new ItemTier[] { ItemTier.COMMON }; }
 
   @Override
-  public ItemTier[] getAllowedTiers() {
-    return new ItemTier[] { ItemTier.COMMON };
-  }
+  public ItemTier getTier() { return ItemTier.COMMON; }
+
+  private Integer quantity;
+    @Override
+    public Integer getQuantity() { return quantity; }
+
+    @Override
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
   @Override
-  public ItemTier getTier() {
-    return ItemTier.COMMON;
+  public boolean isDroppable() { return false; }
+
+  @Override
+  public boolean isMovable() { return true; }
+
+  public GoldCoinItem(ItemTier tier, Integer quantity) {
+    // Tier is static so it is just there for static constructor invocation in ItemIdentifier
+    this.quantity = quantity;
   }
 }

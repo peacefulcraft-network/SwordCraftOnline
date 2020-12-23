@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.items;
 
+import java.util.ArrayList;
+
 import net.md_5.bungee.api.ChatColor;
 
 public enum ItemTier
@@ -30,26 +32,66 @@ public enum ItemTier
 		return getTierColor(this);
 	}
 
-	public static ChatColor getTierColor(String tier) {
-		return getTierColor(ItemTier.valueOf(tier));
-	}
-	
+	/**
+	 * Gets server constant chat colors for item tiers
+	 * @param tier Item tier we encode
+	 * @return Respective Chatcolor of tier
+	 */
 	public static ChatColor getTierColor(ItemTier tier) {
 		switch(tier) {
-		case COMMON:
-			return ChatColor.WHITE;
-		case UNCOMMON:
-			return ChatColor.GREEN;
-		case RARE:
-			return ChatColor.BLUE;
-		case LEGENDARY:
-			return ChatColor.LIGHT_PURPLE;
-		case ETHEREAL:
-			return ChatColor.AQUA;
-		case GODLIKE:
-			return ChatColor.GOLD;
-		default:
+			case COMMON:
+				return ChatColor.WHITE;
+			case UNCOMMON:
+				return ChatColor.GREEN;
+			case RARE:
+				return ChatColor.BLUE;
+			case LEGENDARY:
+				return ChatColor.LIGHT_PURPLE;
+			case ETHEREAL:
+				return ChatColor.AQUA;
+			case GODLIKE:
+				return ChatColor.GOLD;
+			default:
+				return ChatColor.WHITE;
+			}
+	}
+
+	/**
+	 * Gets server constant chat colors for item tiers
+	 * @param tier String of tier we want
+	 * @return Respective chatcolor of tier, white if none found
+	 */
+	public static ChatColor getTierColor(String tier) {
+		try{
+			return getTierColor(ItemTier.valueOf(tier));
+		} catch(IllegalArgumentException ex) {
 			return ChatColor.WHITE;
 		}
+	}
+
+	/**
+	 * Creates base description for item based on tier
+	 * For use on ICustomItems not Sword Skills
+	 * @param tier Tier of item
+	 * @return ArrayList of strings for description of item
+	 */
+	public static ArrayList<String> addDesc(ItemTier tier) {
+		ArrayList<String> desc = new ArrayList<>();
+		ChatColor color = ItemTier.getTierColor(tier);
+		switch(tier) {
+		case COMMON:
+			desc.add(color + "Common Item");
+		break;case UNCOMMON:
+			desc.add(color + "Uncommon Item");
+		break;case RARE:
+			desc.add(color + "Rare Item");
+		break;case LEGENDARY:
+			desc.add(color + "Legendary Item");
+		break;case ETHEREAL:
+			desc.add(color + "Ethereal Item");
+		break;case GODLIKE:
+			desc.add(color + "Godlike Item");
+		}
+		return desc;
 	}
 }

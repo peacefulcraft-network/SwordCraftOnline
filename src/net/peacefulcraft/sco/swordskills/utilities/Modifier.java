@@ -1,42 +1,12 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
-import java.util.List;
-
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
-import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.GameManager;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
-import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 
 /**
  * Class for damage modifiers. Used in calculations of damage in an
  * EntityDamageEvent.
  */
 public class Modifier {
-    /**
-     * Enum to signify how we calculate the modifier.
-     * To subtract use ADD and set to negative
-     * To divide use MULTIPLY and set to a fraction.
-     */
-    public enum MultiplierType{
-        ADD, MULTIPLY;
-        
-        public static MultiplierType get(String s) {
-            if(s == null) { return null; }
-            try{
-                return valueOf(s.toUpperCase());
-            }catch(IllegalArgumentException e) {
-                return null;
-            }
-        }
-    }
 
     /**
      * Enum of effectively all mobs / entities in MC
@@ -67,148 +37,78 @@ public class Modifier {
     ModifierType type;
     /**The amount to modify the damage*/
     double multiplier;
-    /**The type of calculation we do. */
-    MultiplierType mType;
-    /**True if strength, false if weakness */
-    Boolean strength;
+    /**True if damage is incoming, false if outgoing */
+    Boolean incoming;
 
     /**
      * Constructs baseline modifier.
      */
-    public Modifier(ModifierType type, double multiplier, MultiplierType mType, boolean strength) {
+    public Modifier(ModifierType type, double multiplier, boolean incoming) {
         this.type = type;
         this.multiplier = multiplier;
-        this.mType = mType;
-        this.strength = strength;
+        this.incoming = incoming;
     }
 
     /**
      * Constructs modifier from string.
-     * String should be formatted: ZOMBIE-1.2-MULTIPLY
+     * String should be formatted: ZOMBIE-1.2
      * @param strength True if strength, False if weakness
      */
-    public Modifier(String s, boolean strength) {
+    public Modifier(String s, boolean incoming) {
         String[] split = s.split("-");
         this.type = ModifierType.get(split[0]);
         this.multiplier = Double.valueOf(split[1]);
-        this.mType = MultiplierType.get(split[2]);
-        this.strength = strength;
+        this.incoming = incoming;
     }
 
     /**
-     * Calculations done specifically for EntityDamageEvents only
-     * Example: Drowning, explosion, fire, magic(potions), lightning, etc.
-     * Handles creeper explosions.
-     * Only use for incoming damage.
+     * Sets multiplier to given value
+     * @param value Value to be set
      */
-    public double calculate(EntityDamageEvent e) {
-        double d = e.getDamage();
-        Entity ent = e.getEntity();
-
-        //Event is caused by entity
-        if(e.getCause().equals(DamageCause.ENTITY_ATTACK) && e instanceof EntityDamageByEntityEvent) {
-            d = calculateByEntity((EntityDamageByEntityEvent)e);
-        }
-        //Victim is mythic mob
-        if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
-            //Checking if modifier type matches damage type
-            if(this.type.toString().equalsIgnoreCase(e.getCause().toString())) {
-                d = internalCalc(e);
-            }
-        }
-        //Victim is player
-        if(ent instanceof Player && GameManager.findSCOPlayer((Player)ent) != null) {
-            if(this.type.toString().equalsIgnoreCase(e.getCause().toString())) {
-                d = internalCalc(e);
-            }
-        }
-        return d;
+    public void setMultiplier(double value) {
+        this.multiplier = value;
     }
 
     /**
-     * Calculations done specifically for EntityDamageEntity only
+     * @return Value of multiplier
      */
-    private double calculateByEntity(EntityDamageByEntityEvent e) {
-        Entity ent;
-        double d = e.getDamage();
-        if(this.strength) {
-            //Outgoing damage
-            ent = e.getEntity();    
-        } else {
-            //Incoming damage
-            ent = e.getDamager();
-        }
+    public double getMultiplier() {
+        return this.multiplier;
+    }
+    
+    /**
+     * @return Modifiers type
+     */
+    public ModifierType getType() {
+        return this.type;
+    }
 
-        if(ent == null) {
-            SwordCraftOnline.logSevere("Attempted to calculate damage for invalid modifier.");
-        }
-
-        //Victim is mythic mob
-        if(SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().containsKey(ent.getUniqueId())) {
-
-            MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMMDisplay().get(ent.getCustomName());
-            ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMobInstance(ent);
-            Entity amBukkit = am.getEntity().getBukkitEntity();
-
-            //Mob is boss
-            if(mm.usesBossBar() && this.type == ModifierType.BOSS) {
-                d = internalCalc(e);
-            }
-            //Mob matches modifier.type
-            if(amBukkit.getType().equals(EntityType.valueOf(this.type.toString()))) {
-                d = internalCalc(e);
-            }
-        }
-        //Victim is player
-        if(ent instanceof Player && GameManager.findSCOPlayer((Player) ent) != null) {
-            if(this.type == ModifierType.PLAYER) {
-                d = internalCalc(e);
-            }
-        } 
-        return d;
+    public Boolean isIncoming() { 
+        return this.incoming;
     }
 
     /**
-     * Holds internal calculation of modifier and multiplier type.
+     * Clones modifier
+     * @return Copied modifier
      */
-    private double internalCalc(EntityDamageEvent e) {
-        if(this.mType == MultiplierType.MULTIPLY) { return e.getFinalDamage() * this.multiplier; }
-        return e.getFinalDamage() + this.multiplier;
+    public Modifier clone() {
+        return new Modifier(this.type, this.multiplier, this.incoming);
     }
 
     /**
-     * Static method. Checks list for matching modifier and returns damage.
+     * Calculates damage after modifier
+     * @param dam FinalDamage from damage event
+     * @return Calculated damage
      */
-    public static double calculateList(List<Modifier> l, EntityDamageEvent e) {
-        double d = e.getDamage();
-        for(Modifier m : l) {
-            SwordCraftOnline.logDebug(m.getInfo());
-            d = m.calculate(e);
-            if(d != e.getDamage()) { break; }
-        }
-        return d;
-    }
-
-    /**
-     * Static method. Checks players damage modifiers directly.
-     */
-    public static double calculateList(SCOPlayer s, EntityDamageEvent e) {
-        return calculateList(s.getDamageModifiers(), e);
-    }
-
-    /**
-     * Static method. Checks active mobs damage modifiers directly
-     */
-    public static double calculateList(ActiveMob am, EntityDamageEvent e) {
-        return calculateList(am.getDamageModifiers(), e);
+    public double calculate(double dam) {
+        return this.multiplier * dam;
     }
 
     private String getInfo() {
         String s = "[Modifier Info]: ";
         s += "[Modifier Type] " + this.type.toString() + " ";
-        s += "[Modification Type] " + this.mType.toString() + " ";
         s += "[Multiplier] " + String.valueOf(this.multiplier) + " ";
-        s += "[Strength] " + String.valueOf(this.strength);
+        s += "[Incoming] " + String.valueOf(this.incoming);
         return s;
     }
 }

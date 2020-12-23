@@ -3,31 +3,33 @@ package net.peacefulcraft.sco.mythicmobs.mobs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.bukkit.attribute.Attribute;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractPlayer;
-import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.boss.AbstractBossBar;
+import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
+import net.peacefulcraft.sco.quests.Quest;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
-import net.peacefulcraft.sco.swordskills.utilities.IDamage;
-import net.peacefulcraft.sco.swordskills.utilities.IDamageModifier;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 /**
  * Active instance of Mythicmob
  */
-public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
+public class ActiveMob extends ModifierUser implements SwordSkillCaster {
     
     private long aliveTime = 0L;
     
@@ -77,7 +79,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         public Optional<UUID> getOwner() { return this.owner; }
 
     /**Stores mob boss bar if it has one */
-    private Optional<AbstractBossBar> bossBar = Optional.empty();
+    private Optional<BossBar> bossBar = Optional.empty();
 
     private boolean dead = false;
         public void setDead() { this.dead = true; }
@@ -99,8 +101,9 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
     private int noDamageTicks;
         public int getNoDamageTicks() { return this.noDamageTicks; }
 
-    private AbstractEntity newTarget = null;
-        public void setTarget(AbstractEntity ae) { this.newTarget = ae; }
+    /**Active mobs target to follow */
+    private LivingEntity target = null;
+        public LivingEntity getTarget() { return this.target; }
 
     private double lastDamageSkillAmount = 0.0D;
 
@@ -119,20 +122,58 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         public SwordSkillManager getSwordSkillManager() { return this.swordSkillManager; }
 
     /**
-     * Initially copied from MythicMob file. 
-     * Stored again here for dynamic Modifiers based on sword skills as to
-     * not directly edit the Mythic Mob instance.
+     * Active Mobs instance of Health Bar. 
      */
-    private List<Modifier> damageModifiers;
-        public List<Modifier> getDamageModifiers() { return this.damageModifiers; }
-        public void addDamageModifier(Modifier m) { this.damageModifiers.add(m); }
+    private HealthBar healthBar;
+        public HealthBar getHealthBar() { return this.healthBar; }
+        public void setHealthBar(HealthBar b) { this.healthBar = b; }
 
+    /**Determines if mob was spawned during nightwave timeframe */
+    private boolean duringNightwave;
+        public boolean duringNightwave() { return this.duringNightwave; }
+    
+    /**Active mobs damage "dampener" on successful parry */
+    private double parryMultiplier;
+        public double getParryMultiplier() { return this.parryMultiplier; }
+        public void setParryMultiplier(double num) { this.parryMultiplier = num; }
+
+    /** Perm/Persistent location of mob. Used in quest givers*/
+    private Location permLocation;
+        public Location getPermLocation() { return this.permLocation; }
+        public void setPermLocation(Location l) { this.permLocation = l; }
+
+    /**Marks active mob as quest giver */
+    private Boolean canGiveQuests;
+        public Boolean canGiveQuests() { return this.canGiveQuests; }
+
+    /**Active mobs quest to give to players if it can */
+    private Quest quest = null;
+        public Quest getQuest() { return this.quest; }
+        /**If AM cannot give quest, do nothing */
+        public void setQuest(Quest q) { 
+            if(canGiveQuests && q != null) { 
+                this.quest = q; 
+                getLivingEntity().setCustomName(ChatColor.GREEN + "" + getDisplayName());
+            } else if(canGiveQuests && q == null) {
+                getLivingEntity().setCustomName(ChatColor.WHITE + "" + getDisplayName());
+            }
+        }
+
+    /**Cooldown for quest assignment */
+    private Long questAssignTime;
+        public void setQuestAssignmentTime(Long l) { this.questAssignTime = l; }
+        /**@return True if quest assignment has expired */
+        public boolean checkQuestAssignment() {
+            if(this.questAssignTime != 0 && BukkitAdapter.adapt(getLocation()).getWorld().getTime() - this.questAssignTime < (quest.getExistTime() * 60 * 20)) { return false; }
+            return true;
+        }
+    
     /**
      * Initializes active mob instance.
      * @param e Abstract entity
      * @param type Mob type read from Mythic Mob
      */
-    public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int Level) {
+    public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int level, boolean isNightwave) {
         this.uuid = uuid;
         this.entity = e;
         this.type = type;
@@ -149,7 +190,24 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
 
         this.swordSkillManager = new SwordSkillManager(this);
 
-        this.damageModifiers = type.getDamageModifiers();
+        this.canGiveQuests = type.canGiveQuests();
+      
+        /**Setting combat modifiers to type instance */      
+        setCombatModifier(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);
+        setCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, type.getCriticalMultiplier(), -1);
+        setCombatModifier(CombatModifier.PARRY_CHANCE, type.getParryChance(), -1);
+        setCombatModifier(CombatModifier.PARRY_MULTIPLIER, type.getParryMultiplier(), -1);
+
+        this.duringNightwave = isNightwave;
+    }
+
+    /**
+     * Initializes active mob instance.
+     * @param e Abstract entity
+     * @param type Mob type read from Mythic Mob
+     */
+    public ActiveMob(UUID uuid, AbstractEntity e, MythicMob type, int level) {
+        this(uuid, e, type, level, false);
     }
 
     public void tick(int c) {
@@ -170,6 +228,7 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         return this.entity;
     }
 
+    @Override
     public LivingEntity getLivingEntity() {
         if(this.entity.isLiving()) {
             return (LivingEntity)this.entity.getBukkitEntity();
@@ -205,6 +264,10 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         return this.entity.getLocation();
     }
 
+    public Location getBukkitLocation() {
+        return this.entity.getBukkitEntity().getLocation();
+    }
+
     public double getDamage() {
         double damage = getType().getBaseDamage();
         if(this.level > 1 && getType().getPerLevelDamage() > 0.0D) {
@@ -228,33 +291,51 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
     
     public void unregister() {
         if(this.bossBar.isPresent()) {
-            ((AbstractBossBar)this.bossBar.get()).removeAll();
+            this.bossBar.get().removeAll();
             this.bossBar = Optional.empty();
         }
+        SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(this.uuid);
     }
 
+    /*
+    public double getHealth() {
+        return getEntity().getHealth();
+    }
+    */
+
+    /**Call to update health on in display name health bar */
+    public void updateHealthBar() {
+        if(!this.type.usesHealthBar()) { return; }
+        if(this.type.usesBossBar()) { return;}
+        this.healthBar.updateBar(getHealth());
+        getLivingEntity().setCustomName(getType().getDisplayColor(this.level) + "" + getDisplayName() + this.healthBar.getHealthBar());
+    }
+
+    /**Call to update players and damage on boss bar */
     public void updateBossBar() {
         if(!this.bossBar.isPresent()) { return; }
-        AbstractBossBar bar = this.bossBar.get();
-        Collection<AbstractPlayer> inRange = SwordCraftOnline.getGameManager().getPlayersInRangeSq(getLocation(), getType().getBossBarRangeSquared());
-        Collection<AbstractPlayer> current = bar.getPlayers();
+        BossBar bar = this.bossBar.get();
+        Collection<Player> inRange = SwordCraftOnline.getGameManager().getPlayersInRangeSq(getBukkitLocation(), getType().getBossBarRangeSquared());
+        Collection<Player> current = bar.getPlayers();
         double progress = getEntity().getHealth() / getEntity().getMaxHealth();
         String title = this.type.getBossBarTitle();
 
         bar.setTitle(title);
         bar.setProgress(progress);
-        current.stream().forEach(player -> {
-            if(!current.contains(player)) { bar.addPlayer(player); }
-        });
-        inRange.stream().forEach(player -> {
-            if(!inRange.contains(player)) { bar.addPlayer(player); }
-        });
+        
+        for(Player p : inRange) {
+            bar.addPlayer(p);
+        }
+        for(Player p : current) {
+            if(!inRange.contains(p)) { bar.removePlayer(p); }
+        }
     }
 
     public void setUnloaded() {
         if(!this.dead) {
             if(this.type.despawns() && !this.type.isPersistent()) {
                 this.dead = true;
+                this.getLivingEntity().setHealth(0);
                 unregister();
             } else {
                 SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().remove(this.uuid);
@@ -262,6 +343,9 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         } 
     }
 
+    /**
+     * Unregisters mob and kills it
+     */
     public void setDespawned() {
         if(!this.dead) {
             this.dead = true;
@@ -278,131 +362,22 @@ public class ActiveMob implements SwordSkillCaster, IDamage, IDamageModifier {
         unregister();
     }
 
-    @Override
-    /**Returns active mobs attack damage attribute */
-    public double getAttackDamage() {
-        return getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue();
-    }
-
-    @Override
     /**
-     * Sets active mobs attack damage attribute.
-     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     * @return True if mob is herculean
      */
-    public void setAttackDamage(double mod, boolean multiply) {
-        if(multiply) {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(mod); 
-		}
+    public boolean isHerculean() {
+        return this.type.isHerculean();
     }
 
-    @Override
-    /**Returns active mobs movement speed attribute */
-    public double getMovementSpeed() {
-        return getLivingEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
-    }
-
-    @Override
     /**
-     * Sets active mobs movement speed attribute.
-     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
+     * Sets active mobs target and instances attribute
+     * @param e LivingEntity to be tracked
      */
-    public void setMovementSpeed(double mod, boolean multiply) {
-        if(multiply) {
-			getLivingEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getLivingEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(mod); 
-		}
-    }
+    public void setTarget(LivingEntity e) {
+        LivingEntity ent = getLivingEntity();
+        ((Creature)ent).setTarget(e);
 
-    @Override
-    /**Returns active mobs max health attribute */
-    public double getMaxHealth() {
-        return getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-    }
-
-    @Override
-    /**
-     * Sets active mobs max helth attribute.
-     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
-     */
-    public void setMaxHealth(double mod, boolean multiply) {
-        if(multiply) {
-			getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(mod); 
-		}
-    }
-
-    @Override
-    /**Returns active mobs attack speed */
-    public double getAttackSpeed() {
-        return getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_SPEED).getBaseValue();
-    }
-
-    @Override
-    /**
-     * Sets active mobs attack speed attribute.
-     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
-     */
-    public void setAttackSpeed(double mod, boolean multiply) {
-        if(multiply) {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(mod); 
-		}
-    }
-
-    @Override
-    /**Returns active mobs knockback resistance */
-    public double getKnockResist() {
-        return getLivingEntity().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getBaseValue();
-    }
-
-    @Override
-    /**
-     * Sets active mobs knockback resistance attribute.
-     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
-     */
-    public void setKnockResist(double mod, boolean multiply) {
-        if(multiply) {
-			getLivingEntity().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getLivingEntity().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(mod); 
-		}
-    }
-
-    @Override
-    /**
-     * Sets active mobs armor attribute.
-     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
-     */
-    public void setArmor(double mod, boolean multiply) {
-        if(multiply) {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(mod); 
-		}
-    }
-
-    @Override
-    /**Returns active mobs armor toughness attribute */
-    public double getArmorToughness() {
-        return getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).getBaseValue();
-    }
-
-    @Override
-    /**
-     * Sets active mobs armor toughness attribute.
-     * @param multiply If True attribute is mulitplied by value. if False attirbute is set to value.
-     */
-    public void setArmorToughness(double mod, boolean multiply) {
-        if(multiply) {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod * getAttackDamage()); 
-		} else {
-			getLivingEntity().getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(mod); 
-		}
+        this.target = e;
     }
 }
 

@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.inventories;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -32,21 +33,48 @@ public abstract class BukkitInventoryBase implements SCOInventory {
 	}
 
 	/**
+	 * Places the items in the invnetory, using the map indexes as slot numbers
+	 * @param items A map of item slots to ItemIdentifiers
+	 */
+	public void setInventorySlots(HashMap<Integer, ItemIdentifier> items) {
+		Set<Integer> slots = items.keySet();
+		for(Integer slot : slots) {
+			this.inventory.setItem(slot, ItemIdentifier.generateItem(items.get(slot)));
+		}
+	}
+
+	/**
 	 * Sets the inventories slot to the provided item.
 	 * DOES NOT automatically save when called on a persistent inventory.
 	 * Save operators must be triggered manually.
 	 */
-	public HashMap<Integer, ItemStack> addItem(ItemIdentifier item) {
-		return inventory.addItem(ItemIdentifier.generateItem(item));
+	public HashMap<Integer, ItemIdentifier> addItem(ItemIdentifier item) {
+		HashMap<Integer, ItemStack> leftovers = inventory.addItem(ItemIdentifier.generateItem(item));
+		HashMap<Integer, ItemIdentifier> leftoversConverted = new HashMap<Integer, ItemIdentifier>();
+
+		leftovers.forEach((Integer slot, ItemStack lItem) -> {
+			leftoversConverted.put(slot, ItemIdentifier.resolveItemIdentifier(lItem));
+		});
+
+		return leftoversConverted;
 	}
 	
+	/**
+	 * Sets the given slot to the item provided
+	 * @param slot The inventory slot to change
+	 * @param item The item to put in the slot
+	 */
+	public void setItem(Integer slot, ItemIdentifier item) {
+		this.inventory.setItem(slot, ItemIdentifier.generateItem(item));
+	}
+
 	/**
 	 * Removes and reutrns the item at the given slot.
 	 * DOES NOT automatically save when called on a persistent inventory.
 	 * Save operators must be triggered manually.
 	 */
-	public ItemStack removeItem(int index) {
-		ItemStack item = this.inventory.getItem(index);
+	public ItemIdentifier removeItem(int index) {
+		ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(inventory.getItem(index));
 		this.inventory.setItem(index, new ItemStack(Material.AIR));
 		return item;
 	}
