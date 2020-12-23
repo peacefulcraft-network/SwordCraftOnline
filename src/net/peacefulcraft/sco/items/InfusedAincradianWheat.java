@@ -64,8 +64,8 @@ public class InfusedAincradianWheat implements EphemeralAttributeHolder, ItemIde
     }
 
     @Override
-    public void applyEphemeralAttributes(ItemStack item) {
-        Glow.addGlow(item);
+    public ItemStack applyEphemeralAttributes(ItemStack item) {
+        return Glow.addGlow(item);
     }
 
     @Override

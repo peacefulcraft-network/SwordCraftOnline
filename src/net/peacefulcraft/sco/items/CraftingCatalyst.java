@@ -63,8 +63,8 @@ public class CraftingCatalyst implements EphemeralAttributeHolder, ItemIdentifie
     }
 
     @Override
-    public void applyEphemeralAttributes(ItemStack item) {
-        Glow.addGlow(item);
+    public ItemStack applyEphemeralAttributes(ItemStack item) {
+        return Glow.addGlow(item);
     }
 
     @Override

@@ -7,7 +7,7 @@ public interface EphemeralAttributeHolder {
 	/**
 	 * Apply non-database-saved, custom attributes to an ItemStack during generation.
 	 */
-	public void applyEphemeralAttributes(ItemStack item);
+	public ItemStack applyEphemeralAttributes(ItemStack item);
 
 	/**
 	 * Extract non-database-saved, custom attributes from an ItemStack.
