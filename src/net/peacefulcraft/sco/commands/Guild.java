@@ -11,8 +11,10 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.storage.StorageTaskCallbackTask;
 import net.peacefulcraft.sco.storage.StorageTaskOutcome;
 import net.peacefulcraft.sco.storage.tasks.GuildCreateAsyncTask;
+import net.peacefulcraft.sco.storage.tasks.GuildDisbanAsyncTask;
 
 public class Guild implements CommandExecutor{
 
@@ -23,9 +25,9 @@ public class Guild implements CommandExecutor{
 		Player p = (Player) sender;
 		
 		if(args.length > 1) {
+			SCOPlayer s = SwordCraftOnline.getPluginInstance().getGameManager().findSCOPlayer(p);
+
 			if(args[0].equalsIgnoreCase("create")) {
-				
-				SCOPlayer s = SwordCraftOnline.getPluginInstance().getGameManager().findSCOPlayer(p);
 				if(s.isInGuild()) {
 					p.sendMessage(ChatColor.GOLD + "You must leave your current guild before you can found a new guild.");
 					return true;
@@ -54,7 +56,19 @@ public class Guild implements CommandExecutor{
 				}
 				
 			} else if(args[0].equalsIgnoreCase("disban")) {
-				
+				if(args.length > 1) {
+					if(!args[1].equalsIgnoreCase(s.getGuildName())) {
+						(new GuildDisbanAsyncTask(s.getGuildId(), (StorageTaskOutcome outcome, ArrayList<HashMap<String, Object>> result) -> {
+							if(outcome == StorageTaskOutcome.SUCESS) {
+								// Remove all player's from guild in memory
+							} else {
+								p.sendMessage(ChatColor.RED + "Internal server error. Guild disban failed. Please try again. If the issue persists, contact a staff member.");
+							}
+						})).runTaskAsynchronously(SwordCraftOnline.getPluginInstance());
+					}
+				} else {
+					p.sendMessage(ChatColor.RED + "Please specify the name of the Guild to delete.");
+				}
 			} else if(args[0].equalsIgnoreCase("setname")) {
 				
 			} else if(args[0].equalsIgnoreCase("setdescription")) {

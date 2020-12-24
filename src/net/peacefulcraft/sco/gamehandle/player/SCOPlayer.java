@@ -55,7 +55,11 @@ public class SCOPlayer implements SwordSkillCaster
 		public long getGuildId() { return this.guildId; }
 		public void setGuildId(long guildId) { this.guildId = guildId; }
 		public boolean isInGuild() { return (guildId == -1); }
-		
+	
+	private String guildName = "";
+		public String getGuildName(){ return this.guildName; }
+		public void setGuildNamae(String name){ this.guildName = name; }
+
 	private Guild.GuildRank guildRank;
 		public Guild.GuildRank getGuildRank() { return this.guildRank; }
 		public void setGuildRank(Guild.GuildRank rank) { this.guildRank = rank; } 

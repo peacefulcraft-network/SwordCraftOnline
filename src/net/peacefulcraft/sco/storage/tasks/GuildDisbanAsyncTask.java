@@ -25,8 +25,9 @@ public class GuildDisbanAsyncTask extends BukkitRunnable{
   private StorageTaskOutcome outcome;
   private StorageTaskCallbackTask callbackTask;
 
-  public GuildDisbanAsyncTask(long guildId) {
+  public GuildDisbanAsyncTask(long guildId, StorageTaskCallbackTask callbackTask) {
     this.guildId = guildId;
+    this.callbackTask = callbackTask;
   }
 
   @Override
