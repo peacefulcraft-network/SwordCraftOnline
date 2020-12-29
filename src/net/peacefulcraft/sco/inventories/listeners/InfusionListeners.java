@@ -22,9 +22,9 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InfusionInventory;
+import net.peacefulcraft.sco.items.utilityitems.BlackSlot;
 import net.peacefulcraft.sco.items.utilityitems.BlueSlot;
 import net.peacefulcraft.sco.items.utilityitems.GreenSlot;
-import net.peacefulcraft.sco.items.utilityitems.PurpleSlot;
 import net.peacefulcraft.sco.items.utilityitems.RedSlot;
 
 public class InfusionListeners implements Listener {
@@ -146,11 +146,8 @@ public class InfusionListeners implements Listener {
      */
     private void clearIngredients(Inventory inv, Player p, boolean returnItems) {
         ArrayList<ItemStack> leftovers = new ArrayList<>();
-        for(int row = 1; row <= 4; row++) {
+        for(int row = 3; row <= 4; row++) {
             for(int col = 1; col <= 3; col++) {
-                // Skipping blocked slots
-                if(!((row == 1 && col == 2) || row >= 3)) { continue; }
-
                 ItemStack item = inv.getItem(row * 9 + col);
                 if(item == null || item.getType().equals(Material.AIR)) { continue; }
 
@@ -164,7 +161,8 @@ public class InfusionListeners implements Listener {
             } 
         }
 
-        // Dropping item at player
+        // Dropping item at player or consuming items
+        // If consuming, it leaves catalyst slot
         if(returnItems) {
             for(ItemStack item : leftovers) {
                 p.getLocation().getWorld().dropItemNaturally(p.getLocation(), item);
@@ -222,17 +220,30 @@ public class InfusionListeners implements Listener {
     private void beginInfusion(Inventory inv) {
         // Determine if infusion failed right away
         boolean failed = SwordCraftOnline.r.nextInt(9) < FAIL_CHANCE;
-        int fail_col = SwordCraftOnline.r.nextInt(8);         
+        int fail_row = SwordCraftOnline.r.nextInt(5);         
 
-        int col = 0;
         new BukkitRunnable(){
+            /**
+             * Starting rows from bottom -> up
+             */
+            int row = 5;
+
             @Override
             public void run() {
-                if(failed && col == fail_col) {
+                if(failed && row == fail_row) {
                     resetProgressBar(inv, true);
                     this.cancel();
                 }
-                inv.setItem(45 + col, (new PurpleSlot()).create(1, false, false));
+                // Replacing row slots
+                for(int col = 0; col <= 8; col++) {
+                    ItemStack item = inv.getItem(row * 9 + col);
+                    if(item.getType().equals(Material.BLACK_STAINED_GLASS_PANE)) {
+                        inv.setItem(row * 9 + col, (new BlueSlot()).create(1, false, false));
+                    }
+                }
+                row--;
+
+                //inv.setItem(45 + col, (new PurpleSlot()).create(1, false, false));
             }
         }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 0, 20);
 
@@ -252,21 +263,37 @@ public class InfusionListeners implements Listener {
      * @param inv Inventory we are modifying
      */
     private void resetProgressBar(Inventory inv, boolean isFail) {
+        // If infusion failed we freeze rows and then re call reset
         if(isFail) {
-            // Setting progress bar to red
-            for(int col = 0; col <= 8; col++) {
-                inv.setItem(45 + col, (new RedSlot()).create(1, false, false));
-            }
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+            new BukkitRunnable() {
                 @Override
                 public void run() {
                     resetProgressBar(inv, false);
                 }
-            }, 40);
+            }.runTaskLater(SwordCraftOnline.getPluginInstance(), SwordCraftOnline.r.nextInt(4) * 20);
         } else {
-            for(int col = 0; col <= 8; col ++) {
-                inv.setItem(45 + col, (new BlueSlot()).create(1, false, false));
-            }
+            new BukkitRunnable() {
+                /**
+                 * Clean up from top down
+                 */
+                int row = 0;
+
+                @Override
+                public void run() {
+                    if(row >= 5) {
+                        this.cancel();
+                        return;
+                    }
+
+                    for(int col = 0; col <= 8; col++) {
+                        ItemStack item = inv.getItem(row * 9 + col);
+                        if(item.getType().equals(Material.BLUE_STAINED_GLASS_PANE)) {
+                            inv.setItem(row * 9 + col, (new BlackSlot()).create(1, false, false));
+                        }                        
+                    }
+                    row++;
+                }
+            }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 0, 10);
         }
     }
 
