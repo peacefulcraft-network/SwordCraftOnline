@@ -41,7 +41,7 @@ public class InfusionInventory extends InventoryBase {
             for(int col = 0; col <= 8; col++) {
                 // Broke statements into different lines b\c I got annoyed.
                 // Leaves 1 catalyst slot in row 1.
-                // 3 component slots in row 3
+                // 3 component slots in row 3 and 4
                 if(row == 0 || row == 5) {
                     this.addButton(row, col, (new BlackSlot()).create(1, false, false));
                 } else if(row == 1 && (col <= 1 || col == 3 || col == 4 || col == 8)) {
@@ -56,8 +56,17 @@ public class InfusionInventory extends InventoryBase {
             }
         }
         // Places start button and indicator buttons
-        this.addButton(2, 4, (new InfusionStartSlot()).create(1, false, false));
-        this.addButton(1, 4, (new RedSlot()).create(1, false, false));
-        this.addButton(3, 4, (new RedSlot()).create(1, false, false));
+        //this.addButton(2, 4, (new InfusionStartSlot()).create(1, false, false));
+        //this.addButton(1, 4, (new RedSlot()).create(1, false, false));
+        //this.addButton(3, 4, (new RedSlot()).create(1, false, false));
+        this.addButton(1, 5, (new InfusionStartSlot()).create(1, false, false));
+        this.addButton(1, 7, (new InfusionStartSlot()).create(1, false, false));
+        this.addButton(3, 5, (new InfusionStartSlot()).create(1, false, false));
+        this.addButton(3, 7, (new InfusionStartSlot()).create(1, false, false));
+
+        this.addButton(1, 6, (new RedSlot()).create(1, false, false));
+        this.addButton(2, 5, (new RedSlot()).create(1, false, false));
+        this.addButton(2, 7, (new RedSlot()).create(1, false, false));
+        this.addButton(3, 6, (new RedSlot()).create(1, false, false));
     }
 }

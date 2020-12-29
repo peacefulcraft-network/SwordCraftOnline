@@ -56,9 +56,11 @@ public class InfusionListeners implements Listener {
         }
 
         // Cancelling if they hit an input slot w/o sword skill
-        if(hitIngredientSlot(e.getSlot()) && !nbti.hasKey("sword_skill")) {
+        /*
+        if(hitIngredientSlot(e.getSlot()) && (!nbti.hasKey("sword_skill") && nbti.getBoolean("sword_skill") == false)) {
             e.setCancelled(true);
         }
+        */
 
         // Verifying there are skills in input slots
         // and setting indicators
@@ -112,8 +114,12 @@ public class InfusionListeners implements Listener {
      * @return True if valid recipe, false otherwise
      */
     private boolean checkIngredientSlots(Inventory inv) {
+        // Infusion requires catalyst. Not valid without.
+        ItemStack catalyst = inv.getItem(11);
+        if(catalyst == null || catalyst.getType().equals(Material.AIR)) { return false; }
+
         int skillCount = 0;
-        for(int row = 1; row <= 3; row++) {
+        for(int row = 3; row <= 4; row++) {
             for(int col = 1; col <= 3; col++) {
                 ItemStack item = inv.getItem(row * 9 + col);
                 if(item == null || item.getType().equals(Material.AIR)) { continue; }
@@ -122,11 +128,14 @@ public class InfusionListeners implements Listener {
                 NBTItem nbti = new NBTItem(item);
                 if(nbti.hasKey("sword_skill") && nbti.getBoolean("sword_skill")) {
                     skillCount += item.getAmount();
+                } else {
+                    // We only want sword skills
+                    return false;
                 }
             }
         }
 
-        return skillCount >= 2;
+        return skillCount >= 1;
     }
 
     /**
@@ -137,8 +146,11 @@ public class InfusionListeners implements Listener {
      */
     private void clearIngredients(Inventory inv, Player p, boolean returnItems) {
         ArrayList<ItemStack> leftovers = new ArrayList<>();
-        for(int row = 1; row <= 3; row++) {
+        for(int row = 1; row <= 4; row++) {
             for(int col = 1; col <= 3; col++) {
+                // Skipping blocked slots
+                if(!((row == 1 && col == 2) || row >= 3)) { continue; }
+
                 ItemStack item = inv.getItem(row * 9 + col);
                 if(item == null || item.getType().equals(Material.AIR)) { continue; }
 
@@ -167,8 +179,11 @@ public class InfusionListeners implements Listener {
         int i = 0;
         HashMap<Integer, ItemStack> out = new HashMap<>();
 
-        for(int row = 1; row <= 3; row++) {
+        for(int row = 1; row <= 4; row++) {
             for(int col = 1; col <= 3; col++) {
+                // Skipping blocked slots
+                if(!((row == 1 && col == 2) || row >= 3)) { continue; }
+
                 ItemStack item = inv.getItem(row * 9 + col);
                 if(item == null || item.getType().equals(Material.AIR)) { 
                     i++;
@@ -188,11 +203,15 @@ public class InfusionListeners implements Listener {
      */
     private void setValidInfusionSlots(Inventory inv, boolean isValid) {
         if(isValid) {
-            inv.setItem(13, (new GreenSlot()).create(1, false, false));
-            inv.setItem(31, (new GreenSlot()).create(1, false, false));
+            inv.setItem(15, (new GreenSlot()).create(1, false, false));
+            inv.setItem(23, (new GreenSlot()).create(1, false, false));
+            inv.setItem(25, (new GreenSlot()).create(1, false, false));
+            inv.setItem(34, (new GreenSlot()).create(1, false, false));
         } else {
-            inv.setItem(13, (new RedSlot()).create(1, false, false));
-            inv.setItem(31, (new RedSlot()).create(1, false, false));
+            inv.setItem(15, (new RedSlot()).create(1, false, false));
+            inv.setItem(23, (new RedSlot()).create(1, false, false));
+            inv.setItem(25, (new RedSlot()).create(1, false, false));
+            inv.setItem(33, (new RedSlot()).create(1, false, false));
         }
     }
 
@@ -259,15 +278,13 @@ public class InfusionListeners implements Listener {
     private boolean hitIngredientSlot(int index) {
         // This is ugly. I hate this
         switch(index){
-            case 10: return true;
             case 11: return true;
-            case 12: return true;
-            case 19: return true;
-            case 20: return true;
-            case 21: return true;
             case 28: return true;
             case 29: return true;
             case 30: return true;
+            case 37: return true;
+            case 38: return true;
+            case 39: return true;
             default: return false;
         }
     }
