@@ -18,10 +18,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.tr7zw.nbtapi.NBTItem;
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InfusionInventory;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.SkillIdentifier;
 import net.peacefulcraft.sco.items.utilityitems.BlackSlot;
 import net.peacefulcraft.sco.items.utilityitems.BlueSlot;
 import net.peacefulcraft.sco.items.utilityitems.GreenSlot;
@@ -172,23 +175,18 @@ public class InfusionListeners implements Listener {
 
     /**
      * Gets input slot items
+     * @return List of ingredient items
      */
-    private HashMap<Integer, ItemStack> getIngredients(Inventory inv) {
-        int i = 0;
-        HashMap<Integer, ItemStack> out = new HashMap<>();
+    private ArrayList<ItemStack> getIngredients(Inventory inv) {
+        ArrayList<ItemStack> out = new ArrayList<>();
 
-        for(int row = 1; row <= 4; row++) {
+        for(int row = 3; row <= 4; row++) {
             for(int col = 1; col <= 3; col++) {
-                // Skipping blocked slots
-                if(!((row == 1 && col == 2) || row >= 3)) { continue; }
-
                 ItemStack item = inv.getItem(row * 9 + col);
                 if(item == null || item.getType().equals(Material.AIR)) { 
-                    i++;
                     continue; 
                 }
-                out.put(i, item);
-                i++;
+                out.add(item);
             }
         }
         return out;
@@ -242,8 +240,6 @@ public class InfusionListeners implements Listener {
                     }
                 }
                 row--;
-
-                //inv.setItem(45 + col, (new PurpleSlot()).create(1, false, false));
             }
         }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 0, 20);
 
@@ -254,8 +250,45 @@ public class InfusionListeners implements Listener {
         }
 
         // Beginning of main infusion logic
-        HashMap<Integer, ItemStack> skills = getIngredients(inv);
+        int infusionExp = 0;
+        ArrayList<ItemStack> skills = getIngredients(inv);
+        for(ItemStack skill : skills) {
+            NBTItem nbti = new NBTItem(skill);
+            if(nbti.hasKey("tier")) {
+                ItemTier tier = ItemTier.valueOf(nbti.getString("tier"));
+                switch(tier) {
+                    case COMMON:
+                        infusionExp += 10 * skill.getAmount();
+                    break; case UNCOMMON:
+                        infusionExp += 25 * skill.getAmount();
+                    break; case RARE:
+                        infusionExp += 50 * skill.getAmount();
+                    break; case LEGENDARY:
+                        infusionExp += 80 * skill.getAmount();
+                    break; case ETHEREAL:
+                        infusionExp += 115 * skill.getAmount();
+                    break; case GODLIKE:
+                        infusionExp += 160 * skill.getAmount();
+                    default:
+                        break;
+                }
+            }
+        }
         
+        // Calculating cost of infusion upgrade
+        ItemStack catalyst = inv.getItem(11);
+        NBTItem nbti = new NBTItem(catalyst);
+        ItemTier catTier = ItemTier.valueOf(nbti.getString("tier"));
+
+        // Progressing tier of item
+        for(; infusionExp <= 0; infusionExp -= getInfusionCost(catTier)) {
+            catTier = ItemTier.progressTier(catTier);
+        }
+
+        String name = ChatColor.stripColor(catalyst.getItemMeta().getDisplayName().replace(" ", ""));
+        ItemStack result = (new SkillIdentifier(name, 1, catTier)).getProvider().getItem();
+
+        inv.setItem(24, result);
     }
 
     /**
@@ -295,6 +328,31 @@ public class InfusionListeners implements Listener {
                 }
             }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 0, 10);
         }
+    }
+
+    /**
+     * Returns infusion exp cost based on tier
+     * Cost is roughly 3.5x exp gain of ingredient
+     * @param tier Tier of catalyst
+     * @return Int cost of upgrade
+     */
+    private int getInfusionCost(ItemTier tier) {
+        int infusionCost = 0;
+        switch(tier) {
+            case COMMON:
+                infusionCost = 35;
+            break; case UNCOMMON:
+                infusionCost = 88;
+            break; case RARE:
+                infusionCost = 175;
+            break; case LEGENDARY:
+                infusionCost = 280;
+            break; case ETHEREAL:
+                infusionCost = 403;
+            break; case GODLIKE:
+                infusionCost = 560;
+        }
+        return infusionCost;
     }
 
     /**
