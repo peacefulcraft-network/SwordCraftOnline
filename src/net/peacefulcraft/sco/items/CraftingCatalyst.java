@@ -15,6 +15,11 @@ public class CraftingCatalyst implements EphemeralAttributeHolder, ItemIdentifie
     }
 
     @Override
+    public String getDisplayName() {
+        return ItemTier.getTierColor(ItemTier.UNCOMMON) + "Crafting Catalyst";
+    }
+
+    @Override
     public ArrayList<String> getLore() {
         ArrayList<String> desc = ItemTier.addDesc(ItemTier.UNCOMMON);
         desc.add(ItemTier.getTierColor(ItemTier.UNCOMMON) + "Contains immense energy used to combine crafts.");

@@ -20,6 +20,11 @@ public class ParryItem implements SwordSkillProvider {
     public String getName() { return "Parry"; }
 
     @Override
+    public String getDisplayName() {
+        return ItemTier.getTierColor(getTier()) + "Parry";
+    }
+
+    @Override
     public ArrayList<String> getLore() {
         ArrayList<String> lore = new ArrayList<String>();
         lore.add(ItemTier.getTierColor(this.tier) + "A beginners parry technique.");

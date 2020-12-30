@@ -94,4 +94,28 @@ public enum ItemTier
 		}
 		return desc;
 	}
+
+	/**
+	 * Returns next tier
+	 * @param tier Input tier
+	 * @return Next tier up
+	 */
+	public static ItemTier progressTier(ItemTier tier) {
+		switch(tier) {
+			case COMMON:
+				return ItemTier.UNCOMMON;
+			case UNCOMMON:
+				return ItemTier.RARE;
+			case RARE:
+				return ItemTier.LEGENDARY;
+			case LEGENDARY:
+				return ItemTier.ETHEREAL;
+			case ETHEREAL:
+				return ItemTier.GODLIKE;
+			case GODLIKE:
+				return ItemTier.GODLIKE;
+			default:
+				return tier;
+		}
+	}
 }
