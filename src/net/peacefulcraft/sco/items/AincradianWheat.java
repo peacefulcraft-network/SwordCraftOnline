@@ -10,6 +10,11 @@ public class AincradianWheat implements ItemIdentifier {
 	public String getName() { return "Aincradian Wheat"; }
 
 	@Override
+	public String getDisplayName() {
+		return ItemTier.getTierColor(ItemTier.COMMON) + "Aincradian Wheat";
+	}
+
+	@Override
 	public ArrayList<String> getLore() {
 		ArrayList<String> desc = ItemTier.addDesc(ItemTier.COMMON);
 		desc.add(ItemTier.getTierColor(ItemTier.COMMON) + "Natural wheat found across Aincrad");

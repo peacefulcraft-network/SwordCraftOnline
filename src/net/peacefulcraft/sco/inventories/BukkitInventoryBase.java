@@ -58,6 +58,20 @@ public abstract class BukkitInventoryBase implements SCOInventory {
 
 		return leftoversConverted;
 	}
+
+	/**
+	 * Gets item at slot
+	 * @param slot The inventory slot we get
+	 * @return ItemIdentifier at slot or air item
+	 */
+	public ItemIdentifier getItem(Integer slot) {
+		try {
+			return generateItemIdentifiers().get(slot);
+		} catch(IndexOutOfBoundsException ex) {
+			SwordCraftOnline.logDebug("Unable to get item from inventory.");
+			return ItemIdentifier.generateIdentifier("Air", ItemTier.COMMON, 1);
+		}
+	}
 	
 	/**
 	 * Sets the given slot to the item provided

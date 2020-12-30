@@ -12,6 +12,11 @@ public class SwordSkillTomeItem implements ItemIdentifier {
   public String getName() { return "Sword Skill Tome"; }
 
   @Override
+  public String getDisplayName() {
+    return ItemTier.getTierColor(getTier()) + "Sword Skill Tome";
+  }
+
+  @Override
   public ArrayList<String> getLore() {
     ArrayList<String> lore = new ArrayList<String>();
 		lore.add(ChatColor.DARK_PURPLE + "Right click to store your sword skill knowledge.");

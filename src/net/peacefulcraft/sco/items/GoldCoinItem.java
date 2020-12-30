@@ -10,6 +10,11 @@ public class GoldCoinItem implements ItemIdentifier {
   public String getName() { return "Gold Coin"; }
 
   @Override
+  public String getDisplayName() {
+    return ItemTier.getTierColor(ItemTier.COMMON) + "Gold Coin";
+  }
+
+  @Override
   public ArrayList<String> getLore() {
     ArrayList<String> lore = new ArrayList<String>();
     lore.add("Just a shiny coin.");

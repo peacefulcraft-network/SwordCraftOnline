@@ -19,12 +19,18 @@ import net.peacefulcraft.sco.SwordCraftOnline;
  */
 public interface ItemIdentifier {
 
-    /**
+  /**
    * @return The name of the item. Should be the name of the ItemIdentifier class
    *         with appropriate spacing. Spaces are .replaceAll()'d to match items
    *         in game with their ItemIdentifier class.
    */
   public abstract String getName();
+
+  /**
+   * @return The display name of item in inventory. Can be different from name
+   *         of file in package.
+   */
+  public abstract String getDisplayName();
 
 
   /**
@@ -115,7 +121,10 @@ public interface ItemIdentifier {
       }
 
 		} catch (ClassNotFoundException e) {
-			SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
+      if(!name.contains("utilityitems.")) { 
+        return generateIdentifier("utilityitems." + name, tier, quantity); 
+      }
+      SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
 		} catch (NoSuchMethodException e) {
 			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must have a constuctor with arguments (ItemTier, int)");
 		} catch (SecurityException e) {
@@ -168,7 +177,7 @@ public interface ItemIdentifier {
     }
 
     ItemMeta itemMeta = item.getItemMeta();
-    itemMeta.setDisplayName(itemIdentifier.getName());
+    itemMeta.setDisplayName(itemIdentifier.getDisplayName());
     itemMeta.setLore(itemIdentifier.getLore());
     item.setItemMeta(itemMeta);
 

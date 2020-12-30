@@ -20,6 +20,11 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 	public String getName() { return "Critical Strike"; }
 
 	@Override
+	public String getDisplayName() {
+		return ItemTier.getTierColor(getTier()) + "Critical Strike";
+	}
+
+	@Override
 	public ArrayList<String> getLore() {
 		ArrayList<String> lore = new ArrayList<String>();
 		lore.add(tier.getTierColor() + "A Beginners 3 hit combo.");

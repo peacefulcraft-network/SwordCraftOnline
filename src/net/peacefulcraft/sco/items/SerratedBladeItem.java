@@ -25,6 +25,11 @@ public class SerratedBladeItem implements SwordSkillProvider {
   public String getName() { return "Serrated Blade"; }
 
   @Override
+  public String getDisplayName() {
+    return ItemTier.getTierColor(getTier()) + "Serrated Blade";
+  }
+
+  @Override
   public ArrayList<String> getLore() {
     ArrayList<String> lore = new ArrayList<String>();
     lore.add(tier.getTierColor() + "A beginners sword upgrade.");

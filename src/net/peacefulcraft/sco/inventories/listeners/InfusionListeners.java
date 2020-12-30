@@ -24,11 +24,6 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.InfusionInventory;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.SkillIdentifier;
-import net.peacefulcraft.sco.items.utilityitems.BlackSlot;
-import net.peacefulcraft.sco.items.utilityitems.BlueSlot;
-import net.peacefulcraft.sco.items.utilityitems.GreenSlot;
-import net.peacefulcraft.sco.items.utilityitems.RedSlot;
 
 public class InfusionListeners implements Listener {
     
@@ -37,9 +32,7 @@ public class InfusionListeners implements Listener {
      */
     private final int FAIL_CHANCE = 2;
 
-    /**
-     * Main inventory logic
-     */
+    /*
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
@@ -58,13 +51,6 @@ public class InfusionListeners implements Listener {
             e.setCancelled(true);
         }
 
-        // Cancelling if they hit an input slot w/o sword skill
-        /*
-        if(hitIngredientSlot(e.getSlot()) && (!nbti.hasKey("sword_skill") && nbti.getBoolean("sword_skill") == false)) {
-            e.setCancelled(true);
-        }
-        */
-
         // Verifying there are skills in input slots
         // and setting indicators
         boolean checkedIng = checkIngredientSlots(inv);
@@ -77,10 +63,6 @@ public class InfusionListeners implements Listener {
             beginInfusion(inv);
         }
     }
-
-    /**
-     * Handles player closing their inventory
-     */
     @EventHandler
     public void closeInventory(InventoryCloseEvent e) {
         Player p = (Player)e.getPlayer();
@@ -91,6 +73,7 @@ public class InfusionListeners implements Listener {
 
         clearIngredients(e.getInventory(), p, true);
     }
+    */
 
     /**
      * Handling when player right clicks enchanting table
@@ -107,15 +90,10 @@ public class InfusionListeners implements Listener {
         if(!b.getType().equals(Material.ENCHANTING_TABLE)) { return; }
 
         // All checks pass. We create and open inventory
-        new InfusionInventory(s).openInventory();
+        (new InfusionInventory(s)).openInventory(s);
         e.setCancelled(true);
     }
-
-    /**
-     * Verifies there are more than 1 sword skill item in slots
-     * @param inv Inventory we check
-     * @return True if valid recipe, false otherwise
-     */
+    /*
     private boolean checkIngredientSlots(Inventory inv) {
         // Infusion requires catalyst. Not valid without.
         ItemStack catalyst = inv.getItem(11);
@@ -141,12 +119,6 @@ public class InfusionListeners implements Listener {
         return skillCount >= 1;
     }
 
-    /**
-     * Clears the input slots and returns items to player
-     * If player inventory is full, drops items at feet
-     * @param inv Inventory we are clearing
-     * @param p Player instance
-     */
     private void clearIngredients(Inventory inv, Player p, boolean returnItems) {
         ArrayList<ItemStack> leftovers = new ArrayList<>();
         for(int row = 3; row <= 4; row++) {
@@ -173,10 +145,6 @@ public class InfusionListeners implements Listener {
         }
     }
 
-    /**
-     * Gets input slot items
-     * @return List of ingredient items
-     */
     private ArrayList<ItemStack> getIngredients(Inventory inv) {
         ArrayList<ItemStack> out = new ArrayList<>();
 
@@ -192,38 +160,27 @@ public class InfusionListeners implements Listener {
         return out;
     }
 
-    /**
-     * Sets the validity slots in inventory
-     * @param inv Inventory we are changing
-     * @param isValid True if we set colors to valid
-     */
     private void setValidInfusionSlots(Inventory inv, boolean isValid) {
         if(isValid) {
-            inv.setItem(15, (new GreenSlot()).create(1, false, false));
-            inv.setItem(23, (new GreenSlot()).create(1, false, false));
-            inv.setItem(25, (new GreenSlot()).create(1, false, false));
-            inv.setItem(34, (new GreenSlot()).create(1, false, false));
+            inv.setItem(15, (new GreenSlotItem()).create(1, false, false));
+            inv.setItem(23, (new GreenSlotItem()).create(1, false, false));
+            inv.setItem(25, (new GreenSlotItem()).create(1, false, false));
+            inv.setItem(34, (new GreenSlotItem()).create(1, false, false));
         } else {
-            inv.setItem(15, (new RedSlot()).create(1, false, false));
-            inv.setItem(23, (new RedSlot()).create(1, false, false));
-            inv.setItem(25, (new RedSlot()).create(1, false, false));
-            inv.setItem(33, (new RedSlot()).create(1, false, false));
+            inv.setItem(15, (new RedSlotItem()).create(1, false, false));
+            inv.setItem(23, (new RedSlotItem()).create(1, false, false));
+            inv.setItem(25, (new RedSlotItem()).create(1, false, false));
+            inv.setItem(33, (new RedSlotItem()).create(1, false, false));
         }
     }
 
-    /**
-     * Main infusion logic.
-     * @param inv Inventory we are changing
-     */
+
     private void beginInfusion(Inventory inv) {
         // Determine if infusion failed right away
         boolean failed = SwordCraftOnline.r.nextInt(9) < FAIL_CHANCE;
         int fail_row = SwordCraftOnline.r.nextInt(5);         
 
         new BukkitRunnable(){
-            /**
-             * Starting rows from bottom -> up
-             */
             int row = 5;
 
             @Override
@@ -236,7 +193,7 @@ public class InfusionListeners implements Listener {
                 for(int col = 0; col <= 8; col++) {
                     ItemStack item = inv.getItem(row * 9 + col);
                     if(item.getType().equals(Material.BLACK_STAINED_GLASS_PANE)) {
-                        inv.setItem(row * 9 + col, (new BlueSlot()).create(1, false, false));
+                        inv.setItem(row * 9 + col, (new BlueSlotItem()).create(1, false, false));
                     }
                 }
                 row--;
@@ -291,10 +248,6 @@ public class InfusionListeners implements Listener {
         inv.setItem(24, result);
     }
 
-    /**
-     * Resets progress bar to all blue
-     * @param inv Inventory we are modifying
-     */
     private void resetProgressBar(Inventory inv, boolean isFail) {
         // If infusion failed we freeze rows and then re call reset
         if(isFail) {
@@ -306,9 +259,6 @@ public class InfusionListeners implements Listener {
             }.runTaskLater(SwordCraftOnline.getPluginInstance(), SwordCraftOnline.r.nextInt(4) * 20);
         } else {
             new BukkitRunnable() {
-                /**
-                 * Clean up from top down
-                 */
                 int row = 0;
 
                 @Override
@@ -321,7 +271,7 @@ public class InfusionListeners implements Listener {
                     for(int col = 0; col <= 8; col++) {
                         ItemStack item = inv.getItem(row * 9 + col);
                         if(item.getType().equals(Material.BLUE_STAINED_GLASS_PANE)) {
-                            inv.setItem(row * 9 + col, (new BlackSlot()).create(1, false, false));
+                            inv.setItem(row * 9 + col, (new BlackSlotItem()).create(1, false, false));
                         }                        
                     }
                     row++;
@@ -330,12 +280,7 @@ public class InfusionListeners implements Listener {
         }
     }
 
-    /**
-     * Returns infusion exp cost based on tier
-     * Cost is roughly 3.5x exp gain of ingredient
-     * @param tier Tier of catalyst
-     * @return Int cost of upgrade
-     */
+
     private int getInfusionCost(ItemTier tier) {
         int infusionCost = 0;
         switch(tier) {
@@ -355,11 +300,6 @@ public class InfusionListeners implements Listener {
         return infusionCost;
     }
 
-    /**
-     * Checks if player clicked an input slot
-     * @param index Index of slot
-     * @return True if hit input slot
-     */
     private boolean hitIngredientSlot(int index) {
         // This is ugly. I hate this
         switch(index){
@@ -373,4 +313,5 @@ public class InfusionListeners implements Listener {
             default: return false;
         }
     }
+    */
 }
