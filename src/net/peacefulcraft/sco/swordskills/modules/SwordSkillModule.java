@@ -3,7 +3,7 @@ package net.peacefulcraft.sco.swordskills.modules;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 /**
  * Interface defining the hooks a class must implement to used by a SwordSkill as a module.
@@ -20,7 +20,7 @@ public interface SwordSkillModule {
      * @param ss The associated SwordSkill instance
      * @param ev The event which triggered exeuction
      */
-    public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev);
+    public void executeSupportLifecycle(SwordSkillTrigger type, SwordSkill ss, Event ev);
 
     /**
      * Called after the skill signature has been matched

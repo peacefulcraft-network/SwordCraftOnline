@@ -24,11 +24,11 @@ import net.peacefulcraft.sco.gamehandle.listeners.RegionCheckListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionDamageListener;
 import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDamageListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.listeners.InventoryListeners;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.inventories.crafting.CraftingManager;
 import net.peacefulcraft.sco.inventories.listeners.CraftingListeners;
 import net.peacefulcraft.sco.inventories.listeners.InfusionListeners;
-import net.peacefulcraft.sco.inventories.listeners.InventoryActions;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
@@ -48,7 +48,6 @@ import net.peacefulcraft.sco.quests.listeners.QuestOpenInventoryListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerInteractEntityListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerMoveListener;
 import net.peacefulcraft.sco.storage.HikariManager;
-import net.peacefulcraft.sco.storage.SwordSkillRegistery;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityAsyncPlayerChatListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
@@ -69,10 +68,10 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 	public static HikariManager hikari;
 		public static HikariManager getHikariPool() { return hikari; }
-		
+
 	public static GameManager gameManager;
 		public static GameManager getGameManager() {return gameManager;}
-		
+
 	public static PartyManager partyManager;
 		public static PartyManager getPartyManager() {return partyManager;}
 
@@ -93,6 +92,8 @@ public class SwordCraftOnline extends JavaPlugin{
 	private static EffectManager effectManager;
 		public static EffectManager getEffectManager() { return effectManager; }
 
+	private static InventoryListeners inventoryListeners;
+		public static InventoryListeners getInventoryListeners() { return inventoryListeners; }
 	private SpawnerManager spawnerManager;
 		public SpawnerManager getSpawnerManager() { return this.spawnerManager; }
 
@@ -111,8 +112,6 @@ public class SwordCraftOnline extends JavaPlugin{
 		cfg = new SCOConfig(getConfig());
 
 		r = new Random();
-		
-		
 	}
 	
 	public void onEnable() {
@@ -122,7 +121,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.loadEventListeners();
 		
 		hikari = new HikariManager(cfg);
-		new SwordSkillRegistery();
+
 		gameManager = new GameManager();
 		partyManager = new PartyManager();
 		
@@ -194,7 +193,6 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new HealthBarUpdate(), this);
 		
 		// Register Menu Opener
-		getServer().getPluginManager().registerEvents(new InventoryActions(), this);
 		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
 		getServer().getPluginManager().registerEvents(new CraftingListeners(), this);
 		getServer().getPluginManager().registerEvents(new InfusionListeners(), this);
@@ -215,6 +213,9 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new AbilityPlayerMoveListener(),this);
 		getServer().getPluginManager().registerEvents(new AbilityPlayerRespawnListener(), this);
 
+		// Register Inventory Listeners
+		inventoryListeners = new InventoryListeners();
+		getServer().getPluginManager().registerEvents(inventoryListeners, this);
 		//Register Quest listeners
 		getServer().getPluginManager().registerEvents(new NPCActivateListener(), this);
 		getServer().getPluginManager().registerEvents(new QuestEntityDamageListener(), this);
@@ -223,7 +224,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new QuestPlayerMoveListener(), this);
 
 	}
-	
+
 	public static void logDebug(String debug) {
 		if(showDebug()) {
 			sco.getLogger().log(Level.INFO, debug);

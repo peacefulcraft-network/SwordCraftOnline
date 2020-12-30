@@ -1,30 +1,25 @@
 package net.peacefulcraft.sco.swordskills;
 
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.util.Vector;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 
 public class ForwardLungeSkill extends SwordSkill {
 
-    private SCOPlayer s;
-    private double increase;
-    private long delay;
+    private Double increase;
+    private Long delay;
 
-    public ForwardLungeSkill(SCOPlayer s, long delay, SkillProvider p, double increase) {
-        super(s, p);
+    public ForwardLungeSkill(SwordSkillCaster c, Double increase, Long delay, SwordSkillProvider provider) {
+        super(c, provider);
         
-        this.s = s;
         this.increase = increase;
         this.delay = delay;
 
-        this.listenFor(SwordSkillType.PLAYER_INTERACT);
+        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
         this.useModule(new TimedCooldown(delay));
     }
 

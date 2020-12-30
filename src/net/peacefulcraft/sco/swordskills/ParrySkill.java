@@ -8,18 +8,16 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class ParrySkill extends SwordSkill {
 
-    private SCOPlayer s;
-    private int increase;
-    private long delay;
+    private Integer increase;
+    private Long delay;
+    private SwordSkillProvider provider;
 
-    public ParrySkill(SCOPlayer s, long delay, SkillProvider p, int increase) {
-        super(s, p);
-
-        this.s = s;
+    public ParrySkill(SwordSkillCaster c, Integer increase, Long delay, SwordSkillProvider provider) {
+        super(c, provider);
         this.increase = increase;
         this.delay = delay;
 
-        this.listenFor(SwordSkillType.PASSIVE);
+        this.listenFor(SwordSkillTrigger.PASSIVE);
         this.useModule(new TimedCooldown(delay));
     }
 

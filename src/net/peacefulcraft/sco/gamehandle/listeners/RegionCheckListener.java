@@ -12,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
@@ -21,6 +20,7 @@ import net.peacefulcraft.sco.gamehandle.regions.FarmRegion;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 
 public class RegionCheckListener implements Listener {
 
@@ -90,7 +90,7 @@ public class RegionCheckListener implements Listener {
         block.setType(Material.AIR);
         
         Location loc = block.getLocation().clone();
-        loc.getWorld().dropItemNaturally(loc, ItemIdentifier.generate(farm.getCrop(), 1, false, true));
+        loc.getWorld().dropItemNaturally(loc, ItemIdentifier.generateItem(farm.getCrop(), ItemTier.COMMON, 1));
         
         /**
          * Bonus farming drop chances
@@ -106,7 +106,7 @@ public class RegionCheckListener implements Listener {
         if(SwordCraftOnline.r.nextInt(100) <= chance) { mult++; }
 
         if(mult != 0) {
-            loc.getWorld().dropItemNaturally(loc, ItemIdentifier.generate(farm.getCrop(), mult, false, true));
+            loc.getWorld().dropItemNaturally(loc, ItemIdentifier.generateItem(farm.getCrop(), ItemTier.COMMON, mult));
         }
     }
 }
