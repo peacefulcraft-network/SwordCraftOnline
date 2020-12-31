@@ -121,10 +121,10 @@ public interface ItemIdentifier {
       }
 
 		} catch (ClassNotFoundException e) {
-      if(!name.contains("utilityitems.")) { 
+      if(!name.contains("utilityitems.") && (!name.isEmpty() || !name.equals(" "))) { 
         return generateIdentifier("utilityitems." + name, tier, quantity); 
-      }
-      SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
+      } 
+      SwordCraftOnline.logSevere("Attempted to create item " + name.replace("utilityitems.", "") + ", but no coresponding class was found in net.peacefulcraft.sco.items");
 		} catch (NoSuchMethodException e) {
 			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must have a constuctor with arguments (ItemTier, int)");
 		} catch (SecurityException e) {
@@ -212,7 +212,7 @@ public interface ItemIdentifier {
           ItemTier tier = ItemTier.COMMON;
           if (nbti.hasKey("tier")) {
             try {
-              tier = ItemTier.valueOf(nbti.getString("tier"));
+              tier = ItemTier.valueOf(nbti.getString("tier").toUpperCase());
             } catch(IllegalArgumentException ex) {
               SwordCraftOnline.logWarning("Item " + name + " had invalid ItemTier " + nbti.getString("tier") + " falling back to COMMON");
             }

@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.items.utilities.Glow;
 
-public class CraftingCatalyst implements EphemeralAttributeHolder, ItemIdentifier {
+public class CraftingCatalystItem implements EphemeralAttributeHolder, ItemIdentifier {
 
     @Override
     public String getName() {
@@ -63,7 +63,7 @@ public class CraftingCatalyst implements EphemeralAttributeHolder, ItemIdentifie
         return true;
     }
 
-    public CraftingCatalyst(ItemTier tier, Integer quantity) {
+    public CraftingCatalystItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
     }
 

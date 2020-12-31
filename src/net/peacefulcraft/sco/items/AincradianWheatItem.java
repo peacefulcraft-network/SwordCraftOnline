@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-public class AincradianWheat implements ItemIdentifier {
+public class AincradianWheatItem implements ItemIdentifier {
 
 	@Override
 	public String getName() { return "Aincradian Wheat"; }
@@ -44,7 +44,7 @@ public class AincradianWheat implements ItemIdentifier {
 	@Override
 	public boolean isMovable() { return true; }
 
-	public AincradianWheat(ItemTier tier, Integer quantity) {
+	public AincradianWheatItem(ItemTier tier, Integer quantity) {
 		this.quantity = quantity;
 	}
 }

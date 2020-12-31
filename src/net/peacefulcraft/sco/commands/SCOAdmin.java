@@ -58,7 +58,12 @@ public class SCOAdmin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("generateitem")) {
 				Player p = (Player) sender;
 				SCOPlayer s = GameManager.findSCOPlayer(p);
-				s.getPlayerInventory().addItem(ItemIdentifier.generateIdentifier(args[1], ItemTier.valueOf(args[2]), Integer.valueOf(args[3])));
+				ItemIdentifier item = ItemIdentifier.generateIdentifier(args[1], ItemTier.valueOf(args[2]), Integer.valueOf(args[3]));
+				if(item == null || item.getMaterial().equals(Material.AIR)) {
+					p.sendMessage("Failed to create item: " + args[1]);
+					return true;
+				}
+				s.getPlayerInventory().addItem(item);
 				return true;
 			}
 
