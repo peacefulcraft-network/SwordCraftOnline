@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.items.utilities.Glow;
 
-public class InfusedAincradianWheat implements EphemeralAttributeHolder, ItemIdentifier {
+public class InfusedAincradianWheatItem implements EphemeralAttributeHolder, ItemIdentifier {
 
     @Override
     public String getName() {
@@ -64,7 +64,7 @@ public class InfusedAincradianWheat implements EphemeralAttributeHolder, ItemIde
         return true;
     }
 
-    public InfusedAincradianWheat(ItemTier tier, Integer quantity) {
+    public InfusedAincradianWheatItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
     }
 
