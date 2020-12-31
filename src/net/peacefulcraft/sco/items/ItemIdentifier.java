@@ -202,12 +202,13 @@ public interface ItemIdentifier {
     nbti.setString("identifier", name.replaceAll(" ", ""));
     nbti.setString("tier", tier.toString());
 
+    // Reseting to apply ephemeral
+    item = nbti.getItem();
     if (itemIdentifier instanceof EphemeralAttributeHolder) {
-      SwordCraftOnline.logDebug("Applying EphemeralAttribute to " + name);
-      ((EphemeralAttributeHolder) itemIdentifier).applyEphemeralAttributes(item);
+      item = ((EphemeralAttributeHolder) itemIdentifier).applyEphemeralAttributes(item);
     }
 
-    return nbti.getItem();
+    return item;
   }
 
   /**
