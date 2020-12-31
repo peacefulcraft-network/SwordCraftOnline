@@ -20,6 +20,11 @@ public class ForwardLungeItem implements SwordSkillProvider {
     public String getName() { return "Forward Lunge"; }
 
     @Override
+    public String getDisplayName() {
+        return ItemTier.getTierColor(getTier()) + "Forward Lunge";
+    }
+
+    @Override
     public ArrayList<String> getLore() {
         ArrayList<String> lore = new ArrayList<String>();
         switch (this.tier) {

@@ -10,6 +10,9 @@ public class AirItem implements ItemIdentifier {
 	public String getName() { return ""; }
 
 	@Override
+	public String getDisplayName() { return ""; }
+
+	@Override
 	public ArrayList<String> getLore() { return new ArrayList<String>(); }
 
 	@Override

@@ -12,6 +12,11 @@ public class TeleportCrystalItem implements ItemIdentifier {
   public String getName() { return "Teleport Crystal"; }
 
   @Override
+  public String getDisplayName() {
+    return ItemTier.getTierColor(getTier()) + "Teleport Crystal";
+  }
+
+  @Override
   public ArrayList<String> getLore() {
     ArrayList<String> lore = new ArrayList<String>();
 		lore.add(ChatColor.DARK_PURPLE + "Right click to teleport to last visited city.");
@@ -29,10 +34,10 @@ public class TeleportCrystalItem implements ItemIdentifier {
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
   @Override
-  public ItemTier[] getAllowedTiers() { return new ItemTier[] { ItemTier.COMMON }; }
+  public ItemTier[] getAllowedTiers() { return new ItemTier[] { ItemTier.UNCOMMON }; }
 
   @Override
-  public ItemTier getTier() { return ItemTier.COMMON; }
+  public ItemTier getTier() { return ItemTier.UNCOMMON; }
 
   @Override
   public boolean isDroppable() { return false; }

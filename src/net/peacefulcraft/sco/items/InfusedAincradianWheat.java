@@ -11,7 +11,12 @@ public class InfusedAincradianWheat implements EphemeralAttributeHolder, ItemIde
 
     @Override
     public String getName() {
-        return "Aincradian Infused Wheat";
+        return "Infused Aincradian Wheat";
+    }
+
+    @Override
+    public String getDisplayName() {
+        return ItemTier.getTierColor(ItemTier.UNCOMMON) + "Infused Aincradian Wheat";
     }
 
     @Override
