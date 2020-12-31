@@ -85,6 +85,7 @@ public interface ItemIdentifier {
    * @return True if item exist. False if item doesn't exist.
    */
   public static boolean itemExists(String name) {
+    // I love 4 nested try catch statements.
     try {
       Class.forName("net.peacefulcraft.sco.items." + name);
       return true;
@@ -93,7 +94,17 @@ public interface ItemIdentifier {
         Class.forName("net.peacefulcraft.sco.items." + name +"Item");
         return true;
       } catch(ClassNotFoundException ex1) {
-        return false;
+        try {
+          Class.forName("net.peacefulcraft.sco.items.utilityitems." + name);
+          return true;
+        } catch(ClassNotFoundException ex2) {
+          try {
+            Class.forName("net.peacefulcraft.sco.items.utilityitems." + name + "Item");
+            return true;
+          } catch(ClassNotFoundException ex3) {
+            return false;
+          }
+        }
       }
     }
   }
@@ -192,6 +203,7 @@ public interface ItemIdentifier {
     nbti.setString("tier", tier.toString());
 
     if (itemIdentifier instanceof EphemeralAttributeHolder) {
+      SwordCraftOnline.logDebug("Applying EphemeralAttribute to " + name);
       ((EphemeralAttributeHolder) itemIdentifier).applyEphemeralAttributes(item);
     }
 

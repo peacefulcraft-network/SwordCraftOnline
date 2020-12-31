@@ -59,7 +59,7 @@ public class CraftingInventory extends BukkitInventoryBase {
 
     @Override
     public boolean isInventory(Inventory inventory) {
-        return false;
+        return this.inventory == inventory;
     }
 
     @Override
@@ -81,7 +81,10 @@ public class CraftingInventory extends BukkitInventoryBase {
         boolean hitResult = checkResultSlot(ev.getSlot());
         HashMap<Integer, ItemIdentifier> rec = getRecipe();
         Recipe result = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(rec);
+        
+        //SwordCraftOnline.logDebug("Recipe Map: " + String.valueOf(rec));
         if(result == null) {
+            SwordCraftOnline.logDebug("Clearing result...");
             setResult(result);
             setValidCraftSlots(false);
             return;
@@ -93,6 +96,8 @@ public class CraftingInventory extends BukkitInventoryBase {
             setResult(null);
             setValidCraftSlots(false);
         } else {
+            SwordCraftOnline.logDebug("Setting recipe result...");
+            SwordCraftOnline.logDebug("Result Map: " + String.valueOf(result.getResult()));
             setResult(result);
             setValidCraftSlots(true);
         }
@@ -244,6 +249,7 @@ public class CraftingInventory extends BukkitInventoryBase {
                     continue;
                 }
                 setItem(row * 9 + col, item);
+                i++;
             }
         }
     }
