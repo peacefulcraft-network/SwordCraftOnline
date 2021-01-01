@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
@@ -24,6 +27,21 @@ public class CraftingInventory extends BukkitInventoryBase {
         public SCOPlayer getCrafter() { return crafter; }
 
     /**
+     * Crafting task. Runs to check for valid recipe.
+     * Starts when constructor is called.
+     * Cancelled when inventory closes.
+     */
+    private BukkitTask craftTask;
+
+    /**
+     * Recipe fetched from manager.
+     * Null if recipe is invalid.
+     */
+    private Recipe craftingRecipe = null;
+        private void setCraftingRecipe(Recipe rec) { craftingRecipe = rec; }
+        private Recipe getCraftingRecipe() { return craftingRecipe; }
+
+    /**
      * Constructor Creates inventory instance for player
      * 
      * @param s SCOPlayer who owns this instance
@@ -32,6 +50,29 @@ public class CraftingInventory extends BukkitInventoryBase {
         this.crafter = s;
         this.inventory = SwordCraftOnline.getPluginInstance().getServer().createInventory(null, 54, "Crafting Table");
         setBlockers();
+
+        craftTask = new BukkitRunnable(){
+            
+            @Override
+            public void run() {
+
+                // Fetching items in recipe slots and checking Crafting Manager
+                HashMap<Integer, ItemIdentifier> rec = getRecipe();
+                Recipe tempRec = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(rec);
+                
+                // If recipe slots are invalid we clear result slots 
+                // Else we update UI and display results
+                if(tempRec == null) {
+                    setResult(null);
+                    setValidCraftSlots(false);
+                    setCraftingRecipe(null);
+                } else {
+                    setResult(tempRec);
+                    setValidCraftSlots(true);
+                    setCraftingRecipe(tempRec);
+                }
+            }
+        }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 20, 10);
     }
 
     /**
@@ -59,7 +100,7 @@ public class CraftingInventory extends BukkitInventoryBase {
 
     @Override
     public boolean isInventory(Inventory inventory) {
-        return false;
+        return this.inventory == inventory;
     }
 
     @Override
@@ -79,23 +120,13 @@ public class CraftingInventory extends BukkitInventoryBase {
         if(!clickedItem.isMovable()) { ev.setCancelled(true); }
 
         boolean hitResult = checkResultSlot(ev.getSlot());
-        HashMap<Integer, ItemIdentifier> rec = getRecipe();
-        Recipe result = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(rec);
-        if(result == null) {
-            setResult(result);
-            setValidCraftSlots(false);
-            return;
-        }
 
-        if(hitResult) {
+        if(hitResult && craftingRecipe != null) {
             ev.setCancelled(true);
-            giveResult(result);
+            giveResult(craftingRecipe, ev.getClick());
             setResult(null);
             setValidCraftSlots(false);
-        } else {
-            setResult(result);
-            setValidCraftSlots(true);
-        }
+        } 
     }
 
     @Override
@@ -120,6 +151,8 @@ public class CraftingInventory extends BukkitInventoryBase {
     public void onInventoryClose(InventoryCloseEvent ev) {
         if(!ev.getView().getTitle().equalsIgnoreCase("Crafting Table")) { return; }
         clearRecipe();
+
+        craftTask.cancel();
     }
 
     
@@ -230,6 +263,7 @@ public class CraftingInventory extends BukkitInventoryBase {
      */
     private void setResult(Recipe recipe) {
         Map<Integer, ItemIdentifier> result = recipe == null ? new HashMap<>() : recipe.getResult();
+
         int i = 0;
         for(int row = 1; row <= 3; row++) {
             for(int col = 5; col <= 7; col++) {
@@ -243,7 +277,12 @@ public class CraftingInventory extends BukkitInventoryBase {
                     i++;
                     continue;
                 }
-                setItem(row * 9 + col, item);
+
+                // Checking if item is already in result slots
+                if(!item.equals(getItem(row * 9 + col))) {
+                    setItem(row * 9 + col, item);
+                }
+                i++;
             }
         }
     }
@@ -252,40 +291,59 @@ public class CraftingInventory extends BukkitInventoryBase {
      * Gives player the crafting or drops it on the ground
      * Removes necessary recipe components from recipe slots
      * @param recipe Recipe they crafted
+     * @param cType Click type of event.
      */
-    private void giveResult(Recipe recipe) {
-        int i = 0;
+    private void giveResult(Recipe recipe, ClickType cType) {
+        // Removing necessary recipe components from recipe slots
+        int shiftAmount = 0;
         Map<Integer, ItemIdentifier> rec = recipe.getRecipe();
-        for(int row = 1; row <= 3; row++) {
-            for(int col = 1; col <= 3; col++) {
-                ItemIdentifier item = getItem(row * 9 + col);
-                if(item == null || item.getMaterial().equals(Material.AIR)) {
-                    i++;
-                    continue;
-                }
 
-                // Subtract-Remove logic
-                int amount = rec.get(i).getQuantity();
-                if(item.getQuantity() - amount == 0) {
-                    removeItem(row * 9 + col);
-                } else {
-                    item.setQuantity(item.getQuantity() - amount);
-                }
-                i++;
-            }
-        }
+        Recipe recipeCheck = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(getRecipe());
+        // This is the first time I have used a do loop. So sexy
+        do {
+            removeRecipeSlots(rec);
+            recipeCheck = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(getRecipe());
+            shiftAmount++;
+        } while(cType.equals(ClickType.SHIFT_LEFT) && recipeCheck != null && recipeCheck.getName().equalsIgnoreCase(recipe.getName()));
 
+        // Giving player crafted items
         Map<Integer, ItemIdentifier> result = recipe.getResult();
         List<ItemIdentifier> leftovers = new ArrayList<>();
-        for(ItemIdentifier item : result.values()) {
-            HashMap<Integer, ItemIdentifier> temp = this.crafter.getPlayerInventory().addItem(item);
-            for(ItemIdentifier itemm : temp.values()) {
-                leftovers.add(itemm);
+        for(int i = 0; i <= shiftAmount; i++) {
+            for(ItemIdentifier item : result.values()) {
+                HashMap<Integer, ItemIdentifier> temp = this.crafter.getPlayerInventory().addItem(item);
+                for(ItemIdentifier itemm : temp.values()) {
+                    leftovers.add(itemm);
+                }
             }
         }
 
         for(ItemIdentifier item : leftovers) {
             this.crafter.getPlayer().getLocation().getWorld().dropItemNaturally(crafter.getLocation(), ItemIdentifier.generateItem(item));
+        }
+    }
+
+    /**
+     * Used in giveResult() method
+     * Using rec map and rol,col we remove items from crafting inventory.
+     * 
+     * @param rec Recipe map from giveResult()
+     */
+    private void removeRecipeSlots(Map<Integer, ItemIdentifier> rec) {
+        int i = 0;
+
+        for(int row = 1; row <= 3; row++) {
+            for(int col = 1; col <= 3; col++) {
+                ItemIdentifier item = getItem(row * 9 + col);
+                int recAmount = rec.get(i).getQuantity();
+                if(item.getQuantity() - recAmount == 0) {
+                    removeItem(row * 9 + col);
+                } else {
+                    item.setQuantity(item.getQuantity() - recAmount);
+                    setItem(row * 9 + col, item);
+                }
+                i++;
+            }
         }
     }
     

@@ -61,4 +61,7 @@ public class GreenSlotItem implements ItemIdentifier {
         return false;
     }
     
+    public GreenSlotItem(ItemTier tier, Integer quantity) {
+        this.quantity = quantity;
+    }
 }

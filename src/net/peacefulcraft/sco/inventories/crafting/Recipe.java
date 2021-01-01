@@ -103,9 +103,11 @@ public class Recipe {
     private ItemIdentifier parseString(String s, boolean movable) {
         String sItem = StringUtils.substringBetween(s, "item{", "}");
         String sAmount = StringUtils.substringBetween(s, "amount{", "}");
+        String sTier = StringUtils.substringBetween(s, "tier{", "}");
+        ItemTier tier = ItemTier.valueOf(sTier.toUpperCase());
         Integer amount = Integer.valueOf(sAmount);
 
-        return ItemIdentifier.generateIdentifier(sItem, ItemTier.COMMON, amount);
+        return ItemIdentifier.generateIdentifier(sItem, tier, amount);
     }
 
     /**
