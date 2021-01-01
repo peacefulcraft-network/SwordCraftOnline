@@ -299,6 +299,7 @@ public class CraftingInventory extends BukkitInventoryBase {
         Map<Integer, ItemIdentifier> rec = recipe.getRecipe();
 
         Recipe recipeCheck = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(getRecipe());
+        // This is the first time I have used a do loop. So sexy
         do {
             removeRecipeSlots(rec);
             recipeCheck = SwordCraftOnline.getPluginInstance().getCraftingManager().checkRecipe(getRecipe());
