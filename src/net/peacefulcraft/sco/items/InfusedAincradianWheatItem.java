@@ -56,7 +56,7 @@ public class InfusedAincradianWheatItem implements EphemeralAttributeHolder, Ite
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

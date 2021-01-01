@@ -55,7 +55,7 @@ public class CraftingCatalystItem implements EphemeralAttributeHolder, ItemIdent
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override
