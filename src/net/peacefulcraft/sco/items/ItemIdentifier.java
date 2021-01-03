@@ -128,27 +128,37 @@ public interface ItemIdentifier {
   public static ItemIdentifier generateIdentifier(String name, ItemTier tier, int quantity) throws RuntimeException {
     try {
       name = name.replaceAll(" ", "");
-      Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
-      Class<?> params[] = new Class[] { ItemTier.class, Integer.class };
-      Constructor<?> constructor = clas.getConstructor(params);
-    
-      ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
 
-      // Check that the requested item tier is allowed
-      for (ItemTier allowedTier : identiifer.getAllowedTiers()) {
-        if (tier == allowedTier) {
-          return identiifer;
+      // Nested trys to avoid recursive calls
+      Class<?> clas = null;
+      try {
+        clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
+      } catch(ClassNotFoundException ex) {
+        try {
+          clas = Class.forName("net.peacefulcraft.sco.items.utilityitems." + name + "Item");
+        } catch(ClassNotFoundException exx) {
+          try {
+            clas = Class.forName("net.peacefulcraft.sco.items.weaponitems." + name + "Item");
+          } catch(ClassNotFoundException exxx) {
+            SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
+          }
         }
       }
 
-		} catch (ClassNotFoundException e) {
-      if(!name.contains("utilityitems.") && !name.contains("weaponitems.")) {
-        return generateIdentifier("utilityitems." + name, tier, quantity);
-      } else if(name.contains("utilityitems.")) {
-        return generateIdentifier("weaponitems." + name.replace("utilityitems.", ""), tier, quantity);
+      // If class is found we continue. Otherwise throw runtime
+      if(clas != null) {
+        Class<?> params[] = new Class[] { ItemTier.class, Integer.class };
+        Constructor<?> constructor = clas.getConstructor(params);
+      
+        ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
+  
+        // Check that the requested item tier is allowed
+        for (ItemTier allowedTier : identiifer.getAllowedTiers()) {
+          if (tier == allowedTier) {
+            return identiifer;
+          }
+        }
       }
-      name = name.replace("utilityitems.", "").replace("weaponitems.", "");
-      SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
 		} catch (NoSuchMethodException e) {
 			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must have a constuctor with arguments (ItemTier, int)");
 		} catch (SecurityException e) {
