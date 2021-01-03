@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -114,9 +115,13 @@ public class InventoryListeners implements Listener {
       thatInventory = this.inventoryMap.get(ev.getView().getBottomInventory());
     }
 
-    thisInventory.onThisInventoryDrag(ev, itemIdentifiers);
-    if (thatInventory != null) {
-      thatInventory.onThatInventoryDrag(ev, itemIdentifiers);
+    try {
+      thisInventory.onThisInventoryDrag(ev, itemIdentifiers);
+      if (thatInventory != null) {
+        thatInventory.onThatInventoryDrag(ev, itemIdentifiers);
+      }
+    } catch(NullPointerException ex) {
+      ex.printStackTrace();
     }
   }
 
@@ -139,6 +144,9 @@ public class InventoryListeners implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onEntityPickupItem(EntityPickupItemEvent ev) {
     if (ev.getEntityType() == EntityType.PLAYER) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(ev.getItem().getItemStack());
+      GameManager.findSCOPlayer((Player)ev.getEntity()).getPlayerInventory().onPlayerPickup(ev, item);
+
       Bukkit.getScheduler().runTask(SwordCraftOnline.getPluginInstance(), () -> {
         GameManager.findSCOPlayer((Player)ev.getEntity()).getPlayerInventory().saveInventory();
       });
