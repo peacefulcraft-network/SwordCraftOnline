@@ -14,7 +14,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -84,7 +83,10 @@ public class InventoryListeners implements Listener {
 
     SwordCraftOnline.logDebug("Resolved this inventory to " + ((thisInventory == null) ? "null" : thisInventory.getInventory().getType()) + " and that inventory to " + ((thatInventory == null) ? "null" : thatInventory.getInventory().getType()));
 
-    thisInventory.onClickThisInventory(ev, cursorItemId, clickedItemId);
+    if (thisInventory != null) {
+      thisInventory.onClickThisInventory(ev, cursorItemId, clickedItemId);
+    }
+
     if (thatInventory != null) {
       thatInventory.onClickThatInventory(ev, cursorItemId, clickedItemId);
     }
@@ -115,13 +117,12 @@ public class InventoryListeners implements Listener {
       thatInventory = this.inventoryMap.get(ev.getView().getBottomInventory());
     }
 
-    try {
+    if (thisInventory != null) {
       thisInventory.onThisInventoryDrag(ev, itemIdentifiers);
-      if (thatInventory != null) {
-        thatInventory.onThatInventoryDrag(ev, itemIdentifiers);
-      }
-    } catch(NullPointerException ex) {
-      ex.printStackTrace();
+    }
+    
+    if (thatInventory != null) {
+      thatInventory.onThatInventoryDrag(ev, itemIdentifiers);
     }
   }
 
