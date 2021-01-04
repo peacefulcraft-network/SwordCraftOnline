@@ -83,7 +83,10 @@ public class InventoryListeners implements Listener {
 
     SwordCraftOnline.logDebug("Resolved this inventory to " + ((thisInventory == null) ? "null" : thisInventory.getInventory().getType()) + " and that inventory to " + ((thatInventory == null) ? "null" : thatInventory.getInventory().getType()));
 
-    thisInventory.onClickThisInventory(ev, cursorItemId, clickedItemId);
+    if (thisInventory != null) {
+      thisInventory.onClickThisInventory(ev, cursorItemId, clickedItemId);
+    }
+
     if (thatInventory != null) {
       thatInventory.onClickThatInventory(ev, cursorItemId, clickedItemId);
     }
@@ -114,7 +117,10 @@ public class InventoryListeners implements Listener {
       thatInventory = this.inventoryMap.get(ev.getView().getBottomInventory());
     }
 
-    thisInventory.onThisInventoryDrag(ev, itemIdentifiers);
+    if (thisInventory != null) {
+      thisInventory.onThisInventoryDrag(ev, itemIdentifiers);
+    }
+    
     if (thatInventory != null) {
       thatInventory.onThatInventoryDrag(ev, itemIdentifiers);
     }
