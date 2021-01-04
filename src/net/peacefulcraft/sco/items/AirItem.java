@@ -7,7 +7,7 @@ import org.bukkit.Material;
 public class AirItem implements ItemIdentifier {
 
 	@Override
-	public String getName() { return ""; }
+	public String getName() { return "Air"; }
 
 	@Override
 	public String getDisplayName() { return ""; }
