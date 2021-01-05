@@ -84,10 +84,10 @@ public class ModifierUser {
                 for(WeaponModifier wm : entry.getValue()) {
                     ModifierType mType = wm.getModifierType();
                     CombatModifier cType = wm.getCombatModifierType();
-                    if(!mType.equals(null)) {
-                        setMultiplier(mType, wm.getModifierIncoming(), -wm.getModifierAmount(), -1);
+                    if(mType != null) {
+                        addToMultiplier(mType, wm.getModifierIncoming(), -wm.getModifierAmount(), -1);
                     }
-                    if(!cType.equals(null)) {
+                    if(cType != null) {
                         setCombatModifier(cType, -wm.getModifierAmount(), -1);
                     }
                 }
@@ -99,17 +99,21 @@ public class ModifierUser {
         Iterator<Entry<String, ArrayList<WeaponModifier>>> iterr = wModifiers.entrySet().iterator();
         while(iterr.hasNext()) {
             Entry<String, ArrayList<WeaponModifier>> entry = iterr.next();
+            SwordCraftOnline.logDebug("Applying Entry: " + entry.toString());
+
             // Skipping already applied weapons
             if(weaponModifiers.keySet().contains(entry.getKey())) { continue; }
 
             for(WeaponModifier wm : entry.getValue()) {
                 ModifierType mType = wm.getModifierType();
                 CombatModifier cType = wm.getCombatModifierType();
-                if(!mType.equals(null)) {
-                    setMultiplier(mType, wm.getModifierIncoming(), wm.getModifierAmount(), -1);
+                if(mType != null) {
+                    addToMultiplier(mType, wm.getModifierIncoming(), wm.getModifierAmount(), -1);
+                    SwordCraftOnline.logDebug("Set modifier: " + mType.toString() + ", to: " + wm.getModifierAmount());
                 }
-                if(!cType.equals(null)) {
+                if(cType != null) {
                     setCombatModifier(cType, wm.getModifierAmount(), -1);
+                    SwordCraftOnline.logDebug("Set combat modifier: " + cType.toString() + ", to: " + wm.getModifierAmount());
                 }
             }
         }
@@ -141,6 +145,24 @@ public class ModifierUser {
         } catch(IllegalArgumentException ex) {
             SwordCraftOnline.logDebug("[ModifierUser] IllegalArgumentException thrown in checkModifier method.");
             return damage;
+        }
+    }
+
+    /**
+     * Temporarily adds to value of desired multiplier
+     * Permenantly sets value with duration -1
+     * 
+     * @param type
+     * @param incoming
+     * @param value
+     * @param duration
+     */
+    public void addToMultiplier(ModifierType type, boolean incoming, double value, int duration) {
+        Modifier m = getDamageModifier(type, incoming);
+        if(m != null) {
+            setMultiplier(type, incoming, m.getMultiplier() + value, duration);
+        } else {
+            setMultiplier(type, incoming, value, duration);
         }
     }
 
@@ -305,6 +327,14 @@ public class ModifierUser {
         }, duration * 20);
     }
 
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER ATTRIBUTE HANDLING
+     * ===============================================================================================
+     * 
+     */
+
     /**
      * Fetches mobs attribute base value
      * @param attribute Attribute to be searched for
@@ -378,6 +408,14 @@ public class ModifierUser {
     public boolean isDead() {
         return getLivingEntity().isDead();
     }
+
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER COMBAT MODIFIER HANDLING
+     * ===============================================================================================
+     * 
+     */
 
     /**
      * Fetches combat modifier value
@@ -489,6 +527,14 @@ public class ModifierUser {
         /**Additional chance to get more exp on mob kill */
         BONUS_EXP;
     }
+
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER HEALTH HANDLING
+     * ===============================================================================================
+     * 
+     */
 
     /**
      * Gets max health of this user 

@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -142,6 +143,7 @@ public class InventoryListeners implements Listener {
 
   /**
    * Triggers inventory saving when items are picked up off the floor
+   * Holds logic for weapon limitations in inventory
    */
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onEntityPickupItem(EntityPickupItemEvent ev) {
@@ -156,7 +158,7 @@ public class InventoryListeners implements Listener {
   }
 
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-  public void onPlayerChangeHeldItem(PlayerChangedMainHandEvent ev) {
+  public void onPlayerChangeHeldItem(PlayerItemHeldEvent ev) {
     ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(ev.getPlayer().getInventory().getItemInMainHand());
     GameManager.findSCOPlayer(ev.getPlayer()).getPlayerInventory().onPlayerChangeHeldItem(ev, item);
   }

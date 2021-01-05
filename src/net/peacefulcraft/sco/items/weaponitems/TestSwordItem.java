@@ -119,7 +119,7 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
     @Override
     public JsonObject getPassiveData() {
         JsonObject obj = new JsonObject();
-        obj.addProperty("RefinedPower", 1);
+        obj.addProperty("Refined Power", 1);
         return obj;
     }
 

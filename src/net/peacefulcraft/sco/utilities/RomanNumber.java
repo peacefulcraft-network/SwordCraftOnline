@@ -8,7 +8,7 @@ import java.util.TreeMap;
  * Converts roman numerals to decimal
  */
 public class RomanNumber {
-    public static int romanToDecimal(String romanNumber) throws RuntimeException{
+    public static Integer romanToDecimal(String romanNumber) {
         int decimal = 0;
         int lastNumber = 0;
         String romanNumeral = romanNumber.toUpperCase();
@@ -54,7 +54,7 @@ public class RomanNumber {
                     break;
 
                 default:
-                    throw new RuntimeException("Attempted to convert invalid roman numeral to decimal");
+                    return null;
             }
         } 
 
