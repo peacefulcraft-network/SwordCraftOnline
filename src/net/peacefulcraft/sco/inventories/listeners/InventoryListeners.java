@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
@@ -151,6 +152,12 @@ public class InventoryListeners implements Listener {
         GameManager.findSCOPlayer((Player)ev.getEntity()).getPlayerInventory().saveInventory();
       });
     }
+  }
+
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+  public void onPlayerChangeHeldItem(PlayerChangedMainHandEvent ev) {
+    ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(ev.getPlayer().getInventory().getItemInMainHand());
+    GameManager.findSCOPlayer(ev.getPlayer()).getPlayerInventory().onPlayerChangeHeldItem(ev, item);
   }
 
   /**

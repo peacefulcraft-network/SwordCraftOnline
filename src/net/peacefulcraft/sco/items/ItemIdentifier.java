@@ -231,6 +231,11 @@ public interface ItemIdentifier {
       item = ((EphemeralAttributeHolder) itemIdentifier).applyEphemeralAttributes(item);
     }
 
+    if (itemIdentifier instanceof WeaponAttributeHolder) {
+      WeaponAttributeHolder wh = ((WeaponAttributeHolder) itemIdentifier);
+      item = WeaponAttributeHolder.applyLore(item, wh.getPassiveData(), wh.getActiveData());
+    }
+
     return item;
   }
 

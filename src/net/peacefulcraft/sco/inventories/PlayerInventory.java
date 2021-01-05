@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.inventories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -8,21 +9,28 @@ import com.google.gson.JsonObject;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import de.tr7zw.nbtapi.NBTItem;
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 
 public class PlayerInventory extends BukkitInventoryBase {
 
@@ -221,11 +229,50 @@ public class PlayerInventory extends BukkitInventoryBase {
       }
       ev.setCancelled(true);
     }
+  }
 
+  /**
+   * Called when player changes held item
+   * @param ev
+   * @param item
+   */
+  public void onPlayerChangeHeldItem(PlayerChangedMainHandEvent ev, ItemIdentifier item) {
+    HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
+
+    for(int i = 0; i <= 8; i++) {
+      item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      SwordCraftOnline.logDebug("Item before check: " + item.getName());
+      if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
+        SwordCraftOnline.logDebug("item after check: " + item.getName());
+        ArrayList<WeaponModifier> passMods = WeaponAttributeHolder.parseLore(this.inventory.getItem(i)).get("passive");
+        SwordCraftOnline.logDebug("Parsed passive: " + passMods);
+        if(passMods == null || passMods.isEmpty()) { continue; }
+        passives.put(ChatColor.stripColor(item.getDisplayName()), passMods);  
+      }
+    }
+    GameManager.findSCOPlayer((Player)ev.getPlayer()).applyWeaponModifiers(passives);
   }
 
   @Override
   public void onInventoryClose(InventoryCloseEvent ev) {
+    //SwordCraftOnline.logDebug("INVENTORY CLOSE EVENT");
+    /*
+    HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
+
+    for(int i = 0; i <= 8; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      SwordCraftOnline.logDebug("Item before check: " + item.getName());
+      if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
+        SwordCraftOnline.logDebug("item after check: " + item.getName());
+        ArrayList<WeaponModifier> passMods = WeaponAttributeHolder.parseLore(this.inventory.getItem(i)).get("passive");
+        SwordCraftOnline.logDebug("Parsed passive: " + passMods);
+        if(passMods == null || passMods.isEmpty()) { continue; }
+        passives.put(ChatColor.stripColor(item.getDisplayName()), passMods);  
+      }
+    }
+    GameManager.findSCOPlayer((Player)ev.getPlayer()).applyWeaponModifiers(passives);
+    */
+
     this.saveInventory();
   }
 

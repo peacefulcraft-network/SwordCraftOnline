@@ -13,10 +13,11 @@ import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.EphemeralAttributeHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.items.utilities.Durability;
 import net.peacefulcraft.sco.items.utilities.ItemAttribute;
 
-public class TestSwordItem implements EphemeralAttributeHolder, CustomDataHolder, ItemIdentifier {
+public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeHolder, CustomDataHolder, ItemIdentifier {
 
     private Integer quantity;
 
@@ -113,6 +114,19 @@ public class TestSwordItem implements EphemeralAttributeHolder, CustomDataHolder
     public void parseEphemeralAttributes(ItemStack item) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public JsonObject getPassiveData() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("RefinedPower", 1);
+        return obj;
+    }
+
+    @Override
+    public JsonObject getActiveData() {
+        // TODO Auto-generated method stub
+        return null;
     }
     
 }

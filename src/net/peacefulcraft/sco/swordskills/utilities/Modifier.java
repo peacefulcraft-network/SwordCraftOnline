@@ -103,12 +103,4 @@ public class Modifier {
     public double calculate(double dam) {
         return this.multiplier * dam;
     }
-
-    private String getInfo() {
-        String s = "[Modifier Info]: ";
-        s += "[Modifier Type] " + this.type.toString() + " ";
-        s += "[Multiplier] " + String.valueOf(this.multiplier) + " ";
-        s += "[Incoming] " + String.valueOf(this.incoming);
-        return s;
-    }
 }
