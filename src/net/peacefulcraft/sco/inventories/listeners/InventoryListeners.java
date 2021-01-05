@@ -13,7 +13,6 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
@@ -23,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.PlayerInventory;
 import net.peacefulcraft.sco.inventories.SCOInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 
@@ -134,10 +134,44 @@ public class InventoryListeners implements Listener {
    */
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onInventoryClose(InventoryCloseEvent ev) {
-    this.activeViews.remove(ev.getView());
-    SCOInventory si = this.inventoryMap.remove(ev.getInventory());
-    if (si != null) {
-      si.onInventoryClose(ev);
+    SCOInventory topInventory = this.inventoryMap.get(ev.getView().getTopInventory());
+    SCOInventory bottomInventory = this.inventoryMap.get(ev.getView().getBottomInventory());
+
+    /*
+     * Mark inventory as closed.
+     * Player inventories don't ever close, nor do they fire open events so
+     * we can't remove the view ever or else we'll loose it and bad things happen. 
+     */
+    if (topInventory != null && !(topInventory instanceof PlayerInventory)) {
+      this.inventoryMap.remove(ev.getView().getTopInventory());
+      SwordCraftOnline.logDebug("No longer tracking inventory of type " + ev.getView().getTopInventory().getType());
+    }
+    if (bottomInventory != null && !(bottomInventory instanceof PlayerInventory)) {
+      this.inventoryMap.remove(ev.getView().getBottomInventory());
+      SwordCraftOnline.logDebug("No longer tracking inventory of type " + ev.getView().getBottomInventory().getType());
+    }
+
+    // Short circuit for null values, then make sure this was not the InventoryView for the player's inventory
+    if (
+      (topInventory != null &&!topInventory.isInventory(ev.getInventory())) &&
+      (bottomInventory != null && !bottomInventory.isInventory(ev.getInventory()))
+    ) {
+      this.activeViews.remove(ev.getView());
+      SwordCraftOnline.logDebug("No longer tracking InventoryView for inventory of type " + ev.getView().getType());
+    }
+
+    if (topInventory != null) {
+      SwordCraftOnline.logDebug("Dispatching inventory close event to inventory type " + ev.getView().getTopInventory().getType());
+      topInventory.onInventoryClose(ev);
+    } else {
+      SwordCraftOnline.logDebug("Ignoring close event for inventory type " + ev.getView().getTopInventory().getType());
+    }
+
+    if (bottomInventory != null) {
+      SwordCraftOnline.logDebug("Dispatching inventory close event to inventory type " + ev.getView().getBottomInventory().getType());
+      bottomInventory.onInventoryClose(ev);
+    } else {
+      SwordCraftOnline.logDebug("Ignoring close event for inventory type " + ev.getView().getBottomInventory().getType());
     }
   }
 
