@@ -32,16 +32,16 @@ public interface WeaponAttributeHolder {
 
         if(active != null && !active.entrySet().isEmpty()) {
             lore.add("");
-            lore.add("Active Skill Bonuses:");
+            lore.add(ChatColor.LIGHT_PURPLE + "Active Skill Bonuses:");
             for(Entry<String, JsonElement> entry : active.entrySet()) {
-                lore.add(entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
+                lore.add(ChatColor.GOLD + " -" + entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
             }
         }
         if(passive != null && !passive.entrySet().isEmpty()) {
             lore.add("");
-            lore.add("Passive Skill Bonuses:");
+            lore.add(ChatColor.LIGHT_PURPLE + "Passive Skill Bonuses:");
             for(Entry<String, JsonElement> entry : passive.entrySet()) {
-                lore.add(entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
+                lore.add(ChatColor.GOLD + " -" + entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
             }
         }
 
@@ -58,13 +58,11 @@ public interface WeaponAttributeHolder {
         ArrayList<WeaponModifier> activeModifiers = new ArrayList<>();
         ArrayList<WeaponModifier> passiveModifiers = new ArrayList<>();
 
-        //loreLoop:
         for(int i = 0; i < lore.size(); i++) {
             String s = lore.get(i);
             if(ChatColor.stripColor(s).contains("Active")) {
                 int j = i + 1;
                 while(j < lore.size() && !lore.get(j).isEmpty()) {
-
                     try {
                         WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
                         if(wm == null) { continue; }
@@ -74,38 +72,28 @@ public interface WeaponAttributeHolder {
                         SwordCraftOnline.logDebug("Caught Exception");
                         break;
                     }
-
                     j++;
-                    //if(j >= lore.size()) { break loreLoop; }
                 }
                 out.put("active", activeModifiers);
-
                 i = j;
             }
             if(ChatColor.stripColor(s).contains("Passive")) {
                 int j = i + 1;
                 while(j < lore.size() && !lore.get(j).isEmpty()) {
-                    
                     try {
                         WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
                         if(wm == null) { continue; }
                         passiveModifiers.add(wm);
-                       // SwordCraftOnline.logDebug("Added Weapon Modifier: " + wm.getName());
                     } catch(RuntimeException ex) {
                         ex.printStackTrace();
                         break;
                     }
-
                     j++;
-                    //if(j >= lore.size()) { break loreLoop; }
                 }
                 out.put("passive", passiveModifiers);
-                //SwordCraftOnline.logDebug("Passive: " + passiveModifiers.toString());
-
                 i = j;
             }
         }    
-        //SwordCraftOnline.logDebug("Output: " + out.toString());
         return out;  
     }
 
@@ -118,7 +106,7 @@ public interface WeaponAttributeHolder {
      * @throws RuntimeException on invalid parsing
      */
     public static WeaponModifier parseWeaponModifier(List<String> lore, int j) {
-        String[] split = ChatColor.stripColor(lore.get(j)).split(" ");
+        String[] split = ChatColor.stripColor(lore.get(j)).replace(" -", "").split(" ");
         String level = "";
         String skillName = "";
         List<String> skillNameLis = new ArrayList<>();
@@ -131,7 +119,6 @@ public interface WeaponAttributeHolder {
             } else {
                 level = split[k];
                 skillName = String.join(" ", skillNameLis);
-                //SwordCraftOnline.logDebug("Parsed level: " + level + ", name: " + skillName);
             }
         }
         if(level.isEmpty() || skillName.isEmpty()) {

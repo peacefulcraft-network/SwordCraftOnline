@@ -37,7 +37,7 @@ public class ParrySkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         if(this.c instanceof SCOPlayer) {
             SCOPlayer s = (SCOPlayer)c;
-            s.addCombatModifier(CombatModifier.PARRY_CHANCE, this.increase, -1);
+            s.addToCombatModifier(CombatModifier.PARRY_CHANCE, this.increase, -1);
         }
     }
 
@@ -50,7 +50,7 @@ public class ParrySkill extends SwordSkill {
     public void unregisterSkill() {
         if(this.c instanceof SCOPlayer) {
             SCOPlayer s = (SCOPlayer)c;
-            s.addCombatModifier(CombatModifier.PARRY_CHANCE, -this.increase, -1);
+            s.addToCombatModifier(CombatModifier.PARRY_CHANCE, -this.increase, -1);
         }
     }
     

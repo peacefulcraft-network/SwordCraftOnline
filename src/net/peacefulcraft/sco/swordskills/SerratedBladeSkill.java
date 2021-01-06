@@ -29,7 +29,7 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        s.addCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
+        s.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
     }
 
     @Override
@@ -45,6 +45,6 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void unregisterSkill() {
-        s.addCombatModifier(CombatModifier.CRITICAL_CHANCE, -this.increase, -1);
+        s.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, -this.increase, -1);
     }
 }

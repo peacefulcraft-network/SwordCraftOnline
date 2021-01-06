@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
@@ -50,6 +51,20 @@ public interface WeaponModifier {
      * @return combat modifier
      */
     public abstract CombatModifier getCombatModifierType();
+
+    /**
+     * Applies this modifiers effects onto modifier users
+     * 
+     * @param user User we are modifying
+     */
+    public abstract void applyEffects(ModifierUser user);
+
+    /**
+     * Removes this modifiers effects from modifier user
+     * 
+     * @param user User we are modifying
+     */
+    public abstract void removeEffects(ModifierUser user);
 
     /**
      * Check if a weapon skill exists
@@ -102,16 +117,6 @@ public interface WeaponModifier {
         } 
 
         throw new RuntimeException("Failed to generate WeaponModifier with requested scope " + name);
-    }
-
-    /**
-     * Calculates modifier power value against level/
-     * Similar to how sharpness is calculated on weapons
-     * 
-     * @param level Level of weapon modifier
-     */
-    public static double calculateModifierAmount(int level) {
-        return 0.5 * level + 0.5;
     }
 
     /**

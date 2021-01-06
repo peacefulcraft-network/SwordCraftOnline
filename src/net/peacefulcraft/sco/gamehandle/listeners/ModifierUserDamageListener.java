@@ -12,7 +12,6 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class ModifierUserDamageListener implements Listener {
     

@@ -16,12 +16,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
@@ -256,16 +254,16 @@ public class PlayerInventory extends BukkitInventoryBase {
 
   @Override
   public void onInventoryClose(InventoryCloseEvent ev) {
-    SwordCraftOnline.logDebug("INVENTORY CLOSE EVENT");
+    //SwordCraftOnline.logDebug("INVENTORY CLOSE EVENT");
     HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
 
     for(int i = 0; i <= 8; i++) {
       ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
-      SwordCraftOnline.logDebug("Item before check: " + item.getName());
+      //SwordCraftOnline.logDebug("Item before check: " + item.getName());
       if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
-        SwordCraftOnline.logDebug("item after check: " + item.getName());
+        //SwordCraftOnline.logDebug("item after check: " + item.getName());
         ArrayList<WeaponModifier> passMods = WeaponAttributeHolder.parseLore(this.inventory.getItem(i)).get("passive");
-        SwordCraftOnline.logDebug("Parsed passive: " + passMods);
+        //SwordCraftOnline.logDebug("Parsed passive: " + passMods);
         if(passMods == null || passMods.isEmpty()) { continue; }
         passives.put(ChatColor.stripColor(item.getDisplayName()), passMods);  
       }
