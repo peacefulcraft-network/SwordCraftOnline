@@ -5,11 +5,8 @@ import java.util.HashMap;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
-
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SCOInventory;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
@@ -117,23 +114,10 @@ public class SwordSkillManager
 	
 	public void unregisterAllSkills() {
 		for(SwordSkill skill : getSkills()) {
-			unregisterSkill(skill);
+			skill.execSkillUnregistration();
 		}
 		skills = new HashMap<SwordSkillTrigger, ArrayList<SwordSkill>>();
 	}
-	
-		/**
-		 * Doesn't actually remove the skill, just tells it it is going to be removed
-		 * @param skill to remove
-		 */
-		private void unregisterSkill(SwordSkill skill) {
-			for(SwordSkill registeredSkill : getSkills()) {
-				if(registeredSkill == skill) {
-					skill.execSkillUnregistration();
-					return;
-				}
-			}
-		}
 	
 	/**
 	 * Unregisters all of a player's SwordSkills, then re-registers a new
