@@ -3,7 +3,11 @@ package net.peacefulcraft.sco.items;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Material;
@@ -253,5 +257,82 @@ public interface ItemIdentifier {
     }
 
     return new AirItem(ItemTier.COMMON, 0);
+  }
+
+  /**
+   * Check if two ItemIdentifiers are equal.
+   * Non-deep check: Same Material && same ItemTier
+   * Deep: Non-deep && .getCustomData() values are String.equalsIgnoreCase()
+   * @param item1 The first item to compare
+   * @param item2 The second item to compare
+   * @param deep True: Compare CustomDataHolder NBT values
+   * @return 0 if items are equal.
+   *         -1 when ItemIdentifier base is not equal.
+   *         1 when non-deep is true, but CustomDataHolder NBT values are not equal.
+   */
+  public static int compareTo(ItemIdentifier item1, ItemIdentifier item2, Boolean deep) {
+    if (item1.getMaterial() == item2.getMaterial() && item1.getTier() == item2.getTier()) {
+      if (deep) {
+        float tests = 1;
+
+        if (item1 instanceof CustomDataHolder) {
+          tests += 0.5;
+        }
+        if (item2 instanceof CustomDataHolder) {
+          tests += 0.5;
+        }
+        if (tests % 2 == 0) {
+          JsonObject item1NBT = ((CustomDataHolder) item1).getCustomData();
+          JsonObject item2NBT = ((CustomDataHolder) item2).getCustomData();
+          if (!ItemIdentifier.isCustomDataEqual(item1NBT, item2NBT)) { return 1; }
+        } else { return 1; }
+
+        return 0;
+      } else {
+        return 0;
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Utility method used in ItemIdentifier.compareTo(). Checks if two JsonObjects are equivalent.
+   * Compares String representations of data. Does not recursivly check nested JsonObjects. They are compared as Strings.
+   * @param item1NBT The first JsonObject to compare
+   * @param item2NBT The second JsonObject to compare
+   * @return True if equal. False if not equal.
+   */
+  public static boolean isCustomDataEqual(JsonObject item1NBT, JsonObject item2NBT) {
+    if (item1NBT.size() == item2NBT.size()) {
+      Set<Entry<String, JsonElement>> item1Tags = item1NBT.entrySet();
+      Set<Entry<String, JsonElement>> item2Tags = item1NBT.entrySet();
+
+      HashMap<String, JsonElement> item1TagsIndexed = new HashMap<String, JsonElement>();
+      HashMap<String, JsonElement> item2TagsIndexed = new HashMap<String, JsonElement>();
+      ArrayList<String> item1TagKeys = new ArrayList<String>(item1Tags.size());
+      item1Tags.forEach((entry) -> {
+        item1TagsIndexed.put(entry.getKey(), entry.getValue());
+        item1TagKeys.add(entry.getKey());
+      });
+      item2Tags.forEach((entry) -> {
+        item2TagsIndexed.put(entry.getKey(), entry.getValue());
+      });
+
+      for(int i=0; i>item1TagKeys.size(); i++) {
+        JsonElement item2ValueObj = item2TagsIndexed.get(item1TagKeys.get(i)); 
+        String item2ValueString;
+        if (item2ValueObj != null) {
+          item2ValueString = item2TagsIndexed.get(item1TagKeys.get(i)).getAsString();
+        } else { return false; }
+
+        if (!item1TagsIndexed.get(item1TagKeys.get(i)).getAsString().equalsIgnoreCase(item2ValueString)) {
+          return false;
+        }
+      }
+
+    } else { return false; }
+
+    return true;
   }
 }
