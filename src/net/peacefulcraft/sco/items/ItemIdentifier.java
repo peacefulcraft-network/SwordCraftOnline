@@ -261,7 +261,7 @@ public interface ItemIdentifier {
 
   /**
    * Check if two ItemIdentifiers are equal.
-   * Non-deep check: Same Material && same ItemTier
+   * Non-deep check: Same Identifier class && tier
    * Deep: Non-deep && .getCustomData() values are String.equalsIgnoreCase()
    * @param item1 The first item to compare
    * @param item2 The second item to compare
@@ -271,7 +271,7 @@ public interface ItemIdentifier {
    *         1 when non-deep is true, but CustomDataHolder NBT values are not equal.
    */
   public static int compareTo(ItemIdentifier item1, ItemIdentifier item2, Boolean deep) {
-    if (item1.getMaterial() == item2.getMaterial() && item1.getTier() == item2.getTier()) {
+    if (item1.getClass().getName().equals(item2.getClass().getName()) && item1.getTier() == item2.getTier()) {
       if (deep) {
         float tests = 1;
 
