@@ -1,7 +1,6 @@
 package net.peacefulcraft.sco.swordskills.weaponskills;
 
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.RomanNumber;
@@ -9,6 +8,8 @@ import net.peacefulcraft.sco.utilities.RomanNumber;
 public class RefinedPower implements WeaponModifier {
 
     private String level;
+
+    private Boolean canReforge;
 
     @Override
     public String getName() {
@@ -50,7 +51,18 @@ public class RefinedPower implements WeaponModifier {
         user.addToCombatModifier(getCombatModifierType(), -getModifierAmount(), -1);
     }
 
+    @Override
+    public Boolean canReforge() {
+        return this.canReforge;
+    }
+
+    @Override
+    public void setReforge(Boolean can) {
+        this.canReforge = can;
+    }
+
     public RefinedPower(String level) {
         this.level = level;
+        this.canReforge = false;
     }
 }

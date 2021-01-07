@@ -9,6 +9,8 @@ public class RefinedTechnique implements WeaponModifier {
 
     private String level;
 
+    private Boolean canReforge;
+
     @Override
     public String getName() {
         return "Refined Technique";
@@ -49,8 +51,19 @@ public class RefinedTechnique implements WeaponModifier {
         user.addToCombatModifier(getCombatModifierType(), -getModifierAmount(), -1);
     }
 
+    @Override
+    public Boolean canReforge() {
+        return this.canReforge;
+    }
+
+    @Override
+    public void setReforge(Boolean can) {
+        this.canReforge = can;    
+    }
+
     public RefinedTechnique(String level) {
         this.level = level;
+        this.canReforge = false;
     }
     
 }

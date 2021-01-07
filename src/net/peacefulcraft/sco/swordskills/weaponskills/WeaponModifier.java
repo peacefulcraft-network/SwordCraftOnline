@@ -67,6 +67,20 @@ public interface WeaponModifier {
     public abstract void removeEffects(ModifierUser user);
 
     /**
+     * Determines if WeaponModifier can be reforged in inventory
+     * 
+     * @return boolean
+     */
+    public abstract Boolean canReforge();
+
+    /**
+     * Sets modifier instance reforge
+     * 
+     * @param can boolean
+     */
+    public abstract void setReforge(Boolean can);
+
+    /**
      * Check if a weapon skill exists
      * 
      * @param name Name of weapon skill
