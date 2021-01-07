@@ -1,7 +1,9 @@
 package net.peacefulcraft.sco.items.weaponitems;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Material;
@@ -20,6 +22,8 @@ import net.peacefulcraft.sco.items.utilities.ItemAttribute;
 public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeHolder, CustomDataHolder, ItemIdentifier {
 
     private Integer quantity;
+
+    private JsonObject obj;
 
     @Override
     public String getName() {
@@ -75,21 +79,19 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
 
     @Override
     public JsonObject getCustomData() {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("weapon", "sword");
-        return obj;
+        return this.obj;
     }
 
     @Override
     public void setCustomData(JsonObject data) {
-        // TODO Auto-generated method stub
-
+        for(Entry<String, JsonElement> entry : data.entrySet()) {
+            this.obj.add(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
     public void parseCustomItemData(ItemStack item) {
-        // TODO Auto-generated method stub
-
+        
     }
 
     @Override
@@ -97,10 +99,6 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
         NBTItem nbti = new NBTItem(item);
         nbti.setString("weapon", data.get("weapon").getAsString());
         return nbti.getItem();
-    }
-
-    public TestSwordItem(ItemTier tier, Integer quantity) {
-        this.quantity = quantity;
     }
 
     @Override
@@ -120,13 +118,21 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
     public JsonObject getPassiveData() {
         JsonObject obj = new JsonObject();
         obj.addProperty("Refined Power", 1);
+        obj.addProperty("Refined Technique", 7);
         return obj;
     }
 
     @Override
     public JsonObject getActiveData() {
-        // TODO Auto-generated method stub
-        return null;
+        JsonObject obj = new JsonObject();
+        obj.addProperty("Refined Power", 3);
+        return obj;
+    }
+
+    public TestSwordItem(ItemTier tier, Integer quantity) {
+        this.quantity = quantity;
+        this.obj = new JsonObject();
+        this.obj.addProperty("weapon", "sword");
     }
     
 }

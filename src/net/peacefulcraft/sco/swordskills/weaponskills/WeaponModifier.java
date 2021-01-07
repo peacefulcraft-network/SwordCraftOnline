@@ -128,4 +128,14 @@ public interface WeaponModifier {
         return modifier.getName() + " " + modifier.getLevel();
     }
 
+    /**
+     * Types of weapon modifiers when applied to weapon
+     */
+    public enum WeaponModifierType {
+        /**Effects applied while in hotbar */
+        PASSIVE, 
+        /**Effects applied while in hand */
+        ACTIVE;
+    }
+
 }

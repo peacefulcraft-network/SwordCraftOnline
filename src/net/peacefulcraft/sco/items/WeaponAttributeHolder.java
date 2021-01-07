@@ -14,6 +14,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
+import net.peacefulcraft.sco.utilities.ChatColorUtil;
 import net.peacefulcraft.sco.utilities.RomanNumber;
 
 /**
@@ -22,10 +24,93 @@ import net.peacefulcraft.sco.utilities.RomanNumber;
  */
 public interface WeaponAttributeHolder {
     
+    /**
+     * Contains weapons passive weapon skill data
+     * 
+     * @return
+     */
     public abstract JsonObject getPassiveData();
 
+    /**
+     * Contains weapons active weapon skil data
+     * 
+     * @return
+     */
     public abstract JsonObject getActiveData();
 
+    /**
+     * Parse weapons lore data into json object.
+     * Returns ONLY weapon modifiers that are not automatically
+     * applied to weapon.
+     * 
+     * @param item we are parsing
+     */
+    public static JsonObject parseWeaponData(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.getLore();
+
+        JsonObject obj = new JsonObject();
+        //HashMap<String, Integer> actives = new HashMap<>();
+        //HashMap<String, Integer> passives = new HashMap<>();
+        JsonObject activeObj = new JsonObject();
+        JsonObject passiveObj = new JsonObject();
+
+        for(int i = 0; i < lore.size(); i++) {
+            String s = lore.get(i);
+            if(ChatColor.stripColor(s).equalsIgnoreCase("Active Skill Bonuses:")) {
+                int j = i + 1;
+                passiveLoop:
+                while(j < lore.size() && !lore.get(j).isEmpty()) {
+                    if(ChatColorUtil.getColor(lore.get(j)).contains(ChatColor.GOLD)) { continue; }
+                    try {
+                        WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
+                        if(wm == null) { continue; }
+                       // actives.put(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
+                       activeObj.addProperty(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
+                    } catch(RuntimeException ex) {
+                        ex.printStackTrace();
+                        break passiveLoop;
+                    }
+                    j++;
+                }
+                //obj.add(WeaponModifierType.ACTIVE.toString(), new JsonElement(){
+                obj.add(WeaponModifierType.ACTIVE.toString(), activeObj);
+                i = j - 1;
+            }
+            if(ChatColor.stripColor(s).equalsIgnoreCase("Passive Skill Bonuses:")) {
+                int j = i + 1;
+                activeLoop:
+                while(j < lore.size() && !lore.get(j).isEmpty()) {
+                    if(ChatColorUtil.getColor(lore.get(j)).contains(ChatColor.GOLD)) { continue; }
+                    try {
+                        WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
+                        if(wm == null) { continue; }
+                        passiveObj.addProperty(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
+                    } catch(RuntimeException ex) {
+                        ex.printStackTrace();
+                        break activeLoop;
+                    }
+                    j++;
+                }
+                //out.put(WeaponModifierType.PASSIVE, passiveModifiers);
+                obj.add(WeaponModifierType.PASSIVE.toString(), passiveObj);
+                i = j - 1;
+            }
+        }
+
+        SwordCraftOnline.logDebug("Parsed Weapon Data: " + obj.toString());
+        return obj;
+    }
+
+    /**
+     * Converts Weapon Attribute Holder data into strings
+     * and applies onto lore of item
+     * 
+     * @param item we are modifying lore of
+     * @param passive Passive skill data of weapon
+     * @param active Active skill data of weapon
+     * @return modified item stack
+     */
     public static ItemStack applyLore(ItemStack item, JsonObject passive, JsonObject active) {
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
@@ -50,48 +135,58 @@ public interface WeaponAttributeHolder {
         return item;
     }
 
-    public static HashMap<String, ArrayList<WeaponModifier>> parseLore(ItemStack item) {
+    /**
+     * Parses lore of item stack into appropriate weapon modifiers
+     * organizing them by passive/active
+     * 
+     * @param item item stack we are parsing
+     * @return map of passive,active modifiers
+     */
+    public static HashMap<WeaponModifierType, ArrayList<WeaponModifier>> parseLore(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
 
-        HashMap<String, ArrayList<WeaponModifier>> out = new HashMap<>();
+        HashMap<WeaponModifierType, ArrayList<WeaponModifier>> out = new HashMap<>();
         ArrayList<WeaponModifier> activeModifiers = new ArrayList<>();
         ArrayList<WeaponModifier> passiveModifiers = new ArrayList<>();
 
         for(int i = 0; i < lore.size(); i++) {
             String s = lore.get(i);
-            if(ChatColor.stripColor(s).contains("Active")) {
+            if(ChatColor.stripColor(s).equalsIgnoreCase("Active Skill Bonuses:")) {
                 int j = i + 1;
+                passiveLoop:
                 while(j < lore.size() && !lore.get(j).isEmpty()) {
                     try {
                         WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
                         if(wm == null) { continue; }
                         activeModifiers.add(wm);
-                        SwordCraftOnline.logDebug("Added Weapon Modifier: " + wm.getName());
+                        SwordCraftOnline.logDebug("[WeaponAttributeHolder] Added Active Weapon Modifier: " + WeaponModifier.parseName(wm));
                     } catch(RuntimeException ex) {
-                        SwordCraftOnline.logDebug("Caught Exception");
-                        break;
+                        ex.printStackTrace();
+                        break passiveLoop;
                     }
                     j++;
                 }
-                out.put("active", activeModifiers);
-                i = j;
+                out.put(WeaponModifierType.ACTIVE, activeModifiers);
+                i = j - 1;
             }
-            if(ChatColor.stripColor(s).contains("Passive")) {
+            if(ChatColor.stripColor(s).equalsIgnoreCase("Passive Skill Bonuses:")) {
                 int j = i + 1;
+                activeLoop:
                 while(j < lore.size() && !lore.get(j).isEmpty()) {
                     try {
                         WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
                         if(wm == null) { continue; }
                         passiveModifiers.add(wm);
+                        SwordCraftOnline.logDebug("[WeaponAttributeHolder] Added Passive Weapon Modifier: " + WeaponModifier.parseName(wm));
                     } catch(RuntimeException ex) {
                         ex.printStackTrace();
-                        break;
+                        break activeLoop;
                     }
                     j++;
                 }
-                out.put("passive", passiveModifiers);
-                i = j;
+                out.put(WeaponModifierType.PASSIVE, passiveModifiers);
+                i = j - 1;
             }
         }    
         return out;  
@@ -99,6 +194,8 @@ public interface WeaponAttributeHolder {
 
     /**
      * Parses weapon modifier from lore data
+     * SHOULD NOT be called individually. Only inside
+     * other parse method
      * 
      * @param lore of item
      * @param j Current index we are parsing

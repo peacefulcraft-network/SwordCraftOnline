@@ -30,6 +30,7 @@ import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 public class PlayerInventory extends BukkitInventoryBase {
 
@@ -235,40 +236,35 @@ public class PlayerInventory extends BukkitInventoryBase {
    * @param ev
    * @param item
    */
-  public void onPlayerChangeHeldItem(PlayerItemHeldEvent ev, ItemIdentifier item2) {
-    /*
-    HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
-
-    for(int i = 0; i <= 8; i++) {
-      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
-      if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
-        ArrayList<WeaponModifier> passMods = WeaponAttributeHolder.parseLore(this.inventory.getItem(i)).get("passive");
-        if(passMods == null || passMods.isEmpty()) { continue; }
-        passives.put(ChatColor.stripColor(item.getDisplayName()), passMods);  
-      }
+  public void onPlayerChangeHeldItem(PlayerItemHeldEvent ev, ItemIdentifier item) {
+    HashMap<String, ArrayList<WeaponModifier>> actives = new HashMap<>();
+    if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
+      ArrayList<WeaponModifier> activeMods = WeaponAttributeHolder.parseLore(this.inventory.
+        getItem(ev.getNewSlot())).get(WeaponModifierType.ACTIVE);
+      if(activeMods == null || activeMods.isEmpty()) { return; }
+      actives.put(ChatColor.stripColor(item.getDisplayName()), activeMods);
     }
-    SwordCraftOnline.logDebug("Passive Payload: " + passives.toString());
-    GameManager.findSCOPlayer((Player)ev.getPlayer()).applyWeaponModifiers(passives);
-    */
+    GameManager.findSCOPlayer(ev.getPlayer()).applyWeaponModifiers(actives, WeaponModifierType.ACTIVE);
   }
 
   @Override
   public void onInventoryClose(InventoryCloseEvent ev) {
-    //SwordCraftOnline.logDebug("INVENTORY CLOSE EVENT");
     HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
 
     for(int i = 0; i <= 8; i++) {
       ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
-      //SwordCraftOnline.logDebug("Item before check: " + item.getName());
       if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
-        //SwordCraftOnline.logDebug("item after check: " + item.getName());
-        ArrayList<WeaponModifier> passMods = WeaponAttributeHolder.parseLore(this.inventory.getItem(i)).get("passive");
-        //SwordCraftOnline.logDebug("Parsed passive: " + passMods);
+        ArrayList<WeaponModifier> passMods = WeaponAttributeHolder.parseLore(this.inventory.getItem(i)).get(WeaponModifierType.PASSIVE);
         if(passMods == null || passMods.isEmpty()) { continue; }
         passives.put(ChatColor.stripColor(item.getDisplayName()), passMods);  
       }
     }
-    GameManager.findSCOPlayer((Player)ev.getPlayer()).applyWeaponModifiers(passives);
+
+    HashMap<String, Integer> check = checkHotbar();
+    if(check.get("sword") == 0 && check.get("knife") == 0 && check.get("range") == 0) {
+      passives = null;
+    }
+    GameManager.findSCOPlayer((Player)ev.getPlayer()).applyWeaponModifiers(passives, WeaponModifierType.PASSIVE);
 
     this.saveInventory();
   }

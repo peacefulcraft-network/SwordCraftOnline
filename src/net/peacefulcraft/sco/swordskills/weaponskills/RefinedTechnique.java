@@ -1,28 +1,32 @@
 package net.peacefulcraft.sco.swordskills.weaponskills;
 
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.RomanNumber;
 
-public class RefinedPower implements WeaponModifier {
+public class RefinedTechnique implements WeaponModifier {
 
     private String level;
 
     @Override
     public String getName() {
-        return "Refined Power";
-    }
-
-    @Override
-    public String getLevel() {
-        return this.level;
+        return "Refined Technique";
     }
 
     @Override
     public Double getModifierAmount() {
         return 0.2 * RomanNumber.romanToDecimal(this.level) + 0.2;
+    }
+
+    @Override
+    public Boolean getModifierIncoming() {
+        return false;
+    }
+
+    @Override
+    public String getLevel() {
+        return this.level;
     }
 
     @Override
@@ -32,12 +36,7 @@ public class RefinedPower implements WeaponModifier {
 
     @Override
     public CombatModifier getCombatModifierType() {
-        return CombatModifier.CRITICAL_MULTIPLIER;
-    }
-
-    @Override
-    public Boolean getModifierIncoming() {
-        return false;
+        return CombatModifier.CRITICAL_CHANCE;
     }
 
     @Override
@@ -50,7 +49,8 @@ public class RefinedPower implements WeaponModifier {
         user.addToCombatModifier(getCombatModifierType(), -getModifierAmount(), -1);
     }
 
-    public RefinedPower(String level) {
+    public RefinedTechnique(String level) {
         this.level = level;
     }
+    
 }

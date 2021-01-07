@@ -1,7 +1,5 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 /**
  * Holds necessary information for SCOPlayers and AciveMobs
@@ -55,7 +54,7 @@ public class ModifierUser {
     protected double parryMultiplier = 1.2;
 
     /**Holds weapon modifiers of user */
-    protected HashMap<String, ArrayList<WeaponModifier>> weaponModifiers = new HashMap<>();
+    protected HashMap<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> weaponModifiers = new HashMap<>();
     
     /**
      * Fetches implementing sub class living entity
@@ -73,43 +72,99 @@ public class ModifierUser {
      * Applies weapon modifiers to user. 
      * Removes old modifiers.
      * 
-     * @param wModifiers
+     * @param wModifiers Map by Weapon name -> List of weapon modifier
+     * if passed value is empty or null all weapon modifiers are removed and cleared
      */
-    public void applyWeaponModifiers(HashMap<String, ArrayList<WeaponModifier>> wModifiers) {
-        if(wModifiers == null || wModifiers.isEmpty()) {
-            SwordCraftOnline.logDebug("Clearing all active weapon modifiers.");
-            for(Entry<String, ArrayList<WeaponModifier>> entry : weaponModifiers.entrySet()) {
-                for(WeaponModifier wm : entry.getValue()) {
-                    wm.removeEffects(this);
-                }
-            }
-            weaponModifiers.clear();
-        } else {
-            SwordCraftOnline.logDebug("Clearing all non-active weapon modifiers.");
-            Iterator<Entry<String, ArrayList<WeaponModifier>>> iter = weaponModifiers.entrySet().iterator();
-            while(iter.hasNext()) {
-                Entry<String, ArrayList<WeaponModifier>> entry = iter.next();
-                if(!wModifiers.keySet().contains(entry.getKey())) {
-                    for(WeaponModifier wm : entry.getValue()) {
+    public void applyWeaponModifiers(HashMap<String, ArrayList<WeaponModifier>> wModifiers, WeaponModifierType processType) {
+        SwordCraftOnline.logDebug("wModifiers value: " + wModifiers + ", processType: " + processType);
+
+        Iterator<Entry<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>>> iter = weaponModifiers.entrySet().iterator();
+        while(iter.hasNext()) {
+            Entry<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> entry = iter.next();
+
+            if(wModifiers == null) {
+                // Case 1: Hot bar weapon empty, wModifiers null
+
+                ArrayList<WeaponModifier> passiveList = entry.getValue().get(WeaponModifierType.PASSIVE);
+                ArrayList<WeaponModifier> activeList = entry.getValue().get(WeaponModifierType.ACTIVE);
+                if(passiveList != null && !passiveList.isEmpty()) {
+                    for(WeaponModifier wm : passiveList) {
                         wm.removeEffects(this);
+                        SwordCraftOnline.logDebug("Case 1, cleared passive weapon modifier: " + WeaponModifier.parseName(wm));
+                    }
+                }
+                if(activeList != null && !activeList.isEmpty()) {
+                    for(WeaponModifier wm : activeList) {
+                        wm.removeEffects(this);
+                        SwordCraftOnline.logDebug("Case 1, cleared active weapon modifier: " + WeaponModifier.parseName(wm));
+                    }
+                }
+                weaponModifiers.clear();
+            } else if(wModifiers.isEmpty()) {
+                // Case 2: Check passed with no TYPE modifiers in hotbar / hand
+
+                ArrayList<WeaponModifier> wmList = entry.getValue().get(processType);
+                if(wmList != null && !wmList.isEmpty()) {
+                    for(WeaponModifier wm : wmList) {
+                        wm.removeEffects(this);
+                        SwordCraftOnline.logDebug("Case 2, cleared " + processType.toString() + " weapon modifier: "+ WeaponModifier.parseName(wm));
+                    }
+                    //entry.getValue().get(processType).clear();
+                    entry.getValue().remove(processType);
+                }
+            } else {
+                // Case 3: Hotbar passed through. Removing passive and active modifiers not in hotbar
+
+                if(!wModifiers.keySet().contains(entry.getKey())) {
+                    ArrayList<WeaponModifier> passiveList = entry.getValue().get(WeaponModifierType.PASSIVE);
+                    ArrayList<WeaponModifier> activeList = entry.getValue().get(WeaponModifierType.ACTIVE);
+                    if(passiveList != null && !passiveList.isEmpty()) {
+                        for(WeaponModifier wm : passiveList) {
+                            wm.removeEffects(this);
+                            SwordCraftOnline.logDebug("Case 3, removed passive effects of: " + WeaponModifier.parseName(wm));
+                        }
+                    }
+                    if(activeList != null && !activeList.isEmpty()) {
+                        for(WeaponModifier wm : activeList) {
+                            wm.removeEffects(this);
+                            SwordCraftOnline.logDebug("Case 3, active removed effects of: " + WeaponModifier.parseName(wm));
+                        }
                     }
                     iter.remove();
                 }
             }
         }
+        if(wModifiers == null) { return; }
+        // TODO: Allow pass by and reprocessing of modifiers if null
 
         // Applying non-applied weapon modifiers to player
+        HashMap<WeaponModifierType, ArrayList<WeaponModifier>> putList = new HashMap<>();
         Iterator<Entry<String, ArrayList<WeaponModifier>>> iterr = wModifiers.entrySet().iterator();
         while(iterr.hasNext()) {
-            Entry<String, ArrayList<WeaponModifier>> entry = iterr.next();
-            SwordCraftOnline.logDebug("Applying Entry: " + entry.toString());
+            Entry<String, ArrayList<WeaponModifier>> entryy = iterr.next();
+            SwordCraftOnline.logDebug("Applying Entry: " + entryy.toString());
 
-            if(weaponModifiers.keySet().contains(entry.getKey())) { continue; }
-            for(WeaponModifier wm : entry.getValue()) {
-                wm.applyEffects(this);
+            //if(weaponModifiers.keySet().contains(entryy.getKey())) { continue; }
+            HashMap<WeaponModifierType, ArrayList<WeaponModifier>> compareMap = weaponModifiers.get(entryy.getKey());
+            if(compareMap != null && compareMap.get(processType) != null) {
+                SwordCraftOnline.logDebug("Process type: " + processType.toString() + ", on weapon: " + entryy.getKey() + " already applied. Skipping."); 
+                continue; 
             }
-            weaponModifiers.put(entry.getKey(), entry.getValue());
+
+            for(WeaponModifier wm : entryy.getValue()) {
+                wm.applyEffects(this);
+                SwordCraftOnline.logDebug("Applied effects of: " + WeaponModifier.parseName(wm));
+            }
+            //putList.put(processType, entryy.getValue());
+            if(!weaponModifiers.containsKey(entryy.getKey())) {
+                weaponModifiers.put(entryy.getKey(), new HashMap<>());
+            }
+            weaponModifiers.get(entryy.getKey()).put(processType, entryy.getValue());
+            //weaponModifiers.put(entryy.getKey(), putList);
+            //weaponModifiers.put(entry.getKey(), entry.getValue());
         }
+
+        SwordCraftOnline.logDebug("Player Weaponmodifiers post processing: " + weaponModifiers.toString());
     }
 
     /**

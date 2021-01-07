@@ -193,7 +193,9 @@ public class InventoryListeners implements Listener {
 
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPlayerChangeHeldItem(PlayerItemHeldEvent ev) {
-    ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(ev.getPlayer().getInventory().getItemInMainHand());
+    ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(
+      ev.getPlayer().getInventory().getItem(ev.getNewSlot())
+    );
     GameManager.findSCOPlayer(ev.getPlayer()).getPlayerInventory().onPlayerChangeHeldItem(ev, item);
   }
 
