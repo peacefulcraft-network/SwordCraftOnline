@@ -8,12 +8,13 @@ import java.util.Map.Entry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifierList;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 import net.peacefulcraft.sco.utilities.ChatColorUtil;
 import net.peacefulcraft.sco.utilities.RomanNumber;
@@ -29,14 +30,14 @@ public interface WeaponAttributeHolder {
      * 
      * @return
      */
-    public abstract JsonObject getPassiveData();
+    public abstract JsonObject getWeaponData();
 
     /**
-     * Contains weapons active weapon skil data
+     * This weapons roll disposition. 1+x/x
      * 
      * @return
      */
-    public abstract JsonObject getActiveData();
+    public abstract Integer getDisposition();
 
     /**
      * Parse weapons lore data into json object.
@@ -50,8 +51,6 @@ public interface WeaponAttributeHolder {
         List<String> lore = meta.getLore();
 
         JsonObject obj = new JsonObject();
-        //HashMap<String, Integer> actives = new HashMap<>();
-        //HashMap<String, Integer> passives = new HashMap<>();
         JsonObject activeObj = new JsonObject();
         JsonObject passiveObj = new JsonObject();
 
@@ -61,19 +60,18 @@ public interface WeaponAttributeHolder {
                 int j = i + 1;
                 passiveLoop:
                 while(j < lore.size() && !lore.get(j).isEmpty()) {
-                    if(ChatColorUtil.getColor(lore.get(j)).contains(ChatColor.GOLD)) { continue; }
-                    try {
-                        WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
-                        if(wm == null) { continue; }
-                       // actives.put(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
-                       activeObj.addProperty(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
-                    } catch(RuntimeException ex) {
-                        ex.printStackTrace();
-                        break passiveLoop;
+                    if(!ChatColorUtil.getColor(lore.get(j)).contains(ChatColor.GOLD)) {
+                        try {
+                            WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
+                            if(wm == null) { continue; }
+                            activeObj.addProperty(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
+                        } catch(RuntimeException ex) {
+                            ex.printStackTrace();
+                            break passiveLoop;
+                        }
                     }
                     j++;
                 }
-                //obj.add(WeaponModifierType.ACTIVE.toString(), new JsonElement(){
                 obj.add(WeaponModifierType.ACTIVE.toString(), activeObj);
                 i = j - 1;
             }
@@ -81,18 +79,18 @@ public interface WeaponAttributeHolder {
                 int j = i + 1;
                 activeLoop:
                 while(j < lore.size() && !lore.get(j).isEmpty()) {
-                    if(ChatColorUtil.getColor(lore.get(j)).contains(ChatColor.GOLD)) { continue; }
-                    try {
-                        WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
-                        if(wm == null) { continue; }
-                        passiveObj.addProperty(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
-                    } catch(RuntimeException ex) {
-                        ex.printStackTrace();
-                        break activeLoop;
+                    if(!ChatColorUtil.getColor(lore.get(j)).contains(ChatColor.GOLD)) {
+                        try {
+                            WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
+                            if(wm == null) { continue; }
+                            passiveObj.addProperty(wm.getName(), RomanNumber.romanToDecimal(wm.getLevel()));
+                        } catch(RuntimeException ex) {
+                            ex.printStackTrace();
+                            break activeLoop;
+                        }
                     }
                     j++;
                 }
-                //out.put(WeaponModifierType.PASSIVE, passiveModifiers);
                 obj.add(WeaponModifierType.PASSIVE.toString(), passiveObj);
                 i = j - 1;
             }
@@ -107,27 +105,68 @@ public interface WeaponAttributeHolder {
      * and applies onto lore of item
      * 
      * @param item we are modifying lore of
-     * @param passive Passive skill data of weapon
-     * @param active Active skill data of weapon
+     * @param weaponData JsonObject of passive/active data
      * @return modified item stack
      */
-    public static ItemStack applyLore(ItemStack item, JsonObject passive, JsonObject active) {
+    public static ItemStack applyLore(ItemStack item, JsonObject weaponData) {
+        JsonObject active = weaponData.getAsJsonObject(WeaponModifierType.ACTIVE.toString());
+        JsonObject passive = weaponData.getAsJsonObject(WeaponModifierType.PASSIVE.toString());
+        JsonObject maxReforge = weaponData.getAsJsonObject("Max Reforge");
+        
+        JsonObject reforge = null;
+        try {
+            reforge = weaponData.getAsJsonObject("reforge");            
+        } catch(Exception ex) {
+            reforge = new JsonObject();
+        }
+        JsonObject activeReforge = reforge.getAsJsonObject(WeaponModifierType.ACTIVE.toString());
+        JsonObject passiveReforge = reforge.getAsJsonObject(WeaponModifierType.PASSIVE.toString());
+
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
 
         if(active != null && !active.entrySet().isEmpty()) {
-            lore.add("");
+            if(!ChatColorUtil.getColor(lore.get(lore.size() - 1)).contains(ChatColor.DARK_RED)) { lore.add(""); }
             lore.add(ChatColor.LIGHT_PURPLE + "Active Skill Bonuses:");
             for(Entry<String, JsonElement> entry : active.entrySet()) {
                 lore.add(ChatColor.GOLD + " -" + entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
             }
+            if(activeReforge != null) {
+                for(Entry<String, JsonElement> entry : activeReforge.entrySet()) {
+                    lore.add(ChatColor.AQUA + " -" + entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
+                }
+            }
         }
         if(passive != null && !passive.entrySet().isEmpty()) {
-            lore.add("");
+            if(!ChatColorUtil.getColor(lore.get(lore.size() - 1)).contains(ChatColor.DARK_RED)) { lore.add(""); }
             lore.add(ChatColor.LIGHT_PURPLE + "Passive Skill Bonuses:");
             for(Entry<String, JsonElement> entry : passive.entrySet()) {
                 lore.add(ChatColor.GOLD + " -" + entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
             }
+            if(passiveReforge != null) {
+                for(Entry<String, JsonElement> entry : passiveReforge.entrySet()) {
+                    lore.add(ChatColor.AQUA + " -" + entry.getKey() + " " + RomanNumber.toRoman(entry.getValue().getAsInt()));
+                }
+            }
+        }
+
+        if(maxReforge != null) {
+            lore.add("");
+            lore.add(ChatColor.DARK_RED + "Remaining Weapon Slots:");
+            if(maxReforge.get(WeaponModifierType.ACTIVE.toString()) != null) {
+                int maxAR = maxReforge.get(WeaponModifierType.ACTIVE.toString()).getAsInt();
+                int curAR = activeReforge == null ? 0 : activeReforge.entrySet().size();
+                lore.add(ChatColor.DARK_RED + " -Active: " + (maxAR - curAR));
+            }
+            if(maxReforge.get(WeaponModifierType.PASSIVE.toString()) != null) {
+                int maxPR = maxReforge.get(WeaponModifierType.PASSIVE.toString()).getAsInt();
+                int curPR = passiveReforge == null ? 0 : passiveReforge.entrySet().size();
+                lore.add(ChatColor.DARK_RED + " -Passive: " + (maxPR - curPR));
+            }
+        }
+        Integer reforgeCount = weaponData.get("Reforge Count").getAsInt();
+        if(reforgeCount != null && reforgeCount > 0) {
+            lore.add(ChatColor.DARK_RED + "Total Weapon Reforges: " + reforgeCount);
         }
 
         meta.setLore(lore);
@@ -160,7 +199,7 @@ public interface WeaponAttributeHolder {
                         WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
                         if(wm == null) { continue; }
                         activeModifiers.add(wm);
-                        SwordCraftOnline.logDebug("[WeaponAttributeHolder] Added Active Weapon Modifier: " + WeaponModifier.parseName(wm));
+                        //SwordCraftOnline.logDebug("[WeaponAttributeHolder] Added Active Weapon Modifier: " + WeaponModifier.parseName(wm));
                     } catch(RuntimeException ex) {
                         ex.printStackTrace();
                         break passiveLoop;
@@ -178,7 +217,7 @@ public interface WeaponAttributeHolder {
                         WeaponModifier wm = WeaponAttributeHolder.parseWeaponModifier(lore, j);
                         if(wm == null) { continue; }
                         passiveModifiers.add(wm);
-                        SwordCraftOnline.logDebug("[WeaponAttributeHolder] Added Passive Weapon Modifier: " + WeaponModifier.parseName(wm));
+                        //SwordCraftOnline.logDebug("[WeaponAttributeHolder] Added Passive Weapon Modifier: " + WeaponModifier.parseName(wm));
                     } catch(RuntimeException ex) {
                         ex.printStackTrace();
                         break activeLoop;
@@ -226,4 +265,64 @@ public interface WeaponAttributeHolder {
         return WeaponModifier.generateWeaponSkill(skillName, level);
     }
 
+    /**
+     * Rolls reforge weapon skills into new skills
+     * Only replaces reforge-able skills
+     * 
+     * @param weaponData raw Weapon Data from WAH
+     * @return Modified json object
+     */
+    public static JsonObject rollWeaponData(JsonObject weaponData) {
+        JsonObject maxReforge = weaponData.getAsJsonObject("Max Reforge");
+        // Case 1: This weapon has no reforge data
+        if(maxReforge == null) { return weaponData; }
+        
+        // Case 2: This weapon has reforge data, but cannot reforge
+        int maxAR = maxReforge.get(WeaponModifierType.ACTIVE.toString()).getAsInt();
+        int maxPR = maxReforge.get(WeaponModifierType.PASSIVE.toString()).getAsInt();
+        if(maxAR == 0 && maxPR == 0) { return weaponData; }
+
+        int disposition = weaponData.get("Disposition").getAsInt();
+
+        JsonObject reforge = weaponData.getAsJsonObject("reforge");
+
+        JsonObject newActive = new JsonObject();
+        for(int i = 0; i < maxAR; i++) {
+            // Rolling disposition / 10 chance for reforge
+            if((SwordCraftOnline.r.nextInt(99) + 1) <= disposition * 10) {
+                String newModifier = WeaponModifierList.getRandomModifier();
+                int roll = (1 + disposition * 750) / (SwordCraftOnline.r.nextInt(99) + 1);
+                if(roll > 100) { roll = 100; }
+
+                int maxLevel = WeaponModifier.getWeaponMaxLevel(newModifier);
+                int segment = 100 / maxLevel;
+                int level = roll == 100 ? roll / segment : maxLevel;
+
+                newActive.addProperty(newModifier, level);
+            }
+        }
+        reforge.add(WeaponModifierType.ACTIVE.toString(), newActive);
+
+        JsonObject newPassive = new JsonObject();
+        for(int i = 0; i < maxPR; i++) {
+            // Rolling disposition / 10 chance for reforge
+            if((SwordCraftOnline.r.nextInt(99) + 1) <= disposition * 10) {
+                String newModifier = WeaponModifierList.getRandomModifier();
+                int roll = (1 + disposition * 750) / (SwordCraftOnline.r.nextInt(99) + 1);
+                if(roll > 100) { roll = 100; }
+
+                int maxLevel = WeaponModifier.getWeaponMaxLevel(newModifier);
+                int segment = 100 / maxLevel;
+                int level = roll == 100 ? roll / segment : maxLevel;
+
+                newPassive.addProperty(newModifier, level);
+            }
+        }
+        reforge.add(WeaponModifierType.PASSIVE.toString(), newPassive);
+
+        weaponData.add("reforge", reforge);
+        int reforgeCount = weaponData.get("Reforge Count").getAsInt() + 1;
+        weaponData.addProperty("Reforge Count", reforgeCount);
+        return weaponData;
+    }
 }

@@ -233,7 +233,7 @@ public interface ItemIdentifier {
 
     if (itemIdentifier instanceof WeaponAttributeHolder) {
       WeaponAttributeHolder wh = ((WeaponAttributeHolder) itemIdentifier);
-      item = WeaponAttributeHolder.applyLore(item, wh.getPassiveData(), wh.getActiveData());
+      item = WeaponAttributeHolder.applyLore(item, wh.getWeaponData());
     }
 
     return item;

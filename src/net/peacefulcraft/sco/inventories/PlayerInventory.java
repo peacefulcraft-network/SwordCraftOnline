@@ -81,6 +81,7 @@ public class PlayerInventory extends BukkitInventoryBase {
           if (itemIdentifier instanceof CustomDataHolder) {
             CustomDataHolder customDataItem = (CustomDataHolder) itemIdentifier;
             item = ItemIdentifier.generateItem(itemIdentifier.getName(), itemIdentifier.getTier(), itemIdentifier.getQuantity(), customDataItem.getCustomData());
+            SwordCraftOnline.logDebug("Generating item: " + itemIdentifier.getName() + ", Custom Data: " + customDataItem.getCustomData());
           } else {
             item = ItemIdentifier.generateItem(itemIdentifier.getName(), itemIdentifier.getTier(), itemIdentifier.getQuantity());
           }

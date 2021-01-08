@@ -9,8 +9,6 @@ public class RefinedTechnique implements WeaponModifier {
 
     private String level;
 
-    private Boolean canReforge;
-
     @Override
     public String getName() {
         return "Refined Technique";
@@ -53,17 +51,16 @@ public class RefinedTechnique implements WeaponModifier {
 
     @Override
     public Boolean canReforge() {
-        return this.canReforge;
+        return true;
     }
 
     @Override
-    public void setReforge(Boolean can) {
-        this.canReforge = can;    
+    public Integer getMaxPlayerLevel() {
+        return 5;
     }
 
     public RefinedTechnique(String level) {
         this.level = level;
-        this.canReforge = false;
     }
     
 }

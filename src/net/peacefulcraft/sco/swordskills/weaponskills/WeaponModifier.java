@@ -74,11 +74,11 @@ public interface WeaponModifier {
     public abstract Boolean canReforge();
 
     /**
-     * Sets modifier instance reforge
+     * Gets max level of modifier for players
      * 
-     * @param can boolean
+     * @return
      */
-    public abstract void setReforge(Boolean can);
+    public abstract Integer getMaxPlayerLevel();
 
     /**
      * Check if a weapon skill exists
@@ -98,6 +98,26 @@ public interface WeaponModifier {
                 return false;
             }
         }
+    }
+
+    /**
+     * Gets weapon skills max player level
+     * 
+     * @param name Name of skill
+     * @return max level
+     */
+    public static int getWeaponMaxLevel(String name) {
+        WeaponModifier wm = WeaponModifier.generateWeaponSkill(name);
+        return wm.getMaxPlayerLevel();
+    }
+
+    /**
+     * Generates the requested weapon modifier with base level
+     * 
+     * @param name Name of skill
+     */
+    public static WeaponModifier generateWeaponSkill(String name) {
+        return WeaponModifier.generateWeaponSkill(name, "I");
     }
 
     /**

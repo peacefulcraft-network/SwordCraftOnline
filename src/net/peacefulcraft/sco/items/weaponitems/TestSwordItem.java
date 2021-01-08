@@ -1,9 +1,7 @@
 package net.peacefulcraft.sco.items.weaponitems;
 
 import java.util.ArrayList;
-import java.util.Map.Entry;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Material;
@@ -18,12 +16,15 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.items.utilities.Durability;
 import net.peacefulcraft.sco.items.utilities.ItemAttribute;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeHolder, CustomDataHolder, ItemIdentifier {
 
     private Integer quantity;
 
     private JsonObject obj;
+
+    private JsonObject weaponObj;
 
     @Override
     public String getName() {
@@ -84,20 +85,24 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
 
     @Override
     public void setCustomData(JsonObject data) {
-        for(Entry<String, JsonElement> entry : data.entrySet()) {
-            this.obj.add(entry.getKey(), entry.getValue());
-        }
+        this.obj = data;
     }
 
     @Override
     public void parseCustomItemData(ItemStack item) {
-        
+        this.obj.add("reforge", WeaponAttributeHolder.parseWeaponData(item));
     }
 
     @Override
     public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
         NBTItem nbti = new NBTItem(item);
         nbti.setString("weapon", data.get("weapon").getAsString());
+
+        JsonObject reforgeObj = data.getAsJsonObject("reforge");        
+        this.weaponObj.add("reforge", reforgeObj);
+        int reforgeCount = data.get("Reforge Count") == null ? 0 : data.get("Reforge Count").getAsInt();
+        this.weaponObj.addProperty("Reforge Count", reforgeCount);
+
         return nbti.getItem();
     }
 
@@ -110,29 +115,41 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
 
     @Override
     public void parseEphemeralAttributes(ItemStack item) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
-    public JsonObject getPassiveData() {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("Refined Power", 1);
-        obj.addProperty("Refined Technique", 7);
-        return obj;
+    public JsonObject getWeaponData() {
+        return this.weaponObj;
     }
 
     @Override
-    public JsonObject getActiveData() {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("Refined Power", 3);
-        return obj;
+    public Integer getDisposition() {
+        return 3;
     }
 
     public TestSwordItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.obj = new JsonObject();
         this.obj.addProperty("weapon", "sword");
+
+        this.weaponObj = new JsonObject();
+        JsonObject passive = new JsonObject();
+        passive.addProperty("Refined Power", 1);
+        passive.addProperty("Refined Technique", 5);
+
+        JsonObject active = new JsonObject();
+        active.addProperty("Refined Power", 3);
+
+        JsonObject maxReforge = new JsonObject();
+        maxReforge.addProperty(WeaponModifierType.PASSIVE.toString(), 2);
+        maxReforge.addProperty(WeaponModifierType.ACTIVE.toString(), 1);
+
+        this.weaponObj.add(WeaponModifierType.PASSIVE.toString(), passive);
+        this.weaponObj.add(WeaponModifierType.ACTIVE.toString(), active);
+        this.weaponObj.add("Max Reforge", maxReforge);
+        this.weaponObj.addProperty("Disposition", getDisposition());
+        this.weaponObj.addProperty("Reforge Count", 0);
     }
     
 }
