@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.items.utilities.Glow;
 
-public class HardenedForgeSteel implements EphemeralAttributeHolder, ItemIdentifier {
+public class HardenedForgeSteelItem implements EphemeralAttributeHolder, ItemIdentifier {
 
     private int quantity;
 
@@ -74,7 +74,7 @@ public class HardenedForgeSteel implements EphemeralAttributeHolder, ItemIdentif
 
     }
 
-    public HardenedForgeSteel(ItemTier tier, Integer quantity) {
+    public HardenedForgeSteelItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
     }
     

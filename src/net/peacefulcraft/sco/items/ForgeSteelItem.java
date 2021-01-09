@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-public class ForgeSteel implements ItemIdentifier {
+public class ForgeSteelITem implements ItemIdentifier {
 
     private Integer quantity;
 
@@ -62,7 +62,7 @@ public class ForgeSteel implements ItemIdentifier {
         return true;
     }
 
-    public ForgeSteel(ItemTier tier, Integer quanity) {
+    public ForgeSteelITem(ItemTier tier, Integer quanity) {
         this.quantity = quanity;
     }
     

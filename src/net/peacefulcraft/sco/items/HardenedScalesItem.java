@@ -6,7 +6,7 @@ import org.bukkit.Material;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class HardenedScales implements ItemIdentifier {
+public class HardenedScalesItem implements ItemIdentifier {
 
     private int quantity;
 
@@ -63,7 +63,7 @@ public class HardenedScales implements ItemIdentifier {
         return true;
     }
 
-    public HardenedScales(ItemTier tier, Integer quantity) {
+    public HardenedScalesItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
     }
     
