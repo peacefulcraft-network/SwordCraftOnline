@@ -135,28 +135,24 @@ public class ModifierUser {
         }
 
         // Applying non-applied weapon modifiers to player
+        if(wModifiers.entrySet().isEmpty()) { return; }
         Iterator<Entry<String, ArrayList<WeaponModifier>>> iterr = wModifiers.entrySet().iterator();
         while(iterr.hasNext()) {
             Entry<String, ArrayList<WeaponModifier>> entryy = iterr.next();
-            //SwordCraftOnline.logDebug("Applying Entry: " + entryy.toString());
 
             HashMap<WeaponModifierType, ArrayList<WeaponModifier>> compareMap = weaponModifiers.get(entryy.getKey());
             if(compareMap != null && compareMap.get(processType) != null) {
-                //SwordCraftOnline.logDebug("Process type: " + processType.toString() + ", on weapon: " + entryy.getKey() + " already applied. Skipping."); 
-                continue; 
+               continue;
             }
 
             for(WeaponModifier wm : entryy.getValue()) {
                 wm.applyEffects(this);
-                //SwordCraftOnline.logDebug("Applied effects of: " + WeaponModifier.parseName(wm));
             }
             if(!weaponModifiers.containsKey(entryy.getKey())) {
                 weaponModifiers.put(entryy.getKey(), new HashMap<>());
             }
             weaponModifiers.get(entryy.getKey()).put(processType, entryy.getValue());
         }
-
-        //SwordCraftOnline.logDebug("Player Weaponmodifiers post processing: " + weaponModifiers.toString());
     }
 
     /**
