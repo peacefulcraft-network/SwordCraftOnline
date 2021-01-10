@@ -93,13 +93,13 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
     @Override
     public void parseCustomItemData(ItemStack item) {
         JsonObject data = WeaponAttributeHolder.parseWeaponData(item, this);
-        //JsonObject reforgeObj = data.get("reforge").getAsJsonObject();
         this.obj.add("Weapon Data", data);
     }
 
     @Override
     public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
-        SwordCraftOnline.logDebug("Incoming Data: " + data.toString() + "\n");
+        
+        SwordCraftOnline.logDebug("Incoming data: " + data.toString() + "\n");
 
         NBTItem nbti = new NBTItem(item);
         nbti.setString("weapon", data.get("weapon").getAsString());
@@ -114,9 +114,6 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
         JsonElement reforgeCount = parsedWeaponObj.get("Reforge Count");
         reforgeCount = reforgeCount == null ? data.get("Reforge Count") : reforgeCount;
         this.weaponObj.addProperty("Reforge Count", reforgeCount.getAsInt());
-
-        SwordCraftOnline.logDebug("Applied Weapon Data: " + this.weaponObj.toString() + "\n");
-
         return nbti.getItem();
     }
 
