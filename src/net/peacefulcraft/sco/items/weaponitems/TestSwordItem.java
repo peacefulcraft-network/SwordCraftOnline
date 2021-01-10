@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.items.weaponitems;
 
 import java.util.ArrayList;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Material;
@@ -9,6 +10,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.nbtapi.NBTItem;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.EphemeralAttributeHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
@@ -90,18 +92,30 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
 
     @Override
     public void parseCustomItemData(ItemStack item) {
-        this.obj.add("reforge", WeaponAttributeHolder.parseWeaponData(item));
+        JsonObject data = WeaponAttributeHolder.parseWeaponData(item, this);
+        //JsonObject reforgeObj = data.get("reforge").getAsJsonObject();
+        this.obj.add("Weapon Data", data);
     }
 
     @Override
     public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
+        SwordCraftOnline.logDebug("Incoming Data: " + data.toString() + "\n");
+
         NBTItem nbti = new NBTItem(item);
         nbti.setString("weapon", data.get("weapon").getAsString());
 
-        JsonObject reforgeObj = data.getAsJsonObject("reforge");        
+        JsonObject parsedWeaponObj = data.getAsJsonObject("Weapon Data");
+        if(parsedWeaponObj == null) { parsedWeaponObj = new JsonObject(); }
+
+        JsonObject reforgeObj = parsedWeaponObj.getAsJsonObject("reforge");
+        reforgeObj = reforgeObj == null ? data.getAsJsonObject("reforge") : reforgeObj;    
         this.weaponObj.add("reforge", reforgeObj);
-        int reforgeCount = data.get("Reforge Count") == null ? 0 : data.get("Reforge Count").getAsInt();
-        this.weaponObj.addProperty("Reforge Count", reforgeCount);
+        
+        JsonElement reforgeCount = parsedWeaponObj.get("Reforge Count");
+        reforgeCount = reforgeCount == null ? data.get("Reforge Count") : reforgeCount;
+        this.weaponObj.addProperty("Reforge Count", reforgeCount.getAsInt());
+
+        SwordCraftOnline.logDebug("Applied Weapon Data: " + this.weaponObj.toString() + "\n");
 
         return nbti.getItem();
     }
@@ -128,6 +142,14 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
         return 3;
     }
 
+    @Override
+    public JsonObject getMaxReforge() {
+        JsonObject maxReforge = new JsonObject();
+        maxReforge.addProperty(WeaponModifierType.PASSIVE.toString(), 2);
+        maxReforge.addProperty(WeaponModifierType.ACTIVE.toString(), 1);
+        return maxReforge;
+    }
+
     public TestSwordItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.obj = new JsonObject();
@@ -141,13 +163,9 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
         JsonObject active = new JsonObject();
         active.addProperty("Refined Power", 3);
 
-        JsonObject maxReforge = new JsonObject();
-        maxReforge.addProperty(WeaponModifierType.PASSIVE.toString(), 2);
-        maxReforge.addProperty(WeaponModifierType.ACTIVE.toString(), 1);
-
         this.weaponObj.add(WeaponModifierType.PASSIVE.toString(), passive);
         this.weaponObj.add(WeaponModifierType.ACTIVE.toString(), active);
-        this.weaponObj.add("Max Reforge", maxReforge);
+        this.weaponObj.add("Max Reforge", getMaxReforge());
         this.weaponObj.addProperty("Disposition", getDisposition());
         this.weaponObj.addProperty("Reforge Count", 0);
     }

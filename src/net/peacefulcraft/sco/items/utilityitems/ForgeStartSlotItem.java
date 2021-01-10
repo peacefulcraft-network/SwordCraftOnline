@@ -1,35 +1,35 @@
-package net.peacefulcraft.sco.items;
+package net.peacefulcraft.sco.items.utilityitems;
 
 import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-public class ForgeSteelItem implements ItemIdentifier {
+import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 
-    private Integer quantity;
+public class ForgeStartSlotItem implements ItemIdentifier {
+
+    private int quantity;
 
     @Override
     public String getName() {
-        return "Forge Steel";
+        return "Forge Start Slot";
     }
 
     @Override
     public String getDisplayName() {
-        return ItemTier.getTierColor(ItemTier.COMMON) + "Forge Steel";
+        return ChatColor.DARK_PURPLE + "Click to forge item";
     }
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> desc = ItemTier.addDesc(ItemTier.COMMON);
-        desc.add(ItemTier.getTierColor(ItemTier.COMMON) + "Steel made by the ones above.");
-        desc.add(ItemTier.getTierColor(ItemTier.COMMON) + "Occasionally falls to Aincrad for");
-        desc.add(ItemTier.getTierColor(ItemTier.COMMON) + "use in the forge.");
-        return desc;
+        return new ArrayList<String>();
     }
 
     @Override
     public Material getMaterial() {
-        return Material.IRON_INGOT;
+        return Material.GREEN_STAINED_GLASS_PANE;
     }
 
     @Override
@@ -54,16 +54,16 @@ public class ForgeSteelItem implements ItemIdentifier {
 
     @Override
     public boolean isDroppable() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isMovable() {
-        return true;
+        return false;
     }
 
-    public ForgeSteelItem(ItemTier tier, Integer quanity) {
-        this.quantity = quanity;
+    public ForgeStartSlotItem(ItemTier tier, Integer quantity) {
+        this.quantity = quantity;
     }
     
 }
