@@ -321,7 +321,7 @@ public interface WeaponAttributeHolder {
         for(int i = 0; i < maxAR; i++) {
             // Rolling disposition / 10 chance for reforge
             if((SwordCraftOnline.r.nextInt(9) + 1) <= disposition * 2) {
-                String newModifier = WeaponModifierList.getRandomModifier();
+                String newModifier = WeaponModifierList.getRandomModifier(true);
                 int roll = (1 + disposition * 750) / (SwordCraftOnline.r.nextInt(99) + 1);
                 if(roll > 100) { roll = 100; }
 
@@ -338,7 +338,7 @@ public interface WeaponAttributeHolder {
         for(int i = 0; i < maxPR; i++) {
             // Rolling disposition / 10 chance for reforge
             if((SwordCraftOnline.r.nextInt(9) + 1) <= disposition * 2) {
-                String newModifier = WeaponModifierList.getRandomModifier();
+                String newModifier = WeaponModifierList.getRandomModifier(true);
                 int roll = (1 + disposition * 750) / (SwordCraftOnline.r.nextInt(99) + 1);
                 if(roll > 100) { roll = 100; }
 
