@@ -424,7 +424,7 @@ public class ModifierUser {
      * @param amount Value to be added. I.e. 0.2, 0.4, 1, etc.
      * @param duration Resets value after this time in seconds. If -1 it does not
      */
-    public void addAttribute(Attribute attribute, double amount, int duration) {
+    public void addToAttribute(Attribute attribute, double amount, int duration) {
         double d = getAttribute(attribute);
 
         getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
