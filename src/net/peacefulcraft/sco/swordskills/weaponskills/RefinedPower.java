@@ -25,28 +25,13 @@ public class RefinedPower implements WeaponModifier {
     }
 
     @Override
-    public ModifierType getModifierType() {
-        return null;
-    }
-
-    @Override
-    public CombatModifier getCombatModifierType() {
-        return CombatModifier.CRITICAL_MULTIPLIER;
-    }
-
-    @Override
-    public Boolean getModifierIncoming() {
-        return false;
-    }
-
-    @Override
     public void applyEffects(ModifierUser user) {
-        user.addToCombatModifier(getCombatModifierType(), getModifierAmount(), -1);
+        user.addToCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, getModifierAmount(), -1);
     }
 
     @Override
     public void removeEffects(ModifierUser user) {
-        user.addToCombatModifier(getCombatModifierType(), -getModifierAmount(), -1);
+        user.addToCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, -getModifierAmount(), -1);
     }
 
     @Override

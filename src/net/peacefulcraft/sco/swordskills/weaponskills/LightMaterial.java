@@ -1,22 +1,22 @@
 package net.peacefulcraft.sco.swordskills.weaponskills;
 
-import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
+import org.bukkit.attribute.Attribute;
+
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
-import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.RomanNumber;
 
-public class RefinedTechnique implements WeaponModifier {
+public class LightMaterial implements WeaponModifier {
 
     private String level;
 
     @Override
     public String getName() {
-        return "Refined Technique";
+        return "Light Material";
     }
 
     @Override
     public Double getModifierAmount() {
-        return 0.2 * RomanNumber.romanToDecimal(this.level) + 0.2;
+        return 0.1 * RomanNumber.romanToDecimal(this.level);
     }
 
     @Override
@@ -24,15 +24,16 @@ public class RefinedTechnique implements WeaponModifier {
         return this.level;
     }
 
-
     @Override
     public void applyEffects(ModifierUser user) {
-        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, getModifierAmount(), -1);
+        user.addToAttribute(Attribute.GENERIC_ATTACK_SPEED, getModifierAmount(), -1);
+        user.addToAttribute(Attribute.GENERIC_MOVEMENT_SPEED, getModifierAmount(), -1);
     }
 
     @Override
     public void removeEffects(ModifierUser user) {
-        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, -getModifierAmount(), -1);
+        user.addToAttribute(Attribute.GENERIC_ATTACK_SPEED, -getModifierAmount(), -1);
+        user.addToAttribute(Attribute.GENERIC_MOVEMENT_SPEED, -getModifierAmount(), -1);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class RefinedTechnique implements WeaponModifier {
         return 5;
     }
 
-    public RefinedTechnique(String level) {
+    public LightMaterial(String level) {
         this.level = level;
     }
     

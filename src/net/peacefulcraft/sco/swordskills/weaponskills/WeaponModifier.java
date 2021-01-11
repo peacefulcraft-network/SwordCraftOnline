@@ -5,8 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
-import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
-import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public interface WeaponModifier {
 
@@ -25,32 +23,11 @@ public interface WeaponModifier {
     public abstract Double getModifierAmount();
 
     /**
-     * Gets modifier incoming, outgoing
-     * 
-     * @return boolean
-     */
-    public abstract Boolean getModifierIncoming();
-
-    /**
      * Gets weapons modifier level
      * 
      * @return level
      */
     public abstract String getLevel();
-
-    /**
-     * Gets weapons modifier type
-     * 
-     * @return modifier type
-     */
-    public abstract ModifierType getModifierType();
-
-    /**
-     * Gets combat modifier type
-     * 
-     * @return combat modifier
-     */
-    public abstract CombatModifier getCombatModifierType();
 
     /**
      * Applies this modifiers effects onto modifier users
