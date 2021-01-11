@@ -6,13 +6,13 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.RomanNumber;
 
-public class HigherKnowledge implements WeaponModifier {
+public class ExtremePrecision implements WeaponModifier {
 
     private String level;
 
     @Override
     public String getName() {
-        return "Higher Knowledge";
+        return "Extreme Precision";
     }
 
     @Override
@@ -27,14 +27,14 @@ public class HigherKnowledge implements WeaponModifier {
 
     @Override
     public void applyEffects(ModifierUser user) {
-        user.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, getModifierAmount(), -1);    
-        user.addToCombatModifier(CombatModifier.PARRY_CHANCE, -getModifierAmount(), -1);
+        user.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, -getModifierAmount(), -1);
+        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, getModifierAmount(), -1);
     }
 
     @Override
     public void removeEffects(ModifierUser user) {
-        user.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, -getModifierAmount(), -1);    
-        user.addToCombatModifier(CombatModifier.PARRY_CHANCE, getModifierAmount(), -1);
+        user.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, getModifierAmount(), -1);
+        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, -getModifierAmount(), -1);
     }
 
     @Override
@@ -44,11 +44,7 @@ public class HigherKnowledge implements WeaponModifier {
 
     @Override
     public Integer getMaxPlayerLevel() {
-        return 6;
-    }
-
-    public HigherKnowledge(String level) {
-        this.level = level;
+        return 3;
     }
     
 }
