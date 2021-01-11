@@ -108,7 +108,7 @@ public class SerratedBladeItem implements SwordSkillProvider {
   @Override
   public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
     SCOPlayer sp = caster.getSwordSkillManager().getSCOPlayer();
-    sp.addCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
+    sp.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
     switch (this.tier) {
       case UNCOMMON:
         return new SerratedBladeSkill(caster, this, 2);

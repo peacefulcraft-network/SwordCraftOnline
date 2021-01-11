@@ -2,8 +2,10 @@ package net.peacefulcraft.sco.swordskills.utilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
@@ -11,6 +13,8 @@ import org.bukkit.entity.LivingEntity;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 /**
  * Holds necessary information for SCOPlayers and AciveMobs
@@ -19,7 +23,7 @@ import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 public class ModifierUser {
 
     /**List of Modifiers user has */
-    private List<Modifier> damageModifiers;
+    private List<Modifier> damageModifiers = new ArrayList<>();
 
     /**Instance of living entity using this class */
     private LivingEntity entity;
@@ -38,16 +42,19 @@ public class ModifierUser {
     private Integer currHealth = 20;
 
     /**CombatModifier: Chance user lands critical hit */
-    protected int criticalChance;
+    protected int criticalChance = 2;
     
     /**CombatModifier: Additional damage dealt on critical hit */
-    protected double criticalMultiplier;
+    protected double criticalMultiplier = 1.2;
 
     /**CombatModifier: Chance user lowers incoming damage */
-    protected int parryChance;
+    protected int parryChance = 2;
 
     /**CombatModifier: Damage dampener on incoming damage */
-    protected double parryMultiplier;
+    protected double parryMultiplier = 1.2;
+
+    /**Holds weapon modifiers of user */
+    protected HashMap<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> weaponModifiers = new HashMap<>();
     
     /**
      * Fetches implementing sub class living entity
@@ -62,12 +69,99 @@ public class ModifierUser {
     public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
 
     /**
+     * Applies weapon modifiers to user. 
+     * Removes old modifiers.
+     * 
+     * @param wModifiers Map by Weapon name -> List of weapon modifier
+     * if passed value is empty or null all weapon modifiers are removed and cleared
+     */
+    public void applyWeaponModifiers(HashMap<String, ArrayList<WeaponModifier>> wModifiers, WeaponModifierType processType) {
+        //SwordCraftOnline.logDebug("wModifiers value: " + wModifiers + ", processType: " + processType);
+
+        Iterator<Entry<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>>> iter = weaponModifiers.entrySet().iterator();
+        while(iter.hasNext()) {
+            Entry<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> entry = iter.next();
+
+            if(wModifiers == null) {
+                // Case 1: Hot bar weapon empty, wModifiers null
+
+                ArrayList<WeaponModifier> passiveList = entry.getValue().get(WeaponModifierType.PASSIVE);
+                ArrayList<WeaponModifier> activeList = entry.getValue().get(WeaponModifierType.ACTIVE);
+                if(passiveList != null && !passiveList.isEmpty()) {
+                    for(WeaponModifier wm : passiveList) {
+                        wm.removeEffects(this);
+                        //SwordCraftOnline.logDebug("Case 1, cleared passive weapon modifier: " + WeaponModifier.parseName(wm));
+                    }
+                }
+                if(activeList != null && !activeList.isEmpty()) {
+                    for(WeaponModifier wm : activeList) {
+                        wm.removeEffects(this);
+                        //SwordCraftOnline.logDebug("Case 1, cleared active weapon modifier: " + WeaponModifier.parseName(wm));
+                    }
+                }
+                weaponModifiers.clear();
+            } else if(wModifiers.isEmpty()) {
+                // Case 2: Check passed with no TYPE modifiers in hotbar / hand
+
+                ArrayList<WeaponModifier> wmList = entry.getValue().get(processType);
+                if(wmList != null && !wmList.isEmpty()) {
+                    for(WeaponModifier wm : wmList) {
+                        wm.removeEffects(this);
+                        //SwordCraftOnline.logDebug("Case 2, cleared " + processType.toString() + " weapon modifier: "+ WeaponModifier.parseName(wm));
+                    }
+                    entry.getValue().remove(processType);
+                }
+            } else {
+                // Case 3: Hotbar passed through. Removing passive and active modifiers not in hotbar
+
+                if(!wModifiers.keySet().contains(entry.getKey())) {
+                    ArrayList<WeaponModifier> passiveList = entry.getValue().get(WeaponModifierType.PASSIVE);
+                    ArrayList<WeaponModifier> activeList = entry.getValue().get(WeaponModifierType.ACTIVE);
+                    if(passiveList != null && !passiveList.isEmpty()) {
+                        for(WeaponModifier wm : passiveList) {
+                            wm.removeEffects(this);
+                            //SwordCraftOnline.logDebug("Case 3, removed passive effects of: " + WeaponModifier.parseName(wm));
+                        }
+                    }
+                    if(activeList != null && !activeList.isEmpty()) {
+                        for(WeaponModifier wm : activeList) {
+                            wm.removeEffects(this);
+                            //SwordCraftOnline.logDebug("Case 3, active removed effects of: " + WeaponModifier.parseName(wm));
+                        }
+                    }
+                    iter.remove();
+                }
+            }
+        }
+
+        // Applying non-applied weapon modifiers to player
+        if(wModifiers.entrySet().isEmpty()) { return; }
+        Iterator<Entry<String, ArrayList<WeaponModifier>>> iterr = wModifiers.entrySet().iterator();
+        while(iterr.hasNext()) {
+            Entry<String, ArrayList<WeaponModifier>> entryy = iterr.next();
+
+            HashMap<WeaponModifierType, ArrayList<WeaponModifier>> compareMap = weaponModifiers.get(entryy.getKey());
+            if(compareMap != null && compareMap.get(processType) != null) {
+               continue;
+            }
+
+            for(WeaponModifier wm : entryy.getValue()) {
+                wm.applyEffects(this);
+            }
+            if(!weaponModifiers.containsKey(entryy.getKey())) {
+                weaponModifiers.put(entryy.getKey(), new HashMap<>());
+            }
+            weaponModifiers.get(entryy.getKey()).put(processType, entryy.getValue());
+        }
+    }
+
+    /**
      * Checks users modifiers for match
      * @param type Type of damage
      * @param damage FinalDamage from event
      * @return modified damage
      */
-    public double checkModifier(ModifierType type, double damage, boolean incoming) {
+    public double calculateDamage(ModifierType type, double damage, boolean incoming) {
         Modifier m = getDamageModifier(type, incoming);
         if(m == null) { return damage; }
 
@@ -83,10 +177,28 @@ public class ModifierUser {
      */
     public double checkModifier(String type, double damage, boolean incoming) {
         try{
-            return checkModifier(ModifierType.valueOf(type), damage, incoming);
+            return calculateDamage(ModifierType.valueOf(type), damage, incoming);
         } catch(IllegalArgumentException ex) {
-            SwordCraftOnline.logInfo("[ModifierUser] IllegalArgumentException thrown in checkModifier method.");
+            SwordCraftOnline.logDebug("[ModifierUser] IllegalArgumentException thrown in checkModifier method.");
             return damage;
+        }
+    }
+
+    /**
+     * Temporarily adds to value of desired multiplier
+     * Permenantly sets value with duration -1
+     * 
+     * @param type
+     * @param incoming
+     * @param value
+     * @param duration
+     */
+    public void addToMultiplier(ModifierType type, boolean incoming, double value, int duration) {
+        Modifier m = getDamageModifier(type, incoming);
+        if(m != null) {
+            setMultiplier(type, incoming, m.getMultiplier() + value, duration);
+        } else {
+            setMultiplier(type, incoming, value, duration);
         }
     }
 
@@ -97,15 +209,17 @@ public class ModifierUser {
      * @param multiplier Value to be set
      * @param duration Duration of set, if -1 it is permanent.
      */
-    public void setMultiplier(ModifierType type, double multiplier, int duration) {
+    public void setMultiplier(ModifierType type, boolean incoming, double multiplier, int duration) {
         Double initial = null;
         for(Modifier m : this.damageModifiers) {
-			if(m.getType().equals(type)) {
-                // Copying and setting multiplier
+			if(m.getType().equals(type) && m.isIncoming() == incoming) {
                 initial = m.getMultiplier();
 				m.setMultiplier(multiplier);
 				break;
 			}
+        }
+        if(initial == null && type != null) {
+            addDamageModifier(new Modifier(type, multiplier, incoming));
         }
         
         // If not perm change and we found the modifier
@@ -113,7 +227,7 @@ public class ModifierUser {
             double copy = initial;
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    setMultiplier(type, copy, -1);
+                    setMultiplier(type, incoming, copy, -1);
                 }
             }, duration * 20);
         }
@@ -249,6 +363,14 @@ public class ModifierUser {
         }, duration * 20);
     }
 
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER ATTRIBUTE HANDLING
+     * ===============================================================================================
+     * 
+     */
+
     /**
      * Fetches mobs attribute base value
      * @param attribute Attribute to be searched for
@@ -302,7 +424,7 @@ public class ModifierUser {
      * @param amount Value to be added. I.e. 0.2, 0.4, 1, etc.
      * @param duration Resets value after this time in seconds. If -1 it does not
      */
-    public void addAttribute(Attribute attribute, double amount, int duration) {
+    public void addToAttribute(Attribute attribute, double amount, int duration) {
         double d = getAttribute(attribute);
 
         getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
@@ -322,6 +444,14 @@ public class ModifierUser {
     public boolean isDead() {
         return getLivingEntity().isDead();
     }
+
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER COMBAT MODIFIER HANDLING
+     * ===============================================================================================
+     * 
+     */
 
     /**
      * Fetches combat modifier value
@@ -405,9 +535,8 @@ public class ModifierUser {
      * @param amount Amount to be multiplied by
      * @param duration Resets value after this time in seconds. If -1 it does not.
      */
-    public void addCombatModifier(CombatModifier mod, double amount, int duration) {
+    public void addToCombatModifier(CombatModifier mod, double amount, int duration) {
         double d = getCombatModifier(mod);
-
         setCombatModifier(mod, d + amount, -1);
         if(duration != -1) {
             _setCombatModifier(mod, d, duration);
@@ -433,6 +562,14 @@ public class ModifierUser {
         /**Additional chance to get more exp on mob kill */
         BONUS_EXP;
     }
+
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER HEALTH HANDLING
+     * ===============================================================================================
+     * 
+     */
 
     /**
      * Gets max health of this user 

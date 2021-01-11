@@ -1,21 +1,36 @@
 package net.peacefulcraft.sco.inventories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import com.google.gson.JsonObject;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 public class PlayerInventory extends BukkitInventoryBase {
 
@@ -132,8 +147,26 @@ public class PlayerInventory extends BukkitInventoryBase {
 
   @Override
   public void onClickThisInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
-    // TODO Auto-generated method stub
+    // Only check if we click hotbar and not drop click
+    if(ev.getSlotType().equals(SlotType.QUICKBAR) && !ev.getClick().equals(ClickType.DROP)) {
 
+      String cursorWeaponType = (cursorItem instanceof CustomDataHolder) ? 
+        ((CustomDataHolder)cursorItem).getCustomData().get("weapon").getAsString() : "";
+      String clickedWeaponType = (clickedItem instanceof CustomDataHolder) ?
+        ((CustomDataHolder)clickedItem).getCustomData().get("weapon").getAsString() : "";
+
+      HashMap<String, Integer> checked = checkHotbar();
+
+      if(checked.get("sword") >= 1 && cursorWeaponType.equalsIgnoreCase("sword")) {
+        ev.setCancelled(true);
+      }
+      if(checked.get("knife") >= 1 && cursorWeaponType.equalsIgnoreCase("knife")) {
+        ev.setCancelled(true);
+      }
+      if(checked.get("range") >= 1 && cursorWeaponType.equalsIgnoreCase("range")) {
+        ev.setCancelled(true);
+      }
+    }
   }
 
   @Override
@@ -144,7 +177,26 @@ public class PlayerInventory extends BukkitInventoryBase {
 
   @Override
   public void onThisInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
-    // TODO Auto-generated method stub
+    boolean containsHotbar = false;
+    for(Integer i : items.keySet()) {
+      if(i >= 0 && i <= 8) { containsHotbar = true; break; }
+    }
+
+    // Checking old items in cursor.
+    // These items should retain their weapon NBT and be consistent to old items.
+    // Main difference is item amount
+    ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(ev.getOldCursor());
+    String weaponType = (item instanceof CustomDataHolder) ?
+      ((CustomDataHolder)item).getCustomData().get("weapon").getAsString() : "";
+
+    // If hotbar is modified and the item is a weapon
+    if(containsHotbar && !weaponType.equalsIgnoreCase("")) {
+      HashMap<String, Integer> checked = checkHotbar();
+
+      if(checked.get(weaponType) != null && checked.get(weaponType) >= 1) {
+        ev.setCancelled(true);
+      }
+    }
 
   }
 
@@ -154,8 +206,66 @@ public class PlayerInventory extends BukkitInventoryBase {
 
   }
 
+  /**
+   * Called when player picks up item
+   * @param ev
+   * @param item
+   */
+  public void onPlayerPickup(EntityPickupItemEvent ev, ItemIdentifier item) {
+    if(item.getMaterial().equals(Material.AIR)) { return; }
+    String weaponType = (item instanceof CustomDataHolder) ? 
+      ((CustomDataHolder)item).getCustomData().get("weapon").getAsString() : "";
+
+    HashMap<String, Integer> checked = checkHotbar();
+    if(checked.get(weaponType) != null && checked.get(weaponType) >= 1) {
+      for(int i = 9; i <= 35; i++) {
+        ItemIdentifier temp = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+        if(temp != null && temp.getMaterial().equals(Material.AIR)) {
+          setItem(i, item);
+          ev.getItem().remove();
+          ev.setCancelled(true);
+          return;
+        }
+      }
+      ev.setCancelled(true);
+    }
+  }
+
+  /**
+   * Called when player changes held item
+   * @param ev
+   * @param item
+   */
+  public void onPlayerChangeHeldItem(PlayerItemHeldEvent ev, ItemIdentifier item) {
+    HashMap<String, ArrayList<WeaponModifier>> actives = new HashMap<>();
+    if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
+      ArrayList<WeaponModifier> activeMods = WeaponAttributeHolder.parseLore(this.inventory.
+        getItem(ev.getNewSlot())).get(WeaponModifierType.ACTIVE);
+      if(activeMods == null || activeMods.isEmpty()) { return; }
+      actives.put(ChatColor.stripColor(item.getDisplayName()), activeMods);
+    }
+    GameManager.findSCOPlayer(ev.getPlayer()).applyWeaponModifiers(actives, WeaponModifierType.ACTIVE);
+  }
+
   @Override
   public void onInventoryClose(InventoryCloseEvent ev) {
+    HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
+
+    for(int i = 0; i <= 8; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
+        ArrayList<WeaponModifier> passMods = WeaponAttributeHolder.parseLore(this.inventory.getItem(i)).get(WeaponModifierType.PASSIVE);
+        if(passMods == null || passMods.isEmpty()) { continue; }
+        passives.put(ChatColor.stripColor(item.getDisplayName()), passMods);  
+      }
+    }
+
+    HashMap<String, Integer> check = checkHotbar();
+    if(check.get("sword") == 0 && check.get("knife") == 0 && check.get("range") == 0) {
+      passives = null;
+    }
+    GameManager.findSCOPlayer((Player)ev.getPlayer()).applyWeaponModifiers(passives, WeaponModifierType.PASSIVE);
+
     this.saveInventory();
   }
 
@@ -165,5 +275,37 @@ public class PlayerInventory extends BukkitInventoryBase {
       .thenAccept((inventoryId) -> {
         SwordCraftOnline.logDebug("Inventory " + this.inventoryId + " saved succesfully");
       });
+  } 
+  
+  /**
+   * Checks players hotbar for weapon types
+   * @return Map of weapon type with amount of weapons
+   */
+  private HashMap<String, Integer> checkHotbar() {
+    int swordCount = 0;
+    int knifeCount = 0;
+    int rangeCount = 0;
+    for(int i = 0; i < 9; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      if(item.getMaterial().equals(Material.AIR)) { continue; }
+
+      if(item instanceof CustomDataHolder) {
+        // Handling limiting items. If count exceeds 1 we move it to main inventory
+        JsonObject obj = ((CustomDataHolder)item).getCustomData();
+        switch(obj.get("weapon").getAsString()) {
+          case "sword":
+              swordCount++; 
+          break; case "knife":
+              knifeCount++;
+          break; case "range":
+              rangeCount++;
+        }
+      }
+    }
+    HashMap<String, Integer> out = new HashMap<>();
+    out.put("sword", swordCount);
+    out.put("knife", knifeCount);
+    out.put("range", rangeCount);
+    return out;
   }  
 }

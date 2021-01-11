@@ -70,6 +70,7 @@ public class InventoryLoadTask {
           if (itemIdentifier instanceof CustomDataHolder) {
             JsonObject customData = new JsonParser().parse(res.getString("custom_item_data")).getAsJsonObject();
             ((CustomDataHolder) itemIdentifier).setCustomData(customData);
+            //SwordCraftOnline.logDebug("Set custom data of: " + itemIdentifier.getName() + ", to: " + customData.toString());
           }
 
           items.set(res.getInt("slot"), itemIdentifier);

@@ -24,11 +24,10 @@ import net.peacefulcraft.sco.gamehandle.listeners.RegionCheckListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionDamageListener;
 import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDamageListener;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventories.listeners.InventoryListeners;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.inventories.crafting.CraftingManager;
-import net.peacefulcraft.sco.inventories.listeners.CraftingListeners;
-import net.peacefulcraft.sco.inventories.listeners.InfusionListeners;
+import net.peacefulcraft.sco.inventories.listeners.CustomInventoryListeners;
+import net.peacefulcraft.sco.inventories.listeners.InventoryListeners;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
@@ -48,7 +47,6 @@ import net.peacefulcraft.sco.quests.listeners.QuestOpenInventoryListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerInteractEntityListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerMoveListener;
 import net.peacefulcraft.sco.storage.HikariManager;
-import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityAsyncPlayerChatListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
@@ -56,6 +54,7 @@ import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityTeleportListener
 import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerDeathListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerMoveListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerRespawnListener;
+import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -194,8 +193,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		// Register Menu Opener
 		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
-		getServer().getPluginManager().registerEvents(new CraftingListeners(), this);
-		getServer().getPluginManager().registerEvents(new InfusionListeners(), this);
+		getServer().getPluginManager().registerEvents(new CustomInventoryListeners(), this);
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);

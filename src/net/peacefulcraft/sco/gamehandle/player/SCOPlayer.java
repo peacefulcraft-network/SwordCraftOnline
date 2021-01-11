@@ -379,7 +379,7 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	}
 
 	@Override
-	public void addCombatModifier(CombatModifier mod, double amount, int duration) {
+	public void addToCombatModifier(CombatModifier mod, double amount, int duration) {
 		double d = this.getCombatModifier(mod);
 
 		this.setCombatModifier(mod, d + amount, -1);

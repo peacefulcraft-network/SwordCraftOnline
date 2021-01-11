@@ -110,8 +110,6 @@ public class CraftingInventory extends BukkitInventoryBase {
 
     @Override
     public void closeInventory() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -131,20 +129,14 @@ public class CraftingInventory extends BukkitInventoryBase {
 
     @Override
     public void onClickThatInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onThisInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onThatInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

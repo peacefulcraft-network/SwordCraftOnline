@@ -92,6 +92,7 @@ public class InventorySaveTask  {
             stmt_insert_item.setString(4, items.get(i).getTier().toString().toUpperCase());
             stmt_insert_item.setInt(5, items.get(i).getQuantity());
             if (items.get(i) instanceof CustomDataHolder) {
+              //SwordCraftOnline.logDebug("Fetched custom data on item: " + items.get(i).getName() + ", data: " + ((CustomDataHolder) items.get(i)).getCustomData().toString());
               stmt_insert_item.setString(6, ((CustomDataHolder) items.get(i)).getCustomData().toString());
             } else {
               stmt_insert_item.setString(6, "{}");

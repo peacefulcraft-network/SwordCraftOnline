@@ -23,6 +23,8 @@ import net.peacefulcraft.sco.items.ItemTier;
 public class MerchantListeners implements Listener {
     private final String alchemistTag = ChatColor.BLUE + "[" + ChatColor.GOLD + "Bill the Alchemist" + ChatColor.BLUE + "]";
     
+    /*
+
     @EventHandler
     public void interactVillager(PlayerInteractEntityEvent e) {
         Entity entity = e.getRightClicked();
@@ -78,4 +80,5 @@ public class MerchantListeners implements Listener {
             s.getPlayer().sendMessage(alchemistTag + " Enjoy ye' wares.");
         }
     }
+    */
 }

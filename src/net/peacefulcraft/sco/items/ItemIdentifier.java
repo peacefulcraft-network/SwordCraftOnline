@@ -85,13 +85,13 @@ public interface ItemIdentifier {
    * @return True if item exist. False if item doesn't exist.
    */
   public static boolean itemExists(String name) {
-    // I love 4 nested try catch statements.
+    // I love 6 nested try catch statements.
     try {
       Class.forName("net.peacefulcraft.sco.items." + name);
       return true;
     } catch (ClassNotFoundException ex) {
       try {
-        Class.forName("net.peacefulcraft.sco.items." + name +"Item");
+        Class.forName("net.peacefulcraft.sco.items." + name + "Item");
         return true;
       } catch(ClassNotFoundException ex1) {
         try {
@@ -102,7 +102,17 @@ public interface ItemIdentifier {
             Class.forName("net.peacefulcraft.sco.items.utilityitems." + name + "Item");
             return true;
           } catch(ClassNotFoundException ex3) {
-            return false;
+            try {
+              Class.forName("net.peacefulcraft.sco.items.weaponitems." + name);
+              return true;
+            } catch(ClassNotFoundException ex4) {
+              try {
+                Class.forName("net.peacefulcraft.sco.items.weaponitems." + name + "Item");
+                return true;
+              } catch(ClassNotFoundException ex5) {
+                return false;
+              }
+            }
           }
         }
       }
@@ -115,27 +125,40 @@ public interface ItemIdentifier {
    * @param item tier to generate
    * @param quantity Number of items this identifier represents
    */
-  public static ItemIdentifier generateIdentifier(String name, ItemTier tier, int quantity) {
+  public static ItemIdentifier generateIdentifier(String name, ItemTier tier, int quantity) throws RuntimeException {
     try {
       name = name.replaceAll(" ", "");
-      Class<?> clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
-      Class<?> params[] = new Class[] { ItemTier.class, Integer.class };
-      Constructor<?> constructor = clas.getConstructor(params);
-    
-      ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
 
-      // Check that the requested item tier is allowed
-      for (ItemTier allowedTier : identiifer.getAllowedTiers()) {
-        if (tier == allowedTier) {
-          return identiifer;
+      // Nested trys to avoid recursive calls
+      Class<?> clas = null;
+      try {
+        clas = Class.forName("net.peacefulcraft.sco.items." + name + "Item");
+      } catch(ClassNotFoundException ex) {
+        try {
+          clas = Class.forName("net.peacefulcraft.sco.items.utilityitems." + name + "Item");
+        } catch(ClassNotFoundException exx) {
+          try {
+            clas = Class.forName("net.peacefulcraft.sco.items.weaponitems." + name + "Item");
+          } catch(ClassNotFoundException exxx) {
+            SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
+          }
         }
       }
 
-		} catch (ClassNotFoundException e) {
-      if(!name.contains("utilityitems.") && (!name.isEmpty() || !name.equals(" "))) { 
-        return generateIdentifier("utilityitems." + name, tier, quantity); 
-      } 
-      SwordCraftOnline.logSevere("Attempted to create item " + name.replace("utilityitems.", "") + ", but no coresponding class was found in net.peacefulcraft.sco.items");
+      // If class is found we continue. Otherwise throw runtime
+      if(clas != null) {
+        Class<?> params[] = new Class[] { ItemTier.class, Integer.class };
+        Constructor<?> constructor = clas.getConstructor(params);
+      
+        ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
+  
+        // Check that the requested item tier is allowed
+        for (ItemTier allowedTier : identiifer.getAllowedTiers()) {
+          if (tier == allowedTier) {
+            return identiifer;
+          }
+        }
+      }
 		} catch (NoSuchMethodException e) {
 			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must have a constuctor with arguments (ItemTier, int)");
 		} catch (SecurityException e) {
@@ -206,6 +229,11 @@ public interface ItemIdentifier {
     item = nbti.getItem();
     if (itemIdentifier instanceof EphemeralAttributeHolder) {
       item = ((EphemeralAttributeHolder) itemIdentifier).applyEphemeralAttributes(item);
+    }
+
+    if (itemIdentifier instanceof WeaponAttributeHolder) {
+      WeaponAttributeHolder wh = ((WeaponAttributeHolder) itemIdentifier);
+      item = WeaponAttributeHolder.applyLore(item, wh.getWeaponData());
     }
 
     return item;

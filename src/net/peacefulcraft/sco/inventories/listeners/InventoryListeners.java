@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -176,14 +177,26 @@ public class InventoryListeners implements Listener {
 
   /**
    * Triggers inventory saving when items are picked up off the floor
+   * Holds logic for weapon limitations in inventory
    */
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onEntityPickupItem(EntityPickupItemEvent ev) {
     if (ev.getEntityType() == EntityType.PLAYER) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(ev.getItem().getItemStack());
+      GameManager.findSCOPlayer((Player)ev.getEntity()).getPlayerInventory().onPlayerPickup(ev, item);
+
       Bukkit.getScheduler().runTask(SwordCraftOnline.getPluginInstance(), () -> {
         GameManager.findSCOPlayer((Player)ev.getEntity()).getPlayerInventory().saveInventory();
       });
     }
+  }
+
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+  public void onPlayerChangeHeldItem(PlayerItemHeldEvent ev) {
+    ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(
+      ev.getPlayer().getInventory().getItem(ev.getNewSlot())
+    );
+    GameManager.findSCOPlayer(ev.getPlayer()).getPlayerInventory().onPlayerChangeHeldItem(ev, item);
   }
 
   /**
