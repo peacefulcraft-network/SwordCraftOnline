@@ -2,8 +2,8 @@ package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class ParrySkill extends SwordSkill {
@@ -35,9 +35,9 @@ public class ParrySkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        if(this.c instanceof SCOPlayer) {
-            SCOPlayer s = (SCOPlayer)c;
-            s.addToCombatModifier(CombatModifier.PARRY_CHANCE, this.increase, -1);
+        if(this.c instanceof ModifierUser) {
+            ModifierUser mu = (ModifierUser)c;
+            mu.addToCombatModifier(CombatModifier.PARRY_CHANCE, this.increase, -1);
         }
     }
 
@@ -48,9 +48,9 @@ public class ParrySkill extends SwordSkill {
 
     @Override
     public void unregisterSkill() {
-        if(this.c instanceof SCOPlayer) {
-            SCOPlayer s = (SCOPlayer)c;
-            s.addToCombatModifier(CombatModifier.PARRY_CHANCE, -this.increase, -1);
+        if(this.c instanceof ModifierUser) {
+            ModifierUser mu = (ModifierUser)c;
+            mu.addToCombatModifier(CombatModifier.PARRY_CHANCE, -this.increase, -1);
         }
     }
     

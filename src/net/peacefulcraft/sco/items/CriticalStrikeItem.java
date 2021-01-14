@@ -27,31 +27,25 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 	@Override
 	public ArrayList<String> getLore() {
 		ArrayList<String> lore = new ArrayList<String>();
-		lore.add(tier.getTierColor() + "A Beginners 3 hit combo.");
+		lore.add(tier.getTierColor() + "A Beginners critical damage technique.");
 		switch (this.tier) {
 			case COMMON:
-				lore.add(tier.getTierColor() + "Combo Damage: 3");
-				lore.add(tier.getTierColor() + "Cooldown: 5 seconds");
+				lore.add(tier.getTierColor() + "Critical Chance: + 2%");
 				break;
 			case UNCOMMON:
-				lore.add(tier.getTierColor() + "Combo Damage: 4");
-				lore.add(tier.getTierColor() + "Cooldown: 5 seconds");
+				lore.add(tier.getTierColor() + "Critical Chance: + 3%");
 				break;
 			case RARE:
-				lore.add(tier.getTierColor() + "Combo Damage: 5");
-				lore.add(tier.getTierColor() + "Cooldown: 5 seconds");
+				lore.add(tier.getTierColor() + "Critical Chance: + 4%");
 				break;
 			case LEGENDARY:
-				lore.add(tier.getTierColor() + "Combo Damage: 7");
-				lore.add(tier.getTierColor() + "Cooldown: 5 seconds");
+				lore.add(tier.getTierColor() + "Critical Chance: + 5%");
 				break;
 			case ETHEREAL:
-				lore.add(tier.getTierColor() + "Combo Damage: 10");
-				lore.add(tier.getTierColor() + "Cooldown: 4 seconds");
+				lore.add(tier.getTierColor() + "Critical Chance: + 6%");
 				break;
 			case GODLIKE:
-				lore.add(tier.getTierColor() + "Combo Damage: 12");
-				lore.add(tier.getTierColor() + "Cooldown: 5 seconds");
+				lore.add(tier.getTierColor() + "Critical Chance: + 7%");
 		}
 		return lore;
 	}
@@ -89,30 +83,43 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 	@Override
 	public boolean isMovable() { return true; }
 
+	private Integer increase;
+
 	public CriticalStrikeItem(ItemTier tier, Integer quantity) {
 		this.tier = tier;
 		this.quantity = quantity;
+
+		setModifiers();
 	}
+
+	public void setModifiers() {
+        switch (this.tier) {
+            case COMMON:
+                this.increase = 2;
+                break;
+            case UNCOMMON:
+                this.increase = 3;
+                break;
+            case RARE:
+                this.increase = 4;
+                break;
+            case LEGENDARY:
+                this.increase = 5;
+                break;
+            case ETHEREAL:
+                this.increase = 6;
+                break;
+            case GODLIKE:
+                this.increase = 7;
+        }
+    }
 
 	@Override
 	public SwordSkillType getType() { return SwordSkillType.PASSIVE; }
 
 	@Override
 	public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-		switch (this.tier) {
-			case UNCOMMON:
-				return new CriticalStrikeSkill(caster, 5000, this, 3, 4);
-			case RARE:
-				return new CriticalStrikeSkill(caster, 5000, this, 3, 5);
-			case LEGENDARY:
-				return new CriticalStrikeSkill(caster, 5000, this, 3, 7);
-			case ETHEREAL:
-				return new CriticalStrikeSkill(caster, 5000, this, 3, 10);
-			case GODLIKE:
-				return new CriticalStrikeSkill(caster, 5000, this, 3, 12);
-			default:
-				return new CriticalStrikeSkill(caster, 5000, this, 3, 3);
-		}
+		return new CriticalStrikeSkill(caster, this.increase, 10L, (SwordSkillProvider) this);
 	}
 
 	@Override

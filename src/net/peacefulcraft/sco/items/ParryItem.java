@@ -90,12 +90,16 @@ public class ParryItem implements SwordSkillProvider {
         this.tier = tier;
         this.level = level;
         this.quantity = 1;
+
+        setModifiers();
     }
 
     public ParryItem(ItemTier tier, Integer level, Integer quantity) {
         this.tier = tier;
         this.level = level;
         this.quantity = quantity;
+
+        setModifiers();
     }
 
     public void setModifiers() {
