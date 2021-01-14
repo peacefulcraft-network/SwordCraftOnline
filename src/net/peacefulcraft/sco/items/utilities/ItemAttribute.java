@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.items.utilities;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import org.bukkit.attribute.Attribute;
@@ -7,6 +8,8 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import net.peacefulcraft.sco.items.ItemIdentifier;
 
 /**
  * Used as constant way to modify weapon attributes Called in
@@ -42,6 +45,40 @@ public class ItemAttribute {
      */
     public static ItemStack setAttribute(ItemStack item, double value, Attribute attribute) {
         return setAttribute(item, value, EquipmentSlot.HAND, attribute);
+    }
+
+    /**
+     * Gets attribute of item
+     * 
+     * @param identifier
+     * @param attribute
+     * @param slot
+     * @return
+     */
+    public static Double getAttribute(ItemIdentifier identifier, Attribute attribute, EquipmentSlot slot) {
+        ItemStack item = ItemIdentifier.generateItem(identifier);
+        ItemMeta meta = item.getItemMeta();
+
+        double value = 0;
+        Collection<AttributeModifier> modifiers = meta.getAttributeModifiers(attribute);
+        for(AttributeModifier mod : modifiers) {
+            if((slot != null && mod.getSlot().equals(slot)) || slot == null) {
+                value += mod.getAmount();
+            }
+        }
+
+        return value;
+    }
+
+    /**
+     * Gets attribute of item
+     * 
+     * @param identifier
+     * @param attribute
+     * @return
+     */
+    public static Double getAttribute(ItemIdentifier identifier, Attribute attribute) {
+        return getAttribute(identifier, attribute, null);
     }
 
 }

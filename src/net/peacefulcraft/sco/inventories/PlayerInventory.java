@@ -155,7 +155,7 @@ public class PlayerInventory extends BukkitInventoryBase {
       String clickedWeaponType = (clickedItem instanceof CustomDataHolder) ?
         ((CustomDataHolder)clickedItem).getCustomData().get("weapon").getAsString() : "";
 
-      HashMap<String, Integer> checked = checkHotbar();
+      HashMap<String, Integer> checked = getHotbarWeapons();
 
       if(checked.get("sword") >= 1 && cursorWeaponType.equalsIgnoreCase("sword")) {
         ev.setCancelled(true);
@@ -191,7 +191,7 @@ public class PlayerInventory extends BukkitInventoryBase {
 
     // If hotbar is modified and the item is a weapon
     if(containsHotbar && !weaponType.equalsIgnoreCase("")) {
-      HashMap<String, Integer> checked = checkHotbar();
+      HashMap<String, Integer> checked = getHotbarWeapons();
 
       if(checked.get(weaponType) != null && checked.get(weaponType) >= 1) {
         ev.setCancelled(true);
@@ -216,7 +216,7 @@ public class PlayerInventory extends BukkitInventoryBase {
     String weaponType = (item instanceof CustomDataHolder) ? 
       ((CustomDataHolder)item).getCustomData().get("weapon").getAsString() : "";
 
-    HashMap<String, Integer> checked = checkHotbar();
+    HashMap<String, Integer> checked = getHotbarWeapons();
     if(checked.get(weaponType) != null && checked.get(weaponType) >= 1) {
       for(int i = 9; i <= 35; i++) {
         ItemIdentifier temp = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
@@ -260,7 +260,7 @@ public class PlayerInventory extends BukkitInventoryBase {
       }
     }
 
-    HashMap<String, Integer> check = checkHotbar();
+    HashMap<String, Integer> check = getHotbarWeapons();
     if(check.get("sword") == 0 && check.get("knife") == 0 && check.get("range") == 0) {
       passives = null;
     }
@@ -281,7 +281,7 @@ public class PlayerInventory extends BukkitInventoryBase {
    * Checks players hotbar for weapon types
    * @return Map of weapon type with amount of weapons
    */
-  private HashMap<String, Integer> checkHotbar() {
+  public HashMap<String, Integer> getHotbarWeapons() {
     int swordCount = 0;
     int knifeCount = 0;
     int rangeCount = 0;
@@ -308,4 +308,25 @@ public class PlayerInventory extends BukkitInventoryBase {
     out.put("range", rangeCount);
     return out;
   }  
+
+  /**
+   * Checks inventory hotbar for weapon type
+   * 
+   * @param weapon
+   * @return
+   */
+  public ItemIdentifier getHotbarWeapon(String weapon) {
+    for(int i = 0; i < 9; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      if(item.getMaterial().equals(Material.AIR)) { continue; }
+
+      if(item instanceof CustomDataHolder) {
+        JsonObject obj = ((CustomDataHolder)item).getCustomData();
+        if(obj.get("weapon").getAsString().equalsIgnoreCase(weapon)) {
+          return item;
+        }
+      }
+    }
+    return null;
+  }
 }
