@@ -10,8 +10,11 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
@@ -592,7 +595,17 @@ public class ModifierUser {
      * @param h Amount to be set
      */
     public void setHealth(Integer h) {
-        this.currHealth = h;
+        if(h <= 0) {
+            if(this instanceof SCOPlayer) {
+                Player p = ((SCOPlayer)this).getPlayer();
+                p.setHealth(0);
+            } else if(this instanceof ActiveMob) {
+                LivingEntity e = ((ActiveMob)this).getLivingEntity();
+                e.setHealth(0);
+            }
+        } else {
+            this.currHealth = h;
+        }
     }
 
     /**
