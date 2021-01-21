@@ -617,6 +617,9 @@ public class ModifierUser {
         int copy = this.maxHealth;
 
         this.maxHealth = amount;
+        if(this.currHealth > this.maxHealth) {
+            this.currHealth = this.maxHealth;
+        }
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
