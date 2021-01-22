@@ -124,5 +124,10 @@ public class ElephantHeartItem implements SwordSkillProvider {
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
         return new ElephantHeartSkill(caster, (SwordSkillProvider) this);
     }
+
+    @Override
+    public void setModifiers() {
+
+    }
     
 }

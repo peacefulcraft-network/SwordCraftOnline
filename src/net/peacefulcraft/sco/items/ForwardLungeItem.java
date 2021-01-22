@@ -98,7 +98,7 @@ public class ForwardLungeItem implements SwordSkillProvider {
         this.setModifiers();
     }
 
-    private void setModifiers() {
+    public void setModifiers() {
         switch (this.tier) {
             case COMMON:
                 this.increase = 1.2;

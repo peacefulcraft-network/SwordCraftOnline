@@ -149,4 +149,9 @@ public class SerratedBladeItem implements SwordSkillProvider {
     nbti.setInteger("level", data.get("level").getAsInt());
     return nbti.getItem();
   }
+
+  @Override
+  public void setModifiers() {
+
+  }
 }

@@ -37,6 +37,12 @@ public interface SwordSkillProvider extends ItemIdentifier, CustomDataHolder {
   public abstract SwordSkill registerSwordSkill(SwordSkillCaster caster);
 
   /**
+   * Called in constructor
+   * Sets all appropriate modifiers of skill
+   */
+  public abstract void setModifiers();
+
+  /**
    * Check if a skill with the given long-form name exists (.getProviderName()).
    * @param providerName The .getProviderName() for the desired skill.
    * @return True if the requested skill exists.

@@ -122,5 +122,10 @@ public class SimplePunchItem implements SwordSkillProvider {
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
        return new SimplePunchSkill(caster, (SwordSkillProvider) this);
     }
+
+    @Override
+    public void setModifiers() {
+
+    }
     
 }
