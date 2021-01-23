@@ -9,10 +9,12 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
@@ -70,6 +72,31 @@ public class ModifierUser {
      * @return Unmodifiable copy of DamageModifiers list
      */
     public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
+
+    /**
+     * Given entity we return the Modifier User
+     * or null if not valid.
+     * 
+     * @param e
+     * @return
+     */
+    public static ModifierUser getModifierUser(Entity e) {
+        if(e instanceof LivingEntity) {
+            if(e instanceof Player) {
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { return null; }
+                return (ModifierUser) s;
+            } else {
+                ActiveMob am = SwordCraftOnline.getPluginInstance()
+                    .getMobManager()
+                    .getMobRegistry()
+                    .get(e.getUniqueId());
+                if(am == null) { return null; }
+                return (ModifierUser) am;
+            }
+        }
+        return null;
+    }
 
     /**
      * Applies weapon modifiers to user. 

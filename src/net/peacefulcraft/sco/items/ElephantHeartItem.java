@@ -106,21 +106,6 @@ public class ElephantHeartItem implements SwordSkillProvider {
     }
 
     @Override
-    public Integer[] getAllowedLevels() {
-        return new Integer[] { 1 };
-    }
-
-    @Override
-    public Integer getLevel() {
-        return 1;
-    }
-
-    @Override
-    public void setLevel(Integer level) {
-
-    }
-
-    @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
         return new ElephantHeartSkill(caster, (SwordSkillProvider) this);
     }

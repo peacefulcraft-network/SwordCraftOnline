@@ -153,15 +153,6 @@ public class ParryItem implements SwordSkillProvider {
     public SwordSkillType getType() { return SwordSkillType.PASSIVE; }
 
     @Override
-    public Integer[] getAllowedLevels() { return new Integer[]{ 1, 2, 3}; }
-
-    @Override
-    public Integer getLevel() { return this.level; }
-
-    @Override
-    public void setLevel(Integer level) { this.level = level; }
-
-    @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
         switch (this.tier) {
             case UNCOMMON:

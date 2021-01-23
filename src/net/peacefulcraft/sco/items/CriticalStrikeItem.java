@@ -61,14 +61,6 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 		public ItemTier getTier() { return tier; }
 
 	private Integer level;
-		@Override
-		public Integer[] getAllowedLevels() { return new Integer[] { 1 }; }
-		
-		@Override
-		public Integer getLevel() { return level; }
-		
-		@Override
-		public void setLevel(Integer level) { this.level = level; }
 
 	private Integer quantity;
 		@Override

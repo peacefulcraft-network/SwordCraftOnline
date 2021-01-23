@@ -80,14 +80,6 @@ public class SerratedBladeItem implements SwordSkillProvider {
     public ItemTier getTier() { return tier; }
 
   private int level;
-    @Override
-    public Integer[] getAllowedLevels() { return new Integer[] { 1 }; }
-    
-    @Override
-    public Integer getLevel() { return level; }
-
-    @Override
-    public void setLevel(Integer level) { this.level = level; }
 
   @Override
   public boolean isDroppable() { return false; }
