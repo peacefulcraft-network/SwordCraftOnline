@@ -14,7 +14,7 @@ public class BasicCombo implements SwordSkillModule {
     private double activationThreshold;
         public boolean hasMetActivationThreshold() { return comboAccumulation > activationThreshold; }
 
-    private double comboAccumulation = 0.0;
+    protected double comboAccumulation = 0.0;
         public void resetComboAccumulation() { this.comboAccumulation = 0.0; }
         public void comboAccumulate(double value) { comboAccumulation += value; }
 
