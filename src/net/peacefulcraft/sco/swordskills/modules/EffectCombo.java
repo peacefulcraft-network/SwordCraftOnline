@@ -31,6 +31,8 @@ public class EffectCombo extends BasicCombo {
         this.executeComboAccumulation(ev);
         
         if(this.comboAccumulation == 0) { return; }
+        if(effects.get((int)this.comboAccumulation) == null) { return; }
+
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
         mu.getLivingEntity().addPotionEffect(
