@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class BlindRageSkill extends SwordSkill {
@@ -14,6 +15,7 @@ public class BlindRageSkill extends SwordSkill {
     public BlindRageSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
         
+        this.useModule(new TimedCooldown(25000));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 

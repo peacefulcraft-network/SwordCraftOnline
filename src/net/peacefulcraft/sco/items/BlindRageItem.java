@@ -41,6 +41,7 @@ public class BlindRageItem implements SwordSkillProvider {
         lore.add(ItemTier.getTierColor(this.tier) + "May inflict blindness.");
         lore.add(ItemTier.getTierColor(this.tier) + "Gives: Strength II, Blindness I");
         lore.add(ItemTier.getTierColor(this.tier) + "Effect time: 15 seconds");
+        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown time: 25 seconds");
         return lore;
     }
 
