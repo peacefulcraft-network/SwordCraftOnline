@@ -6,7 +6,9 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityInteractEvent;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.LocationUtil;
@@ -35,7 +37,13 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        ModifierUser mu = (ModifierUser)c;
+        EntityInteractEvent evv = (EntityInteractEvent)ev;
+
+        ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
+        if(mu == null) { 
+            SwordCraftOnline.logDebug("System Chain: Thunderstruck failed.");
+            return; 
+        }
         Location start = mu.getLivingEntity().getLocation();
         Location end = mu.getLivingEntity().getTargetBlock((Set<Material>)null, rangeModifier).getLocation();
 
