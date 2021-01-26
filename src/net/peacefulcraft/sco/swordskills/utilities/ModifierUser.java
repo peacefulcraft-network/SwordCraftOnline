@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
