@@ -53,11 +53,11 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
 
         if(tier.equals(ItemTier.ETHEREAL)) {
             mu.getLivingEntity().addPotionEffect(
-                new PotionEffect(PotionEffectType.REGENERATION, 2, 5));
+                new PotionEffect(PotionEffectType.REGENERATION, 5, 2));
         }
         if(tier.equals(ItemTier.GODLIKE)) {
             mu.getLivingEntity().addPotionEffect(
-                new PotionEffect(PotionEffectType.REGENERATION, 3, 5));
+                new PotionEffect(PotionEffectType.REGENERATION, 5, 3));
         }
     }
 
