@@ -8,7 +8,6 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class ElephantHeartSkill extends SwordSkill {
 
     private int maxHealth;
-    private double speed;
 
     public ElephantHeartSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
@@ -33,8 +32,10 @@ public class ElephantHeartSkill extends SwordSkill {
             this.maxHealth = mu.getMaxHealth();
             mu.setMaxHealth((int) (this.maxHealth * 1.5), -1);
 
-            this.speed = mu.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-            mu.multiplyAttribute(Attribute.GENERIC_MOVEMENT_SPEED, 0.8, -1);
+            mu.addToAttribute(
+                Attribute.GENERIC_MOVEMENT_SPEED, 
+                -(ModifierUser.getBaseGenericMovement(mu) * 0.2), 
+                -1);
         }
     }
 
@@ -49,7 +50,10 @@ public class ElephantHeartSkill extends SwordSkill {
             ModifierUser mu = (ModifierUser)c;
 
             mu.setMaxHealth(this.maxHealth, -1);
-            mu.setAttribute(Attribute.GENERIC_MOVEMENT_SPEED, this.speed, -1);
+            mu.addToAttribute(
+                Attribute.GENERIC_MOVEMENT_SPEED, 
+                ModifierUser.getBaseGenericMovement(mu) * 0.2, 
+                -1);
         }        
     }
     

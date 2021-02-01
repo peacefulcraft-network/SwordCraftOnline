@@ -10,7 +10,6 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class SwiftSwimSkill extends SwordSkill {
 
     private boolean rainBoosted;
-    private double baseSpeed;
 
     public SwiftSwimSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
@@ -36,11 +35,16 @@ public class SwiftSwimSkill extends SwordSkill {
 
         Location loc = evv.getTo();
         if(loc.getWorld().hasStorm() && !rainBoosted) {
-            baseSpeed = mu.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-            mu.multiplyAttribute(Attribute.GENERIC_MOVEMENT_SPEED, 1.2, -1);
+            mu.addToAttribute(
+                Attribute.GENERIC_MOVEMENT_SPEED, 
+                ModifierUser.getBaseGenericMovement(mu) * 0.2, 
+                -1);
             rainBoosted = true;
         } else if(!loc.getWorld().hasStorm() && rainBoosted) {
-            mu.setAttribute(Attribute.GENERIC_MOVEMENT_SPEED, baseSpeed, -1);
+            mu.addToAttribute(
+                Attribute.GENERIC_MOVEMENT_SPEED, 
+                -(ModifierUser.getBaseGenericMovement(mu) * 0.2), 
+                -1);
             rainBoosted = false;
         }
     }

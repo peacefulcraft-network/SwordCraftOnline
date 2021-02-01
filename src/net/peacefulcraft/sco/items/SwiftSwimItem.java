@@ -36,7 +36,7 @@ public class SwiftSwimItem implements SwordSkillProvider {
     @Override
     public ArrayList<String> getLore() {
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Boost your speed by 1.2x");
+        lore.add(ItemTier.getTierColor(this.tier) + "Boost your speed by 20%");
         lore.add(ItemTier.getTierColor(this.tier) + "while in the rain.");
         return lore;
     }
