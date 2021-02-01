@@ -9,15 +9,16 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
-import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
@@ -73,31 +74,6 @@ public class ModifierUser {
      * @return Unmodifiable copy of DamageModifiers list
      */
     public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
-
-    /**
-     * Given entity we return the Modifier User
-     * or null if not valid.
-     * 
-     * @param e
-     * @return
-     */
-    public static ModifierUser getModifierUser(Entity e) {
-        if(e instanceof LivingEntity) {
-            if(e instanceof Player) {
-                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
-                if(s == null) { return null; }
-                return (ModifierUser) s;
-            } else {
-                ActiveMob am = SwordCraftOnline.getPluginInstance()
-                    .getMobManager()
-                    .getMobRegistry()
-                    .get(e.getUniqueId());
-                if(am == null) { return null; }
-                return (ModifierUser) am;
-            }
-        }
-        return null;
-    }
 
     /**
      * Applies weapon modifiers to user. 
@@ -676,5 +652,137 @@ public class ModifierUser {
         }
 
         return health;
+    }
+
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER STATIC METHODS
+     * ===============================================================================================
+     * 
+     */
+
+    /**
+     * Given entity we return the Modifier User
+     * or null if not valid.
+     * 
+     * @param e
+     * @return
+     */
+    public static ModifierUser getModifierUser(Entity e) {
+        if(e instanceof LivingEntity) {
+            if(e instanceof Player) {
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { return null; }
+                return (ModifierUser) s;
+            } else {
+                ActiveMob am = SwordCraftOnline.getPluginInstance()
+                    .getMobManager()
+                    .getMobRegistry()
+                    .get(e.getUniqueId());
+                if(am == null) { return null; }
+                return (ModifierUser) am;
+            }
+        }
+        return null;
+    }
+
+    public static Double getBaseGenericMovement(ModifierUser mu) {
+        /**
+         * This code is gross but is a workaround for
+         * having to temporarily spawn in a new entity
+         * every time we do a check.
+         * 
+         * Solution is to hard code these values to check against
+         */
+
+        if(mu instanceof SCOPlayer) {
+            return 0.1;
+        }
+
+        ActiveMob am = (ActiveMob)mu;
+        switch(am.getEntity().getBukkitEntity().getType()) {
+            case PANDA:
+                return 0.15;
+            case DONKEY:
+            case LLAMA:
+            case MULE:
+            case STRIDER:
+                return 0.175;
+            case SLIME:
+                int size = ((Slime)am.getEntity().getBukkitEntity()).getSize();
+                return 0.2 + (0.1 * size);
+            case COW:
+            case MAGMA_CUBE:
+            case MUSHROOM_COW:
+            case PARROT:
+            case SKELETON_HORSE:
+            case SNOWMAN:
+            case ZOMBIE_HORSE:
+                return 0.2;
+            case BLAZE:
+            case DROWNED:
+            case HUSK:
+            case SHEEP:
+            case ZOMBIE:
+            case ZOMBIE_VILLAGER:
+            case ZOMBIFIED_PIGLIN:
+                return 0.23;
+            case CHICKEN:
+            case CREEPER:
+            case ENDERMITE:
+            case IRON_GOLEM:
+            case PIG:
+            case POLAR_BEAR:
+            case SILVERFISH:
+            case SKELETON:
+            case STRAY:
+            case TURTLE:
+            case WITCH:
+            case WITHER_SKELETON:
+                return 0.25;
+            case BEE:
+            case CAT:
+            case CAVE_SPIDER:
+            case ELDER_GUARDIAN:
+            case ENDERMAN:
+            case FOX:
+            case OCELOT:
+            case RABBIT:
+            case RAVAGER:
+            case SPIDER:
+            case WOLF:
+                return 0.3;
+            case PILLAGER:
+            case VINDICATOR:
+                return 0.35;
+            case HOGLIN:
+                return 0.4;
+            case EVOKER:
+            case GIANT:
+            case GUARDIAN:
+            case ILLUSIONER:
+            case PIGLIN:
+            case VILLAGER:
+            case WANDERING_TRADER:
+                return 0.5;
+            case WITHER:
+                return 0.6;
+            case BAT:
+            case COD:
+            case ENDER_DRAGON:
+            case GHAST:
+            case PUFFERFISH:
+            case SALMON:
+            case SHULKER:
+            case SQUID:
+            case TROPICAL_FISH:
+            case VEX:
+                return 0.7;
+            case DOLPHIN:
+                return 1.2;
+            default:
+                return 0.0;
+        }
     }
 }
