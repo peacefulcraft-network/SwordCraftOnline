@@ -64,7 +64,7 @@ public class WallWave extends Structure {
             return;
         }
 
-        BlockFace sideFace = DirectionalUtil.getSideDirections(target);
+        BlockFace sideFace = DirectionalUtil.getRelativeBlockFace(target, 90);
         Location start = target.getLocation().add(0, -1, 0);
         Location end = target.getTargetBlock((Set<Material>) null, length).getLocation();
     
