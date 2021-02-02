@@ -1,12 +1,10 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import com.google.gson.JsonObject;
 
@@ -80,8 +78,17 @@ public class ModifierUser {
         return getLivingEntity().isDead();
     }
 
+    /**
+     * Queued up stat changes for user
+     */
     private HashMap<UUID, JsonObject> queuedChanges = new HashMap<>();
 
+    /**
+     * Queue an attribute data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
     public UUID queueChange(Attribute attribute, Double amount, int duration) {
         UUID id = UUID.randomUUID();
         JsonObject obj = _queueChange_(
@@ -96,10 +103,22 @@ public class ModifierUser {
         return id;
     }
 
+    /**
+     * Queue an attribute data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
     public UUID queueChange(Attribute attribute, Integer amount, int duration) {
         return queueChange(attribute, Double.valueOf(amount), duration);
     }
 
+    /**
+     * Queue an damage modifier data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
     public UUID queueChange(ModifierType modifier, Double amount, boolean incoming, int duration) {
         UUID id = UUID.randomUUID();
         JsonObject obj = _queueChange_(
@@ -115,6 +134,12 @@ public class ModifierUser {
         return id;
     }
 
+    /**
+     * Queue n combat modifier data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
     public UUID queueChange(CombatModifier modifier, Double amount, int duration) {
         UUID id = UUID.randomUUID();
         JsonObject obj = _queueChange_(
@@ -129,10 +154,22 @@ public class ModifierUser {
         return id;
     }
 
+    /**
+     * Queue n combat modifier data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
     public UUID queueChange(CombatModifier modifier, Integer amount, int duration) {
         return queueChange(modifier, Double.valueOf(amount), duration);
     }
 
+    /**
+     * Queue a max health data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
     public UUID queueChange(Integer healthAmount, int duration) {
         UUID id = UUID.randomUUID();
         JsonObject obj = _queueChange_(
@@ -162,6 +199,10 @@ public class ModifierUser {
         return obj;
     }
 
+    /**
+     * Dequeues and reverts data field change
+     * @param id of change in queue
+     */
     public void dequeueChange(UUID id) {
         JsonObject obj = this.queuedChanges.get(id);
         if(obj == null) { 
