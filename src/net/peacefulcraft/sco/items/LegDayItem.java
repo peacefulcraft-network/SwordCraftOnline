@@ -43,17 +43,17 @@ public class LegDayItem implements SwordSkillProvider {
         lore.add(ItemTier.getTierColor(this.tier) + "your movement speed.");
         switch(this.tier) {
             case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed +20%");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.0");
             case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed +22%");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.2");
             case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed +24%");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.4");
             case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed +26%");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.6");
             case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed +28%");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.8");
             case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed +30%");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +3.0");
         }
         return lore;
     }
@@ -136,15 +136,15 @@ public class LegDayItem implements SwordSkillProvider {
             case COMMON:
                 this.movementModifier = 0.0;
             break; case UNCOMMON:
-                this.movementModifier = 0.02;
+                this.movementModifier = 0.2;
             break; case RARE:
-                this.movementModifier = 0.04;
+                this.movementModifier = 0.4;
             break; case LEGENDARY:
-                this.movementModifier = 0.06;
+                this.movementModifier = 0.6;
             break; case ETHEREAL:
-                this.movementModifier = 0.08;
+                this.movementModifier = 0.8;
             break; case GODLIKE:
-                this.movementModifier = 0.1;
+                this.movementModifier = 1.0;
         }
     }
     

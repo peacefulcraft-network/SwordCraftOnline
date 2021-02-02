@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
@@ -8,6 +10,7 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class PristineGrindstoneSkill extends SwordSkill {
 
     private Double increase;
+    private UUID change1;
 
     public PristineGrindstoneSkill(SwordSkillCaster c, Double increase, SwordSkillProvider provider) {
         super(c, provider);
@@ -30,7 +33,7 @@ public class PristineGrindstoneSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         if(this.c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
-            mu.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, this.increase, -1);
+            change1 = mu.queueChange(Attribute.GENERIC_ATTACK_DAMAGE, this.increase, -1);
         }
     }
 
@@ -43,7 +46,7 @@ public class PristineGrindstoneSkill extends SwordSkill {
     public void unregisterSkill() {
         if(this.c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
-            mu.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, -this.increase, -1);
+            mu.dequeueChange(change1);
         }
     }
     

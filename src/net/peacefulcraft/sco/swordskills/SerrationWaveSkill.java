@@ -75,7 +75,10 @@ public class SerrationWaveSkill extends SwordSkill {
                     .getMobRegistry()
                     .get(((LivingEntity)e).getUniqueId());
 
-                am.multiplyAttribute(Attribute.GENERIC_MOVEMENT_SPEED, 0.8, 6);
+                am.queueChange(
+                    Attribute.GENERIC_MOVEMENT_SPEED,
+                    -(am.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) * 0.2), 
+                    6);
                 
                 am.setHealth((int) (am.getHealth() - damage));
                 am.updateHealthBar();
@@ -90,7 +93,10 @@ public class SerrationWaveSkill extends SwordSkill {
                 SCOPlayer s = GameManager.findSCOPlayer((Player)e);
                 if(s == null) { continue; }
 
-                s.multiplyAttribute(Attribute.GENERIC_ATTACK_SPEED, 0.8, 6);
+                s.queueChange(
+                    Attribute.GENERIC_MOVEMENT_SPEED,
+                    -(s.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) * 0.2), 
+                    6);
                 s.setHealth((int) (s.getHealth() - damage));
             }
         }

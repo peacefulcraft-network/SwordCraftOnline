@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
@@ -10,6 +12,7 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class SwiftSwimSkill extends SwordSkill {
 
     private boolean rainBoosted;
+    private UUID change1;
 
     public SwiftSwimSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
@@ -35,16 +38,13 @@ public class SwiftSwimSkill extends SwordSkill {
 
         Location loc = evv.getTo();
         if(loc.getWorld().hasStorm() && !rainBoosted) {
-            mu.addToAttribute(
+            change1 = mu.queueChange(
                 Attribute.GENERIC_MOVEMENT_SPEED, 
-                ModifierUser.getBaseGenericMovement(mu) * 0.2, 
+                3, 
                 -1);
             rainBoosted = true;
         } else if(!loc.getWorld().hasStorm() && rainBoosted) {
-            mu.addToAttribute(
-                Attribute.GENERIC_MOVEMENT_SPEED, 
-                -(ModifierUser.getBaseGenericMovement(mu) * 0.2), 
-                -1);
+            mu.dequeueChange(change1);
             rainBoosted = false;
         }
     }

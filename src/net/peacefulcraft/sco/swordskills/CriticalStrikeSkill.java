@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -9,6 +11,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 	
 	private long delay;
 	private Integer increase;
+	private UUID change1;
 
 	public CriticalStrikeSkill(SwordSkillCaster c, Integer increase, long delay, SwordSkillProvider provider) {
 		super(c, provider);
@@ -35,7 +38,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 	public void triggerSkill(Event ev) {
 		if(this.c instanceof ModifierUser) {
 			ModifierUser mu = (ModifierUser)c;
-			mu.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
+			mu.queueChange(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
 		}
 	}
 
@@ -48,7 +51,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 	public void unregisterSkill() {
 		if(this.c instanceof ModifierUser) {
 			ModifierUser mu = (ModifierUser)c;
-			mu.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, -this.increase, -1);
+			mu.dequeueChange(change1);
 		}
 	}
 }

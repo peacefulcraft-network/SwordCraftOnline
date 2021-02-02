@@ -7,23 +7,19 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import net.peacefulcraft.sco.swordskills.GuardianSkill;
+import net.peacefulcraft.sco.swordskills.ArtificialHopeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
-public class GuardianItem implements SwordSkillProvider {
+public class ArtificialHopeItem implements SwordSkillProvider {
 
-    private int quantity;
-    private int armorModifier;
     private ItemTier tier;
+    private int quantity;
+    private double valueModifier;
 
-    public GuardianItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public GuardianItem(ItemTier tier, Integer level, int quantity) {
+    public ArtificialHopeItem(ItemTier tier, int quantity) {
         this.tier = tier;
         this.quantity = quantity;
 
@@ -32,41 +28,52 @@ public class GuardianItem implements SwordSkillProvider {
 
     @Override
     public String getName() {
-        return "Guardian";
+        return "Artificial Hope";
     }
 
     @Override
     public String getDisplayName() {
-        return ItemTier.getTierColor(this.tier) + "Guardian";
+        return ItemTier.getTierColor(this.tier) + "Artifical Hope";
     }
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Protect you and your allies for 20 seconds.");
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ItemTier.getTierColor(this.tier) + "Fill your heart with hope.");
         switch(this.tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +5");
+            case COMMON:
+                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.2");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.2");
+            break; case UNCOMMON:
+                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.3");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.3");
+            break; case RARE:
+                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.4");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.4");
             break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +7");
+                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.5");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.5");
             break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +9");
+                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.6");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.6");
             break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +11");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
+                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.7");
+                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.7");
         }
+        lore.add(ItemTier.getTierColor(this.tier) + "Armor: -2");
         return lore;
     }
 
     @Override
     public Material getMaterial() {
-        return Material.SHULKER_SHELL;
+        return Material.WHITE_STAINED_GLASS;
     }
 
     @Override
     public ItemTier[] getAllowedTiers() {
         return new ItemTier[] {
+            ItemTier.COMMON,
+            ItemTier.UNCOMMON,
             ItemTier.RARE,
             ItemTier.LEGENDARY,
             ItemTier.ETHEREAL,
@@ -121,26 +128,29 @@ public class GuardianItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return SwordSkillType.PASSIVE;
     }
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new GuardianSkill(caster, this.armorModifier, (SwordSkillProvider)this);
+        return new ArtificialHopeSkill(caster, this.valueModifier, (SwordSkillProvider)this);
     }
 
+    @Override
     public void setModifiers() {
         switch(this.tier) {
-            case RARE:
-                this.armorModifier = 5;
+            case COMMON:
+                this.valueModifier = 0.0;
+            break; case UNCOMMON:
+                this.valueModifier = 0.1;
+            break; case RARE:
+                this.valueModifier = 0.2;
             break; case LEGENDARY:
-                this.armorModifier = 7;
+                this.valueModifier = 0.3;
             break; case ETHEREAL:
-                this.armorModifier = 8;
+                this.valueModifier = 0.4;
             break; case GODLIKE:
-                this.armorModifier = 9;
-            default:
-             this.armorModifier = 0;
+                this.valueModifier = 0.5;
         }
     }
     

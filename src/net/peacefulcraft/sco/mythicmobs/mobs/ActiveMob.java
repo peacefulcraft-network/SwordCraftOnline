@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Creature;
@@ -192,11 +191,11 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
 
         this.canGiveQuests = type.canGiveQuests();
       
-        /**Setting combat modifiers to type instance */      
-        setCombatModifier(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);
-        setCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, type.getCriticalMultiplier(), -1);
-        setCombatModifier(CombatModifier.PARRY_CHANCE, type.getParryChance(), -1);
-        setCombatModifier(CombatModifier.PARRY_MULTIPLIER, type.getParryMultiplier(), -1);
+        /**Setting combat modifiers to type instance */   
+        queueChange(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);   
+        queueChange(CombatModifier.CRITICAL_MULTIPLIER, type.getCriticalMultiplier(), -1); 
+        queueChange(CombatModifier.PARRY_CHANCE, type.getParryChance(), -1); 
+        queueChange(CombatModifier.PARRY_MULTIPLIER, type.getParryMultiplier(), -1); 
 
         this.duringNightwave = isNightwave;
     }

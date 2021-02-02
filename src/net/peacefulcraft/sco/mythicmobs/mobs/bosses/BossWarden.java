@@ -121,11 +121,8 @@ public class BossWarden implements MythicBoss {
      * with a 8 - powerModifier cooldown
      */
     private void abilityZero() {
-        double armor = this.am.getArmor();
-        this.am.setAttribute(Attribute.GENERIC_ARMOR, 3 + this.powerModifier, 10);
-
-        double toughness = this.am.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
-        this.am.setAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS, 3 + this.powerModifier, 10);
+        this.am.queueChange(Attribute.GENERIC_ARMOR, 3 + this.powerModifier, 10);
+        this.am.queueChange(Attribute.GENERIC_ARMOR_TOUGHNESS, 3 + this.powerModifier, 10);
 
         //Selects new phase after (8 - powermodifier) seconds
         this.isUsing = false;

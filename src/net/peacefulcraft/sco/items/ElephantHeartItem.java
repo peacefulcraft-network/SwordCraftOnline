@@ -41,7 +41,7 @@ public class ElephantHeartItem implements SwordSkillProvider {
         lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Empower yourself with the heart");
         lore.add(ItemTier.getTierColor(ItemTier.RARE) + "of the Aincradian Elephant.");
         lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Max Health: +50%");
-        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Movement Speed: -20%");
+        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Movement Speed: -2");
         return lore;
     }
 

@@ -1,12 +1,14 @@
 package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class ForwardLungeSkill extends SwordSkill {
 
@@ -38,15 +40,16 @@ public class ForwardLungeSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        Player p = s.getPlayer();
+        ModifierUser mu = (ModifierUser)c;
+
+        LivingEntity p = mu.getLivingEntity();
 
         Vector v = new Vector(p.getVelocity().getX(), p.getVelocity().getY(), p.getVelocity().getZ());
         Vector forward = p.getLocation().getDirection().multiply(1.6);
         v.add(forward);
 
         p.setVelocity(v);
-
-        s.multiplyAttribute(Attribute.GENERIC_ATTACK_DAMAGE, this.increase, 2);
+        mu.queueChange(Attribute.GENERIC_ATTACK_DAMAGE, mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) * this.increase, 2);
     }
 
     @Override

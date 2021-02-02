@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
@@ -14,6 +16,7 @@ public class FatalTeleportSkill extends SwordSkill {
 
     private ModifierUser lastHit = null;
     private double damageModifier;
+    private UUID change1;
 
     public FatalTeleportSkill(SwordSkillCaster c, double damageModifier, int cooldown, SwordSkillProvider provider) {
         super(c, provider);
@@ -56,8 +59,10 @@ public class FatalTeleportSkill extends SwordSkill {
             Location behind = lastHit.getLivingEntity().getLocation().add(inverse);
 
             mu.getLivingEntity().teleport(behind);
-
-            mu.multiplyAttribute(Attribute.GENERIC_ATTACK_DAMAGE, 2.0 + damageModifier, 1);
+            change1 = mu.queueChange(
+                Attribute.GENERIC_ATTACK_DAMAGE,
+                mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) + damageModifier, 
+                2);
         }
     }
 

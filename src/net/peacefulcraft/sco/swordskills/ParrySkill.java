@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
@@ -9,13 +11,11 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 public class ParrySkill extends SwordSkill {
 
     private Integer increase;
-    private Long delay;
-    private SwordSkillProvider provider;
+    private UUID change1;
 
     public ParrySkill(SwordSkillCaster c, Integer increase, Long delay, SwordSkillProvider provider) {
         super(c, provider);
         this.increase = increase;
-        this.delay = delay;
 
         this.listenFor(SwordSkillTrigger.PASSIVE);
         this.useModule(new TimedCooldown(delay));
@@ -37,7 +37,7 @@ public class ParrySkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         if(this.c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
-            mu.addToCombatModifier(CombatModifier.PARRY_CHANCE, this.increase, -1);
+            change1 = mu.queueChange(CombatModifier.PARRY_CHANCE, this.increase, -1);
         }
     }
 
@@ -50,7 +50,7 @@ public class ParrySkill extends SwordSkill {
     public void unregisterSkill() {
         if(this.c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
-            mu.addToCombatModifier(CombatModifier.PARRY_CHANCE, -this.increase, -1);
+            mu.dequeueChange(change1);
         }
     }
     

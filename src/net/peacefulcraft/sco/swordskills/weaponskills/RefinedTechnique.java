@@ -1,6 +1,9 @@
 package net.peacefulcraft.sco.swordskills.weaponskills;
 
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
+
+import java.util.UUID;
+
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.RomanNumber;
@@ -8,6 +11,7 @@ import net.peacefulcraft.sco.utilities.RomanNumber;
 public class RefinedTechnique implements WeaponModifier {
 
     private String level;
+    private UUID change1;
 
     @Override
     public String getName() {
@@ -27,12 +31,12 @@ public class RefinedTechnique implements WeaponModifier {
 
     @Override
     public void applyEffects(ModifierUser user) {
-        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, getModifierAmount(), -1);
+        change1 = user.queueChange(CombatModifier.CRITICAL_CHANCE, getModifierAmount(), -1);
     }
 
     @Override
     public void removeEffects(ModifierUser user) {
-        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, -getModifierAmount(), -1);
+        user.dequeueChange(change1);
     }
 
     @Override

@@ -48,7 +48,7 @@ public class GuardianSkill extends SwordSkill {
                 if(entity instanceof Player) {
                     SCOPlayer s = GameManager.findSCOPlayer((Player)entity);
                     if(s == null) { continue; }
-                    s.multiplyAttribute(Attribute.GENERIC_ARMOR, this.armorModifier, 20);
+                    s.queueChange(Attribute.GENERIC_ARMOR, this.armorModifier, 20);
                 }
             }
         } else if (c instanceof ActiveMob) {
@@ -59,7 +59,7 @@ public class GuardianSkill extends SwordSkill {
                         .getMobRegistry()
                         .get(entity.getUniqueId());
                     if(am == null) { continue; }
-                    am.multiplyAttribute(Attribute.GENERIC_ARMOR, 1.5 + this.armorModifier, 20);
+                    am.queueChange(Attribute.GENERIC_ARMOR, this.armorModifier, 20);
                 }
             }
         }

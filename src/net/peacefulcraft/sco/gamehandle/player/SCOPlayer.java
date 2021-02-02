@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -23,6 +24,7 @@ import net.peacefulcraft.sco.inventories.utilities.EmptyIdentifierGenerator;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.quests.QuestBookManager;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
@@ -343,7 +345,7 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	}
 
 	@Override
-	public void setCombatModifier(CombatModifier mod, double amount, int duration) {
+	protected void setCombatModifier(CombatModifier mod, double amount, int duration, UUID id) {
 		double d = this.getCombatModifier(mod);
 
 		switch(mod) {
@@ -364,27 +366,41 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		}
 		
 		if(duration != -1) {
-			_setCombatModifier(mod, d, duration);
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    setCombatModifier(mod, d, -1, id);
+                    dequeueChange(id);
+                }
+            }, duration * 20);
 		}
 	}
 
 	@Override
-	public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
-		double d = this.getCombatModifier(mod);
-
-		this.setCombatModifier(mod, d * amount, -1);
-		if(duration != -1) {
-			_setCombatModifier(mod, d, duration);
+	protected void addToCombatModifier(CombatModifier mod, double amount, int duration, UUID id) {
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance += (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier += amount;
+            case PARRY_CHANCE:
+                parryChance += (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier += amount;
+			case ITEM_LEVEL:
+				this.bonusLevelMod += amount;
+			case BONUS_DROP:
+				this.bonusDropMod += amount;
+			case BONUS_EXP:
+				this.expMod += amount;
 		}
-	}
 
-	@Override
-	public void addToCombatModifier(CombatModifier mod, double amount, int duration) {
-		double d = this.getCombatModifier(mod);
-
-		this.setCombatModifier(mod, d + amount, -1);
 		if(duration != -1) {
-			_setCombatModifier(mod, d, duration);
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    addToCombatModifier(mod, -amount, -1, id);
+                    dequeueChange(id);
+                }
+            }, duration * 20);
 		}
 	}
 

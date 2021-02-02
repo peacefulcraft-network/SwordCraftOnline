@@ -158,6 +158,7 @@ public class SCOAdmin implements CommandExecutor {
 				}
 
 				String data = args[2];
+				/*
 				if (data.equalsIgnoreCase("critical_chance") || data.equalsIgnoreCase("crit_chance")) {
 					s.setCombatModifier(CombatModifier.CRITICAL_CHANCE,(int) i, -1);
 					p.sendMessage(ChatColor.GOLD + "Critical Chance set to: " + ChatColor.RED + i);
@@ -184,6 +185,7 @@ public class SCOAdmin implements CommandExecutor {
 							+ "player_kills, parry, admin_override, admin_over");
 					return true;
 				}
+				*/
 			}
 
 			if (args[0].equalsIgnoreCase("swordskills")) {

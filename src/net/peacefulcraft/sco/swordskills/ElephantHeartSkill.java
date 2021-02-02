@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
@@ -8,6 +10,8 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class ElephantHeartSkill extends SwordSkill {
 
     private int maxHealth;
+    private UUID change1;
+    private UUID change2;
 
     public ElephantHeartSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
@@ -30,12 +34,8 @@ public class ElephantHeartSkill extends SwordSkill {
         if(c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
             this.maxHealth = mu.getMaxHealth();
-            mu.setMaxHealth((int) (this.maxHealth * 1.5), -1);
-
-            mu.addToAttribute(
-                Attribute.GENERIC_MOVEMENT_SPEED, 
-                -(ModifierUser.getBaseGenericMovement(mu) * 0.2), 
-                -1);
+            change1 = mu.queueChange((int) (this.maxHealth * 0.5), -1);
+            change2 = mu.queueChange(Attribute.GENERIC_MOVEMENT_SPEED, -2, -1);
         }
     }
 
@@ -49,11 +49,8 @@ public class ElephantHeartSkill extends SwordSkill {
         if(c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
 
-            mu.setMaxHealth(this.maxHealth, -1);
-            mu.addToAttribute(
-                Attribute.GENERIC_MOVEMENT_SPEED, 
-                ModifierUser.getBaseGenericMovement(mu) * 0.2, 
-                -1);
+            mu.dequeueChange(change1);
+            mu.dequeueChange(change2);
         }        
     }
     
