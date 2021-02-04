@@ -18,6 +18,10 @@ public class Trigger implements SwordSkillModule {
 
     private SwordSkillType type;
 
+    /**
+     * @param type of SwordSkill we are triggering
+     * changes which item we detect for
+     */
     public Trigger(SwordSkillType type) {
         this.type = type;
     }

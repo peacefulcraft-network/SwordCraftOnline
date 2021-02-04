@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import net.md_5.bungee.api.chat.hover.content.Item;
 import net.peacefulcraft.sco.swordskills.SupremeLockdownSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;

@@ -19,6 +19,7 @@ import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.utilities.ItemAttribute;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 
 public class SerrationWaveSkill extends SwordSkill {
 
@@ -32,6 +33,7 @@ public class SerrationWaveSkill extends SwordSkill {
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new TimedCooldown(this.cooldown));
+        this.useModule(new Trigger(SwordSkillType.SWORD));
     }
 
     @Override
@@ -41,14 +43,6 @@ public class SerrationWaveSkill extends SwordSkill {
 
     @Override
     public boolean skillPreconditions(Event ev) {
-        if(this.c instanceof SCOPlayer) {
-            SCOPlayer s = (SCOPlayer)this.c;
-
-            PlayerInventory pi = s.getPlayerInventory();
-            HashMap<String, Integer> weapons = pi.getHotbarWeapons();
-            
-            if(weapons.get("sword") == 0) { return false; }
-        }
         return true;
     }
 

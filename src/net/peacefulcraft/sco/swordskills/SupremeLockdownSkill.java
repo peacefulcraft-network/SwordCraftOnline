@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class SupremeLockdownSkill extends SwordSkill {
@@ -15,6 +16,7 @@ public class SupremeLockdownSkill extends SwordSkill {
         super(c, provider);
         
         this.useModule(new TimedCooldown(25000));
+        this.useModule(new Trigger(SwordSkillType.SECONDARY));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 

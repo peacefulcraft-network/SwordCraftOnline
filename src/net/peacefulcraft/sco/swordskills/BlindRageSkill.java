@@ -1,13 +1,11 @@
 package net.peacefulcraft.sco.swordskills;
 
-import org.bukkit.Material;
 import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class BlindRageSkill extends SwordSkill {
@@ -15,6 +13,7 @@ public class BlindRageSkill extends SwordSkill {
     public BlindRageSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
         
+        this.useModule(new Trigger(SwordSkillType.SECONDARY));
         this.useModule(new TimedCooldown(25000));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
@@ -26,11 +25,6 @@ public class BlindRageSkill extends SwordSkill {
 
     @Override
     public boolean skillPreconditions(Event ev) {
-        PlayerInteractEvent evv = (PlayerInteractEvent)ev;
-        ItemIdentifier identifier = ItemIdentifier.resolveItemIdentifier(evv.getItem());
-        if(identifier == null || identifier.getMaterial().equals(Material.AIR)) { return false; }
-
-        if(!identifier.getName().equalsIgnoreCase("Secondary Skill Activated")) { return false; }
         return true;
     }
 

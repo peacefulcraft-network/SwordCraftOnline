@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityInteractEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
@@ -22,6 +23,7 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
         this.rangeModifier = rangeModifier;        
 
         this.useModule(new TimedCooldown(30000));
+        this.useModule(new Trigger(SwordSkillType.PRIMARY));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 

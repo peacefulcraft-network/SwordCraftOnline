@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class FatalTeleportSkill extends SwordSkill {
@@ -23,6 +24,7 @@ public class FatalTeleportSkill extends SwordSkill {
         this.damageModifier = damageModifier;
 
         this.useModule(new TimedCooldown(cooldown));
+        this.useModule(new Trigger(SwordSkillType.SWORD));
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);

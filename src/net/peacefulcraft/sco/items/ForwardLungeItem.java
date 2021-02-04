@@ -146,7 +146,7 @@ public class ForwardLungeItem implements SwordSkillProvider {
     }
 
     @Override
-    public SwordSkillType getType() { return SwordSkillType.SECONDARY; }
+    public SwordSkillType getType() { return SwordSkillType.SWORD; }
 
     private Integer level;
 

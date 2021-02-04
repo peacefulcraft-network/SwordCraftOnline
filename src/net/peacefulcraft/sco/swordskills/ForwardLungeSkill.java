@@ -2,12 +2,12 @@ package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class ForwardLungeSkill extends SwordSkill {
@@ -23,11 +23,11 @@ public class ForwardLungeSkill extends SwordSkill {
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
         this.useModule(new TimedCooldown(delay));
+        this.useModule(new Trigger(SwordSkillType.SWORD));
     }
 
     @Override
     public boolean skillSignature(Event ev) {
-        //TODO: Check item in hand
         return true;
     }
 

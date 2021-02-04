@@ -4,6 +4,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class BackPedalSkill extends SwordSkill {
@@ -15,7 +17,10 @@ public class BackPedalSkill extends SwordSkill {
         this.vectorMultiplier = vectorMultiplier;
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_RECIEVE);
+        this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
+
+        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new TimedCooldown(10000));
     }
 
     @Override

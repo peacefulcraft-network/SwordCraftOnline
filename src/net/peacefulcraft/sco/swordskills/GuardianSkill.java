@@ -13,6 +13,7 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 
 public class GuardianSkill extends SwordSkill {
 
@@ -23,6 +24,7 @@ public class GuardianSkill extends SwordSkill {
         this.armorModifier = armorModifier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
+        this.useModule(new Trigger(SwordSkillType.SECONDARY));
     }
 
     @Override
@@ -32,12 +34,6 @@ public class GuardianSkill extends SwordSkill {
 
     @Override
     public boolean skillPreconditions(Event ev) {
-        PlayerInteractEvent evv = (PlayerInteractEvent)ev;
-        ItemIdentifier identifier = ItemIdentifier.resolveItemIdentifier(evv.getItem());
-        if(identifier == null || identifier.getMaterial().equals(Material.AIR)) { return false; }
-
-        if(!identifier.getName().equalsIgnoreCase("Secondary Skill Activated Item")) { return false; }
-
         return true;
     }
 

@@ -67,6 +67,7 @@ public class BackpedalItem implements SwordSkillProvider {
             case GODLIKE:
                 lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +1.3");
         }
+        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 10 seconds");
 
         return lore;
     }
@@ -135,7 +136,7 @@ public class BackpedalItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return SwordSkillType.SWORD;
     }
 
     @Override

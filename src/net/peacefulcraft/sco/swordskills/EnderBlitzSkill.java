@@ -9,6 +9,7 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
@@ -21,6 +22,8 @@ public class EnderBlitzSkill extends SwordSkill {
         super(c, provider);
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
+
+        this.useModule(new Trigger(SwordSkillType.SECONDARY));
         this.useModule(new TimedCooldown(25000));
     }
 
