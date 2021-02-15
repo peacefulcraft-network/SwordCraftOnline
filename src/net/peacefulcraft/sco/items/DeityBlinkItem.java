@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import net.peacefulcraft.sco.swordskills.DeityBlinkSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
@@ -14,105 +15,101 @@ import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 public class DeityBlinkItem implements SwordSkillProvider {
 
+    private ItemTier tier;
+    private int quantity;
+
+    public DeityBlinkItem(ItemTier tier, int quantity) {
+        this.tier = ItemTier.LEGENDARY;
+        this.quantity = quantity;
+    }
+
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Deity Blink";
     }
 
     @Override
     public String getDisplayName() {
-        // TODO Auto-generated method stub
-        return null;
+        return ItemTier.getTierColor(tier) + "Deity Blink";
     }
 
     @Override
     public ArrayList<String> getLore() {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ItemTier.getTierColor(tier) + "Be blessed with speed");
+        lore.add(ItemTier.getTierColor(tier) + "upon exiting a teleport.");
+        lore.add(ItemTier.getTierColor(tier) + "Movement Speed: x1.5 for 2 seconds");
+        lore.add(ItemTier.getTierColor(tier) + "after teleport.");
+        return lore;
     }
 
     @Override
     public Material getMaterial() {
-        // TODO Auto-generated method stub
-        return null;
+        return Material.FEATHER;
     }
 
     @Override
     public ItemTier[] getAllowedTiers() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ItemTier[] { ItemTier.LEGENDARY };
     }
 
     @Override
     public ItemTier getTier() {
-        // TODO Auto-generated method stub
-        return null;
+        return tier;
     }
 
     @Override
     public Integer getQuantity() {
-        // TODO Auto-generated method stub
-        return null;
+        return quantity;
     }
 
     @Override
     public void setQuantity(Integer quantity) {
-        // TODO Auto-generated method stub
-
+        this.quantity = quantity;
     }
 
     @Override
     public boolean isDroppable() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean isMovable() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public JsonObject getCustomData() {
-        // TODO Auto-generated method stub
-        return null;
+        return new JsonObject();
     }
 
     @Override
     public void setCustomData(JsonObject data) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void parseCustomItemData(ItemStack item) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
-        // TODO Auto-generated method stub
-        return null;
+        return item;
     }
 
     @Override
     public SwordSkillType getType() {
-        // TODO Auto-generated method stub
-        return null;
+        return SwordSkillType.PASSIVE;
     }
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        // TODO Auto-generated method stub
-        return null;
+        return new DeityBlinkSkill(caster, (SwordSkillProvider)this);
     }
 
     @Override
     public void setModifiers() {
-        // TODO Auto-generated method stub
 
     }
     
