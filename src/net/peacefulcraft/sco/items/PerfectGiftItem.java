@@ -65,7 +65,7 @@ public class PerfectGiftItem implements SwordSkillProvider, EphemeralAttributeHo
 
     @Override
     public void setQuantity(Integer quantity) {
-        this.tier = tier;
+        this.quantity = quantity;
     }
 
     @Override
