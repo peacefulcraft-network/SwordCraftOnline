@@ -23,6 +23,7 @@ import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionCheckListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionDamageListener;
 import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDamageListener;
+import net.peacefulcraft.sco.gamehandle.managers.FireManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.inventories.crafting.CraftingManager;
@@ -105,6 +106,9 @@ public class SwordCraftOnline extends JavaPlugin{
 	private CraftingManager craftingManager;
 		public CraftingManager getCraftingManager() { return this.craftingManager; }
 	
+	private FireManager fireManager;
+		public FireManager getFireManager() { return this.fireManager; }
+
 	public SwordCraftOnline() {
 
 		sco = this;
@@ -136,6 +140,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.questManager = new QuestManager();
 
 		this.craftingManager = new CraftingManager();
+
+		this.fireManager = new FireManager();
 
 		effectManager = new EffectManager(this);
 		
