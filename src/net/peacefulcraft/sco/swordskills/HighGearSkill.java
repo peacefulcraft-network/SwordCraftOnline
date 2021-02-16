@@ -57,18 +57,9 @@ public class HighGearSkill extends SwordSkill {
     @Override
     public void unregisterSkill() {
         ModifierUser mu = (ModifierUser)c;
-        change1 = mu.queueChange(
-            Attribute.GENERIC_ATTACK_DAMAGE, 
-            -(3 + (1 * levelModifier)), 
-            -1);
-        change2 = mu.queueChange(
-            Attribute.GENERIC_MOVEMENT_SPEED, 
-            -(2 + (1 * levelModifier)), 
-            -1);
-        change3 = mu.queueChange(
-            CombatModifier.PARRY_CHANCE, 
-            0.2 + (0.02 * levelModifier),
-            -1);
+        mu.dequeueChange(change1);
+        mu.dequeueChange(change2);
+        mu.dequeueChange(change3);
     }
     
 }

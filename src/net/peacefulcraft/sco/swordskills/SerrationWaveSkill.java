@@ -1,7 +1,6 @@
 package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.attribute.Attribute;
@@ -14,7 +13,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventories.PlayerInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.utilities.ItemAttribute;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
@@ -57,8 +55,12 @@ public class SerrationWaveSkill extends SwordSkill {
             if(weapon != null) {
                 double tempDamage = ItemAttribute.getAttribute(weapon, Attribute.GENERIC_ATTACK_DAMAGE, EquipmentSlot.HAND);
                 damage += tempDamage;
+            } else {
+                SwordCraftOnline.logDebug("No suitable weapon equipped.");
+                return;
             }
             damage *= s.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+            damage *= multiplier;
             entities = s.getPlayer().getNearbyEntities(5, 5, 5);
 
             for(Entity e : entities) {
