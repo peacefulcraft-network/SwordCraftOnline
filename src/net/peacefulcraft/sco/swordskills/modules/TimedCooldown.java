@@ -21,6 +21,8 @@ public class TimedCooldown implements SwordSkillModule {
     private String cooldownMessage;
         private String getCooldownMessage() { return this.cooldownMessage; }
 
+    private String eventName = null;
+
     public TimedCooldown(long cooldonwDelay) {
         this.cooldownDelay = cooldonwDelay;
     }
@@ -28,6 +30,17 @@ public class TimedCooldown implements SwordSkillModule {
     public TimedCooldown(long cooldownDelay, String cooldonwMessage) {
         this.cooldownDelay = cooldownDelay;
         this.cooldownMessage = cooldonwMessage;
+    }
+
+    /**
+     * Modified constructor to detect specific events
+     * that trigger timer
+     * @param eventName of Event
+     */
+    public TimedCooldown(long cooldownDelay, String cooldownMessage, String eventName) {
+        this.cooldownDelay = cooldownDelay;
+        this.cooldownMessage = cooldownMessage;
+        this.eventName = eventName;
     }
 
     @Override
@@ -49,7 +62,9 @@ public class TimedCooldown implements SwordSkillModule {
      */
     @Override
     public void afterTriggerSkill(SwordSkill ss, Event ev) {
-        this.cooldownEnd = System.currentTimeMillis() + cooldownDelay;
+        if(this.eventName == null || (this.eventName != null && ev.getEventName().equalsIgnoreCase(this.eventName))) {
+            this.cooldownEnd = System.currentTimeMillis() + cooldownDelay;
+        } 
     }
 
     @Override

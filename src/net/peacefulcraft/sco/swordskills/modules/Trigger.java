@@ -17,6 +17,7 @@ public class Trigger implements SwordSkillModule {
         private boolean getTriggered() { return this.triggered; }
 
     private SwordSkillType type;
+    private String passedEvent;
 
     /**
      * @param type of SwordSkill we are triggering
@@ -24,6 +25,17 @@ public class Trigger implements SwordSkillModule {
      */
     public Trigger(SwordSkillType type) {
         this.type = type;
+        this.passedEvent = null;
+    }
+
+    /**
+     * @param type of SwordSkill we are triggering
+     * changes which item we detect for
+     * @param event type we pass through triggering
+     */
+    public Trigger(SwordSkillType type, String event) {
+        this.type = type;
+        this.passedEvent = event;
     }
 
     @Override
@@ -38,6 +50,11 @@ public class Trigger implements SwordSkillModule {
 
     @Override
     public boolean beforeTriggerSkill(SwordSkill ss, Event ev) {
+        // Checking if event should pass
+        if(passedEvent != null && ev.getEventName().equalsIgnoreCase(passedEvent)) {
+            return true;
+        }
+
         if((ev instanceof PlayerInteractEvent) && getTriggered() == false) {
             PlayerInteractEvent evv = (PlayerInteractEvent)ev;
             ItemIdentifier identifier = ItemIdentifier.resolveItemIdentifier(evv.getItem());
