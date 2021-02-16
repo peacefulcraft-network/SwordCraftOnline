@@ -41,6 +41,7 @@ public class GodOfIsolationRepelItem implements SwordSkillProvider {
         lore.add(ItemTier.getTierColor(tier) + "Blindness II for 5 seconds");
         lore.add(ItemTier.getTierColor(tier) + "on all effected entities.");
         lore.add(ItemTier.getTierColor(tier) + "Blindess II for 3 seconds to self.");
+        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 20 seconds");
         return lore;
     }
 
