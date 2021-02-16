@@ -1,5 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
@@ -11,6 +13,8 @@ import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class FinalStandVenomSkill extends SwordSkill {
+
+    UUID healthChange;
 
     public FinalStandVenomSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
@@ -43,6 +47,10 @@ public class FinalStandVenomSkill extends SwordSkill {
                     3));
             }
         }
+
+        healthChange = mu.queueChange(
+            -(int)(mu.getHealth() * 0.2), 
+            10);
     }
 
     @Override

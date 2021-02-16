@@ -40,6 +40,7 @@ public class FinalStandVenomItem implements SwordSkillProvider {
         lore.add(ItemTier.getTierColor(tier) + "Inflict Poison III for");
         lore.add(ItemTier.getTierColor(tier) + "10 seconds on every entity");
         lore.add(ItemTier.getTierColor(tier) + "within 5 block radius.");
+        lore.add(ItemTier.getTierColor(tier) + "Max Health: 80% for 10 seconds");
         lore.add(ItemTier.getTierColor(tier) + "Cooldown: 35 seconds");
         return lore;
     }
