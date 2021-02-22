@@ -577,7 +577,7 @@ public class ModifierUser {
     }
 
     public void setHealth(Integer amount) {
-        this.currHealth = amount;
+        this.currHealth = amount >= this.maxHealth ? this.maxHealth : amount;
         double ratio = this.currHealth / this.maxHealth;
         double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
 
