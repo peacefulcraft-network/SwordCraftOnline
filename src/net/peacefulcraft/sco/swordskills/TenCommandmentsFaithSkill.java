@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -15,13 +14,13 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
-public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable {
+public class TenCommandmentsFaithSkill extends SwordSkill implements Runnable {
 
     private HashMap<ModifierUser, Long> vicMap = new HashMap<>();
 
     private BukkitTask vicTask;
 
-    public TenCommandmentsPacifismSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public TenCommandmentsFaithSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
@@ -57,7 +56,7 @@ public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable
     public void triggerSkill(Event ev) {
         if(!(ev instanceof EntityDamageByEntityEvent)) { return; }
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
-        if(!(evv.getDamager() instanceof LivingEntity)) { return; }
+        if(!evv.getEntity().getType().equals(evv.getEntity().getType())) { return; }
 
         ModifierUser mu = (ModifierUser)c;
         ModifierUser damMu = ModifierUser.getModifierUser(evv.getDamager());
@@ -65,22 +64,20 @@ public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable
 
         if(mu.getLivingEntity().getNearbyEntities(15, 15, 15).contains(evv.getDamager())) {
             if(vicMap.containsKey(damMu)) { return; }
-            vicMap.put(damMu, System.currentTimeMillis() + 40000);
-            damMu.queueChange(
-                -(damMu.getMaxHealth() / 2), 
-                40);
+            vicMap.put(damMu, System.currentTimeMillis() + 200);
+            damMu.getLivingEntity().setFireTicks(200);
             if(evv.getDamager() instanceof Player) {
                 Announcer.messagePlayer(
                     (Player)evv.getDamager(), 
-                    "[Pacifism] You dare strike another in the presence of my conduit.", 
+                    "[Faith] You broke the faith of your kind near my conduit.", 
                     0);
             }
-        } 
+        }
     }
 
     @Override
     public void skillUsed() {
-        
+
     }
 
     @Override
