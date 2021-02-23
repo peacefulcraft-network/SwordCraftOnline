@@ -432,7 +432,11 @@ public class ModifierUser {
     private void addToAttribute(Attribute attribute, double amount, int duration, UUID id) {
         double d = getAttribute(attribute);
 
-        getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
+        if(d + amount <= 0.0) {
+            getLivingEntity().getAttribute(attribute).setBaseValue(0.0);
+        } else {
+            getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
+        }
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {

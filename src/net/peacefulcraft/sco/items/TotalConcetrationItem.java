@@ -7,19 +7,19 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import net.peacefulcraft.sco.swordskills.QuickHandsSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.TotalConcentrationSkill;
 
-public class QuickHandsItem implements SwordSkillProvider {
+public class TotalConcetrationItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
     private int levelModifier;
 
-    public QuickHandsItem(ItemTier tier, int quantity) {
+    public TotalConcetrationItem(ItemTier tier, int quantity) {
         this.tier = tier;
         this.quantity = quantity;
 
@@ -28,45 +28,42 @@ public class QuickHandsItem implements SwordSkillProvider {
 
     @Override
     public String getName() {
-        return "Quick Hands";
+        return "Total Concentration";
     }
 
     @Override
     public String getDisplayName() {
-        return ItemTier.getTierColor(tier) + "Quick Hands";
+        return ItemTier.getTierColor(tier) + "Total Concetration";
     }
 
     @Override
     public ArrayList<String> getLore() {
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "High reaction time to");
-        lore.add(ItemTier.getTierColor(tier) + "increase your attack speed.");
+        lore.add(ItemTier.getTierColor(tier) + "Calm your breath and");
+        lore.add(ItemTier.getTierColor(tier) + "empty your mind.");
         switch(tier) {
             case RARE:
                 lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +2");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -20%");
             break; case LEGENDARY:
                 lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +3");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -25%");
             break; case ETHEREAL:
                 lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +4");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -30%");
             break; case GODLIKE:
                 lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +5");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -35%");
             default:
         }
+        lore.add(ItemTier.getTierColor(tier) + "Movement Speed: -3");
         return lore;
     }
 
     @Override
     public Material getMaterial() {
-        return Material.SUGAR;
+        return Material.BLUE_ICE;
     }
 
     @Override
     public ItemTier[] getAllowedTiers() {
-        return new ItemTier[] { 
+        return new ItemTier[] {
             ItemTier.RARE,
             ItemTier.LEGENDARY,
             ItemTier.ETHEREAL,
@@ -126,22 +123,12 @@ public class QuickHandsItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new QuickHandsSkill(caster, levelModifier, (SwordSkillProvider)this);
+        return new TotalConcentrationSkill(caster, levelModifier, (SwordSkillProvider)this);
     }
 
     @Override
     public void setModifiers() {
-        switch(tier) {
-            case RARE:
-                this.levelModifier = 0;
-            break; case LEGENDARY:
-                this.levelModifier = 1;
-            break; case ETHEREAL:
-                this.levelModifier = 2;
-            break; case GODLIKE:
-                this.levelModifier = 3;
-            default: 
-        }
+
     }
     
 }
