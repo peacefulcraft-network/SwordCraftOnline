@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.ArtificialHopeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,12 +19,39 @@ public class ArtificialHopeItem implements SwordSkillProvider {
     private ItemTier tier;
     private int quantity;
     private double valueModifier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public ArtificialHopeItem(ItemTier tier, int quantity) {
+    public ArtificialHopeItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
 
         setModifiers();
+
+        desc = new SwordSkillDesc(tier, type);
+        desc.add("Fill your heart with hope.");
+        switch(this.tier) {
+            case COMMON:
+                desc.add("True Damage: +1.2");
+                desc.add("Movement Speed: +1.2");
+            break; case UNCOMMON:
+                desc.add("True Damage: +1.3");
+                desc.add("Movement Speed: +1.3");
+            break; case RARE:
+                desc.add("True Damage: +1.4");
+                desc.add("Movement Speed: +1.4");
+            break; case LEGENDARY:
+                desc.add("True Damage: +1.5");
+                desc.add("Movement Speed: +1.5");
+            break; case ETHEREAL:
+                desc.add("True Damage: +1.6");
+                desc.add("Movement Speed: +1.6");
+            break; case GODLIKE:
+                desc.add("True Damage: +1.7");
+                desc.add("Movement Speed: +1.7");
+        }
+        desc.add("Armor: -2");
     }
 
     @Override
@@ -38,30 +66,7 @@ public class ArtificialHopeItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Fill your heart with hope.");
-        switch(this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.2");
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.2");
-            break; case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.3");
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.3");
-            break; case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.4");
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.4");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.5");
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.5");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.6");
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.6");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "True Damage: +1.7");
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +1.7");
-        }
-        lore.add(ItemTier.getTierColor(this.tier) + "Armor: -2");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -128,7 +133,7 @@ public class ArtificialHopeItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

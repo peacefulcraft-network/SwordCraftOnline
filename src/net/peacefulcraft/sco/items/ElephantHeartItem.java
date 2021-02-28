@@ -10,15 +10,27 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.ElephantHeartSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 public class ElephantHeartItem implements SwordSkillProvider {
 
     private int quantity;
+    private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public ElephantHeartItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
+    public ElephantHeartItem(ItemTier tier, Integer quantity) {
+        this.quantity = quantity;
+        this.tier = ItemTier.RARE;
+        this.type = SwordSkillType.PASSIVE;
+        
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Empower yourself with the heart");
+        desc.add("of the Aincradian Elephant.");
+        desc.add("Max Health: +50%");
+        desc.add("Movement Speed: -2");
     }
 
     public ElephantHeartItem(ItemTier tier, Integer level, int quantity) {
@@ -37,12 +49,7 @@ public class ElephantHeartItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Empower yourself with the heart");
-        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "of the Aincradian Elephant.");
-        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Max Health: +50%");
-        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Movement Speed: -2");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -57,7 +64,7 @@ public class ElephantHeartItem implements SwordSkillProvider {
 
     @Override
     public ItemTier getTier() {
-        return ItemTier.RARE;
+        return tier;
     }
 
     @Override
@@ -102,7 +109,7 @@ public class ElephantHeartItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

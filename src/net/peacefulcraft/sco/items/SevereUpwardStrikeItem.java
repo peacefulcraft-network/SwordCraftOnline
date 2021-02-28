@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.SevereUpwardStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,16 +18,38 @@ public class SevereUpwardStrikeItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int cooldown;
     private double vectorMultiplier;
 
-    public SevereUpwardStrikeItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public SevereUpwardStrikeItem(ItemTier tier, Integer level, int quantity) {
-        this.quantity = quantity;
+    public SevereUpwardStrikeItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
+        this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A low to high strike that launches");
+        desc.add("your foe into the air.");
+        switch (this.tier) {
+            case COMMON:
+                desc.add("Vector Multiplier: +0.1");
+                desc.add("Cooldown: 7 Seconds");
+            break; case UNCOMMON:
+                desc.add("Vector Multiplier: +0.3");
+                desc.add("Cooldown: 8 Seconds");
+            break; case RARE:
+                desc.add("Vector Multiplier: +0.5");
+                desc.add("Cooldown: 8 Seconds");
+            break; case LEGENDARY:
+                desc.add("Vector Multiplier: +0.7");
+                desc.add("Cooldown: 9 Seconds");
+            break; case ETHEREAL:
+                desc.add("Vector Multiplier: +0.9");
+                desc.add("Cooldown: 9 Seconds");
+            break; case GODLIKE:
+                desc.add("Vector Multiplier: +1.1");
+                desc.add("Cooldown: 11 Seconds");
+        }
 
         setModifiers();
     }
@@ -43,36 +66,7 @@ public class SevereUpwardStrikeItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "A low to high strike that launches");
-        lore.add(ItemTier.getTierColor(this.tier) + "your foe into the air.");
-        switch (this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.1");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 7 Seconds");
-                break;
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.3");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 8 Seconds");
-                break;
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.5");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 8 Seconds");
-                break;
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.7");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 9 Seconds");
-                break;
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.9");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 9 Seconds");
-                break;
-            case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +1.1");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 11 Seconds");
-        }
-
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -139,7 +133,7 @@ public class SevereUpwardStrikeItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

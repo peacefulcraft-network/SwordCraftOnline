@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.SystemBreakAccelerantBurstSkill;
@@ -18,10 +19,21 @@ public class SystemBreakAccelerantBurstItem implements SwordSkillProvider, Ephem
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SystemBreakAccelerantBurstItem(ItemTier tier, int quantity) {
+    public SystemBreakAccelerantBurstItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PRIMARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Create explosions from");
+        desc.add("the flames around you.");
+        desc.add("1 explosion per nearby");
+        desc.add("fire.");
+        desc.add("Creates no explosions if");
+        desc.add("there are no flames.");
+        desc.add("Cooldown: 45 seconds");
     }
 
     @Override
@@ -36,15 +48,7 @@ public class SystemBreakAccelerantBurstItem implements SwordSkillProvider, Ephem
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Create explosions from");
-        lore.add(ItemTier.getTierColor(tier) + "the flames around you.");
-        lore.add(ItemTier.getTierColor(tier) + "1 explosion per nearby");
-        lore.add(ItemTier.getTierColor(tier) + "fire.");
-        lore.add(ItemTier.getTierColor(tier) + "Creates no explosions if");
-        lore.add(ItemTier.getTierColor(tier) + "there are no flames.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 45 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -114,7 +118,7 @@ public class SystemBreakAccelerantBurstItem implements SwordSkillProvider, Ephem
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

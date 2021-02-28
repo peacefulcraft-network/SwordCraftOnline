@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.OverheatSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,18 @@ public class OverheatItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public OverheatItem(ItemTier tier, int quantity) {
+    public OverheatItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
+        this.type = SwordSkillType.SECONDARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Coat the surrounding");
+        desc.add("in fierce flames.");
+        desc.add("Fire Radius: 6 blocks");
+        desc.add("Cooldown: 17 seconds");
     }
 
     @Override
@@ -35,12 +44,7 @@ public class OverheatItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Coat the surrounding");
-        lore.add(ItemTier.getTierColor(tier) + "in fierce flames.");
-        lore.add(ItemTier.getTierColor(tier) + "Fire Radius: 6 blocks");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 17 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -100,7 +104,7 @@ public class OverheatItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.TenCommandmentsPietySkill;
@@ -18,10 +19,17 @@ public class TenCommandmentsPietyItem implements SwordSkillProvider, EphemeralAt
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public TenCommandmentsPietyItem(ItemTier tier, int quantity) {
+    public TenCommandmentsPietyItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Become the conduit for Piety.");
+        desc.add("Any entity with regeneration");
+        desc.add("near the conduit is poisoned.");
     }
 
     @Override
@@ -36,11 +44,7 @@ public class TenCommandmentsPietyItem implements SwordSkillProvider, EphemeralAt
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Become the conduit for Piety.");
-        lore.add(ItemTier.getTierColor(tier) + "Any entity with regeneration");
-        lore.add(ItemTier.getTierColor(tier) + "near the conduit is poisoned.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override

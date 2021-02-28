@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.TotalConcentrationSkill;
@@ -17,11 +18,29 @@ public class TotalConcetrationItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int levelModifier;
 
-    public TotalConcetrationItem(ItemTier tier, int quantity) {
+    public TotalConcetrationItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Calm your breath and");
+        desc.add("empty your mind.");
+        switch(tier) {
+            case RARE:
+                desc.add("Attack Speed: +2");
+            break; case LEGENDARY:
+                desc.add("Attack Speed: +3");
+            break; case ETHEREAL:
+                desc.add("Attack Speed: +4");
+            break; case GODLIKE:
+                desc.add("Attack Speed: +5");
+            default:
+        }
+        desc.add("Movement Speed: -3");
 
         setModifiers();
     }
@@ -38,22 +57,7 @@ public class TotalConcetrationItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Calm your breath and");
-        lore.add(ItemTier.getTierColor(tier) + "empty your mind.");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +2");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +3");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +4");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +5");
-            default:
-        }
-        lore.add(ItemTier.getTierColor(tier) + "Movement Speed: -3");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -118,7 +122,7 @@ public class TotalConcetrationItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

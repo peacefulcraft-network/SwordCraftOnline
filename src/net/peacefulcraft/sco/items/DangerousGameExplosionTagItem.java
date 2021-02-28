@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.DangerousGameExplosionTagSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,21 @@ public class DangerousGameExplosionTagItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public DangerousGameExplosionTagItem(ItemTier tier, int quantity) {
+    public DangerousGameExplosionTagItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Inscribe an explosive rune");
+        desc.add("into your weapon.");
+        desc.add("On trigger: Tracks entities hit");
+        desc.add("for 10 seconds.");
+        desc.add("After 10 seconds: entity explodes.");
+        desc.add("Cooldown: 40 seconds");
     }
 
     @Override
@@ -35,14 +47,7 @@ public class DangerousGameExplosionTagItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Inscribe an explosive rune");
-        lore.add(ItemTier.getTierColor(tier) + "into your weapon.");
-        lore.add(ItemTier.getTierColor(tier) + "On trigger: Tracks entities hit");
-        lore.add(ItemTier.getTierColor(tier) + "for 10 seconds.");
-        lore.add(ItemTier.getTierColor(tier) + "After 10 seconds: entity explodes.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 40 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -102,7 +107,7 @@ public class DangerousGameExplosionTagItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

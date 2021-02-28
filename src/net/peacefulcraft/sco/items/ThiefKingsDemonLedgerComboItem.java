@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.ThiefKingsDemonLedgerComboSkill;
@@ -17,10 +18,19 @@ public class ThiefKingsDemonLedgerComboItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
     public ThiefKingsDemonLedgerComboItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = ItemTier.ETHEREAL;
+        this.type = SwordSkillType.PRIMARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("The signature 4 hit combo of the thief king.");
+        desc.add("First hit: Inflicts weakness IV");
+        desc.add("Second hit: Inflicts poison IV");
+        desc.add("Third hit: Inflicts wither IV");
+        desc.add("Fourth hit: Damage x3");
     }
 
     @Override
@@ -35,13 +45,7 @@ public class ThiefKingsDemonLedgerComboItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "The signature 4 hit combo of the thief king.");
-        lore.add(ItemTier.getTierColor(this.tier) + "First hit: Inflicts weakness IV");
-        lore.add(ItemTier.getTierColor(this.tier) + "Second hit: Inflicts poison IV");
-        lore.add(ItemTier.getTierColor(this.tier) + "Third hit: Inflicts wither IV");
-        lore.add(ItemTier.getTierColor(this.tier) + "Fourth hit: Damage x3");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -101,7 +105,7 @@ public class ThiefKingsDemonLedgerComboItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

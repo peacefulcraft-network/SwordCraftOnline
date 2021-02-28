@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.ArmoredAgilitySkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,12 +19,34 @@ public class ArmoredAgilityItem implements SwordSkillProvider {
     private ItemTier tier;
     private int quantity;
     private int levelModifier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
     public ArmoredAgilityItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
 
         setModifiers();
+
+        desc = new SwordSkillDesc(tier, type);
+        desc.add("Upgrade your armor with");
+        desc.add("tougher, more mobile metal.");
+        switch(tier) {
+            case RARE:
+                desc.add("Movement Speed: +2");
+                desc.add("Armor: +2");
+            break; case LEGENDARY:
+                desc.add("Movement Speed: +3");
+                desc.add("Armor: +3");
+            break; case ETHEREAL:
+                desc.add("Movement Speed: +4");
+                desc.add("Armor: +4");
+            break; case GODLIKE:
+                desc.add("Movement Speed: +5");
+                desc.add("Armor: +5");
+            default:
+        }
     }
 
     @Override
@@ -38,25 +61,7 @@ public class ArmoredAgilityItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Upgrade your armor with");
-        lore.add(ItemTier.getTierColor(tier) + "tougher, more mobile metal.");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +2");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: +2");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +3");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: +3");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +4");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: +4");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +5");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: +5");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -121,7 +126,7 @@ public class ArmoredAgilityItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

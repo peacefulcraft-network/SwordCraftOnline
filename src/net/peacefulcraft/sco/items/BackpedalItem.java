@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.BackPedalSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,12 +19,35 @@ public class BackpedalItem implements SwordSkillProvider {
     private ItemTier tier;
     private int quantity;
     private double vectorMultiplier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
     public BackpedalItem(ItemTier tier, Integer level) {
         this.tier = tier;
         this.quantity = 1;
+        this.type = SwordSkillType.SWORD;
 
         setModifiers();
+
+        desc = new SwordSkillDesc(tier, type);
+        desc.add("Leap backwards after performing a strike.");
+        desc.add("After trigger, strike with your weapon to perform back pedal.");
+        switch (this.tier) {
+            case COMMON:
+                desc.add("Vector Multiplier: +0.3");
+            break; case UNCOMMON:
+                desc.add("Vector Multiplier: +0.5");
+            break; case RARE:
+                desc.add("Vector Multiplier: +0.7");
+            break; case LEGENDARY:
+                desc.add("Vector Multiplier: +0.9");
+            break; case ETHEREAL:
+                desc.add("Vector Multiplier: +1.1");
+            break; case GODLIKE:
+                desc.add("Vector Multiplier: +1.3");
+        }
+        desc.add("Cooldown: 10 seconds");
+
     }
 
     public BackpedalItem(ItemTier tier, Integer level, int quantity) {
@@ -45,31 +69,7 @@ public class BackpedalItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Leap backwards after performing a strike.");
-        lore.add(ItemTier.getTierColor(this.tier) + "After trigger, strike with your weapon to perform back pedal.");
-        switch (this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.3");
-                break;
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.5");
-                break;
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.7");
-                break;
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +0.9");
-                break;
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +1.1");
-                break;
-            case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Vector Multiplier: +1.3");
-        }
-        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 10 seconds");
-
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -136,7 +136,7 @@ public class BackpedalItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

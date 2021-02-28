@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.LegDaySkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,31 @@ public class LegDayItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private double movementModifier;
 
-    public LegDayItem(int quantity, ItemTier tier) {
+    public LegDayItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Train your legs to increase");
+        desc.add("your movement speed.");
+        switch(this.tier) {
+            case COMMON:
+                desc.add("Movement Speed: +2.0");
+            case UNCOMMON:
+                desc.add("Movement Speed: +2.2");
+            case RARE:
+                desc.add("Movement Speed: +2.4");
+            case LEGENDARY:
+                desc.add("Movement Speed: +2.6");
+            case ETHEREAL:
+                desc.add("Movement Speed: +2.8");
+            case GODLIKE:
+                desc.add("Movement Speed: +3.0");
+        }
 
         setModifiers();
     }
@@ -38,24 +59,7 @@ public class LegDayItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Train your legs to increase");
-        lore.add(ItemTier.getTierColor(this.tier) + "your movement speed.");
-        switch(this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.0");
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.2");
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.4");
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.6");
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +2.8");
-            case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Movement Speed: +3.0");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -122,7 +126,7 @@ public class LegDayItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

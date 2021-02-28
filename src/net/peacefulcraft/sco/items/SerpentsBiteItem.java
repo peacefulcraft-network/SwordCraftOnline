@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.SerpentsBiteSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,12 +18,30 @@ public class SerpentsBiteItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int poisonModifier;
 
-    public SerpentsBiteItem(ItemTier tier, int quantity) {
+    public SerpentsBiteItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
-        
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Coat your blade with a powerful poison.");
+        switch(this.tier) {
+            case UNCOMMON:
+                desc.add("Poison level I");
+            break; case RARE:
+                desc.add("Poison level II");
+            break; case LEGENDARY:
+                desc.add("Poison level III");
+            break; case ETHEREAL:
+                desc.add("Poison level IV");
+            break; case GODLIKE:
+                desc.add("Poison level V");
+            default:
+        } 
+
         setModifiers();
     }
 
@@ -38,23 +57,7 @@ public class SerpentsBiteItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Coat your blade with a powerful poison.");
-        switch(this.tier) {
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Poison level I");
-            break; case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Poison level II");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Poison level III");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Poison level IV");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Poison level V");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        } 
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -120,7 +123,7 @@ public class SerpentsBiteItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

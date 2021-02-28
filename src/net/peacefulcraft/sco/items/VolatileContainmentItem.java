@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.VolatileContainmentSkill;
@@ -17,10 +18,20 @@ public class VolatileContainmentItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public VolatileContainmentItem(ItemTier tier, int quantity) {
+    public VolatileContainmentItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.RARE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PRIMARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Fill the nearby area");
+        desc.add("with a sinister aura.");
+        desc.add("On trigger: For 10 seconds");
+        desc.add("every entity within");
+        desc.add("5 blocks is withered.");
+        desc.add("Cooldown: 27 seconds");
     }
 
     @Override
@@ -35,14 +46,7 @@ public class VolatileContainmentItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Fill the nearby area");
-        lore.add(ItemTier.getTierColor(tier) + "with a sinister aura.");
-        lore.add(ItemTier.getTierColor(tier) + "On trigger: For 10 seconds");
-        lore.add(ItemTier.getTierColor(tier) + "every entity within");
-        lore.add(ItemTier.getTierColor(tier) + "5 blocks is withered.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 27 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -104,7 +108,7 @@ public class VolatileContainmentItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

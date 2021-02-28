@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.FullCounterSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,20 @@ public class FullCounterItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public FullCounterItem(ItemTier tier, int quantity) {
+    public FullCounterItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.ETHEREAL;
         this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A powerful skill passed");
+        desc.add("down from a legendary soldier.");
+        desc.add("On trigger, next damage taken");
+        desc.add("from a blade is reflected twice");
+        desc.add("as strong as true damage.");
+        desc.add("Cooldown: 45 seconds");
     }
 
     @Override
@@ -35,14 +46,7 @@ public class FullCounterItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "A powerful skill passed");
-        lore.add(ItemTier.getTierColor(tier) + "down from a legendary soldier.");
-        lore.add(ItemTier.getTierColor(tier) + "On trigger, next damage taken");
-        lore.add(ItemTier.getTierColor(tier) + "from a blade is reflected twice");
-        lore.add(ItemTier.getTierColor(tier) + "as strong as true damage.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 45 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -103,7 +107,7 @@ public class FullCounterItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

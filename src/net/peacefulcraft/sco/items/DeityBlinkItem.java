@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.DeityBlinkSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,19 @@ public class DeityBlinkItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public DeityBlinkItem(ItemTier tier, int quantity) {
+    public DeityBlinkItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Be blessed with speed");
+        desc.add("upon exiting a teleport.");
+        desc.add("Movement Speed: x1.5 for 2 seconds");
+        desc.add("after teleport.");
     }
 
     @Override
@@ -35,12 +45,7 @@ public class DeityBlinkItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Be blessed with speed");
-        lore.add(ItemTier.getTierColor(tier) + "upon exiting a teleport.");
-        lore.add(ItemTier.getTierColor(tier) + "Movement Speed: x1.5 for 2 seconds");
-        lore.add(ItemTier.getTierColor(tier) + "after teleport.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -100,7 +105,7 @@ public class DeityBlinkItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

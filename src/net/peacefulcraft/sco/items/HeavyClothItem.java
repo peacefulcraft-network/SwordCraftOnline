@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.HeavyClothSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,35 @@ public class HeavyClothItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int armorModifier;
 
     public HeavyClothItem(ItemTier tier, int quantity) {
         this.quantity = quantity;
         this.tier = tier;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Weave Aincradian Steel into");
+        desc.add("your clothing.");
+        switch(this.tier) {
+            case UNCOMMON:
+                desc.add("Armor: +2");
+                desc.add("Armor Toughness +2");
+            break; case RARE:
+                desc.add("Armor: +4");
+                desc.add("Armor Toughness +4");
+            break; case LEGENDARY:
+                desc.add("Armor: +6");
+                desc.add("Armor Toughness +6");
+            break; case ETHEREAL:
+                desc.add("Armor: +8");
+                desc.add("Armor Toughness +8");
+            break; case GODLIKE:
+                desc.add("Armor: +10");
+                desc.add("Armor Toughness +10");
+            default:
+        }
 
         setModifiers();
     }
@@ -38,28 +63,7 @@ public class HeavyClothItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) +"Weave Aincradian Steel into");
-        lore.add(ItemTier.getTierColor(this.tier) +"your clothing.");
-        switch(this.tier) {
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor: +2");
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor Toughness +2");
-            break; case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor: +4");
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor Toughness +4");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor: +6");
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor Toughness +6");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor: +8");
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor Toughness +8");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor: +10");
-                lore.add(ItemTier.getTierColor(this.tier) +"Armor Toughness +10");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -125,7 +129,7 @@ public class HeavyClothItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

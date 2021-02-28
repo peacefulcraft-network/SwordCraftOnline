@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.SoulsOfTheFallenSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,28 @@ public class SoulsOfTheFallenItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int levelModifier;
 
-    public SoulsOfTheFallenItem(ItemTier tier, int quantity) {
+    public SoulsOfTheFallenItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Call upon the souls");
+        desc.add("of players you've killed.");
+        desc.add("On trigger: Boosts true damage.");
+        switch(tier) {
+            case ETHEREAL:
+                desc.add("True Damage: x2.0 + 0.1");
+                desc.add("per player kill.");
+            break; case GODLIKE:
+                desc.add("True Damage: x2.0 + 0.2");
+                desc.add("per player kill.");
+            default:
+        }
+        desc.add("Cooldown: 60 seconds");
 
         setModifiers();
     }
@@ -38,21 +56,7 @@ public class SoulsOfTheFallenItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Call upon the souls");
-        lore.add(ItemTier.getTierColor(tier) + "of players you've killed.");
-        lore.add(ItemTier.getTierColor(tier) + "On trigger: Boosts true damage.");
-        switch(tier) {
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: x2.0 + 0.1");
-                lore.add(ItemTier.getTierColor(tier) + "per player kill.");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: x2.0 + 0.2");
-                lore.add(ItemTier.getTierColor(tier) + "per player kill.");
-            default:
-        }
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 60 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -115,7 +119,7 @@ public class SoulsOfTheFallenItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.TenCommandmentsReposeSkill;
@@ -18,10 +19,18 @@ public class TenCommandmentsReposeItem implements SwordSkillProvider, EphemeralA
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public TenCommandmentsReposeItem(ItemTier tier, int quantity) {
+    public TenCommandmentsReposeItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Become the conduit for Repose.");
+        desc.add("Any entity with movement speed");
+        desc.add("above base has their true damage");
+        desc.add("halved for 35 seconds.");
     }
 
     @Override
@@ -36,12 +45,7 @@ public class TenCommandmentsReposeItem implements SwordSkillProvider, EphemeralA
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Become the conduit for Repose.");
-        lore.add(ItemTier.getTierColor(tier) + "Any entity with movement speed");
-        lore.add(ItemTier.getTierColor(tier) + "above base has their true damage");
-        lore.add(ItemTier.getTierColor(tier) + "halved for 35 seconds.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -111,7 +115,7 @@ public class TenCommandmentsReposeItem implements SwordSkillProvider, EphemeralA
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

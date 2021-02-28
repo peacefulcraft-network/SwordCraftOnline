@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.GuardianSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,14 +19,26 @@ public class GuardianItem implements SwordSkillProvider {
     private int quantity;
     private int armorModifier;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public GuardianItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public GuardianItem(ItemTier tier, Integer level, int quantity) {
+    public GuardianItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PRIMARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add(ItemTier.getTierColor(this.tier) + "Protect you and your allies for 20 seconds.");
+        switch(this.tier) {
+            case RARE:
+                desc.add("Armor: +5");
+            break; case LEGENDARY:
+                desc.add("Armor: +7");
+            break; case ETHEREAL:
+                desc.add("Armor: +9");
+            break; case GODLIKE:
+                desc.add("Armor: +11");
+            default:
+        }
 
         setModifiers();
     }
@@ -42,21 +55,7 @@ public class GuardianItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Protect you and your allies for 20 seconds.");
-        switch(this.tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +5");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +7");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +9");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Armor: +11");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -121,7 +120,7 @@ public class GuardianItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

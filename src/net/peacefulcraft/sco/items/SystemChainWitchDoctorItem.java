@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.SystemChainWitchDoctorSkill;
@@ -17,10 +18,21 @@ public class SystemChainWitchDoctorItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SystemChainWitchDoctorItem(ItemTier tier, int quantity) {
+    public SystemChainWitchDoctorItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.ETHEREAL;
         this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Draw out the power of the");
+        desc.add("grand witch doctor.");
+        desc.add("On trigger: deal 20 true");
+        desc.add("damage to nearby entities.");
+        desc.add("Heals user for 17 health per");
+        desc.add("effected entity.");
+        desc.add("Cooldown: 55 seconds");
     }
 
     @Override
@@ -35,15 +47,7 @@ public class SystemChainWitchDoctorItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Draw out the power of the");
-        lore.add(ItemTier.getTierColor(tier) + "grand witch doctor.");
-        lore.add(ItemTier.getTierColor(tier) + "On trigger: deal 20 true");
-        lore.add(ItemTier.getTierColor(tier) + "damage to nearby entities.");
-        lore.add(ItemTier.getTierColor(tier) + "Heals user for 17 health per");
-        lore.add(ItemTier.getTierColor(tier) + "effected entity.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 55 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -103,7 +107,7 @@ public class SystemChainWitchDoctorItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

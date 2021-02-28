@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.WeakenedPulseSkill;
@@ -17,17 +18,29 @@ public class WeakenedPulseItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int weakModifier;
 
-    public WeakenedPulseItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public WeakenedPulseItem(ItemTier tier, Integer level, int quantity) {
-        this.quantity = quantity;
+    public WeakenedPulseItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
-
-        setModifiers();
+        this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Inflict weakness on your enemies.");
+        switch(this.tier) {
+            case UNCOMMON:
+                desc.add("Weakness level I");
+            break; case RARE:
+                desc.add("Weakness level II");
+            break; case LEGENDARY:
+                desc.add("Weakness level III");
+            break; case ETHEREAL:
+                desc.add("Weakness level IV");
+            break; case GODLIKE:
+                desc.add("Weakness level V");
+            default:
+        } 
     }
 
     @Override
@@ -42,23 +55,7 @@ public class WeakenedPulseItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Inflict weakness on your enemies.");
-        switch(this.tier) {
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Weakness level I");
-            break; case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Weakness level II");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Weakness level III");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Weakness level IV");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Weakness level V");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        } 
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -124,7 +121,7 @@ public class WeakenedPulseItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

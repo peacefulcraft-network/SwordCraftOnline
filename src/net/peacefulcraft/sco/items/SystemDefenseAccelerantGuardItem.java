@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.SystemDefenseAccelerantGuardSkill;
@@ -18,10 +19,21 @@ public class SystemDefenseAccelerantGuardItem implements SwordSkillProvider, Eph
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SystemDefenseAccelerantGuardItem(ItemTier tier, int quantity) {
+    public SystemDefenseAccelerantGuardItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.SECONDARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Protect yourself with the");
+        desc.add("flames around you.");
+        desc.add("Armor: x2.0 + 0.1");
+        desc.add("per nearby fire.");
+        desc.add("Provides no boost if there");
+        desc.add("are no surrounding flames.");
+        desc.add("Cooldown: 45 seconds");
     }
 
     @Override
@@ -36,15 +48,7 @@ public class SystemDefenseAccelerantGuardItem implements SwordSkillProvider, Eph
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Protect yourself with the");
-        lore.add(ItemTier.getTierColor(tier) + "flames around you.");
-        lore.add(ItemTier.getTierColor(tier) + "Armor: x2.0 + 0.1");
-        lore.add(ItemTier.getTierColor(tier) + "per nearby fire.");
-        lore.add(ItemTier.getTierColor(tier) + "Provides no boost if there");
-        lore.add(ItemTier.getTierColor(tier) + "are no surrounding flames.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 45 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -114,7 +118,7 @@ public class SystemDefenseAccelerantGuardItem implements SwordSkillProvider, Eph
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override

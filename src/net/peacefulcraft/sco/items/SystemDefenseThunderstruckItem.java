@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.SystemDefenseThunderstruckSkill;
@@ -18,10 +19,23 @@ public class SystemDefenseThunderstruckItem implements SwordSkillProvider, Ephem
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SystemDefenseThunderstruckItem(ItemTier tier, int quantity) {
+    public SystemDefenseThunderstruckItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.SECONDARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Call upon the ones above and");
+        desc.add("protect yourself with lightning.");
+        switch(tier) {
+            case ETHEREAL:
+                desc.add("Grants regen II for 5 seconds.");
+            break; case GODLIKE:
+                desc.add("Grants regen III for 5 seconds.");
+            default:
+        }
     }
 
     @Override
@@ -36,15 +50,7 @@ public class SystemDefenseThunderstruckItem implements SwordSkillProvider, Ephem
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Call upon the ones above and");
-        lore.add(ItemTier.getTierColor(this.tier) + "protect yourself with lightning.");
-        if(this.tier.equals(ItemTier.ETHEREAL)) {
-            lore.add(ItemTier.getTierColor(this.tier) + "Grants regen II for 5 seconds.");
-        } else if(this.tier.equals(ItemTier.GODLIKE)) {
-            lore.add(ItemTier.getTierColor(this.tier) + "Grants regen III for 5 seconds.");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -108,7 +114,7 @@ public class SystemDefenseThunderstruckItem implements SwordSkillProvider, Ephem
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override

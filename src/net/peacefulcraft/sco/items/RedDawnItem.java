@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.RedDawnSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,10 +19,32 @@ public class RedDawnItem implements SwordSkillProvider {
     private ItemTier tier;
     private int quantity;
     private int levelModifier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public RedDawnItem(ItemTier tier, int quantity) {
+    public RedDawnItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("The sun rises blood red.");
+        desc.add("Your heart fills with souls");
+        desc.add("laid to rest.");
+        switch(tier) {
+            case RARE:
+                desc.add("Max Health: x1.2 + 0.1");
+                desc.add("per player kill.");
+            break; case LEGENDARY:
+                desc.add("Max Health: x1.2 + 0.2");
+                desc.add("per player kill."); 
+            break; case ETHEREAL:
+                desc.add("Max Health: x1.2 + 0.3");
+                desc.add("per player kill.");
+            break; case GODLIKE:
+                desc.add("Max Health: x1.2 + 0.4");
+                desc.add("per player kill.");
+            default:
+        }
 
         setModifiers();
     }
@@ -38,26 +61,7 @@ public class RedDawnItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "The sun rises blood red.");
-        lore.add(ItemTier.getTierColor(tier) + "Your heart fills with souls");
-        lore.add(ItemTier.getTierColor(tier) + "laid to rest.");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: x1.2 + 0.1");
-                lore.add(ItemTier.getTierColor(tier) + "per player kill.");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: x1.2 + 0.2");
-                lore.add(ItemTier.getTierColor(tier) + "per player kill."); 
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: x1.2 + 0.3");
-                lore.add(ItemTier.getTierColor(tier) + "per player kill.");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: x1.2 + 0.4");
-                lore.add(ItemTier.getTierColor(tier) + "per player kill.");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -122,7 +126,7 @@ public class RedDawnItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

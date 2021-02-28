@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.TenCommandmentsFaithSkill;
@@ -18,10 +19,18 @@ public class TenCommandmentsFaithItem implements SwordSkillProvider, EphemeralAt
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public TenCommandmentsFaithItem(ItemTier tier, int quantity) {
+    public TenCommandmentsFaithItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Become the conduit for Faith.");
+        desc.add("Any entity who deals damage");
+        desc.add("to an entity of the same type");
+        desc.add("in your presence is ignited.");
     }
 
     @Override
@@ -36,12 +45,7 @@ public class TenCommandmentsFaithItem implements SwordSkillProvider, EphemeralAt
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Become the conduit for Faith.");
-        lore.add(ItemTier.getTierColor(tier) + "Any entity who deals damage");
-        lore.add(ItemTier.getTierColor(tier) + "to an entity of the same type");
-        lore.add(ItemTier.getTierColor(tier) + "in your presence is ignited.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -111,7 +115,7 @@ public class TenCommandmentsFaithItem implements SwordSkillProvider, EphemeralAt
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

@@ -11,6 +11,7 @@ import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.EnderBlitzControlSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,10 +19,22 @@ public class EnderBlitzControlItem implements SwordSkillProvider, EphemeralAttri
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public EnderBlitzControlItem(ItemTier tier, int quantity) {
+    public EnderBlitzControlItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = ItemTier.ETHEREAL;
+        this.type = SwordSkillType.SECONDARY;
+        
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Channel and control the");
+        desc.add("power of the end.");
+        desc.add("Teleport with direction control");
+        desc.add("5 times.");
+        desc.add("True Damage: x2 for 2 seconds");
+        desc.add("per teleport.");
+        desc.add("Cooldown: 32 seconds");
     }
 
     @Override
@@ -36,15 +49,7 @@ public class EnderBlitzControlItem implements SwordSkillProvider, EphemeralAttri
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Channel and control the");
-        lore.add(ItemTier.getTierColor(tier) + "power of the end.");
-        lore.add(ItemTier.getTierColor(tier) + "Teleport with direction control");
-        lore.add(ItemTier.getTierColor(tier) + "5 times.");
-        lore.add(ItemTier.getTierColor(this.tier) + "True Damage: x2 for 2 seconds");
-        lore.add(ItemTier.getTierColor(this.tier) + "per teleport.");
-        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 32 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override

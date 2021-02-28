@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
@@ -39,6 +40,7 @@ public class CriticalStrikeSkill extends SwordSkill{
 		if(this.c instanceof ModifierUser) {
 			ModifierUser mu = (ModifierUser)c;
 			mu.queueChange(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
+			SwordCraftOnline.logDebug("Player critical chance set: " + mu.getCombatModifier(CombatModifier.CRITICAL_CHANCE));
 		}
 	}
 

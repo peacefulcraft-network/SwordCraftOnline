@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.CriticalComboSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,19 @@ public class CriticalComboItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public CriticalComboItem(ItemTier tier, int quantity) {
+    public CriticalComboItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.RARE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("An advanced three hit");
+        desc.add("combo.");
+        desc.add("Critical Chance: x2 after");
+        desc.add("third hit for 4 seconds.");
     }
 
     @Override
@@ -35,12 +45,7 @@ public class CriticalComboItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "An advanced three hit");
-        lore.add(ItemTier.getTierColor(tier) + "combo.");
-        lore.add(ItemTier.getTierColor(tier) + "Critical Chance: x2 after");
-        lore.add(ItemTier.getTierColor(tier) + "third hit for 4 seconds.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -100,7 +105,7 @@ public class CriticalComboItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

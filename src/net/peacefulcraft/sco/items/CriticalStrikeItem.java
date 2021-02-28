@@ -11,6 +11,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -26,28 +27,7 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 
 	@Override
 	public ArrayList<String> getLore() {
-		ArrayList<String> lore = new ArrayList<String>();
-		lore.add(tier.getTierColor() + "A Beginners critical damage technique.");
-		switch (this.tier) {
-			case COMMON:
-				lore.add(tier.getTierColor() + "Critical Chance: + 2%");
-				break;
-			case UNCOMMON:
-				lore.add(tier.getTierColor() + "Critical Chance: + 3%");
-				break;
-			case RARE:
-				lore.add(tier.getTierColor() + "Critical Chance: + 4%");
-				break;
-			case LEGENDARY:
-				lore.add(tier.getTierColor() + "Critical Chance: + 5%");
-				break;
-			case ETHEREAL:
-				lore.add(tier.getTierColor() + "Critical Chance: + 6%");
-				break;
-			case GODLIKE:
-				lore.add(tier.getTierColor() + "Critical Chance: + 7%");
-		}
-		return lore;
+		return desc.getDesc();
 	}
 
 	@Override
@@ -76,12 +56,32 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 	public boolean isMovable() { return true; }
 
 	private Integer increase;
+	private SwordSkillType type;
+	private SwordSkillDesc desc;
 
 	public CriticalStrikeItem(ItemTier tier, Integer quantity) {
 		this.tier = tier;
 		this.quantity = quantity;
+		this.type = SwordSkillType.PASSIVE;
 
 		setModifiers();
+
+		this.desc = new SwordSkillDesc(tier, type);
+		desc.add("A Beginners critical damage technique.");
+		switch (this.tier) {
+			case COMMON:
+				desc.add("Critical Chance: + 2%");
+			break; case UNCOMMON:
+				desc.add("Critical Chance: + 3%");
+			break; case RARE:
+				desc.add("Critical Chance: + 4%");
+			break; case LEGENDARY:
+				desc.add("Critical Chance: + 5%");
+			break; case ETHEREAL:
+				desc.add("Critical Chance: + 6%");
+			break; case GODLIKE:
+				desc.add("Critical Chance: + 7%");
+		}
 	}
 
 	public void setModifiers() {
@@ -107,7 +107,7 @@ public class CriticalStrikeItem implements SwordSkillProvider {
     }
 
 	@Override
-	public SwordSkillType getType() { return SwordSkillType.PASSIVE; }
+	public SwordSkillType getType() { return type; }
 
 	@Override
 	public SwordSkill registerSwordSkill(SwordSkillCaster caster) {

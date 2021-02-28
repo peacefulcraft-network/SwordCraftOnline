@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.WitheringNecrolysisSkill;
@@ -17,11 +18,30 @@ public class WitheringNecrolysisItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int witherModifier;
 
     public WitheringNecrolysisItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = tier;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Infuse your blade with the");
+        desc.add("curse of death.");
+        switch(this.tier) {
+            case UNCOMMON:
+                desc.add("Wither level I");
+            break; case RARE:
+                desc.add("Wither level II");
+            break; case LEGENDARY:
+                desc.add("Wither level III");
+            break; case ETHEREAL:
+                desc.add("Wither level IV");
+            break; case GODLIKE:
+                desc.add("Wither level V");
+            default:
+        } 
 
         setModifiers();
     }
@@ -38,24 +58,7 @@ public class WitheringNecrolysisItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Infuse your blade with the");
-        lore.add(ItemTier.getTierColor(this.tier) + "curse of death.");
-        switch(this.tier) {
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Wither level I");
-            break; case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Wither level II");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Wither level III");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Wither level IV");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Wither level V");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        } 
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -121,7 +124,7 @@ public class WitheringNecrolysisItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

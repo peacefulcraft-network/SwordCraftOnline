@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.GlassCannonSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,32 @@ public class GlassCannonItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int levelModifier;
 
-    public GlassCannonItem(ItemTier tier, int quantity) {
+    public GlassCannonItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A delicate balance between");
+        desc.add("damage and health.");
+        switch(tier) {
+            case LEGENDARY:
+                desc.add("Max Health: -30%");
+                desc.add("True Damage: +4");
+                desc.add("Armor: -1");
+            break; case ETHEREAL:
+                desc.add("Max Health: -35%");
+                desc.add("True Damage: +5");
+                desc.add("Armor: -2");
+            break; case GODLIKE:
+                desc.add("Max Health: -40%");
+                desc.add("True Damage: +6");
+                desc.add("Armor: -3");
+            default:
+        }
 
         setModifiers();
     }
@@ -38,25 +60,7 @@ public class GlassCannonItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "A delicate balance between");
-        lore.add(ItemTier.getTierColor(tier) + "damage and health.");
-        switch(tier) {
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: -30%");
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: +4");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: -1");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: -35%");
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: +5");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: -2");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: -40%");
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: +6");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: -3");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -120,7 +124,7 @@ public class GlassCannonItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

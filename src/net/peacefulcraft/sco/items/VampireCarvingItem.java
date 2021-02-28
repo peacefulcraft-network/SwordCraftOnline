@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.VampireCarvingSkill;
@@ -17,17 +18,28 @@ public class VampireCarvingItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private double lifeDrain;
 
-    public VampireCarvingItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public VampireCarvingItem(ItemTier tier, Integer level, int quantity) {
-        this.quantity = quantity;
+    public VampireCarvingItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
-
-        setModifiers();
+        this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Drain the health of your foes");
+        desc.add("with each strike.");
+        switch (this.tier) {
+            case RARE:
+                desc.add("Life Drain on Hit: 0.1x");
+            break; case LEGENDARY:
+                desc.add("Life Drain on Hit: 0.12x");
+            break; case ETHEREAL:
+                desc.add("Life Drain on Hit: 0.14x");
+            break; case GODLIKE:
+                desc.add("Life Drain on Hit: 0.15x");
+            default:
+        }
     }
 
     @Override
@@ -42,22 +54,7 @@ public class VampireCarvingItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Drain the health of your foes");
-        lore.add(ItemTier.getTierColor(this.tier) + "with each strike.");
-        switch (this.tier) {
-            case RARE:
-                lore.add(tier.getTierColor() + "Life Drain on Hit: 0.1x");
-            break; case LEGENDARY:
-                lore.add(tier.getTierColor() + "Life Drain on Hit: 0.12x");
-            break; case ETHEREAL:
-                lore.add(tier.getTierColor() + "Life Drain on Hit: 0.14x");
-            break; case GODLIKE:
-                lore.add(tier.getTierColor() + "Life Drain on Hit: 0.15x");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -122,7 +119,7 @@ public class VampireCarvingItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

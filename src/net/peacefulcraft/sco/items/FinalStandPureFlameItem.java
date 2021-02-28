@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.FinalStandPureFlameSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,21 @@ public class FinalStandPureFlameItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public FinalStandPureFlameItem(ItemTier tier, int quantity) {
+    public FinalStandPureFlameItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
+        this.type = SwordSkillType.PRIMARY;
+
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Wield the strongest flames");
+        desc.add("in Aincrad.");
+        desc.add("Light every entity in 5");
+        desc.add("blocks for 10 seconds.");
+        desc.add("Max Health: 80% for 10 seconds");
+        desc.add("Cooldown: 35 seconds");
     }
 
     @Override
@@ -35,14 +47,7 @@ public class FinalStandPureFlameItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Wield the strongest flames");
-        lore.add(ItemTier.getTierColor(tier) + "in Aincrad.");
-        lore.add(ItemTier.getTierColor(tier) + "Light every entity in 5");
-        lore.add(ItemTier.getTierColor(tier) + "blocks for 10 seconds.");
-        lore.add(ItemTier.getTierColor(tier) + "Max Health: 80% for 10 seconds");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 35 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -102,7 +107,7 @@ public class FinalStandPureFlameItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

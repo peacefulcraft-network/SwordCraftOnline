@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.QuickHandsSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,32 @@ public class QuickHandsItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int levelModifier;
 
-    public QuickHandsItem(ItemTier tier, int quantity) {
+    public QuickHandsItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("High reaction time to");
+        desc.add("increase your attack speed.");
+        switch(tier) {
+            case RARE:
+                desc.add("Attack Speed: +2");
+                desc.add("Critical Chance: -20%");
+            break; case LEGENDARY:
+                desc.add("Attack Speed: +3");
+                desc.add("Critical Chance: -25%");
+            break; case ETHEREAL:
+                desc.add("Attack Speed: +4");
+                desc.add("Critical Chance: -30%");
+            break; case GODLIKE:
+                desc.add("Attack Speed: +5");
+                desc.add("Critical Chance: -35%");
+            default:
+        }
 
         setModifiers();
     }
@@ -38,25 +60,7 @@ public class QuickHandsItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "High reaction time to");
-        lore.add(ItemTier.getTierColor(tier) + "increase your attack speed.");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +2");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -20%");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +3");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -25%");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +4");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -30%");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Attack Speed: +5");
-                lore.add(ItemTier.getTierColor(tier) + "Critical Chance: -35%");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -121,7 +125,7 @@ public class QuickHandsItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

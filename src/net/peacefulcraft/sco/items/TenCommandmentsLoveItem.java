@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.TenCommandmentsLoveSkill;
@@ -18,10 +19,18 @@ public class TenCommandmentsLoveItem implements SwordSkillProvider, EphemeralAtt
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public TenCommandmentsLoveItem(ItemTier tier, int quantity) {
+    public TenCommandmentsLoveItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Become the conduit for Love.");
+        desc.add("Any player with player kills");
+        desc.add("cannot deal damage in your");
+        desc.add("presence.");
     }
 
     @Override
@@ -36,12 +45,7 @@ public class TenCommandmentsLoveItem implements SwordSkillProvider, EphemeralAtt
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Become the conduit for Love.");
-        lore.add(ItemTier.getTierColor(tier) + "Any player with player kills");
-        lore.add(ItemTier.getTierColor(tier) + "cannot deal damage in your");
-        lore.add(ItemTier.getTierColor(tier) + "presence.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -111,7 +115,7 @@ public class TenCommandmentsLoveItem implements SwordSkillProvider, EphemeralAtt
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

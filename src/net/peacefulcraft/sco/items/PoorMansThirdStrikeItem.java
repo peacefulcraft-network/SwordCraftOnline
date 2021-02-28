@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.PoorMansThirdStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,16 @@ public class PoorMansThirdStrikeItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillDesc desc;
+    private SwordSkillType type;
 
-    public PoorMansThirdStrikeItem(ItemTier tier, int quantity) {
+    public PoorMansThirdStrikeItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = ItemTier.UNCOMMON;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A swift three hit combo.");
+        desc.add("On the third strike you deal 1.8x damage.");
     }
 
     @Override
@@ -35,10 +42,7 @@ public class PoorMansThirdStrikeItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "A swift three hit combo.");
-        lore.add(ItemTier.getTierColor(this.tier) + "On the third strike you deal 1.8x damage.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -98,7 +102,7 @@ public class PoorMansThirdStrikeItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

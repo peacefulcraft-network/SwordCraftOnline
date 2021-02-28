@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
@@ -18,7 +18,6 @@ public class ParrySkill extends SwordSkill {
         this.increase = increase;
 
         this.listenFor(SwordSkillTrigger.PASSIVE);
-        this.useModule(new TimedCooldown(delay));
     }
 
     @Override
@@ -38,6 +37,7 @@ public class ParrySkill extends SwordSkill {
         if(this.c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
             change1 = mu.queueChange(CombatModifier.PARRY_CHANCE, this.increase, -1);
+            SwordCraftOnline.logDebug("Parry chance set: " + mu.getCombatModifier(CombatModifier.PARRY_CHANCE));
         }
     }
 

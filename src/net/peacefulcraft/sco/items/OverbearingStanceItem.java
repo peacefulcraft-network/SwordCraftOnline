@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.OverbearingStanceSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,29 @@ public class OverbearingStanceItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int knockbackModifier;
 
-    public OverbearingStanceItem(ItemTier tier, int quantity) {
+    public OverbearingStanceItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A firm stance increases");
+        desc.add("your knockback resistance.");
+        switch(tier) {
+            case RARE:
+                desc.add("Knockback Resistance: +4");
+            break; case LEGENDARY:
+                desc.add("Knockback Resistance: +5");
+            break; case ETHEREAL:
+                desc.add("Knockback Resistance: +6");
+            break; case GODLIKE:
+                desc.add("Knockback Resistance: +7");
+            default:
+        }
+        desc.add("Movement Speed: -1");
         
         setModifiers();
     }
@@ -38,22 +57,7 @@ public class OverbearingStanceItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "A firm stance increases");
-        lore.add(ItemTier.getTierColor(tier) + "your knockback resistance.");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "Knockback Resistance: +4");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Knockback Resistance: +5");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Knockback Resistance: +6");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Knockback Resistance: +7");
-            default:
-        }
-        lore.add(ItemTier.getTierColor(tier) + "Movement Speed: -1");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -118,7 +122,7 @@ public class OverbearingStanceItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

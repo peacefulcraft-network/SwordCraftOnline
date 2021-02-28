@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.RootedSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,15 +18,25 @@ public class RootedItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int regenModifier;
 
-    public RootedItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public RootedItem(ItemTier tier, Integer level, int quantity) {
+    public RootedItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add( "Absorb the life energy from the soil around you.");
+        switch(this.tier) {
+            case LEGENDARY:
+                desc.add("Grants regeneration I while on grass.");
+            break; case ETHEREAL:
+                desc.add("Grants regeneration II while on grass.");
+            break; case GODLIKE:
+                desc.add("Grants regeneration III while on grass.");
+            default:
+        }
 
         setModifiers();
     }
@@ -42,19 +53,7 @@ public class RootedItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Absorb the life energy from the soil around you.");
-        switch(this.tier) {
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Grants regeneration I while on grass.");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Grants regeneration II while on grass.");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Grants regeneration III while on grass.");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -118,7 +117,7 @@ public class RootedItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

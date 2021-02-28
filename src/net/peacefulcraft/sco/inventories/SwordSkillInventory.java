@@ -10,13 +10,16 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
+import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 /**
  * Persistent Sword Skill Inventory Loads contents from database using provided
@@ -96,6 +99,60 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 	@Override
 	public void onClickThisInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
 		SwordCraftOnline.logDebug("Clicked SwordSKill Inventory");
+
+		// We only want sword skill provider items in this inventory
+		if(!(cursorItem instanceof SwordSkillProvider)) { 
+			ev.setCancelled(true);
+			return;
+		}
+
+		SwordSkillProvider cursorProvider = (SwordSkillProvider)cursorItem;
+		SwordSkillType cursorType = cursorProvider.getType();
+
+		// Checking skill slot equivalents
+		if(cursorType.equals(SwordSkillType.SWORD) && ev.getSlot() != 0) { 
+			ev.setCancelled(true);
+			if(this.s instanceof SCOPlayer) {
+				Announcer.messagePlayer((SCOPlayer)this.s, "You can only equip this type of skill in slot 0.", 0);
+			}
+			return;
+		} else if(cursorType.equals(SwordSkillType.PRIMARY) && ev.getSlot() != 1) {
+			ev.setCancelled(true);
+			if(this.s instanceof SCOPlayer) {
+				Announcer.messagePlayer((SCOPlayer)this.s, "You can only equip this type of skill in slot 1.", 0);
+			}
+			return;
+		} else if(cursorType.equals(SwordSkillType.SECONDARY) && ev.getSlot() != 2) {
+			ev.setCancelled(true);
+			if(this.s instanceof SCOPlayer) {
+				Announcer.messagePlayer((SCOPlayer)this.s, "You can only equip this type of skill in slot 2.", 0);
+			}
+			return;
+		} else if(cursorType.equals(SwordSkillType.PASSIVE) && ev.getSlot() <= 2) {
+			ev.setCancelled(true);
+			if(this.s instanceof SCOPlayer) {
+				Announcer.messagePlayer((SCOPlayer)this.s, "You can only equip this in the left 6 slots.", 0);
+			}
+			return;
+		}
+
+		// Checking placed skill quantity
+		if(cursorProvider.getQuantity() > 1) {
+			ev.setCancelled(true);
+			if(this.s instanceof SCOPlayer) {
+				Announcer.messagePlayer((SCOPlayer)this.s, "You can't place more than 1 skill in a slot.", 0);
+			}
+			return;
+		}
+
+		// Checking if skill is already in first row
+		if(isSkillRegistered(cursorItem.getName())) {
+			ev.setCancelled(true);
+			if(this.s instanceof SCOPlayer) {
+				Announcer.messagePlayer((SCOPlayer)this.s, "You can't equip the same skill twice.", 0);
+			}
+			return;
+		}
 	}
 
 	@Override
@@ -122,5 +179,14 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 
 		this.s.getSwordSkillManager().syncSkillInventory(this);
 		this.s.getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.PASSIVE, null);
+	}
+
+	private boolean isSkillRegistered(String name) {
+		for(int i = 0; i < 8; i++) {
+			if(this.getItem(i).getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

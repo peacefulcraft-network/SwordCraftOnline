@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.UnfortunateDivisorSkill;
@@ -17,14 +18,17 @@ public class UnfortunateDivisorItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public UnfortunateDivisorItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public UnfortunateDivisorItem(ItemTier tier, Integer level, int quantity) {
-        this.quantity = quantity;
+    public UnfortunateDivisorItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.ETHEREAL;
+        this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Slice your opponents soul in half.");
+        desc.add("Divides victims health by 2.");
+        desc.add("Cooldown 30 seconds.");
     }
 
     @Override
@@ -39,11 +43,7 @@ public class UnfortunateDivisorItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Slice your opponents soul in half.");
-        lore.add(ItemTier.getTierColor(this.tier) + "Divides victims health by 2.");
-        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown 30 seconds.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class UnfortunateDivisorItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

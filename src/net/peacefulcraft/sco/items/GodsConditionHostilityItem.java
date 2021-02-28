@@ -11,6 +11,7 @@ import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.GodsConditionHostilitySkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,10 +19,19 @@ public class GodsConditionHostilityItem implements SwordSkillProvider, Ephemeral
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public GodsConditionHostilityItem(ItemTier tier, int quantity) {
+    public GodsConditionHostilityItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Force your presense onto");
+        desc.add("reality itself. All damaged");
+        desc.add("foes cannot move unless");
+        desc.add("holding a sword.");
+        desc.add("Effect Time: 35 seconds");
     }
 
     @Override
@@ -36,13 +46,7 @@ public class GodsConditionHostilityItem implements SwordSkillProvider, Ephemeral
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Force your presense onto");
-        lore.add(ItemTier.getTierColor(tier) + "reality itself. All damaged");
-        lore.add(ItemTier.getTierColor(tier) + "foes cannot move unless");
-        lore.add(ItemTier.getTierColor(tier) + "holding a sword.");
-        lore.add(ItemTier.getTierColor(tier) + "Effect Time: 35 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -102,7 +106,7 @@ public class GodsConditionHostilityItem implements SwordSkillProvider, Ephemeral
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

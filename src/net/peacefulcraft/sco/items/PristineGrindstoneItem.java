@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.PristineGrindstoneSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,17 +19,29 @@ public class PristineGrindstoneItem implements SwordSkillProvider {
     private double increase;
     private ItemTier tier;
     private int quantity;
+    private SwordSkillDesc desc;
+    private SwordSkillType type;
 
-    public PristineGrindstoneItem(ItemTier tier, Integer level) {
-        this.tier = tier;
-        this.quantity = 1;
-
-        setModifiers();
-    }
-
-    public PristineGrindstoneItem(ItemTier tier, Integer level, int quantity) {
+    public PristineGrindstoneItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A beginners grindstone. Increases attack damage.");
+        switch (this.tier) {
+            case COMMON:
+                desc.add("Attack Damage: +0.1");
+            break; case UNCOMMON:
+                desc.add("Attack Damage: +0.2");
+            break; case RARE:
+                desc.add("Attack Damage: +0.3");
+            break; case LEGENDARY:
+                desc.add("Attack Damage: +0.4");
+            break; case ETHEREAL:
+                desc.add("Attack Damage: +0.5");
+            break; case GODLIKE:
+                desc.add("Attack Damage: +0.6");
+        }
 
         setModifiers();
     }
@@ -45,29 +58,7 @@ public class PristineGrindstoneItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "A beginners grindstone. Increases attack damage.");
-        switch (this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Attack Damage: +0.1");
-                break;
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Attack Damage: +0.2");
-                break;
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Attack Damage: +0.3");
-                break;
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Attack Damage: +0.4");
-                break;
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Attack Damage: +0.5");
-                break;
-            case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Attack Damage: +0.6");
-        }
-
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -134,7 +125,7 @@ public class PristineGrindstoneItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

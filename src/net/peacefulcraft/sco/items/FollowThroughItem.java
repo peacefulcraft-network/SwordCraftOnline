@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.FollowThroughSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,11 +19,31 @@ public class FollowThroughItem implements SwordSkillProvider {
     private int quantity;
     private ItemTier tier;
     private double critModifier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public FollowThroughItem(ItemTier tier, int quantity) {
+    public FollowThroughItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = tier;
-        
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A more complete strike deals");
+        desc.add("more critical damage.");
+        switch(this.tier) {
+            case COMMON:
+                desc.add("Critical Damage Multiplier: +0.5");
+            break; case UNCOMMON:
+                desc.add("Critical Damage Multiplier: +0.6");
+            break; case RARE:
+                desc.add("Critical Damage Multiplier: +0.7");
+            break; case LEGENDARY:
+                desc.add("Critical Damage Multiplier: +0.8");
+            break; case ETHEREAL:
+                desc.add("Critical Damage Multiplier: +0.9");
+            break; case GODLIKE:
+                desc.add("Critical Damage Multiplier: +1.0");
+        }
+
         setModifiers();
     }
 
@@ -38,24 +59,7 @@ public class FollowThroughItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "A more complete strike deals");
-        lore.add(ItemTier.getTierColor(this.tier) + "more critical damage.");
-        switch(this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Damage Multiplier: +0.5");
-            break; case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Damage Multiplier: +0.6");
-            break; case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Damage Multiplier: +0.7");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Damage Multiplier: +0.8");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Damage Multiplier: +0.9");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Damage Multiplier: +1.0");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -122,7 +126,7 @@ public class FollowThroughItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

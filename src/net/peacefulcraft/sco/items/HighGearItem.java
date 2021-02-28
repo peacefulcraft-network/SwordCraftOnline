@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.HighGearSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,36 @@ public class HighGearItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int levelModifier;
 
-    public HighGearItem(ItemTier tier, int quantity) {
+    public HighGearItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Shift your body into");
+        desc.add("high gear.");
+        switch(tier) {
+            case RARE:
+                desc.add("True Damage: +3");
+                desc.add("Movement Speed: +2");
+                desc.add("Parry Chance: -20%");
+            break; case LEGENDARY:
+                desc.add("True Damage: +4");
+                desc.add("Movement Speed: +3");
+                desc.add("Parry Chance: -22%");
+            break; case ETHEREAL:
+                desc.add("True Damage: +5");
+                desc.add("Movement Speed: +4");
+                desc.add("Parry Chance: -24%");
+            break; case GODLIKE:
+                desc.add("True Damage: +6");
+                desc.add("Movement Speed: +5");
+                desc.add("Parry Chance: -26%");
+            default:
+        }
         
         setModifiers();
     }
@@ -38,29 +64,7 @@ public class HighGearItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Shift your body into");
-        lore.add(ItemTier.getTierColor(tier) + "high gear.");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: +3");
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +2");
-                lore.add(ItemTier.getTierColor(tier) + "Parry Chance: -20%");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: +4");
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +3");
-                lore.add(ItemTier.getTierColor(tier) + "Parry Chance: -22%");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: +5");
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +4");
-                lore.add(ItemTier.getTierColor(tier) + "Parry Chance: -24%");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "True Damage: +6");
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +5");
-                lore.add(ItemTier.getTierColor(tier) + "Parry Chance: -26%");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -125,7 +129,7 @@ public class HighGearItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

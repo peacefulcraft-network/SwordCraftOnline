@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.YouthfulIdiocracySkill;
@@ -17,11 +18,36 @@ public class YouthfulIdiocracyItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int levelModifier;
 
-    public YouthfulIdiocracyItem(ItemTier tier, int quantity) {
+    public YouthfulIdiocracyItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Be inspired by the");
+        desc.add("power of youth!");
+        switch(tier) {
+            case RARE:
+                desc.add("Movement Speed: +2");
+                desc.add("Max Health: +20%");
+                desc.add("Armor: -1");
+            break; case LEGENDARY:
+                desc.add("Movement Speed: +3");
+                desc.add("Max Health: +25%");
+                desc.add("Armor: -2");
+            break; case ETHEREAL:
+                desc.add("Movement Speed: +4");
+                desc.add("Max Health: +30%");
+                desc.add("Armor: -3");
+            break; case GODLIKE:
+                desc.add("Movement Speed: +5");
+                desc.add("Max Health: +35%");
+                desc.add("Armor: -4");
+            default:
+        }
 
         setModifiers();
     }
@@ -38,29 +64,7 @@ public class YouthfulIdiocracyItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Be inspired by the");
-        lore.add(ItemTier.getTierColor(tier) + "power of youth!");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +2");
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: +20%");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: -1");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +3");
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: +25%");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: -2");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +4");
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: +30%");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: -3");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Movement Speed: +5");
-                lore.add(ItemTier.getTierColor(tier) + "Max Health: +35%");
-                lore.add(ItemTier.getTierColor(tier) + "Armor: -4");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -125,7 +129,7 @@ public class YouthfulIdiocracyItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

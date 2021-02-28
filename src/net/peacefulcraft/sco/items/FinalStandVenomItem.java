@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.FinalStandVenomSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,21 @@ public class FinalStandVenomItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public FinalStandVenomItem(ItemTier tier, int quantity) {
+    public FinalStandVenomItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
+        this.type = SwordSkillType.PRIMARY;
+
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("The pinnacle of poison.");
+        desc.add("Inflict Poison III for");
+        desc.add("10 seconds on every entity");
+        desc.add("within 5 block radius.");
+        desc.add("Max Health: 80% for 10 seconds");
+        desc.add("Cooldown: 35 seconds");
     }
 
     @Override
@@ -35,14 +47,7 @@ public class FinalStandVenomItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "The pinnacle of poison.");
-        lore.add(ItemTier.getTierColor(tier) + "Inflict Poison III for");
-        lore.add(ItemTier.getTierColor(tier) + "10 seconds on every entity");
-        lore.add(ItemTier.getTierColor(tier) + "within 5 block radius.");
-        lore.add(ItemTier.getTierColor(tier) + "Max Health: 80% for 10 seconds");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 35 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -102,7 +107,7 @@ public class FinalStandVenomItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

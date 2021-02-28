@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.EnderBlitzSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,20 @@ public class EnderBlitzItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public EnderBlitzItem(ItemTier tier, int quantity) {
+    public EnderBlitzItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = ItemTier.RARE;
+        this.type = SwordSkillType.SECONDARY;
+        
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Channel the power of the end.");
+        desc.add("Teleport randomly 5 times.");
+        desc.add("True Damage: x2 for 2 seconds");
+        desc.add("per teleport.");
+        desc.add("Cooldown: 25 seconds");
     }
 
     @Override
@@ -35,13 +46,7 @@ public class EnderBlitzItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Channel the power of the end.");
-        lore.add(ItemTier.getTierColor(this.tier) + "Teleport randomly 5 times.");
-        lore.add(ItemTier.getTierColor(this.tier) + "True Damage: x2 for 2 seconds");
-        lore.add(ItemTier.getTierColor(this.tier) + "per teleport.");
-        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 25 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -103,7 +108,7 @@ public class EnderBlitzItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.BlindRageSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,21 @@ public class BlindRageItem implements SwordSkillProvider {
 
     private int quantity;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public BlindRageItem(ItemTier tier, int quantity) {
+    public BlindRageItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = ItemTier.RARE;
+        this.type = SwordSkillType.SECONDARY;
+
+        desc = new SwordSkillDesc(tier, type);
+        desc.add("Fill yourself with rage and");
+        desc.add("strike down your foes...");
+        desc.add("May inflict blindness.");
+        desc.add("Gives: Strength II, Blindness I");
+        desc.add("Effect time: 15 seconds");
+        desc.add("Cooldown time: 25 seconds");
     }
 
     @Override
@@ -35,14 +47,7 @@ public class BlindRageItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Fill yourself with rage and");
-        lore.add(ItemTier.getTierColor(this.tier) + "strike down your foes...");
-        lore.add(ItemTier.getTierColor(this.tier) + "May inflict blindness.");
-        lore.add(ItemTier.getTierColor(this.tier) + "Gives: Strength II, Blindness I");
-        lore.add(ItemTier.getTierColor(this.tier) + "Effect time: 15 seconds");
-        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown time: 25 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -102,7 +107,7 @@ public class BlindRageItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override

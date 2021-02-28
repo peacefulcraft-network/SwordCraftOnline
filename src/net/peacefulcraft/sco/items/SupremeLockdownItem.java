@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.SupremeLockdownSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,18 @@ public class SupremeLockdownItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SupremeLockdownItem(ItemTier tier, int quantity) {
+    public SupremeLockdownItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
+        this.type = SwordSkillType.SECONDARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Temporarily halt the");
+        desc.add("movements of all nearby.");
+        desc.add("Freezes allies and foes: 7 seconds");
+        desc.add("Cooldown: 25 seconds");
     }
 
     @Override
@@ -35,12 +44,7 @@ public class SupremeLockdownItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Temporarily halt the");
-        lore.add(ItemTier.getTierColor(tier) + "movements of all nearby.");
-        lore.add(ItemTier.getTierColor(tier) + "Freezes allies and foes: 7 seconds");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 25 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -100,7 +104,7 @@ public class SupremeLockdownItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override

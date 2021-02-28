@@ -7,14 +7,12 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.SerratedBladeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
-import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 /**
  * Common Serrated Blade - Quartz Increases players critical hit chance.
@@ -31,30 +29,7 @@ public class SerratedBladeItem implements SwordSkillProvider {
 
   @Override
   public ArrayList<String> getLore() {
-    ArrayList<String> lore = new ArrayList<String>();
-    lore.add(tier.getTierColor() + "A beginners sword upgrade.");
-
-    switch (this.tier) {
-      case COMMON:
-        lore.add(tier.getTierColor() + "Critical Hit Chance: +1%");
-        break;
-      case UNCOMMON:
-        lore.add(tier.getTierColor() + "Critical Hit Chance: +2%");
-        break;
-      case RARE:
-        lore.add(tier.getTierColor() + "Critical Hit Chance: +3%");
-        break;
-      case LEGENDARY:
-        lore.add(tier.getTierColor() + "Critical Hit Chance: +5%");
-        break;
-      case ETHEREAL:
-        lore.add(tier.getTierColor() + "Critical Hit Chance: +7%");
-        break;
-      case GODLIKE:
-        lore.add(tier.getTierColor() + "Critical Hit Chance: +10%");
-    }
-
-    return lore;
+    return desc.getDesc();
   }
 
   @Override
@@ -79,23 +54,39 @@ public class SerratedBladeItem implements SwordSkillProvider {
     @Override
     public ItemTier getTier() { return tier; }
 
-  private int level;
-
   @Override
   public boolean isDroppable() { return false; }
 
   @Override
   public boolean isMovable() { return true; }
 
-  private int increase;
+  private SwordSkillDesc desc;
+  private SwordSkillType type;
 
-  public SerratedBladeItem(ItemTier tier, Integer level) {
+  public SerratedBladeItem(ItemTier tier, Integer quantity) {
     this.tier = tier;
-    this.level = level;
+    this.quantity = quantity;
+    this.type = SwordSkillType.PASSIVE;
+    this.desc = new SwordSkillDesc(tier, type);
+    desc.add("A beginners sword upgrade.");
+    switch (this.tier) {
+      case COMMON:
+        desc.add("Critical Hit Chance: +1%");
+      break; case UNCOMMON:
+        desc.add("Critical Hit Chance: +2%");
+      break; case RARE:
+        desc.add("Critical Hit Chance: +3%");
+      break; case LEGENDARY:
+        desc.add("Critical Hit Chance: +5%");
+      break; case ETHEREAL:
+        desc.add("Critical Hit Chance: +7%");
+      break; case GODLIKE:
+        desc.add("Critical Hit Chance: +10%");
+    }
   }
 
   @Override
-  public SwordSkillType getType() { return SwordSkillType.PASSIVE; }
+  public SwordSkillType getType() { return type; }
 
   @Override
   public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
@@ -117,27 +108,21 @@ public class SerratedBladeItem implements SwordSkillProvider {
 
   @Override
   public JsonObject getCustomData() {
-    JsonObject json = new JsonObject();
-    json.addProperty("level", this.level);
-    return json;
+    return new JsonObject();
   }
 
   @Override
   public void setCustomData(JsonObject data) {
-    this.level = data.get("level").getAsInt();
   }
 
   @Override
   public void parseCustomItemData(ItemStack item) {
-    NBTItem nbti = new NBTItem(item);
-    this.level = nbti.getInteger("level");
+
   }
 
   @Override
   public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
-    NBTItem nbti = new NBTItem(item);
-    nbti.setInteger("level", data.get("level").getAsInt());
-    return nbti.getItem();
+    return item;
   }
 
   @Override

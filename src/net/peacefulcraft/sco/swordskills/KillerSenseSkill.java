@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
@@ -17,6 +19,8 @@ public class KillerSenseSkill extends SwordSkill {
         super(c, provider);
         
         this.levelModifier = levelModifier;
+        this.useModule(new Trigger(SwordSkillType.SECONDARY));
+        this.useModule(new TimedCooldown(35000));
     }
 
     @Override
@@ -55,13 +59,11 @@ public class KillerSenseSkill extends SwordSkill {
 
     @Override
     public void skillUsed() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void unregisterSkill() {
-        // TODO Auto-generated method stub
 
     }
     

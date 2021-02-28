@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.SwiftSwimSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,16 @@ public class SwiftSwimItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SwiftSwimItem(ItemTier tier, int quantity) {
+    public SwiftSwimItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.UNCOMMON;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Boost your speed by 20%");
+        desc.add("while in the rain.");
     }
 
     @Override
@@ -35,10 +42,7 @@ public class SwiftSwimItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Boost your speed by 20%");
-        lore.add(ItemTier.getTierColor(this.tier) + "while in the rain.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -98,7 +102,7 @@ public class SwiftSwimItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

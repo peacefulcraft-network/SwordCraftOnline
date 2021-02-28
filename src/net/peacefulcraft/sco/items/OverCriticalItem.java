@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.OverCriticalSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,10 +19,27 @@ public class OverCriticalItem implements SwordSkillProvider {
     private double criticalModifier;
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public OverCriticalItem(ItemTier tier, int quantity) {
+    public OverCriticalItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A hidden technique that");
+        desc.add("releases your true potential.");
+        switch(this.tier) {
+            case RARE:
+                desc.add("Critical Chance: +20%");
+            break; case LEGENDARY:
+                desc.add("Critical Chance: +22%");
+            break; case ETHEREAL:
+                desc.add("Critical Chance: +24%");
+            break; case GODLIKE:
+                desc.add("Critcial Chance: +30%");
+            default:
+        }
 
         setModifiers();
     }
@@ -38,21 +56,7 @@ public class OverCriticalItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "A hidden technique that");
-        lore.add(ItemTier.getTierColor(this.tier) + "releases your true potential.");
-        switch(this.tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Chance: +20%");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Chance: +22%");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critical Chance: +24%");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Critcial Chance: +30%");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -117,7 +121,7 @@ public class OverCriticalItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

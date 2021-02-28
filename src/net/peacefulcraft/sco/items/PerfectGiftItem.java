@@ -11,17 +11,25 @@ import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.PerfectGiftSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 public class PerfectGiftItem implements SwordSkillProvider, EphemeralAttributeHolder {
 
     private ItemTier tier;
-    private int quantity;   
+    private int quantity;  
+    private SwordSkillDesc desc;
+    private SwordSkillType type; 
     
-    public PerfectGiftItem(ItemTier tier, int quantity) {
+    public PerfectGiftItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Shield your soul from death.");
+        desc.add("On death, you are fully healed.");
+        desc.add("Cooldown: 15 minutes");
     }
 
     @Override
@@ -36,11 +44,7 @@ public class PerfectGiftItem implements SwordSkillProvider, EphemeralAttributeHo
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Shield your soul from death.");
-        lore.add(ItemTier.getTierColor(this.tier) + "On death, you are fully healed.");
-        lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 15 minutes");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -100,7 +104,7 @@ public class PerfectGiftItem implements SwordSkillProvider, EphemeralAttributeHo
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

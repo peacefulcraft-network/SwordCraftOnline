@@ -10,19 +10,24 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.SimplePunchSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
 public class SimplePunchItem implements SwordSkillProvider {
 
     private int quantity;
+    private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SimplePunchItem(ItemTier tier, Integer level) {
-        this(tier, level, 1);
-    }
-
-    public SimplePunchItem(ItemTier tier, Integer level, int quantity) {
+    public SimplePunchItem(ItemTier tier, Integer quantity) {
+        this.tier = ItemTier.RARE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Empower your fists to deal");
+        desc.add("0.7x the damage of your weapon.");
     }
 
     @Override
@@ -37,10 +42,7 @@ public class SimplePunchItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "Empower your fists to deal");
-        lore.add(ItemTier.getTierColor(ItemTier.RARE) + "0.7x the damage of your weapon.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -55,7 +57,7 @@ public class SimplePunchItem implements SwordSkillProvider {
 
     @Override
     public ItemTier getTier() {
-        return ItemTier.RARE;
+        return tier;
     }
 
     @Override
@@ -100,7 +102,7 @@ public class SimplePunchItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

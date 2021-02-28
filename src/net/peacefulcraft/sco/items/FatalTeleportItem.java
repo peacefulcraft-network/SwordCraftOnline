@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.FatalTeleportSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -19,12 +20,34 @@ public class FatalTeleportItem implements SwordSkillProvider {
     private ItemTier tier;
     private double damageModifier;
     private int cooldown;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public FatalTeleportItem(ItemTier tier, int quantity) {
+    public FatalTeleportItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = tier;
+        this.type = SwordSkillType.SWORD;
 
         setModifiers();
+
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("hit enemy and strike them down.");
+        desc.add("Teleport behind your last");
+        switch(this.tier) {
+            case RARE:
+                desc.add("Damage: x2.0 after teleport.");
+                desc.add("Cooldown: 20 seconds.");
+            break; case LEGENDARY:
+                desc.add("Damage: x2.2 after teleport.");
+                desc.add("Cooldown: 22 seconds.");
+            break; case ETHEREAL:
+                desc.add("Damage: x2.4 after teleport.");
+                desc.add("Cooldown: 24 seconds.");
+            break; case GODLIKE:
+                desc.add("Damage: x2.6 after teleport.");
+                desc.add("Cooldown: 26 seconds.");
+            default:
+        }
     }
 
     @Override
@@ -39,26 +62,7 @@ public class FatalTeleportItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Teleport behind your last");
-        lore.add(ItemTier.getTierColor(this.tier) + "hit enemy and strike them down.");
-        switch(this.tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: x2.0 after teleport.");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 20 seconds.");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: x2.2 after teleport.");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 22 seconds.");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: x2.4 after teleport.");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 24 seconds.");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: x2.6 after teleport.");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 26 seconds.");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -123,7 +127,7 @@ public class FatalTeleportItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

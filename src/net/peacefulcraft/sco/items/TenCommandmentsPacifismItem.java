@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.TenCommandmentsPacifismSkill;
@@ -18,10 +19,18 @@ public class TenCommandmentsPacifismItem implements SwordSkillProvider, Ephemera
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public TenCommandmentsPacifismItem(ItemTier tier, int quantity) {
+    public TenCommandmentsPacifismItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Become the conduit for Pacifism.");
+        desc.add("Any entity who deals damage in");
+        desc.add("your presence has their health");
+        desc.add("halved for 40 seconds.");
     }
 
     @Override
@@ -36,12 +45,7 @@ public class TenCommandmentsPacifismItem implements SwordSkillProvider, Ephemera
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Become the conduit for Pacifism.");
-        lore.add(ItemTier.getTierColor(tier) + "Any entity who deals damage in");
-        lore.add(ItemTier.getTierColor(tier) + "your presence has their health");
-        lore.add(ItemTier.getTierColor(tier) + "halved for 40 seconds.");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -111,7 +115,7 @@ public class TenCommandmentsPacifismItem implements SwordSkillProvider, Ephemera
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PASSIVE;
+        return type;
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.WildSliceSkill;
@@ -17,10 +18,18 @@ public class WildSliceItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public WildSliceItem(ItemTier tier, int quantity) {
+    public WildSliceItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.RARE;
         this.quantity = quantity;
+        this.type = SwordSkillType.PRIMARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Strike your foe hapharzardly.");
+        desc.add("Next hit deals: 0.5x, 2x, or 4x");
+        desc.add("after trigger.");
+        desc.add("Cooldown: 32 seconds");
     }
 
     @Override
@@ -35,12 +44,7 @@ public class WildSliceItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Strike your foe hapharzardly.");
-        lore.add(ItemTier.getTierColor(tier) + "Next hit deals: 0.5x, 2x, or 4x");
-        lore.add(ItemTier.getTierColor(tier) + "after trigger.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 32 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -100,7 +104,7 @@ public class WildSliceItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

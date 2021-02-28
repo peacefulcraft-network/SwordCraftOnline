@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.GodOfIsolationRepelSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,20 @@ public class GodOfIsolationRepelItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public GodOfIsolationRepelItem(ItemTier tier, int quantity) {
+    public GodOfIsolationRepelItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
+        this.type = SwordSkillType.PRIMARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Call on the ones above");
+        desc.add("to blast your foes away.");
+        desc.add("Blindness II for 5 seconds");
+        desc.add("on all effected entities.");
+        desc.add("Blindess II for 3 seconds to self.");
+        desc.add("Cooldown: 20 seconds");
     }
 
     @Override
@@ -35,14 +46,7 @@ public class GodOfIsolationRepelItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Call on the ones above");
-        lore.add(ItemTier.getTierColor(tier) + "to blast your foes away.");
-        lore.add(ItemTier.getTierColor(tier) + "Blindness II for 5 seconds");
-        lore.add(ItemTier.getTierColor(tier) + "on all effected entities.");
-        lore.add(ItemTier.getTierColor(tier) + "Blindess II for 3 seconds to self.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 20 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -102,7 +106,7 @@ public class GodOfIsolationRepelItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

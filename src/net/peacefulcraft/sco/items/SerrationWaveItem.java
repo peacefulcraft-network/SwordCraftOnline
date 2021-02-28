@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.SerrationWaveSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -18,18 +19,37 @@ public class SerrationWaveItem implements SwordSkillProvider {
     private int quantity;
     private double damage;
     private ItemTier tier;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int cooldown;
 
-    public SerrationWaveItem(ItemTier tier, Integer level) {
+    public SerrationWaveItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
-        this.quantity = 1;
-
-        setModifiers();
-    }
-
-    public SerrationWaveItem(ItemTier tier, Integer level, int quantity) {
         this.quantity = quantity;
-        this.tier = tier;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Unleash a flurry of strikes in all directions");
+        desc.add("at the cost of damage.");
+        switch (this.tier) {
+            case COMMON:
+                desc.add("Damage: 0.5x main weapon");
+                desc.add("Cooldown: 7 Seconds");
+            break; case UNCOMMON:
+                desc.add("Damage: 0.7x main weapon");
+                desc.add("Cooldown: 8 Seconds");
+            break; case RARE:
+                desc.add("Damage: 0.9x main weapon");
+                desc.add("Cooldown: 8 Seconds");
+            break; case LEGENDARY:
+                desc.add("Damage: 1.1x main weapon");
+                desc.add("Cooldown: 9 Seconds");
+            break; case ETHEREAL:
+                desc.add("Damage: 1.3x main weapon");
+                desc.add("Cooldown: 9 Seconds");
+            break; case GODLIKE:
+                desc.add("Damage: 1.5x main weapon");
+                desc.add("Cooldown: 11 Seconds");
+        }
 
         setModifiers();
     }
@@ -46,36 +66,7 @@ public class SerrationWaveItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Unleash a flurry of strikes in all directions");
-        lore.add(ItemTier.getTierColor(this.tier) + "at the cost of damage.");
-        switch (this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: 0.5x main weapon");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 7 Seconds");
-                break;
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: 0.7x main weapon");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 8 Seconds");
-                break;
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: 0.9x main weapon");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 8 Seconds");
-                break;
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: 1.1x main weapon");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 9 Seconds");
-                break;
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: 1.3x main weapon");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 9 Seconds");
-                break;
-            case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage: 1.5x main weapon");
-                lore.add(ItemTier.getTierColor(this.tier) + "Cooldown: 11 Seconds");
-        }
-
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -136,7 +127,7 @@ public class SerrationWaveItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

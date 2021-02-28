@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.HunterSightSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,10 +18,18 @@ public class HunterSightItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public HunterSightItem(ItemTier tier, int quantity) {
+    public HunterSightItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.UNCOMMON;
         this.quantity = quantity;
+        this.type = SwordSkillType.SECONDARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Enhance your eyesight to");
+        desc.add("see those all in your area.");
+        desc.add("Glow effect: 20 seconds");
+        desc.add("Cooldown: 43 seconds");
     }
 
     @Override
@@ -35,12 +44,7 @@ public class HunterSightItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Enhance your eyesight to");
-        lore.add(ItemTier.getTierColor(tier) + "see those all in your area.");
-        lore.add(ItemTier.getTierColor(tier) + "Glow effect: 20 seconds");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 43 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -100,7 +104,7 @@ public class HunterSightItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override

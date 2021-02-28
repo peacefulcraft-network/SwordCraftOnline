@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.SystemChainThunderstruckSkill;
@@ -18,11 +19,26 @@ public class SystemChainThunderstruckItem implements SwordSkillProvider, Ephemer
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private int rangeModifier;
 
-    public SystemChainThunderstruckItem(ItemTier tier, int quantity) {
+    public SystemChainThunderstruckItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = tier;
+        this.type = SwordSkillType.PRIMARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Channel multiple lightning strikes");
+        desc.add("from the ones above.");
+        switch(this.tier) {
+            case LEGENDARY:
+                desc.add("Summon lightning wave: 6 blocks");
+            break; case ETHEREAL:
+                desc.add("Summon lightning wave: 7 blocks");
+            break; case GODLIKE:
+                desc.add("Summon lightning wave: 8 blocks");
+            default:
+        }
 
         setModifiers();
     }
@@ -39,20 +55,7 @@ public class SystemChainThunderstruckItem implements SwordSkillProvider, Ephemer
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(this.tier) + "Channel multiple lightning strikes");
-        lore.add(ItemTier.getTierColor(this.tier) + "from the ones above.");
-        switch(this.tier) {
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Summon lightning wave: 6 blocks");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Summon lightning wave: 7 blocks");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Summon lightning wave: 8 blocks");
-            default:
-                lore.add("Severe Error: Skill not functional, Contact Admin for correction.");
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -116,7 +119,7 @@ public class SystemChainThunderstruckItem implements SwordSkillProvider, Ephemer
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.PRIMARY;
+        return type;
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.items.utilities.Glow;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.SystemChainAccelerantDriveSkill;
@@ -18,10 +19,21 @@ public class SystemChainAccelerantDriveItem implements SwordSkillProvider, Ephem
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public SystemChainAccelerantDriveItem(ItemTier tier, int quantity) {
+    public SystemChainAccelerantDriveItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.GODLIKE;
         this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Empower yourself with the");
+        desc.add("flames around you.");
+        desc.add("True Damage: x2.0 + 0.1");
+        desc.add("per nearby fire.");
+        desc.add("Provides no boost if there");
+        desc.add("no surrounding flames.");
+        desc.add("Cooldown: 45 seconds");
     }
 
     @Override
@@ -36,15 +48,7 @@ public class SystemChainAccelerantDriveItem implements SwordSkillProvider, Ephem
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Empower yourself with the");
-        lore.add(ItemTier.getTierColor(tier) + "flames around you.");
-        lore.add(ItemTier.getTierColor(tier) + "True Damage: x2.0 + 0.1");
-        lore.add(ItemTier.getTierColor(tier) + "per nearby fire.");
-        lore.add(ItemTier.getTierColor(tier) + "Provides no boost if there");
-        lore.add(ItemTier.getTierColor(tier) + "no surrounding flames.");
-        lore.add(ItemTier.getTierColor(tier) + "Cooldown: 45 seconds");
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -114,7 +118,7 @@ public class SystemChainAccelerantDriveItem implements SwordSkillProvider, Ephem
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SWORD;
+        return type;
     }
 
     @Override

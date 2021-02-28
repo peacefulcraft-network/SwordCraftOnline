@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.swordskills.ResolutionWindSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -17,11 +18,28 @@ public class ResolutionWindItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
     private double vectorModifier;
 
-    public ResolutionWindItem(ItemTier tier, int quantity) {
+    public ResolutionWindItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
+        this.type = SwordSkillType.SECONDARY;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Summon a gust of wind");
+        desc.add("to force back your foes.");
+        switch(tier) {
+            case RARE:
+                desc.add("Wind Modifier: 2.0");
+            break; case LEGENDARY:
+                desc.add("Wind Modifier: 2.1");
+            break; case ETHEREAL:
+                desc.add("Wind Modifier: 2.2");
+            break; case GODLIKE:
+                desc.add("Wind Modifier: 2.3");
+            default:
+        }
 
         setModifiers();
     }
@@ -38,21 +56,7 @@ public class ResolutionWindItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ItemTier.getTierColor(tier) + "Summon a gust of wind");
-        lore.add(ItemTier.getTierColor(tier) + "to force back your foes.");
-        switch(tier) {
-            case RARE:
-                lore.add(ItemTier.getTierColor(tier) + "Wind Modifier: 2.0");
-            break; case LEGENDARY:
-                lore.add(ItemTier.getTierColor(tier) + "Wind Modifier: 2.1");
-            break; case ETHEREAL:
-                lore.add(ItemTier.getTierColor(tier) + "Wind Modifier: 2.2");
-            break; case GODLIKE:
-                lore.add(ItemTier.getTierColor(tier) + "Wind Modifier: 2.3");
-            default:
-        }
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -117,7 +121,7 @@ public class ResolutionWindItem implements SwordSkillProvider {
 
     @Override
     public SwordSkillType getType() {
-        return SwordSkillType.SECONDARY;
+        return type;
     }
 
     @Override
