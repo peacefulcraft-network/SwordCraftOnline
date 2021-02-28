@@ -149,7 +149,7 @@ public interface ItemIdentifier {
       if(clas != null) {
         Class<?> params[] = new Class[] { ItemTier.class, Integer.class };
         Constructor<?> constructor = clas.getConstructor(params);
-      
+
         ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
   
         // Check that the requested item tier is allowed

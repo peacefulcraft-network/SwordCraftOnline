@@ -19,7 +19,7 @@ public class ArmoredAgilityItem implements SwordSkillProvider {
     private int quantity;
     private int levelModifier;
 
-    public ArmoredAgilityItem(ItemTier tier, int quantity) {
+    public ArmoredAgilityItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
 

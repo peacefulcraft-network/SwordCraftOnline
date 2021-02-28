@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Bukkit;
@@ -149,11 +150,19 @@ public class PlayerInventory extends BukkitInventoryBase {
   public void onClickThisInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
     // Only check if we click hotbar and not drop click
     if(ev.getSlotType().equals(SlotType.QUICKBAR) && !ev.getClick().equals(ClickType.DROP)) {
-
-      String cursorWeaponType = (cursorItem instanceof CustomDataHolder) ? 
-        ((CustomDataHolder)cursorItem).getCustomData().get("weapon").getAsString() : "";
-      String clickedWeaponType = (clickedItem instanceof CustomDataHolder) ?
-        ((CustomDataHolder)clickedItem).getCustomData().get("weapon").getAsString() : "";
+      // Json Element null safety
+      String cursorWeaponType = "";
+      if(cursorItem instanceof CustomDataHolder) {
+        try {
+          ((CustomDataHolder)cursorItem).getCustomData().get("weapon").getAsString();
+        } catch(NullPointerException exx) {}
+      }
+      String clickedWeaponType = "";
+      if(clickedItem instanceof CustomDataHolder) {
+        try {
+          ((CustomDataHolder)clickedItem).getCustomData().get("weapon").getAsString();
+        } catch(NullPointerException exx) {}
+      }
 
       HashMap<String, Integer> checked = getHotbarWeapons();
 
@@ -292,7 +301,12 @@ public class PlayerInventory extends BukkitInventoryBase {
       if(item instanceof CustomDataHolder) {
         // Handling limiting items. If count exceeds 1 we move it to main inventory
         JsonObject obj = ((CustomDataHolder)item).getCustomData();
-        switch(obj.get("weapon").getAsString()) {
+        if(obj == null) { continue; }
+
+        // Json element safety
+        JsonElement weapElement = obj.get("weapon");
+        if(weapElement == null) { continue; }
+        switch(weapElement.getAsString()) {
           case "sword":
               swordCount++; 
           break; case "knife":

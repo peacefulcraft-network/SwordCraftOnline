@@ -12,9 +12,11 @@ import org.bukkit.inventory.Inventory;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 /**
  * Persistent Sword Skill Inventory Loads contents from database using provided
@@ -56,6 +58,12 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 				// Get back on Bukkit's thread before we touch MC Inventories
 				Bukkit.getScheduler().runTask(SwordCraftOnline.getPluginInstance(), () -> {
 					this.inventory = Bukkit.getServer().createInventory(null, items.size(), "Sword Skill Inventory");
+					// TODO: Move this to more dynamic blocking solution
+					// Currently permanently initializes inventory regardless
+					// of item loads
+					for (int col = 0; col <= 8; col++) {
+						setItem(9 + col, ItemIdentifier.generateIdentifier("BlackSlot", ItemTier.COMMON, 1));
+					}
 
 					// Indicate to any tasks waiting for this to complete that we've completed.
 					this.inventoryReadyPromise.complete(null);
@@ -113,5 +121,6 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 				});
 
 		this.s.getSwordSkillManager().syncSkillInventory(this);
+		this.s.getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.PASSIVE, null);
 	}
 }
