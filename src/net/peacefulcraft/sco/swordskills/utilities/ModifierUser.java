@@ -445,7 +445,7 @@ public class ModifierUser {
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    addToAttribute(attribute, -d, -1, id);
+                    dequeueChange(id);
                 }
             }, duration * 20);
         }
@@ -504,7 +504,6 @@ public class ModifierUser {
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    setCombatModifier(mod, d, -1, id);
                     dequeueChange(id);
                 }
             }, duration * 20);
@@ -534,7 +533,6 @@ public class ModifierUser {
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    setCombatModifier(mod, -amount, -1, id);
                     dequeueChange(id);
                 }
             }, duration * 20);
@@ -602,7 +600,7 @@ public class ModifierUser {
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    addToMaxHealth(-amount, -1, id);
+                    dequeueChange(id);
                 }
             }, duration * 20);
         }
