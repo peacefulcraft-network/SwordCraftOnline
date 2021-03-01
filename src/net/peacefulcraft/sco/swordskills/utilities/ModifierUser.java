@@ -99,6 +99,7 @@ public class ModifierUser {
         );
         this.queuedChanges.put(id, obj);
         addToAttribute(attribute, amount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Attribute " + attribute.toString() + ". Set to " + getAttribute(attribute));
 
         return id;
     }
@@ -130,6 +131,7 @@ public class ModifierUser {
         obj.addProperty("incoming", incoming);
         this.queuedChanges.put(id, obj);
         addToMultiplier(modifier, incoming, amount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Modifier " + modifier.toString() + ". Set to " + getDamageModifier(modifier, incoming));
 
         return id;
     }
@@ -150,6 +152,7 @@ public class ModifierUser {
         );
         this.queuedChanges.put(id, obj);
         addToCombatModifier(modifier, amount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Combat Modifier " + modifier.toString() + ". Set to " + getCombatModifier(modifier));
 
         return id;
     }
@@ -180,6 +183,7 @@ public class ModifierUser {
         );
         this.queuedChanges.put(id, obj);
         addToMaxHealth(healthAmount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Max Health set to:" + getMaxHealth());
 
         return id;
     }
@@ -227,6 +231,7 @@ public class ModifierUser {
             SwordCraftOnline.logDebug("No matching field change for obj in Modifier User.");
             return;
         }
+        SwordCraftOnline.logDebug("[ModifierUser] Change dequeued.");
 
         this.queuedChanges.remove(id);
     }
@@ -298,7 +303,7 @@ public class ModifierUser {
         }
 
         // Applying non-applied weapon modifiers to player
-        if(wModifiers.entrySet().isEmpty()) { return; }
+        if(wModifiers == null || wModifiers.entrySet() == null || wModifiers.entrySet().isEmpty()) { return; }
         Iterator<Entry<String, ArrayList<WeaponModifier>>> iterr = wModifiers.entrySet().iterator();
         while(iterr.hasNext()) {
             Entry<String, ArrayList<WeaponModifier>> entryy = iterr.next();
