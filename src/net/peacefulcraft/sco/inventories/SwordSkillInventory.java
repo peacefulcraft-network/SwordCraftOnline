@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -101,8 +102,13 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 		SwordCraftOnline.logDebug("Clicked SwordSKill Inventory");
 
 		// We only want sword skill provider items in this inventory
-		if(!(cursorItem instanceof SwordSkillProvider)) { 
+		if(!(cursorItem instanceof SwordSkillProvider) && !(clickedItem instanceof SwordSkillProvider)) { 
 			ev.setCancelled(true);
+			return;
+		}
+
+		// If the cursor item is air we return without cancelling
+		if(cursorItem.getMaterial().equals(Material.AIR)) { 
 			return;
 		}
 
