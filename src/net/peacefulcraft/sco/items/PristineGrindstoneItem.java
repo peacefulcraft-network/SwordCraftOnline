@@ -27,7 +27,8 @@ public class PristineGrindstoneItem implements SwordSkillProvider {
         this.quantity = quantity;
         this.type = SwordSkillType.PASSIVE;
         this.desc = new SwordSkillDesc(tier, type);
-        desc.add("A beginners grindstone. Increases attack damage.");
+        desc.add("A beginners grindstone.");
+        desc.add("Increases attack damage.");
         switch (this.tier) {
             case COMMON:
                 desc.add("Attack Damage: +0.1");
