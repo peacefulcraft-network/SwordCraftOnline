@@ -70,6 +70,7 @@ public class SerrationWaveSkill extends SwordSkill {
                     .getMobManager()
                     .getMobRegistry()
                     .get(((LivingEntity)e).getUniqueId());
+                if(am == null) { continue; }
 
                 am.queueChange(
                     Attribute.GENERIC_MOVEMENT_SPEED,
