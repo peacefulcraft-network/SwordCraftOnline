@@ -4,19 +4,16 @@ import java.util.UUID;
 
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class CriticalStrikeSkill extends SwordSkill{
 	
-	private long delay;
 	private Integer increase;
-	private UUID change1;
+	private UUID change1 = null;
 
 	public CriticalStrikeSkill(SwordSkillCaster c, Integer increase, long delay, SwordSkillProvider provider) {
 		super(c, provider);
-		this.delay = delay;
 		this.increase = increase;
 
 		this.listenFor(SwordSkillTrigger.PASSIVE);
@@ -31,16 +28,14 @@ public class CriticalStrikeSkill extends SwordSkill{
 
 	@Override
 	public boolean skillPreconditions(Event ev) {
-		// No extra checks required
-		return true;
+		return change1 == null;
 	}
 	
 	@Override
 	public void triggerSkill(Event ev) {
 		if(this.c instanceof ModifierUser) {
 			ModifierUser mu = (ModifierUser)c;
-			mu.queueChange(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
-			SwordCraftOnline.logDebug("Player critical chance set: " + mu.getCombatModifier(CombatModifier.CRITICAL_CHANCE));
+			change1 = mu.queueChange(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
 		}
 	}
 

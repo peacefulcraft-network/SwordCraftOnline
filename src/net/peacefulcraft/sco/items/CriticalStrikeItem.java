@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
@@ -40,8 +39,6 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 		@Override
 		public ItemTier getTier() { return tier; }
 
-	private Integer level;
-
 	private Integer quantity;
 		@Override
 		public Integer getQuantity() { return quantity; }
@@ -70,17 +67,17 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 		desc.add("A Beginners critical damage technique.");
 		switch (this.tier) {
 			case COMMON:
-				desc.add("Critical Chance: + 2%");
+				desc.add("Critical Chance: +2%");
 			break; case UNCOMMON:
-				desc.add("Critical Chance: + 3%");
+				desc.add("Critical Chance: +3%");
 			break; case RARE:
-				desc.add("Critical Chance: + 4%");
+				desc.add("Critical Chance: +4%");
 			break; case LEGENDARY:
-				desc.add("Critical Chance: + 5%");
+				desc.add("Critical Chance: +5%");
 			break; case ETHEREAL:
-				desc.add("Critical Chance: + 6%");
+				desc.add("Critical Chance: +6%");
 			break; case GODLIKE:
-				desc.add("Critical Chance: + 7%");
+				desc.add("Critical Chance: +7%");
 		}
 	}
 
@@ -116,26 +113,20 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 
 	@Override
 	public JsonObject getCustomData() {
-		JsonObject json = new JsonObject();
-		json.addProperty("level", this.level);
-		return json;
+		return new JsonObject();
 	}
 
 	@Override
 	public void setCustomData(JsonObject data) {
-		this.level = data.get("level").getAsInt();
+
 	}
 
 	@Override
 	public void parseCustomItemData(ItemStack item) {
-		NBTItem nbti = new NBTItem(item);
-		this.level = nbti.getInteger("level");
 	}
 
 	@Override
 	public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
-		NBTItem nbti = new NBTItem(item);
-		nbti.setInteger("level", data.get("level").getAsInt());
-		return nbti.getItem();
+		return item;
 	}
 }
