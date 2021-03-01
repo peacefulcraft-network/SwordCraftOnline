@@ -3,7 +3,6 @@ package net.peacefulcraft.sco.swordskills;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.util.Vector;
 
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
@@ -13,13 +12,11 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class ForwardLungeSkill extends SwordSkill {
 
     private Double increase;
-    private Long delay;
 
     public ForwardLungeSkill(SwordSkillCaster c, Double increase, Long delay, SwordSkillProvider provider) {
         super(c, provider);
         
         this.increase = increase;
-        this.delay = delay;
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
         this.useModule(new TimedCooldown(delay));
@@ -33,8 +30,6 @@ public class ForwardLungeSkill extends SwordSkill {
 
     @Override
     public boolean skillPreconditions(Event ev) {
-        EntityInteractEvent e = (EntityInteractEvent)ev;
-        if(!(e.getEntity().isOnGround())) { return false; }
         return true;
     }
 
@@ -45,7 +40,7 @@ public class ForwardLungeSkill extends SwordSkill {
         LivingEntity p = mu.getLivingEntity();
 
         Vector v = new Vector(p.getVelocity().getX(), p.getVelocity().getY(), p.getVelocity().getZ());
-        Vector forward = p.getLocation().getDirection().multiply(1.6);
+        Vector forward = p.getLocation().getDirection().multiply(1.9);
         v.add(forward);
 
         p.setVelocity(v);
