@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.swordskills.weaponskills;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.attribute.Attribute;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -45,6 +47,13 @@ public class EnhancedGuard implements WeaponModifier {
     @Override
     public Integer getMaxPlayerLevel() {
         return 5;
+    }
+
+    @Override
+    public JsonObject getModifiedStats() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(Attribute.GENERIC_ARMOR.toString(), getModifierAmount());
+        return obj;
     }
     
 }

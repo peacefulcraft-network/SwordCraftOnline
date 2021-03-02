@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.swordskills.weaponskills;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.RomanNumber;
@@ -48,5 +50,12 @@ public class RefinedPower implements WeaponModifier {
 
     public RefinedPower(String level) {
         this.level = level;
+    }
+
+    @Override
+    public JsonObject getModifiedStats() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(CombatModifier.CRITICAL_MULTIPLIER.toString(), getModifierAmount());
+        return obj;
     }
 }

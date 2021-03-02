@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.swordskills.weaponskills;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.attribute.Attribute;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -49,6 +51,14 @@ public class ExtremePrecision implements WeaponModifier {
     @Override
     public Integer getMaxPlayerLevel() {
         return 3;
+    }
+
+    @Override
+    public JsonObject getModifiedStats() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(Attribute.GENERIC_ATTACK_DAMAGE.toString(), -getModifierAmount());
+        obj.addProperty(CombatModifier.CRITICAL_CHANCE.toString(), getModifierAmount());
+        return obj;
     }
     
 }

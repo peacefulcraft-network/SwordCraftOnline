@@ -3,6 +3,8 @@ package net.peacefulcraft.sco.swordskills.weaponskills;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import com.google.gson.JsonObject;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
@@ -56,6 +58,13 @@ public interface WeaponModifier {
      * @return
      */
     public abstract Integer getMaxPlayerLevel();
+
+    /**
+     * List of modified stats
+     * 
+     * @return
+     */
+    public abstract JsonObject getModifiedStats();
 
     /**
      * Check if a weapon skill exists

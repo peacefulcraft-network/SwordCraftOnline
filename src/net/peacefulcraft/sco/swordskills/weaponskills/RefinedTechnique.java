@@ -4,6 +4,8 @@ import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.RomanNumber;
@@ -28,7 +30,6 @@ public class RefinedTechnique implements WeaponModifier {
         return this.level;
     }
 
-
     @Override
     public void applyEffects(ModifierUser user) {
         change1 = user.queueChange(CombatModifier.CRITICAL_CHANCE, getModifierAmount(), -1);
@@ -51,6 +52,13 @@ public class RefinedTechnique implements WeaponModifier {
 
     public RefinedTechnique(String level) {
         this.level = level;
+    }
+
+    @Override
+    public JsonObject getModifiedStats() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(CombatModifier.CRITICAL_CHANCE.toString(), getModifierAmount());
+        return obj;
     }
     
 }
