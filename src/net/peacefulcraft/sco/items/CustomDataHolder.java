@@ -1,8 +1,13 @@
 package net.peacefulcraft.sco.items;
 
+import java.util.ArrayList;
+
 import com.google.gson.JsonObject;
 
 import org.bukkit.inventory.ItemStack;
+
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 
 /**
  * Sub category of ItemIdentifier.
@@ -36,4 +41,18 @@ public interface CustomDataHolder {
    * @param data The NBT tags to apply
    */
   public abstract ItemStack applyCustomItemData(ItemStack item, JsonObject data);
+
+  public static ArrayList<String> parseDynamicLore(JsonObject data) {
+    try {
+      ArrayList<String> desc = new ArrayList<>();
+      String s = data.get("lore").getAsString();
+      for(String split : s.split("\n")) {
+        desc.add(split);
+      }
+      return desc;
+    } catch(NullPointerException ex) {
+      SwordCraftOnline.logDebug("Failed to load lore from Json.");
+      return new ArrayList<String>();
+    }   
+  }
 }

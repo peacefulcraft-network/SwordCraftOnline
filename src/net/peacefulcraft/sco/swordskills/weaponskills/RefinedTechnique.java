@@ -1,7 +1,5 @@
 package net.peacefulcraft.sco.swordskills.weaponskills;
 
-import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
-
 import java.util.UUID;
 
 import com.google.gson.JsonObject;

@@ -31,7 +31,7 @@ public class ModifierUser {
 
     /**List of Modifiers user has */
     //private List<Modifier> damageModifiers = new ArrayList<>();
-    private HashMap<ModifierType, HashMap<Boolean, Modifier>> damageModifiers = new HashMap<>();
+    protected HashMap<ModifierType, HashMap<Boolean, Modifier>> damageModifiers = new HashMap<>();
 
     /**Instance of living entity using this class */
     private LivingEntity entity;
@@ -61,7 +61,10 @@ public class ModifierUser {
     /**CombatModifier: Damage dampener on incoming damage */
     protected double parryMultiplier = 1.2;
 
-    /**Holds weapon modifiers of user */
+    /**
+     * Holds weapon modifiers of user 
+     * Weapon name -> Map of modifier by passve / active
+     */
     protected HashMap<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> weaponModifiers = new HashMap<>();
     
     /**
@@ -486,8 +489,6 @@ public class ModifierUser {
      * @param duration Resets value after this time in seconds. If -1 it does not.
      */
     protected void setCombatModifier(CombatModifier mod, double amount, int duration, UUID id) {
-        double d = getCombatModifier(mod);
-
         switch(mod) {
             case CRITICAL_CHANCE:
                 criticalChance = (int)amount;
@@ -504,7 +505,6 @@ public class ModifierUser {
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    setCombatModifier(mod, d, -1, id);
                     dequeueChange(id);
                 }
             }, duration * 20);
@@ -534,7 +534,6 @@ public class ModifierUser {
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    setCombatModifier(mod, -amount, -1, id);
                     dequeueChange(id);
                 }
             }, duration * 20);

@@ -130,8 +130,6 @@ public class SCOAdmin implements CommandExecutor {
 						return true;
 					}
 				}
-
-				p.sendMessage(s.getPlayerData());
 				return true;
 			}
 
