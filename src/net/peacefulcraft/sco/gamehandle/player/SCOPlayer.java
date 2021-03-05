@@ -186,7 +186,7 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 
 	/**Player receives messages related to skill stat changes */
 	private Boolean doesReceiveSkillMessages = true;
-		public Boolean DoesReceiveSkillMessages() { return doesReceiveSkillMessages; }
+		public Boolean doesReceiveSkillMessages() { return doesReceiveSkillMessages; }
 		public void setReceiveSkillMessages(Boolean b) { this.doesReceiveSkillMessages = b; }
 
 	/**

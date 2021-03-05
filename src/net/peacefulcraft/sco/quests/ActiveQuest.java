@@ -110,12 +110,12 @@ public class ActiveQuest {
 
     /**Sends player announce title of quest completed */
     private void sendCompletedTitle() {
-        Announcer.sendTitle(s.getPlayer(), "Quest Completed!", "Completed: \"" + getName() + "\"");
+        Announcer.messageTitleBar(s.getPlayer(), "Quest Completed!", "Completed: \"" + getName() + "\"");
     }
 
     /**Sends player announce title of quest step completed */
     private void sendProgressedTitle() {
-        Announcer.sendTitle(s.getPlayer(), "Quest progression unlocked!", "Progression unlocked in: \"" + getName() + "\"");
+        Announcer.messageTitleBar(s.getPlayer(), "Quest progression unlocked!", "Progression unlocked in: \"" + getName() + "\"");
     }
 
     /**@return QuestType of current step */

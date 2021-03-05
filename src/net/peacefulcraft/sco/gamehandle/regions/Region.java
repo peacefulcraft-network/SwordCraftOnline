@@ -143,7 +143,7 @@ public class Region {
 
     /**Sends player title of name and desc */
     public void sendTitle(Player p) {
-        Announcer.sendTitle(p, name, description);
+        Announcer.messageTitleBar(p, name, description);
     }
 
     /**
