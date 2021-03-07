@@ -3,6 +3,8 @@ package net.peacefulcraft.sco.swordskills;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -38,6 +40,10 @@ public class FullCounterSkill extends SwordSkill {
             ModifierUser mu = ModifierUser.getModifierUser(evv.getDamager());
             if(mu == null) { return; }
             mu.setHealth((int)(mu.getHealth() - (damage * 2)));
+
+            if(mu instanceof SCOPlayer) {
+                Announcer.messagePlayerSkill((SCOPlayer)mu, "Damage returned twofold.", "Full Counter");
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
@@ -14,6 +15,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
@@ -60,7 +64,6 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
 
     @Override
     public void skillUsed() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -113,5 +116,10 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
             999999,
             10
         ));
+        if(liv instanceof Player) {
+            SCOPlayer s = GameManager.findSCOPlayer((Player)liv);
+            if(s == null) { return; }
+            Announcer.messagePlayerSkill(s, "You must now meet my condition.", "Gods Condition: Hostility");
+        }
     }
 }

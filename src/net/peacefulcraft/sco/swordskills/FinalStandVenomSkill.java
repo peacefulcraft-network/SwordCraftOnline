@@ -4,10 +4,14 @@ import java.util.UUID;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -45,6 +49,11 @@ public class FinalStandVenomSkill extends SwordSkill {
                     PotionEffectType.POISON, 
                     200, 
                     3));
+            }
+            if(e instanceof Player) {
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { continue; }
+                Announcer.messagePlayerSkill(s, "Beguled.", "Final Stand: Venom");
             }
         }
 

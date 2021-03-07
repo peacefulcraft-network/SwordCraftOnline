@@ -7,7 +7,9 @@ import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -45,8 +47,9 @@ public class HunterSightSkill extends SwordSkill {
                     1));
             }
             if(e instanceof Player) {
-                Player p = (Player)e;
-                Announcer.messagePlayer(p, "You have been spotted...", 0);
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { continue; }
+                Announcer.messagePlayerSkill(s, "You have been spotted.", "Hunter Sight");
             }
         }
     }

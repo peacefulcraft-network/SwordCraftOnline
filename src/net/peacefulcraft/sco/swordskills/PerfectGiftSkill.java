@@ -5,6 +5,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
@@ -33,10 +35,14 @@ public class PerfectGiftSkill extends SwordSkill {
         double damage = evv.getFinalDamage();
 
         ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
-        if(mu.getHealth() - mu.convertHealth(damage, false) <= 0) {
+        if(mu.getHealth() - damage <= 0) {
             mu.setHealth(mu.getMaxHealth());
-            mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 5, 3));    
+            mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 5, 3));             
             evv.setCancelled(true);
+
+            if(mu instanceof SCOPlayer) {
+                Announcer.messagePlayerSkill((SCOPlayer)mu, "Death prevented.", "Perfect Gift");
+            }
         }
     }
 

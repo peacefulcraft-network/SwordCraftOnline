@@ -5,7 +5,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -51,8 +53,9 @@ public class KillerSenseSkill extends SwordSkill {
                 7);
 
             if(e instanceof Player) {
-                Player p = (Player)e;
-                Announcer.messagePlayer(p, "A killer is nearby...", 0);
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { continue; }
+                Announcer.messagePlayerSkill(s, "A killer is nearby. Armor -" + (1 + levelModifier), "Killer Sense");
             }
         }
     }

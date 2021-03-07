@@ -4,11 +4,15 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 
@@ -58,6 +62,11 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
             EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
             if(evv.getEntity() instanceof LivingEntity) {
                 tagList.add((LivingEntity)evv.getEntity());
+            }
+            if(evv.getEntity() instanceof Player) {
+                SCOPlayer s = GameManager.findSCOPlayer((Player)evv.getEntity());
+                if(s == null) { return; }
+                Announcer.messagePlayerSkill(s, "You have been marked.", "Dangerous Game: Explosion Tag");
             }
         }
     }

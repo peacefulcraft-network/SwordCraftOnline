@@ -64,9 +64,10 @@ public abstract class Announcer {
         }
     }
 
-    public static void messagePlayerSkill(SCOPlayer s, String message) {
+    public static void messagePlayerSkill(SCOPlayer s, String message, String skillName) {
         if(!s.doesReceiveSkillMessages()) { return; }
-        s.getPlayer().sendMessage(getPrefix() + ChatColor.DARK_GRAY + message);
+        String prefix = ChatColor.DARK_RED + "[" + ChatColor.RED + skillName + ChatColor.DARK_RED + "]";
+        s.getPlayer().sendMessage(prefix + ChatColor.DARK_GRAY + message);
     }
 
     /**

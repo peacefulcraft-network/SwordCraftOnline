@@ -8,6 +8,7 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
@@ -42,6 +43,8 @@ public class GuardianSkill extends SwordSkill {
                     SCOPlayer s = GameManager.findSCOPlayer((Player)entity);
                     if(s == null) { continue; }
                     s.queueChange(Attribute.GENERIC_ARMOR, this.armorModifier, 20);
+
+                    Announcer.messagePlayerSkill(s, "Armor +" + this.armorModifier, "Guardian");
                 }
             }
         } else if (c instanceof ActiveMob) {
