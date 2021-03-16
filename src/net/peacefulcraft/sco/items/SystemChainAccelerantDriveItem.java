@@ -123,7 +123,7 @@ public class SystemChainAccelerantDriveItem implements SwordSkillProvider, Ephem
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SystemChainAccelerantDriveSkill(caster, (SwordSkillProvider)this);
+        return new SystemChainAccelerantDriveSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

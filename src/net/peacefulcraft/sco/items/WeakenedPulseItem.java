@@ -126,7 +126,7 @@ public class WeakenedPulseItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new WeakenedPulseSkill(caster, this.weakModifier, (SwordSkillProvider)this);
+        return new WeakenedPulseSkill(caster, this.weakModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override

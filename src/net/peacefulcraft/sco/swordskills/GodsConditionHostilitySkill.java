@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
@@ -14,8 +15,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
@@ -24,9 +29,11 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
     private HashMap<Long, LivingEntity> vicMap = new HashMap<>();
 
     private BukkitTask vicTask;
+    private ItemTier tier;
 
-    public GodsConditionHostilitySkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public GodsConditionHostilitySkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.vicTask = Bukkit.getServer().getScheduler().runTaskTimer(
@@ -60,7 +67,6 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
 
     @Override
     public void skillUsed() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -113,5 +119,14 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
             999999,
             10
         ));
+        if(liv instanceof Player) {
+            SCOPlayer s = GameManager.findSCOPlayer((Player)liv);
+            if(s == null) { return; }
+            SkillAnnouncer.messageSkill(
+                s, 
+                "You must now meet my condition, inflicted slowness X", 
+                "Gods Condition: Hostility", 
+                tier);
+        }
     }
 }

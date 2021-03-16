@@ -10,10 +10,15 @@ public class SwordSkillDesc {
     private SwordSkillType type;
     private ArrayList<String> desc = new ArrayList<>();
 
+    public SwordSkillDesc(ItemTier tier) {
+        this(tier, null);
+    }
+
     public SwordSkillDesc(ItemTier tier, SwordSkillType type) {
         this.tier = tier;
         this.type = type;
 
+        if(this.type == null) { return; }
         String sTier = "";
         switch(this.tier) {
             case COMMON:

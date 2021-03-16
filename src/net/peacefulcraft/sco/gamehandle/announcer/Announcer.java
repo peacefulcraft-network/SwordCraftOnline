@@ -133,14 +133,6 @@ public abstract class Announcer {
 			}
 		}
     }
-    
-    /**
-     * Messages all players in gamemanager 
-     * @param cooldown Cooldown timer of message in ms. Set to 0 means no cooldown
-     */
-    public static void messageInGame(String message, int cooldown) {
-        messageGroup(GameManager.getPlayers().values(), message, cooldown);
-    }
 
     /**
      * Messages all online players in a party 
@@ -216,16 +208,16 @@ public abstract class Announcer {
         cooldowns.clear();
     }
 
-    public static void sendCountdown(Player p, int seconds, String preRunMessage, String postRunMessage, boolean isTitle) {
+    public static void messageCountdown(Player p, int seconds, String preRunMessage, String postRunMessage, boolean isTitle) {
         if(isTitle) {
-            Announcer.sendTitle(p, preRunMessage, " ");
+            Announcer.messageTitleBar(p, preRunMessage, " ");
         } else {
             Announcer.messagePlayer(p,preRunMessage, 0);
         }
         (new CountdownTimer(seconds, p, postRunMessage, isTitle)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
     }
 
-    public static void sendCountdown(List<Player> lis, int seconds, String preRunMessage, String postRunMessage, boolean isTitle){
+    public static void messageCountdown(List<Player> lis, int seconds, String preRunMessage, String postRunMessage, boolean isTitle){
         Announcer.messageGroup(GameManager.findSCOPlayers(lis), preRunMessage, 0);
         (new CountdownTimer(seconds, lis, postRunMessage, isTitle)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
     }
@@ -255,7 +247,7 @@ public abstract class Announcer {
         public void run() {
             if(seconds < 1) {
                 if(isTitle) {
-                    Announcer.sendTitle(lis, countdownMessage, " ");
+                    Announcer.messageTitleBar(lis, countdownMessage, " ");
                 } else {
                     Announcer.messageGroup(GameManager.findSCOPlayers(lis), countdownMessage, 0);
                 }
@@ -264,7 +256,7 @@ public abstract class Announcer {
             }
             String message = String.valueOf(seconds) + "...";
             if(isTitle) {
-                Announcer.sendTitle(lis, message, " ");
+                Announcer.messageTitleBar(lis, message, " ");
             } else {
                 Announcer.messageGroup(GameManager.findSCOPlayers(lis), message, 0);
             }
@@ -274,19 +266,19 @@ public abstract class Announcer {
     }
 
     /**Sends player a title bar message */
-    public static void sendTitle(Player p, String message, String subMessage) {
+    public static void messageTitleBar(Player p, String message, String subMessage) {
         p.sendTitle(message, subMessage, 10, 70, 20);
     }
 
     /**Sends player a title bar message */
-    public static void sendTitle(SCOPlayer s, String message, String subMessage) {
-        Announcer.sendTitle(s.getPlayer(), message, subMessage);
+    public static void messageTitleBar(SCOPlayer s, String message, String subMessage) {
+        Announcer.messageTitleBar(s.getPlayer(), message, subMessage);
     }
 
     /**Sends players a title bar message */
-    public static void sendTitle(List<Player> lis, String message, String subMessage) {
+    public static void messageTitleBar(List<Player> lis, String message, String subMessage) {
         for(Player p : lis) {
-            Announcer.sendTitle(p, message, subMessage);
+            Announcer.messageTitleBar(p, message, subMessage);
         }
     }
 

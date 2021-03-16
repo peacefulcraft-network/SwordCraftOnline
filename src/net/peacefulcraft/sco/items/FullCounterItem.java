@@ -112,7 +112,7 @@ public class FullCounterItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new FullCounterSkill(caster, (SwordSkillProvider)this);
+        return new FullCounterSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

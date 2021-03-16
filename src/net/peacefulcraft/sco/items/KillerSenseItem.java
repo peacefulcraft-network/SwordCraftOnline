@@ -139,7 +139,7 @@ public class KillerSenseItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new KillerSenseSkill(caster, this.levelModifier, (SwordSkillProvider)this);
+        return new KillerSenseSkill(caster, this.levelModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override

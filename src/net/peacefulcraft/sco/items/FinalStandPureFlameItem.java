@@ -112,7 +112,7 @@ public class FinalStandPureFlameItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new FinalStandPureFlameSkill(caster, (SwordSkillProvider)this);
+        return new FinalStandPureFlameSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

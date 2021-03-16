@@ -1,23 +1,27 @@
 package net.peacefulcraft.sco.swordskills;
 
-import java.util.UUID;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class FinalStandVenomSkill extends SwordSkill {
 
-    UUID healthChange;
+    private ItemTier tier;
 
-    public FinalStandVenomSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public FinalStandVenomSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new TimedCooldown(35000));
@@ -46,9 +50,14 @@ public class FinalStandVenomSkill extends SwordSkill {
                     200, 
                     3));
             }
+            if(e instanceof Player) {
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { continue; }
+                SkillAnnouncer.messageSkill(s, "Beguiled.", "Final Stand: Venom", tier);
+            }
         }
 
-        healthChange = mu.queueChange(
+        mu.queueChange(
             -(int)(mu.getHealth() * 0.2), 
             10);
     }

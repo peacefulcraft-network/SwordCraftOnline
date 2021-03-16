@@ -8,12 +8,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class TenCommandmentsReposeSkill extends SwordSkill implements Runnable {
@@ -22,8 +22,11 @@ public class TenCommandmentsReposeSkill extends SwordSkill implements Runnable {
 
     private BukkitTask vicTask;
 
-    public TenCommandmentsReposeSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public TenCommandmentsReposeSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PASSIVE);
         this.vicTask = Bukkit.getServer().getScheduler().runTaskTimer(
@@ -50,12 +53,12 @@ public class TenCommandmentsReposeSkill extends SwordSkill implements Runnable {
                     Attribute.GENERIC_ATTACK_DAMAGE, 
                     -(vicMu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) / 2), 
                     35);
-                if(vicMu.getLivingEntity() instanceof Player) {
-                    Announcer.messagePlayer(
-                        (Player)vicMu.getLivingEntity(), 
-                        "[Repose] In the presence of my conduit, you should stay... calm.", 
-                        0);
-                }
+
+                SkillAnnouncer.messageSkill(
+                    mu, 
+                    "You are next to my conduit. You should be... calm.", 
+                    "Ten Commandments: Repose", 
+                    tier);
             }
         }
 

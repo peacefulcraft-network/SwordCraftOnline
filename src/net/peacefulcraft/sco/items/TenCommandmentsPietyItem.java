@@ -119,7 +119,7 @@ public class TenCommandmentsPietyItem implements SwordSkillProvider, EphemeralAt
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new TenCommandmentsPietySkill(caster, (SwordSkillProvider)this);
+        return new TenCommandmentsPietySkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

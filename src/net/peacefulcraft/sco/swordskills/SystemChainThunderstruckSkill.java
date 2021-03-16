@@ -3,6 +3,9 @@ package net.peacefulcraft.sco.swordskills;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
@@ -55,9 +58,19 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
             rangeModifier, 
             2, 
             true);
-        for(Location loc : blocks) {
-            start.getWorld().strikeLightning(loc);
-        }
+        
+        List<List<Location>> part = Lists.partition(blocks, 5);
+        Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), new Runnable(){
+            int i = 0;
+            @Override
+            public void run() {
+                for(Location locc : part.get(i)) {
+                    start.getWorld().strikeLightning(locc);
+                }    
+                i++;
+            }
+            
+        }, 20, 20);
     }
 
     @Override

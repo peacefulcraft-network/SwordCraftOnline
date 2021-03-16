@@ -8,17 +8,22 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class GuardianSkill extends SwordSkill {
 
     public double armorModifier;
+    public ItemTier tier;
 
-    public GuardianSkill(SwordSkillCaster c, double armorModifier, SwordSkillProvider provider) {
+    public GuardianSkill(SwordSkillCaster c, double armorModifier, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         this.armorModifier = armorModifier;
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
@@ -42,6 +47,12 @@ public class GuardianSkill extends SwordSkill {
                     SCOPlayer s = GameManager.findSCOPlayer((Player)entity);
                     if(s == null) { continue; }
                     s.queueChange(Attribute.GENERIC_ARMOR, this.armorModifier, 20);
+
+                    SkillAnnouncer.messageSkill(
+                        s, 
+                        new Pair<String, Double>(Attribute.GENERIC_ARMOR.toString(), this.armorModifier), 
+                        "Guardian", 
+                        tier);
                 }
             }
         } else if (c instanceof ActiveMob) {

@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.swordskills.weaponskills;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.attribute.Attribute;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -52,6 +54,14 @@ public class LightMaterial implements WeaponModifier {
 
     public LightMaterial(String level) {
         this.level = level;
+    }
+
+    @Override
+    public JsonObject getModifiedStats() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(Attribute.GENERIC_ATTACK_SPEED.toString(), getModifierAmount());
+        obj.addProperty(Attribute.GENERIC_MOVEMENT_SPEED.toString(), getModifierAmount());
+        return obj;
     }
     
 }

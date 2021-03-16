@@ -124,7 +124,7 @@ public class SoulsOfTheFallenItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SoulsOfTheFallenSkill(caster, levelModifier, (SwordSkillProvider)this);
+        return new SoulsOfTheFallenSkill(caster, levelModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override

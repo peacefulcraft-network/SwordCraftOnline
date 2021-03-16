@@ -123,7 +123,7 @@ public class SystemDefenseAccelerantGuardItem implements SwordSkillProvider, Eph
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SystemDefenseAccelerantGuardSkill(caster, (SwordSkillProvider)this);
+        return new SystemDefenseAccelerantGuardSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

@@ -2,7 +2,6 @@ package net.peacefulcraft.sco.swordskills;
 
 import java.util.UUID;
 
-import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;

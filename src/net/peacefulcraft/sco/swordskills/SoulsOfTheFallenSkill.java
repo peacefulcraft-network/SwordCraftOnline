@@ -3,17 +3,22 @@ package net.peacefulcraft.sco.swordskills;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class SoulsOfTheFallenSkill extends SwordSkill {
 
     private int levelModifier;
+    private ItemTier tier;
 
-    public SoulsOfTheFallenSkill(SwordSkillCaster c, int levelModifier, SwordSkillProvider provider) {
+    public SoulsOfTheFallenSkill(SwordSkillCaster c, int levelModifier, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         this.levelModifier = levelModifier;
+        this.tier = tier;
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SWORD));
@@ -41,6 +46,11 @@ public class SoulsOfTheFallenSkill extends SwordSkill {
             Attribute.GENERIC_ATTACK_DAMAGE, 
             damage, 
             15);
+        SkillAnnouncer.messageSkill(
+            s, 
+            new Pair<String, Double>("True Damage", damage), 
+            "Souls of the Fallen", 
+            tier);
     }
 
     @Override

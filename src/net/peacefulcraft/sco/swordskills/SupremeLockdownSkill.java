@@ -6,14 +6,19 @@ import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class SupremeLockdownSkill extends SwordSkill {
 
-    public SupremeLockdownSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public SupremeLockdownSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.useModule(new TimedCooldown(25000));
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
@@ -40,6 +45,11 @@ public class SupremeLockdownSkill extends SwordSkill {
                 vic.getLivingEntity().addPotionEffect(
                     new PotionEffect(PotionEffectType.SLOW, 7, 999)
                 );
+                SkillAnnouncer.messageSkill(
+                    mu, 
+                    "Locked down for 7 seconds.", 
+                    "Supreme Lockdown", 
+                    tier);
             }
         }
     }

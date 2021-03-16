@@ -9,6 +9,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -16,8 +18,11 @@ import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class SystemBreakAccelerantBurstSkill extends SwordSkill {
 
-    public SystemBreakAccelerantBurstSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public SystemBreakAccelerantBurstSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
@@ -71,6 +76,7 @@ public class SystemBreakAccelerantBurstSkill extends SwordSkill {
 
         if(SwordCraftOnline.r.nextInt(5) <= 3) {
             mu.getLivingEntity().setFireTicks(100);
+            SkillAnnouncer.messageSkill(mu, "Accelerant backfired.", "System Break: Accelerant Burst", tier);
         }
     }
 

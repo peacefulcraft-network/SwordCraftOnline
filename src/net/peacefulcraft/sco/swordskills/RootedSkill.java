@@ -7,15 +7,19 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class RootedSkill extends SwordSkill {
 
     private int regenModifier;
+    private ItemTier tier;
 
-    public RootedSkill(SwordSkillCaster c, int regenModifier, SwordSkillProvider provider) {
+    public RootedSkill(SwordSkillCaster c, int regenModifier, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         this.regenModifier = regenModifier;
+        this.tier = tier;
 
         this.listenFor(SwordSkillTrigger.PLAYER_MOVE);
     }
@@ -49,6 +53,7 @@ public class RootedSkill extends SwordSkill {
         mu.getLivingEntity().addPotionEffect(
             new PotionEffect(PotionEffectType.REGENERATION, 9999, regenModifier)
             );
+        SkillAnnouncer.messageSkill(mu, "Regeneration " + regenModifier, "Rooted", tier);
     }
 
     @Override

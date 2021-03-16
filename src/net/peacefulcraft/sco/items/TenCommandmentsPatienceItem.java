@@ -120,7 +120,7 @@ public class TenCommandmentsPatienceItem implements SwordSkillProvider, Ephemera
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new TenCommandmentsPatienceSkill(caster, (SwordSkillProvider)this);
+        return new TenCommandmentsPatienceSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

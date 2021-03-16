@@ -120,7 +120,7 @@ public class TenCommandmentsPacifismItem implements SwordSkillProvider, Ephemera
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new TenCommandmentsPacifismSkill(caster, (SwordSkillProvider)this);
+        return new TenCommandmentsPacifismSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

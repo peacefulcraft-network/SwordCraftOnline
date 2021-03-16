@@ -111,7 +111,7 @@ public class GodsConditionHostilityItem implements SwordSkillProvider, Ephemeral
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new GodsConditionHostilitySkill(caster, (SwordSkillProvider)this);
+        return new GodsConditionHostilitySkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

@@ -109,7 +109,7 @@ public class PerfectGiftItem implements SwordSkillProvider, EphemeralAttributeHo
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new PerfectGiftSkill(caster, (SwordSkillProvider)this);
+        return new PerfectGiftSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

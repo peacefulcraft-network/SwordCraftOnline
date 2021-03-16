@@ -7,15 +7,21 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class SwiftSwimSkill extends SwordSkill {
 
+    private ItemTier tier;
     private boolean rainBoosted;
     private UUID change1;
 
-    public SwiftSwimSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public SwiftSwimSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_MOVE);
     }
@@ -43,6 +49,11 @@ public class SwiftSwimSkill extends SwordSkill {
                 3, 
                 -1);
             rainBoosted = true;
+            SkillAnnouncer.messageSkill(
+                (SCOPlayer)mu, 
+                new Pair<String, Double>(Attribute.GENERIC_MOVEMENT_SPEED.toString(), 3.0),
+                "Swift Swim", 
+                tier);
         } else if(!loc.getWorld().hasStorm() && rainBoosted) {
             mu.dequeueChange(change1);
             rainBoosted = false;

@@ -108,7 +108,7 @@ public class UnfortunateDivisorItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new UnfortunateDivisorSkill(caster, (SwordSkillProvider) this);
+        return new UnfortunateDivisorSkill(caster, (SwordSkillProvider) this, tier);
     }
 
     @Override

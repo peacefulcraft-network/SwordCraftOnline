@@ -15,8 +15,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class TenCommandmentsPatienceSkill extends SwordSkill implements Runnable {
@@ -25,8 +26,11 @@ public class TenCommandmentsPatienceSkill extends SwordSkill implements Runnable
 
     private BukkitTask vicTask;
 
-    public TenCommandmentsPatienceSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public TenCommandmentsPatienceSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PASSIVE);
         this.vicTask = Bukkit.getServer().getScheduler().runTaskTimer(
@@ -55,10 +59,10 @@ public class TenCommandmentsPatienceSkill extends SwordSkill implements Runnable
                     99999, 
                     3));
                 if(vicMu instanceof SCOPlayer) {
-                    Announcer.messagePlayer(
-                        (SCOPlayer)vicMu, 
-                        "[Patience] Stay collected near my conduit... else you may lose your eyes.", 
-                        0);
+                    SkillAnnouncer.messageSkill(
+                        vicMu, "Stay collected near my conduit... else you may lose your eyes.", 
+                        "Ten Commandments: Patience", 
+                        tier);
                 }
             }
         }

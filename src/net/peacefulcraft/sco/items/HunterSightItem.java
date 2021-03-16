@@ -109,7 +109,7 @@ public class HunterSightItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new HunterSightSkill(caster, (SwordSkillProvider)this);
+        return new HunterSightSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override
