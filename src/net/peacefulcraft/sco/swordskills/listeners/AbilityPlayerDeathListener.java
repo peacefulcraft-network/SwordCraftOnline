@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 /**
@@ -14,7 +14,7 @@ public class AbilityPlayerDeathListener implements Listener{
 
   @EventHandler
   public void onPlayerMessage(PlayerDeathEvent ev) {
-    SwordCraftOnline.getGameManager().findSCOPlayer(ev.getEntity())
+    GameManager.findSCOPlayer(ev.getEntity())
     .getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.PLAYER_DEATH, ev);
   }
 }
