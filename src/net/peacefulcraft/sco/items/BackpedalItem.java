@@ -14,7 +14,7 @@ import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
-public class BackpedalItem implements SwordSkillProvider {
+public class BackPedalItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
@@ -22,7 +22,7 @@ public class BackpedalItem implements SwordSkillProvider {
     private SwordSkillType type;
     private SwordSkillDesc desc;
 
-    public BackpedalItem(ItemTier tier, Integer level) {
+    public BackPedalItem(ItemTier tier, Integer level) {
         this.tier = tier;
         this.quantity = 1;
         this.type = SwordSkillType.SWORD;
@@ -30,8 +30,9 @@ public class BackpedalItem implements SwordSkillProvider {
         setModifiers();
 
         desc = new SwordSkillDesc(tier, type);
-        desc.add("Leap backwards after performing a strike.");
-        desc.add("After trigger, strike with your weapon to perform back pedal.");
+        desc.add("Leap backwards after performing");
+        desc.add("a strike. After trigger, strike");
+        desc.add("with your weapon to perform back pedal.");
         switch (this.tier) {
             case COMMON:
                 desc.add("Vector Multiplier: +0.3");
@@ -50,7 +51,7 @@ public class BackpedalItem implements SwordSkillProvider {
 
     }
 
-    public BackpedalItem(ItemTier tier, Integer level, int quantity) {
+    public BackPedalItem(ItemTier tier, Integer level, int quantity) {
         this.tier = tier;
         this.quantity = quantity;
 
