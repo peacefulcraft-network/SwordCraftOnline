@@ -113,7 +113,7 @@ public class VolatileContainmentItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new VolatileContainmentSkill(caster, (SwordSkillProvider)this);
+        return new VolatileContainmentSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

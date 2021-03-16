@@ -123,7 +123,7 @@ public class SystemBreakAccelerantBurstItem implements SwordSkillProvider, Ephem
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SystemBreakAccelerantBurstSkill(caster, (SwordSkillProvider)this);
+        return new SystemBreakAccelerantBurstSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

@@ -120,7 +120,7 @@ public class TenCommandmentsFaithItem implements SwordSkillProvider, EphemeralAt
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new TenCommandmentsFaithSkill(caster, (SwordSkillProvider)this);
+        return new TenCommandmentsFaithSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

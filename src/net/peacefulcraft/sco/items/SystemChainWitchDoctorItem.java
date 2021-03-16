@@ -112,7 +112,7 @@ public class SystemChainWitchDoctorItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SystemChainWitchDoctorSkill(caster, (SwordSkillProvider)this);
+        return new SystemChainWitchDoctorSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

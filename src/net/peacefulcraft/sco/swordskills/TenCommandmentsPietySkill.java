@@ -14,8 +14,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class TenCommandmentsPietySkill extends SwordSkill implements Runnable {
@@ -24,8 +24,11 @@ public class TenCommandmentsPietySkill extends SwordSkill implements Runnable {
 
     private BukkitTask vicTask;
 
-    public TenCommandmentsPietySkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public TenCommandmentsPietySkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PASSIVE);
         this.vicTask = Bukkit.getServer().getScheduler().runTaskTimer(
@@ -53,12 +56,12 @@ public class TenCommandmentsPietySkill extends SwordSkill implements Runnable {
                     PotionEffectType.POISON, 
                     99999, 
                     2));
-                if(vicMu instanceof SCOPlayer) {
-                    Announcer.messagePlayer(
-                        (SCOPlayer)vicMu, 
-                        "[Piety] You try to heal near my conduit?.. No.", 
-                        0);
-                }
+
+                SkillAnnouncer.messageSkill(
+                    vicMu,
+                    "You try to heal near my conduit?.. No.", 
+                    "Ten Commandments: Piety", 
+                    tier);
             }
         }
 

@@ -125,7 +125,7 @@ public class GuardianItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new GuardianSkill(caster, this.armorModifier, (SwordSkillProvider)this);
+        return new GuardianSkill(caster, this.armorModifier, (SwordSkillProvider)this, tier);
     }
 
     public void setModifiers() {

@@ -109,7 +109,7 @@ public class SupremeLockdownItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SupremeLockdownSkill(caster, (SwordSkillProvider)this);
+        return new SupremeLockdownSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

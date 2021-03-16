@@ -1,18 +1,21 @@
 package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class TenCommandmentsLoveSkill extends SwordSkill {
 
-    public TenCommandmentsLoveSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public TenCommandmentsLoveSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
     }
@@ -41,10 +44,12 @@ public class TenCommandmentsLoveSkill extends SwordSkill {
 
         if(mu.getLivingEntity().getNearbyEntities(15, 15, 15).contains(evv.getDamager())) {
             evv.setCancelled(true);
-            Announcer.messagePlayer(
-                (Player)evv.getDamager(), 
-                "[Love] Do not strike another player near my conduit with your heart full of hate.", 
-                0);
+
+            SkillAnnouncer.messageSkill(
+                s, 
+                "Do not strike another player near my conduit with your heart full of hate.", 
+                "Ten Commandments: Love", 
+                tier);
         }
     }
 

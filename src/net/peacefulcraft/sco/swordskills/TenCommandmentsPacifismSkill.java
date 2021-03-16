@@ -12,7 +12,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable {
@@ -21,8 +24,11 @@ public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable
 
     private BukkitTask vicTask;
 
-    public TenCommandmentsPacifismSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public TenCommandmentsPacifismSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.vicTask = Bukkit.getServer().getScheduler().runTaskTimer(
@@ -70,10 +76,14 @@ public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable
                 -(damMu.getMaxHealth() / 2), 
                 40);
             if(evv.getDamager() instanceof Player) {
-                Announcer.messagePlayer(
-                    (Player)evv.getDamager(), 
-                    "[Pacifism] You dare strike another in the presence of my conduit.", 
-                    0);
+                SCOPlayer s = GameManager.findSCOPlayer((Player)evv.getDamager());
+                if(s == null) { return; }
+
+                SkillAnnouncer.messageSkill(
+                    s, 
+                    "You dare strike another in the presence of my conduit.", 
+                    "Ten Commandments: Pacifism", 
+                    tier);
             }
         } 
     }

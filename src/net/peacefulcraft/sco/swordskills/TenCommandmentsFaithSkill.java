@@ -11,7 +11,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class TenCommandmentsFaithSkill extends SwordSkill implements Runnable {
@@ -20,8 +23,11 @@ public class TenCommandmentsFaithSkill extends SwordSkill implements Runnable {
 
     private BukkitTask vicTask;
 
-    public TenCommandmentsFaithSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public TenCommandmentsFaithSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.vicTask = Bukkit.getServer().getScheduler().runTaskTimer(
@@ -67,10 +73,14 @@ public class TenCommandmentsFaithSkill extends SwordSkill implements Runnable {
             vicMap.put(damMu, System.currentTimeMillis() + 200);
             damMu.getLivingEntity().setFireTicks(200);
             if(evv.getDamager() instanceof Player) {
-                Announcer.messagePlayer(
-                    (Player)evv.getDamager(), 
-                    "[Faith] You broke the faith of your kind near my conduit.", 
-                    0);
+                SCOPlayer s = GameManager.findSCOPlayer((Player)evv.getDamager());
+                if(s == null) { return; }
+
+                SkillAnnouncer.messageSkill(
+                    s, 
+                    "You broke the faith of your kind near my conduit.", 
+                    "Ten Commandments: Faith", 
+                    tier);
             }
         }
     }

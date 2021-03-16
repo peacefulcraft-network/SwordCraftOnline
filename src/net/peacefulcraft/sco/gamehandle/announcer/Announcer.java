@@ -64,12 +64,6 @@ public abstract class Announcer {
         }
     }
 
-    public static void messagePlayerSkill(SCOPlayer s, String message, String skillName) {
-        if(!s.doesReceiveSkillMessages()) { return; }
-        String prefix = ChatColor.DARK_RED + "[" + ChatColor.RED + skillName + ChatColor.DARK_RED + "]";
-        s.getPlayer().sendMessage(prefix + ChatColor.DARK_GRAY + message);
-    }
-
     /**
      * Messages group of players 
      * @param cooldown Cooldown timer of message in ms. Set to 0 means no cooldown

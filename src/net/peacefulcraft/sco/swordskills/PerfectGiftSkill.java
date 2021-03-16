@@ -5,15 +5,18 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class PerfectGiftSkill extends SwordSkill {
 
-    public PerfectGiftSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public PerfectGiftSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.useModule(new TimedCooldown(900000));
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_RECIEVE);
@@ -40,9 +43,7 @@ public class PerfectGiftSkill extends SwordSkill {
             mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 5, 3));             
             evv.setCancelled(true);
 
-            if(mu instanceof SCOPlayer) {
-                Announcer.messagePlayerSkill((SCOPlayer)mu, "Death prevented.", "Perfect Gift");
-            }
+            SkillAnnouncer.messageSkill(mu, "Death prevented.", "Perfect Gift", tier);
         }
     }
 

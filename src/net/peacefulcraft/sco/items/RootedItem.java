@@ -122,7 +122,7 @@ public class RootedItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new RootedSkill(caster, this.regenModifier, (SwordSkillProvider)this);
+        return new RootedSkill(caster, this.regenModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override

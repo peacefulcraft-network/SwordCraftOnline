@@ -107,7 +107,7 @@ public class SwiftSwimItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SwiftSwimSkill(caster, (SwordSkillProvider)this);
+        return new SwiftSwimSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

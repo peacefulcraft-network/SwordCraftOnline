@@ -13,13 +13,11 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class ForwardLungeSkill extends SwordSkill {
 
     private Double increase;
-    private Long delay;
 
     public ForwardLungeSkill(SwordSkillCaster c, Double increase, Long delay, SwordSkillProvider provider) {
         super(c, provider);
         
         this.increase = increase;
-        this.delay = delay;
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
         this.useModule(new TimedCooldown(delay));

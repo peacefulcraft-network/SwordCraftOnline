@@ -120,7 +120,7 @@ public class TenCommandmentsLoveItem implements SwordSkillProvider, EphemeralAtt
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new TenCommandmentsLoveSkill(caster, (SwordSkillProvider)this);
+        return new TenCommandmentsLoveSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

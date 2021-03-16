@@ -120,7 +120,7 @@ public class TenCommandmentsReposeItem implements SwordSkillProvider, EphemeralA
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new TenCommandmentsReposeSkill(caster, (SwordSkillProvider)this);
+        return new TenCommandmentsReposeSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

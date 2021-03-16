@@ -128,7 +128,7 @@ public class SerpentsBiteItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SerpentsBiteSkill(caster, this.poisonModifier, (SwordSkillProvider)this);
+        return new SerpentsBiteSkill(caster, this.poisonModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override

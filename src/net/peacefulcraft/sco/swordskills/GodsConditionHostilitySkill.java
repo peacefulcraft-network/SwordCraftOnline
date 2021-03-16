@@ -16,10 +16,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
@@ -28,9 +29,11 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
     private HashMap<Long, LivingEntity> vicMap = new HashMap<>();
 
     private BukkitTask vicTask;
+    private ItemTier tier;
 
-    public GodsConditionHostilitySkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public GodsConditionHostilitySkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.vicTask = Bukkit.getServer().getScheduler().runTaskTimer(
@@ -119,7 +122,11 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
         if(liv instanceof Player) {
             SCOPlayer s = GameManager.findSCOPlayer((Player)liv);
             if(s == null) { return; }
-            Announcer.messagePlayerSkill(s, "You must now meet my condition.", "Gods Condition: Hostility");
+            SkillAnnouncer.messageSkill(
+                s, 
+                "You must now meet my condition, inflicted slowness X", 
+                "Gods Condition: Hostility", 
+                tier);
         }
     }
 }

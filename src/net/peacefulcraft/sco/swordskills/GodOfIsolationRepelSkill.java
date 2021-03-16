@@ -9,15 +9,18 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import net.peacefulcraft.sco.gamehandle.GameManager;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class GodOfIsolationRepelSkill extends SwordSkill {
 
-    public GodOfIsolationRepelSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public GodOfIsolationRepelSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
@@ -60,7 +63,7 @@ public class GodOfIsolationRepelSkill extends SwordSkill {
             if(e instanceof Player) {
                 SCOPlayer s = GameManager.findSCOPlayer((Player)e);
                 if(s == null) { continue; }
-                Announcer.messagePlayerSkill(s, "Inflicted Blindness II", "God of Isolation: Repel");
+                SkillAnnouncer.messageSkill(s, "Inflicted Blindness II", "God of Isolation: Repel", tier);
             }
         }
         mu.getLivingEntity().addPotionEffect(new PotionEffect(

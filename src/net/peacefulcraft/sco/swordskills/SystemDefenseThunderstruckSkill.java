@@ -9,11 +9,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.LocationUtil;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class SystemDefenseThunderstruckSkill extends SwordSkill {
 
@@ -55,11 +57,20 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
 
         if(tier.equals(ItemTier.ETHEREAL)) {
             mu.getLivingEntity().addPotionEffect(
-                new PotionEffect(PotionEffectType.REGENERATION, 5, 2));
-        }
-        if(tier.equals(ItemTier.GODLIKE)) {
+                new PotionEffect(PotionEffectType.REGENERATION, 100, 2));
+            SkillAnnouncer.messageSkill(
+                mu, 
+                "System Defense: Thunderstruck",
+                tier, 
+                new Pair<String, Integer>(PotionEffectType.REGENERATION.toString(), 2));
+        } else if(tier.equals(ItemTier.GODLIKE)) {
             mu.getLivingEntity().addPotionEffect(
-                new PotionEffect(PotionEffectType.REGENERATION, 5, 3));
+                new PotionEffect(PotionEffectType.REGENERATION, 100, 3));
+            SkillAnnouncer.messageSkill(
+                mu, 
+                "System Defense: Thunderstruck",
+                tier, 
+                new Pair<String, Integer>(PotionEffectType.REGENERATION.toString(), 3));
         }
     }
 

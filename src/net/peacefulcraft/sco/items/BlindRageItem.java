@@ -112,7 +112,7 @@ public class BlindRageItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new BlindRageSkill(caster, (SwordSkillProvider)this);
+        return new BlindRageSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

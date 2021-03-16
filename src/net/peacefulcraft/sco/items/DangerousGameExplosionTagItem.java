@@ -112,7 +112,7 @@ public class DangerousGameExplosionTagItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new DangerousGameExplosionTagSkill(caster, (SwordSkillProvider)this);
+        return new DangerousGameExplosionTagSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

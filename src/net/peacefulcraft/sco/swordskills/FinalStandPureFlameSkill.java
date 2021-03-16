@@ -6,16 +6,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.GameManager;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class FinalStandPureFlameSkill extends SwordSkill {
 
-    public FinalStandPureFlameSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public FinalStandPureFlameSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new TimedCooldown(35000));
@@ -44,7 +48,7 @@ public class FinalStandPureFlameSkill extends SwordSkill {
             if(e instanceof Player) {
                 SCOPlayer s = GameManager.findSCOPlayer((Player)e);
                 if(s == null) { continue; }
-                Announcer.messagePlayerSkill(s, "Burn in the pure flame!", "Final Stand: Pure Flame");
+                SkillAnnouncer.messageSkill(s, "Burn in the pure flame!", "Final Stand: Pure Flame", tier);
             }
         }
 

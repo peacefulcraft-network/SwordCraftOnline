@@ -111,7 +111,7 @@ public class GodOfIsolationRepelItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new GodOfIsolationRepelSkill(caster, (SwordSkillProvider)this);
+        return new GodOfIsolationRepelSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

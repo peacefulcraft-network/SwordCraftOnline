@@ -124,7 +124,7 @@ public class VampireCarvingItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new VampireCarvingSkill(caster, lifeDrain, (SwordSkillProvider)this);
+        return new VampireCarvingSkill(caster, lifeDrain, (SwordSkillProvider)this, tier);
     }
 
     public void setModifiers() {

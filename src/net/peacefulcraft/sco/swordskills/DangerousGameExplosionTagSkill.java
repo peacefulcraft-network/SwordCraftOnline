@@ -11,8 +11,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 
@@ -21,9 +22,11 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
     private ArrayList<LivingEntity> tagList = new ArrayList<>();
     private boolean tracking = false;
         private void setTracking(boolean set) { this.tracking = set; }
+    private ItemTier tier;
 
-    public DangerousGameExplosionTagSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public DangerousGameExplosionTagSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
@@ -66,7 +69,7 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
             if(evv.getEntity() instanceof Player) {
                 SCOPlayer s = GameManager.findSCOPlayer((Player)evv.getEntity());
                 if(s == null) { return; }
-                Announcer.messagePlayerSkill(s, "You have been marked.", "Dangerous Game: Explosion Tag");
+                SkillAnnouncer.messageSkill(s, "You have been marked.", "Danger Game: Explosion Tag", tier);
             }
         }
     }
