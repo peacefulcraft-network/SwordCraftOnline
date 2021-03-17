@@ -129,7 +129,7 @@ public class WitheringNecrolysisItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new WitheringNecrolysisSkill(caster, this.witherModifier, (SwordSkillProvider)this);
+        return new WitheringNecrolysisSkill(caster, this.witherModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override
