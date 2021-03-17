@@ -2,8 +2,10 @@ package net.peacefulcraft.sco.swordskills.modules;
 
 import org.bukkit.Material;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
@@ -51,12 +53,12 @@ public class Trigger implements SwordSkillModule {
     @Override
     public boolean beforeTriggerSkill(SwordSkill ss, Event ev) {
         // Checking if event should pass
-        if(passedEvent != null && ev.getEventName().equalsIgnoreCase(passedEvent)) {
-            return true;
-        }
+        if(passedEvent != null && ev.getEventName().equalsIgnoreCase(passedEvent)) { return true; }
 
         if((ev instanceof PlayerInteractEvent) && getTriggered() == false) {
             PlayerInteractEvent evv = (PlayerInteractEvent)ev;
+            if(evv.getAction().equals(Action.LEFT_CLICK_AIR) || evv.getAction().equals(Action.LEFT_CLICK_BLOCK)) { return false; }
+
             ItemIdentifier identifier = ItemIdentifier.resolveItemIdentifier(evv.getItem());
             if(identifier == null || identifier.getMaterial().equals(Material.AIR)) { return false; }
 
@@ -66,8 +68,9 @@ public class Trigger implements SwordSkillModule {
                 && !identifier.getName().equalsIgnoreCase("Secondary Skill Activated")) { return false; }
             if(this.type.equals(SwordSkillType.SWORD) 
                 && !(identifier instanceof WeaponAttributeHolder)) { return false; }
+            setTriggered(true);
             return true;
-        } else if(!(ev instanceof PlayerInteractEvent) && getTriggered() == true) {
+        } else if(!(ev instanceof PlayerInteractEvent) && getTriggered()) {
             return true;
         }
         return false;

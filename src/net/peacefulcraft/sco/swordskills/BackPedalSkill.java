@@ -20,7 +20,7 @@ public class BackPedalSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 
         this.useModule(new Trigger(SwordSkillType.SWORD));
-        this.useModule(new TimedCooldown(10000));
+        this.useModule(new TimedCooldown(10000, null, "PlayerInteractEvent"));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class BackPedalSkill extends SwordSkill {
             ModifierUser mu = (ModifierUser)c;
             mu.getLivingEntity().setVelocity(
                 mu.getLivingEntity().getLocation().getDirection()
-                    .multiply(-1 * vectorMultiplier).add(new Vector(0, 0.5, 0))
+                    .multiply(-1 * vectorMultiplier).add(new Vector(0, 0.1, 0))
             );
         }
     }
