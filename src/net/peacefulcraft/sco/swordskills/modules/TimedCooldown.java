@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.swordskills.modules;
 
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
@@ -22,6 +23,7 @@ public class TimedCooldown implements SwordSkillModule {
         private String getCooldownMessage() { return this.cooldownMessage; }
 
     private String eventName = null;
+    private String deniedEvent = null;
 
     public TimedCooldown(long cooldonwDelay) {
         this.cooldownDelay = cooldonwDelay;
@@ -36,11 +38,12 @@ public class TimedCooldown implements SwordSkillModule {
      * Modified constructor to detect specific events
      * that trigger timer
      * @param eventName of Event
+     * @param deniedEvent Events we want to stop from altering cooldown
      */
-    public TimedCooldown(long cooldownDelay, String cooldownMessage, String eventName) {
+    public TimedCooldown(long cooldownDelay, String eventName, String deniedEvent) {
         this.cooldownDelay = cooldownDelay;
-        this.cooldownMessage = cooldownMessage;
         this.eventName = eventName;
+        this.deniedEvent = deniedEvent;
     }
 
     @Override
@@ -62,9 +65,13 @@ public class TimedCooldown implements SwordSkillModule {
      */
     @Override
     public void afterTriggerSkill(SwordSkill ss, Event ev) {
-        if(this.eventName == null || (this.eventName != null && ev.getEventName().equalsIgnoreCase(this.eventName))) {
+        if(this.eventName != null && ev.getEventName().equalsIgnoreCase(this.eventName)) {
             this.cooldownEnd = System.currentTimeMillis() + cooldownDelay;
-        } 
+        } else if(this.deniedEvent != null && !ev.getEventName().equalsIgnoreCase(this.deniedEvent)) {
+            this.cooldownEnd = System.currentTimeMillis() + cooldownDelay;
+        } else if(this.deniedEvent == null && this.eventName == null) {
+            this.cooldownEnd = System.currentTimeMillis() + cooldownDelay;
+        }
     }
 
     @Override

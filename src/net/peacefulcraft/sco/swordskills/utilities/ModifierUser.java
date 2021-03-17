@@ -350,7 +350,7 @@ public class ModifierUser {
         try{
             return calculateDamage(ModifierType.valueOf(type), damage, incoming);
         } catch(IllegalArgumentException ex) {
-            SwordCraftOnline.logDebug("[ModifierUser] IllegalArgumentException thrown in checkModifier method.");
+            SwordCraftOnline.logDebug("[ModifierUser] IllegalArgumentException thrown in checkModifier method. Input: " + type);
             return damage;
         }
     }
@@ -643,7 +643,7 @@ public class ModifierUser {
         double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
 
         if(set) {
-            this.currHealth -= (int)damage;
+            this.currHealth = this.currHealth - (int)damage < 0 ? 0 : this.currHealth - (int)damage;
             getLivingEntity().setHealth(health);
         }
 

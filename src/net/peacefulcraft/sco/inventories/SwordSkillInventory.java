@@ -99,7 +99,7 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 
 	@Override
 	public void onClickThisInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
-		SwordCraftOnline.logDebug("Clicked SwordSKill Inventory");
+		//SwordCraftOnline.logDebug("Clicked SwordSKill Inventory");
 
 		// We only want sword skill provider items in this inventory
 		if(!(cursorItem instanceof SwordSkillProvider) && !(clickedItem instanceof SwordSkillProvider)) { 
@@ -163,17 +163,17 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 
 	@Override
 	public void onClickThatInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
-		SwordCraftOnline.logDebug("Clicked player inv while in SwordSkill Inventory");
+		//SwordCraftOnline.logDebug("Clicked player inv while in SwordSkill Inventory");
 	}
 
 	@Override
 	public void onThisInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
-		SwordCraftOnline.logDebug("Drug items in SwordSkill inventory");
+		//SwordCraftOnline.logDebug("Drug items in SwordSkill inventory");
 	}
 
 	@Override
 	public void onThatInventoryDrag(InventoryDragEvent ev, HashMap<Integer, ItemIdentifier> items) {
-		SwordCraftOnline.logDebug("Drug items in player inv while in SwordSkill Inventory");
+		//SwordCraftOnline.logDebug("Drug items in player inv while in SwordSkill Inventory");
 	}
 
 	@Override

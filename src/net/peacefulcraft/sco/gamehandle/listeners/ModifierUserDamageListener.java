@@ -17,6 +17,10 @@ public class ModifierUserDamageListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void modDamage(EntityDamageEvent e) {
+        //TODO: REMOVE THIS CANCEL
+        return;
+
+        /*
         Entity vic = e.getEntity();
 
         ModifierUser mu = checkType(vic);
@@ -44,7 +48,8 @@ public class ModifierUserDamageListener implements Listener {
         }
 
         // Converting health to appropriate amount
-        mu.convertHealth(damage, true);          
+        mu.convertHealth(damage, true);     
+        */     
     }
 
     /**

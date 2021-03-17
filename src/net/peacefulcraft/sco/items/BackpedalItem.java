@@ -33,20 +33,8 @@ public class BackPedalItem implements SwordSkillProvider {
         desc.add("Leap backwards after performing");
         desc.add("a strike. After trigger, strike");
         desc.add("with your weapon to perform back pedal.");
-        switch (this.tier) {
-            case COMMON:
-                desc.add("Vector Multiplier: +0.3");
-            break; case UNCOMMON:
-                desc.add("Vector Multiplier: +0.5");
-            break; case RARE:
-                desc.add("Vector Multiplier: +0.7");
-            break; case LEGENDARY:
-                desc.add("Vector Multiplier: +0.9");
-            break; case ETHEREAL:
-                desc.add("Vector Multiplier: +1.1");
-            break; case GODLIKE:
-                desc.add("Vector Multiplier: +1.3");
-        }
+        desc.add("");
+        desc.add("Vector Multiplier: +" + this.vectorMultiplier);
         desc.add("Cooldown: 10 seconds");
 
     }
@@ -148,22 +136,22 @@ public class BackPedalItem implements SwordSkillProvider {
     public void setModifiers() {
         switch (this.tier) {
             case COMMON:
-                this.vectorMultiplier = 0.3;
-                break;
-            case UNCOMMON:
                 this.vectorMultiplier = 0.5;
                 break;
-            case RARE:
+            case UNCOMMON:
                 this.vectorMultiplier = 0.7;
                 break;
-            case LEGENDARY:
+            case RARE:
                 this.vectorMultiplier = 0.9;
                 break;
-            case ETHEREAL:
+            case LEGENDARY:
                 this.vectorMultiplier = 1.1;
                 break;
-            case GODLIKE:
+            case ETHEREAL:
                 this.vectorMultiplier = 1.3;
+                break;
+            case GODLIKE:
+                this.vectorMultiplier = 1.5;
         }
     }
     

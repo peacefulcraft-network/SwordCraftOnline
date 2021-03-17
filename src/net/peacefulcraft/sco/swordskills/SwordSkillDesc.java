@@ -45,6 +45,7 @@ public class SwordSkillDesc {
                 sTier += ItemTier.getTierColor(tier) + " Passive Sword Skill";
         }
         desc.add(sTier);
+        desc.add("");
     }
 
     /**
