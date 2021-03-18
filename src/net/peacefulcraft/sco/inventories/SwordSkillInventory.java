@@ -69,6 +69,8 @@ public class SwordSkillInventory extends BukkitInventoryBase {
 						setItem(9 + col, ItemIdentifier.generateIdentifier("BlackSlot", ItemTier.COMMON, 1));
 					}
 
+					this.setInventoryContents(items);
+
 					// Indicate to any tasks waiting for this to complete that we've completed.
 					this.inventoryReadyPromise.complete(null);
 				});
