@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.inventories;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -15,6 +16,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
+import net.peacefulcraft.sco.storage.tasks.InventorySaveSlotTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 
 public class PlayerInventory extends BukkitInventoryBase {
@@ -81,17 +83,21 @@ public class PlayerInventory extends BukkitInventoryBase {
   public void setInventoryContents(List<ItemIdentifier> items) {
     super.setInventoryContents(items);
     s.getPlayer().updateInventory();
+    // TODO: Save Inventory
   }
 
   @Override
   public void setInventorySlots(HashMap<Integer, ItemIdentifier> items) {
     super.setInventorySlots(items);
+    // TODO: Implement partial saving
     s.getPlayer().updateInventory();
   }
 
   @Override
   public HashMap<Integer, ItemIdentifier> addItem(ItemIdentifier item) {
     HashMap<Integer, ItemIdentifier> leftovers =  super.addItem(item);
+    // TODO: Resolve items that were actually added and where they were added so we can do a partial save
+    this.saveInventory();
     s.getPlayer().updateInventory();
     return leftovers;
   }
@@ -99,18 +105,22 @@ public class PlayerInventory extends BukkitInventoryBase {
   @Override
   public void setItem(Integer slot, ItemIdentifier item) {
     super.setItem(slot, item);
+    new InventorySaveSlotTask(this.inventoryId, slot, item).saveInventory();
     s.getPlayer().updateInventory();
   }
 
   @Override
-  public void removeItem(ItemStack item) {
+  public void removeItem(ItemIdentifier item) {
     super.removeItem(item);
+    // TODO: Find a way to resolve the slot being updated so we can do a single row update 
+    this.saveInventory();
     s.getPlayer().updateInventory();
   }
 
   @Override
   public ItemIdentifier removeItem(int index) {
     ItemIdentifier removed = super.removeItem(index);
+    new InventorySaveSlotTask(this.inventoryId, index, removed).saveInventory();
     s.getPlayer().updateInventory();
     return removed;
   }

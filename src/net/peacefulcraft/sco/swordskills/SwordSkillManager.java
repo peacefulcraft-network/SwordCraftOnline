@@ -2,9 +2,13 @@ package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
+
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SCOInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
@@ -36,8 +40,8 @@ public class SwordSkillManager
 			skills.put(type, new ArrayList<SwordSkill>());
 		} else {
 			for(SwordSkill s : skills.get(type)) {
-				if(s.getClass().toString().equals(s.getClass().toString())) {
-					throw new IllegalStateException("SwordSkill child " + s.getClass() + " is already registered with this executor");
+				if(s == skill) {
+					throw new IllegalStateException("SwordSkill " + s.getClass() + " is already registered with this executor");
 				}
 			}
 		}
@@ -104,7 +108,7 @@ public class SwordSkillManager
 		return false;
 	}
 
-	public ArrayList<SwordSkill> getSkills() {
+	public List<SwordSkill> getSkills() {
 		ArrayList<SwordSkill> dummy = new ArrayList<SwordSkill>();
 		for(ArrayList<SwordSkill> s : skills.values()) {
 			dummy.addAll(s);
@@ -118,16 +122,72 @@ public class SwordSkillManager
 		}
 		skills = new HashMap<SwordSkillTrigger, ArrayList<SwordSkill>>();
 	}
-	
-	/**
-	 * Unregisters all of a player's SwordSkills, then re-registers a new
-	 * set of abilities based off of what is currently in the player's SwordSkill Inventory
-	 */
+
+	public void unregisterSkill(SwordSkill skill) {
+		// Loop through all trigger types
+		Iterator<ArrayList<SwordSkill>> skillTypesIterator = this.skills.values().iterator();
+		while (skillTypesIterator.hasNext()) {
+
+			// Loop through all sword skills on the trigger type
+			Iterator<SwordSkill> skillTypeListIterator = skillTypesIterator.next().iterator();
+			while (skillTypeListIterator.hasNext()) {
+
+				// Unregister the skill if it matches the removal target
+				SwordSkill loopSkill = skillTypeListIterator.next();
+				if (loopSkill == skill) {
+					loopSkill.execSkillUnregistration();
+					skillTypeListIterator.remove();
+					break;
+				}
+
+			}
+
+		}
+	}
+
 	public void syncSkillInventory(SCOInventory inv) {
-		unregisterAllSkills();
-		for(ItemIdentifier identifier : inv.generateItemIdentifiers()) {
-			if (identifier instanceof SwordSkillProvider) {
-				((SwordSkillProvider) identifier).registerSwordSkill(s);
+		List<ItemIdentifier> items = inv.generateItemIdentifiers();
+		List<SwordSkill> skills = getSkills();
+
+		// Diff the current sword skills with the new ones
+		Iterator<ItemIdentifier> itemsIterator = items.iterator();
+		while (itemsIterator.hasNext()) {
+			ItemIdentifier item = itemsIterator.next();
+			Iterator<SwordSkill> skillsIterator = skills.iterator();
+
+			while(skillsIterator.hasNext()) {
+				SwordSkillProvider skill = skillsIterator.next().getProvider();
+				if (ItemIdentifier.compareTo(item, skill, false) == 0) {
+					// Make sure items with cooldown match exactly so prevent cooldown bypassing
+					if (item instanceof SwordSkillCooldownProvider && skill instanceof SwordSkillCooldownProvider){
+						if (((SwordSkillCooldownProvider) item).getCooldownEnd() == ((SwordSkillCooldownProvider) skill).getCooldownEnd()) {
+							itemsIterator.remove();
+							skillsIterator.remove();
+						} else {
+							continue;
+						}
+					}
+
+					// Remove match skill / item identifier
+					itemsIterator.remove();
+					skillsIterator.remove();
+					SwordCraftOnline.logDebug("SSM Inventory sync will not touch already equiped skill from provider " + item.getName());
+					break;
+				}
+			}
+		}
+
+		// Only remove the skills that don't have providers in the SCOInventory anymore
+		for (SwordSkill oldSkill : skills) {
+			SwordCraftOnline.logDebug("SSM Inventory sync is removing skill " + oldSkill.getProvider().getName());
+			this.unregisterSkill(oldSkill);
+		}
+
+		// Only register the skills that were not found to already be in the inventory
+		for(ItemIdentifier item : items) {
+			if (item instanceof SwordSkillProvider) {
+				SwordCraftOnline.logDebug("SSM Inventory sync is adding skill " + item.getName());
+				((SwordSkillProvider) item).registerSwordSkill(s);
 			}
 		}
 	}

@@ -3,7 +3,6 @@ package net.peacefulcraft.sco.swordskills;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.modules.TimedCombo;
-import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
 
 /**
@@ -14,7 +13,8 @@ public class SwordSkillTest extends SwordSkill {
     public SwordSkillTest(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
-        this.useModule(new TimedCooldown(5000L));
+        // this.useModule(new TimedCooldown(provider, 5000L));
+        // TODO: FIX when we fix admin item generation
         this.useModule(new TimedCombo(this, SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE, 10, 200L));
         s.getPlayer().sendMessage("[DEBUG] - SwordSkillTest Instantiated");
     }

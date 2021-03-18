@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.SerratedBladeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillCooldownProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
@@ -19,7 +20,7 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 /**
  * Common Serrated Blade - Quartz Increases players critical hit chance.
  */
-public class SerratedBladeItem implements SwordSkillProvider {
+public class SerratedBladeItem implements SwordSkillProvider, SwordSkillCooldownProvider {
 
   @Override
   public String getName() { return "Serrated Blade"; }
@@ -88,6 +89,22 @@ public class SerratedBladeItem implements SwordSkillProvider {
 
     @Override
     public void setLevel(Integer level) { this.level = level; }
+
+  private Long cooldownEnd;
+		@Override
+		public Boolean isOnCooldown() {
+			return this.cooldownEnd > System.currentTimeMillis();
+		}
+
+		@Override
+		public Long getCooldownEnd() {
+			return this.cooldownEnd;
+		}
+
+		@Override
+		public void markCooldownEnd(Long cooldownEnd) {
+			this.cooldownEnd = cooldownEnd;
+		}
 
   @Override
   public boolean isDroppable() { return false; }

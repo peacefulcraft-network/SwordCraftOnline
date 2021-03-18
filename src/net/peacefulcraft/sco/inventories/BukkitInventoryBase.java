@@ -98,8 +98,8 @@ public abstract class BukkitInventoryBase implements SCOInventory {
 	 * DOES NOT automatically save when called on a persistent inventory.
 	 * Save operators must be triggered manually.
 	 */
-	public void removeItem(ItemStack item) {
-		this.inventory.removeItem(item);
+	public void removeItem(ItemIdentifier item) {
+		this.inventory.removeItem(ItemIdentifier.generateItem(item));
 	}
 
 	/**

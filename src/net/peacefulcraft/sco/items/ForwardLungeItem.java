@@ -11,10 +11,11 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.swordskills.ForwardLungeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillCooldownProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
-public class ForwardLungeItem implements SwordSkillProvider {
+public class ForwardLungeItem implements SwordSkillProvider, SwordSkillCooldownProvider {
 
     @Override
     public String getName() { return "Forward Lunge"; }
@@ -68,6 +69,22 @@ public class ForwardLungeItem implements SwordSkillProvider {
 
         @Override
         public ItemTier getTier() { return this.tier; }
+
+    private Long cooldownEnd;
+		@Override
+		public Boolean isOnCooldown() {
+			return this.cooldownEnd > System.currentTimeMillis();
+		}
+
+		@Override
+		public Long getCooldownEnd() {
+			return this.cooldownEnd;
+		}
+
+		@Override
+		public void markCooldownEnd(Long cooldownEnd) {
+			this.cooldownEnd = cooldownEnd;
+		}
 
     private Integer quantity;
         @Override
@@ -162,17 +179,17 @@ public class ForwardLungeItem implements SwordSkillProvider {
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
         switch (this.tier) {
             case UNCOMMON:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
+                return new ForwardLungeSkill(caster, this.increase, 15000L, this);
             case RARE:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
+                return new ForwardLungeSkill(caster, this.increase, 15000L, this);
             case LEGENDARY:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
+                return new ForwardLungeSkill(caster, this.increase, 15000L, this);
             case ETHEREAL:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
+                return new ForwardLungeSkill(caster, this.increase, 15000L, this);
             case GODLIKE:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
+                return new ForwardLungeSkill(caster, this.increase, 15000L, this);
             default:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
+                return new ForwardLungeSkill(caster, this.increase, 15000L, this);
         }
     }
     

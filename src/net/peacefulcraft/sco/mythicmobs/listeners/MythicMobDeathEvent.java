@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.drops.Conditions;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;

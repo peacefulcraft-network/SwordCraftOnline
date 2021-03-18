@@ -16,8 +16,6 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.InfusionInventory;
-import net.peacefulcraft.sco.inventories.InventoryType;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;

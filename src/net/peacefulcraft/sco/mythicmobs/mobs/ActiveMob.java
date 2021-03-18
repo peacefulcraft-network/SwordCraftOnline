@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Creature;

@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.swordskills;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ParryItem;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
@@ -12,13 +13,13 @@ public class ParrySkill extends SwordSkill {
     private Long delay;
     private SwordSkillProvider provider;
 
-    public ParrySkill(SwordSkillCaster c, Integer increase, Long delay, SwordSkillProvider provider) {
+    public ParrySkill(SwordSkillCaster c, Integer increase, Long delay, ParryItem provider) {
         super(c, provider);
         this.increase = increase;
         this.delay = delay;
 
         this.listenFor(SwordSkillTrigger.PASSIVE);
-        this.useModule(new TimedCooldown(delay));
+        this.useModule(new TimedCooldown(provider, delay));
     }
 
     @Override

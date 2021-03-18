@@ -1,6 +1,5 @@
 package net.peacefulcraft.sco.mythicmobs.mobs;
 
-import org.apache.commons.lang.ObjectUtils.Null;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -9,7 +8,6 @@ import org.bukkit.scheduler.BukkitTask;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
-import net.peacefulcraft.sco.mythicmobs.mobs.MobManager.SpawnFields;
 
 /**
  * ActiveMob instance that acts as a players pet Logic involves protecting the

@@ -11,10 +11,11 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.swordskills.CriticalStrikeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillCooldownProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
-public class CriticalStrikeItem implements SwordSkillProvider {
+public class CriticalStrikeItem implements SwordSkillProvider, SwordSkillCooldownProvider {
 
 	@Override
 	public String getName() { return "Critical Strike"; }
@@ -76,6 +77,22 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 		@Override
 		public void setLevel(Integer level) { this.level = level; }
 
+	private Long cooldownEnd;
+		@Override
+		public Boolean isOnCooldown() {
+			return this.cooldownEnd > System.currentTimeMillis();
+		}
+
+		@Override
+		public Long getCooldownEnd() {
+			return this.cooldownEnd;
+		}
+
+		@Override
+		public void markCooldownEnd(Long cooldownEnd) {
+			this.cooldownEnd = cooldownEnd;
+		}
+
 	private Integer quantity;
 		@Override
 		public Integer getQuantity() { return quantity; }
@@ -119,24 +136,28 @@ public class CriticalStrikeItem implements SwordSkillProvider {
 	public JsonObject getCustomData() {
 		JsonObject json = new JsonObject();
 		json.addProperty("level", this.level);
+		json.addProperty("ss_cooldown", this.cooldownEnd);
 		return json;
 	}
 
 	@Override
 	public void setCustomData(JsonObject data) {
 		this.level = data.get("level").getAsInt();
+		this.cooldownEnd = data.get("ss_cooldown").getAsLong();
 	}
 
 	@Override
 	public void parseCustomItemData(ItemStack item) {
 		NBTItem nbti = new NBTItem(item);
 		this.level = nbti.getInteger("level");
+		this.cooldownEnd = nbti.getLong("ss_cooldown");
 	}
 
 	@Override
 	public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
 		NBTItem nbti = new NBTItem(item);
 		nbti.setInteger("level", data.get("level").getAsInt());
+		nbti.setLong("ss_cooldown", data.get("ss_cooldown").getAsLong());
 		return nbti.getItem();
 	}
 }

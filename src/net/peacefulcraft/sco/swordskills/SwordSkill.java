@@ -113,7 +113,7 @@ public abstract class SwordSkill {
 	public final List<SwordSkillModule> getModules() {
 		ArrayList<SwordSkillModule> modules = new ArrayList<SwordSkillModule>();
 		for(SwordSkillTrigger type : supportListeners.keySet()) {
-			modules.addAll((Collection) supportListeners.get(type));
+			modules.addAll((Collection<SwordSkillModule>) supportListeners.get(type));
 		}
 
 		return Collections.unmodifiableList(modules);

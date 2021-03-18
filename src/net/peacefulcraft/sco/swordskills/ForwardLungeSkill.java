@@ -6,6 +6,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.sco.items.ForwardLungeItem;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 
 public class ForwardLungeSkill extends SwordSkill {
@@ -13,14 +14,14 @@ public class ForwardLungeSkill extends SwordSkill {
     private Double increase;
     private Long delay;
 
-    public ForwardLungeSkill(SwordSkillCaster c, Double increase, Long delay, SwordSkillProvider provider) {
+    public ForwardLungeSkill(SwordSkillCaster c, Double increase, Long delay, ForwardLungeItem provider) {
         super(c, provider);
         
         this.increase = increase;
         this.delay = delay;
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
-        this.useModule(new TimedCooldown(delay));
+        this.useModule(new TimedCooldown(provider, delay));
     }
 
     @Override

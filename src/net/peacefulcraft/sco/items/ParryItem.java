@@ -11,10 +11,11 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.swordskills.ParrySkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillCooldownProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
-public class ParryItem implements SwordSkillProvider {
+public class ParryItem implements SwordSkillProvider, SwordSkillCooldownProvider {
 
     @Override
     public String getName() { return "Parry"; }
@@ -157,22 +158,37 @@ public class ParryItem implements SwordSkillProvider {
     @Override
     public void setLevel(Integer level) { this.level = level; }
 
+	private Long cooldownEnd;
+		@Override
+		public Boolean isOnCooldown() {
+			return this.cooldownEnd > System.currentTimeMillis();
+		}
+
+		@Override
+		public Long getCooldownEnd() {
+			return this.cooldownEnd;
+		}
+
+		@Override
+		public void markCooldownEnd(Long cooldownEnd) {
+			this.cooldownEnd = cooldownEnd;
+		}
+
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
         switch (this.tier) {
             case UNCOMMON:
-                return new ParrySkill(caster, this.increase, 10L, (SwordSkillProvider) this);
+                return new ParrySkill(caster, this.increase, 10L, this);
             case RARE:
-                return new ParrySkill(caster, this.increase, 10L, (SwordSkillProvider) this);
+                return new ParrySkill(caster, this.increase, 10L, this);
             case LEGENDARY:
-                return new ParrySkill(caster, this.increase, 10L, (SwordSkillProvider) this);
+                return new ParrySkill(caster, this.increase, 10L, this);
             case ETHEREAL:
-                return new ParrySkill(caster, this.increase, 10L, (SwordSkillProvider) this);
+                return new ParrySkill(caster, this.increase, 10L, this);
             case GODLIKE:
-                return new ParrySkill(caster, this.increase, 10L, (SwordSkillProvider) this);
+                return new ParrySkill(caster, this.increase, 10L, this);
             default:
-                return new ParrySkill(caster, this.increase, 10L, (SwordSkillProvider) this);
+                return new ParrySkill(caster, this.increase, 10L, this);
         }
     }
-    
 }
