@@ -10,6 +10,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.Pair;
+import net.peacefulcraft.sco.utilities.PositivePotionUtil;
 
 /**
  * Static class to handle messaging players
@@ -134,7 +135,7 @@ public class SkillAnnouncer {
     public static void messageSkill(SCOPlayer s, String skillName, ItemTier tier, List<Pair<String, Integer>> potionEffects) {
         String message = "";
         for(Pair<String, Integer> pair : potionEffects) {
-            String temp = isEffectPositive(pair.getFirst()) ? "Recieved " : "Inflicted ";
+            String temp = PositivePotionUtil.isEffectPositive(pair.getFirst()) ? "Recieved " : "Inflicted ";
             message += temp + pair.getFirst() + " for " + pair.getSecond() + " seconds, ";
         }
         message = message.substring(0, message.length() - 2) + ".";
@@ -161,36 +162,5 @@ public class SkillAnnouncer {
         if(!s.doesReceiveSkillMessages()) { return; }
         String prefix = ChatColor.DARK_RED + "[" + ItemTier.getTierColor(tier) + skillName + ChatColor.DARK_RED + "]";
         s.getPlayer().sendMessage(prefix + ChatColor.DARK_GRAY + message);
-    }
-
-    private static boolean isEffectPositive(String effect) {
-        PotionEffectType type = PotionEffectType.getByName(effect);
-        if(type == null) { return true; }
-
-        return positives.contains(type);
-    }
-
-    private static List<PotionEffectType> positives = new ArrayList<>();
-    static {
-        positives.add(PotionEffectType.SPEED);
-        positives.add(PotionEffectType.FAST_DIGGING);
-        positives.add(PotionEffectType.INCREASE_DAMAGE);
-        positives.add(PotionEffectType.HEAL);
-        positives.add(PotionEffectType.JUMP);
-        positives.add(PotionEffectType.REGENERATION);
-        positives.add(PotionEffectType.DAMAGE_RESISTANCE);
-        positives.add(PotionEffectType.FIRE_RESISTANCE);
-        positives.add(PotionEffectType.WATER_BREATHING);
-        positives.add(PotionEffectType.INVISIBILITY);
-        positives.add(PotionEffectType.NIGHT_VISION);
-        positives.add(PotionEffectType.HEALTH_BOOST);
-        positives.add(PotionEffectType.ABSORPTION);
-        positives.add(PotionEffectType.SATURATION);
-        positives.add(PotionEffectType.GLOWING);
-        positives.add(PotionEffectType.LUCK);
-        positives.add(PotionEffectType.SLOW_FALLING);
-        positives.add(PotionEffectType.CONDUIT_POWER);
-        positives.add(PotionEffectType.DOLPHINS_GRACE);
-        positives.add(PotionEffectType.HERO_OF_THE_VILLAGE);
     }
 }
