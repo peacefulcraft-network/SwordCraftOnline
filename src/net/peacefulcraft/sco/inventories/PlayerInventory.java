@@ -336,7 +336,7 @@ public class PlayerInventory extends BukkitInventoryBase {
 
       if(item instanceof CustomDataHolder) {
         JsonObject obj = ((CustomDataHolder)item).getCustomData();
-        if(obj.get("weapon").getAsString().equalsIgnoreCase(weapon)) {
+        if(obj.get("weapon") != null && obj.get("weapon").getAsString().equalsIgnoreCase(weapon)) {
           return item;
         }
       }
