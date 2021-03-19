@@ -5,13 +5,14 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.utilities.ItemAttribute;
 
 public class SimplePunchSkill extends SwordSkill {
 
-    private double damage;
+    private Double damage;
 
     public SimplePunchSkill(SwordSkillCaster c, SwordSkillProvider provider) {
         super(c, provider);
@@ -33,12 +34,14 @@ public class SimplePunchSkill extends SwordSkill {
             ItemIdentifier knife = s.getPlayerInventory().getHotbarWeapon("knife");
             if(sword != null && !sword.getMaterial().equals(Material.AIR)) {
                 double attrDamage = ItemAttribute.getAttribute(sword, Attribute.GENERIC_ATTACK_DAMAGE);
+                SwordCraftOnline.logDebug("[Simple Punch] Attribute: " + attrDamage);
                 if(attrDamage > 0) {
                     this.damage = 0.7 * attrDamage;
                     return true;
                 }
             } else if(knife != null && !knife.getMaterial().equals(Material.AIR)) {
                 double attrDamage = ItemAttribute.getAttribute(knife, Attribute.GENERIC_ATTACK_DAMAGE);
+                SwordCraftOnline.logDebug("[Simple Punch] Attribute: " + attrDamage);
                 if(attrDamage > 0) {
                     this.damage = 0.7 * attrDamage;
                     return true;
@@ -51,6 +54,8 @@ public class SimplePunchSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        if(this.damage == null) { return; }
+        if(!(ev instanceof EntityDamageByEntityEvent)) { return; }
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         evv.setDamage(this.damage);
     }
