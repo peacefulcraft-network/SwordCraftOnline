@@ -30,7 +30,7 @@ public class ElephantHeartItem implements SwordSkillProvider {
         desc.add("Empower yourself with the heart");
         desc.add("of the Aincradian Elephant.");
         desc.add("Max Health: +50%");
-        desc.add("Movement Speed: -2");
+        desc.add("Movement Speed: -20%");
     }
 
     public ElephantHeartItem(ItemTier tier, Integer level, int quantity) {

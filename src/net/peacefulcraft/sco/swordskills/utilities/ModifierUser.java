@@ -228,7 +228,7 @@ public class ModifierUser {
         } else if(changedField.equalsIgnoreCase("DAMAGE_MODIFIER")) {
             boolean incoming = obj.get("incoming").getAsBoolean();
             addToMultiplier(ModifierType.valueOf(changedField), incoming, -changedValue, -1, id);
-        } else if(changedField.equalsIgnoreCase("HEALTH")) {
+        } else if(changedField.equalsIgnoreCase("MAX_HEALTH")) {
             addToMaxHealth(-((int) changedValue), -1, id);
         }else {
             SwordCraftOnline.logDebug("No matching field change for obj in Modifier User.");
@@ -639,22 +639,17 @@ public class ModifierUser {
     public Double convertHealth(double damage, boolean set) {
         // Ratio of current health to max health
         // Ex: (100-2) / 100 = 0.98
+        // DisplayedHealth = 20 * ratio
+        // DisplayedHealth = 20 * ( (currHealth - damage) / maxhealth )
+        // currHealth = (displayed * max) / 20 + damage
+        
+        //double displayed = this.entity.getHealth();
+        int damagee = (int)damage;
         double ratio = (this.currHealth - damage) / this.maxHealth;
         double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
-
         if(set) {
-            this.currHealth = this.currHealth - (int)damage < 0 ? 0 : this.currHealth - (int)damage;
-            getLivingEntity().setHealth(health);
-        }
-
-        return health;
-    }
-
-    public Double convertHealth(boolean set) {
-        double ratio = (this.currHealth) / this.maxHealth;
-        double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
-
-        if(set) {
+            this.currHealth = this.currHealth - damagee < 0 ? 0 : this.currHealth - damagee;
+            this.currHealth = this.currHealth > this.maxHealth ? this.maxHealth : this.currHealth;
             getLivingEntity().setHealth(health);
         }
 

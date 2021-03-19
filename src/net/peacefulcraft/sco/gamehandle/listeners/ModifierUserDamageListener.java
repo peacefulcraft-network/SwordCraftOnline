@@ -7,23 +7,24 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
+/**
+ * Holds relevant event handling for modifier user
+ * damage and health regeneration
+ */
 public class ModifierUserDamageListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void modDamage(EntityDamageEvent e) {
-        //TODO: REMOVE THIS CANCEL
-        return;
-
-        /*
         Entity vic = e.getEntity();
 
-        ModifierUser mu = checkType(vic);
+        ModifierUser mu = ModifierUser.getModifierUser(vic);
         if(mu == null) { return; }
 
         // Getting damage from event then setting to 0
@@ -37,7 +38,7 @@ public class ModifierUserDamageListener implements Listener {
         if(e instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent ev = (EntityDamageByEntityEvent)e;
             
-            ModifierUser damager = checkType(ev.getDamager());
+            ModifierUser damager = ModifierUser.getModifierUser(ev.getDamager());
             if(damager != null) {
                 // Checking outgoing damage calculation
                 damage = damager.checkModifier(ev.getEntity().getType().toString().toUpperCase(), damage, false);
@@ -49,26 +50,15 @@ public class ModifierUserDamageListener implements Listener {
 
         // Converting health to appropriate amount
         mu.convertHealth(damage, true);     
-        */     
     }
 
-    /**
-     * Helper function
-     * Checks mob type against modifer users
-     * @param e Entity we are checking
-     * @return Modifier user if entity is valid. Null otherwise
-     */
-    private ModifierUser checkType(Entity e) {
-        ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(e.getUniqueId());
-        if(am == null && !(e instanceof Player)) {
-            // Activemob is null and entity isn't player. Don't care
-            return null;
-        } else if(am != null && !(e instanceof Player)) {
-            // Valid ActiveMob and not player
-            return am;
-        }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void healthRegen(EntityRegainHealthEvent e) {
+        Entity ent = e.getEntity();
 
-        // Entity is player. We check game manager
-        return GameManager.findSCOPlayer((Player)e);
+        ModifierUser mu = ModifierUser.getModifierUser(ent);
+        if(mu == null) { return; }
+
+        mu.convertHealth(-e.getAmount(), true);
     }
 }

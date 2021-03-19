@@ -35,7 +35,10 @@ public class ElephantHeartSkill extends SwordSkill {
             ModifierUser mu = (ModifierUser)c;
             this.maxHealth = mu.getMaxHealth();
             change1 = mu.queueChange((int) (this.maxHealth * 0.5), -1);
-            change2 = mu.queueChange(Attribute.GENERIC_MOVEMENT_SPEED, -2, -1);
+            change2 = mu.queueChange(
+                Attribute.GENERIC_MOVEMENT_SPEED,
+                -(ModifierUser.getBaseGenericMovement(mu) * 0.2),
+                -1);
         }
     }
 
