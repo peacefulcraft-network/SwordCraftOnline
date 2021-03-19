@@ -5,10 +5,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.items.ItemIdentifier;
-import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.modules.Trigger;
 
 public class SevereUpwardStrikeSkill extends SwordSkill {
 
@@ -20,8 +18,11 @@ public class SevereUpwardStrikeSkill extends SwordSkill {
         this.vectorMultiplier = vectorMultiplier;
         this.cooldown = cooldown;
 
+        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
-        this.useModule(new TimedCooldown(this.cooldown));
+
+        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new TimedCooldown(this.cooldown, null, "PlayerInteractEvent"));
     }
 
     @Override
@@ -31,25 +32,21 @@ public class SevereUpwardStrikeSkill extends SwordSkill {
 
     @Override
     public boolean skillPreconditions(Event ev) {
-        if(this.c instanceof SCOPlayer) {
-            SCOPlayer s = (SCOPlayer)this.c;
-
-            ItemIdentifier identifier = ItemIdentifier.resolveItemIdentifier(
-                s.getPlayer().getInventory().getItemInMainHand()  
-            );
-            if(!(identifier instanceof WeaponAttributeHolder)) { return false; }
-        }
         return true;
     }
 
     @Override
     public void triggerSkill(Event ev) {
-        EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
-        if(evv.getEntity() instanceof LivingEntity) {
-            LivingEntity liv = (LivingEntity)evv.getEntity();
-
-            Vector dir = liv.getLocation().getDirection();
-            liv.setVelocity(dir.multiply(-1 * (3 + this.vectorMultiplier)));
+        if(ev instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
+            if(evv.getEntity() instanceof LivingEntity) {
+                LivingEntity liv = (LivingEntity)evv.getEntity();
+    
+                liv.setVelocity(
+                    liv.getLocation().getDirection()
+                        .multiply(-1 * (2 + this.vectorMultiplier)).add(new Vector(0, 5, 0))
+                );
+            }
         }
     }
 

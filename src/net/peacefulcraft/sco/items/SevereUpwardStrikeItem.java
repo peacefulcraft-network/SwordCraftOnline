@@ -27,31 +27,15 @@ public class SevereUpwardStrikeItem implements SwordSkillProvider {
         this.tier = tier;
         this.quantity = quantity;
         this.type = SwordSkillType.SWORD;
+
+        setModifiers();
+
         this.desc = new SwordSkillDesc(tier, type);
         desc.add("A low to high strike that launches");
         desc.add("your foe into the air.");
-        switch (this.tier) {
-            case COMMON:
-                desc.add("Vector Multiplier: +0.1");
-                desc.add("Cooldown: 7 Seconds");
-            break; case UNCOMMON:
-                desc.add("Vector Multiplier: +0.3");
-                desc.add("Cooldown: 8 Seconds");
-            break; case RARE:
-                desc.add("Vector Multiplier: +0.5");
-                desc.add("Cooldown: 8 Seconds");
-            break; case LEGENDARY:
-                desc.add("Vector Multiplier: +0.7");
-                desc.add("Cooldown: 9 Seconds");
-            break; case ETHEREAL:
-                desc.add("Vector Multiplier: +0.9");
-                desc.add("Cooldown: 9 Seconds");
-            break; case GODLIKE:
-                desc.add("Vector Multiplier: +1.1");
-                desc.add("Cooldown: 11 Seconds");
-        }
-
-        setModifiers();
+        desc.add("");
+        desc.add("Vector Multiplier: +" + vectorMultiplier);
+        desc.add("Cooldown: " + cooldown + " Seconds");
     }
 
     @Override
