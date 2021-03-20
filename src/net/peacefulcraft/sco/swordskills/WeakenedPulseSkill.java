@@ -47,7 +47,7 @@ public class WeakenedPulseSkill extends SwordSkill {
             mu, 
             "Weakened Pulse", 
             tier, 
-            new Pair<String,Integer>(PotionEffectType.WEAKNESS.toString(), weakModifier));
+            new Pair<String,Integer>(PotionEffectType.WEAKNESS.toString(), 5));
     }
 
     @Override
