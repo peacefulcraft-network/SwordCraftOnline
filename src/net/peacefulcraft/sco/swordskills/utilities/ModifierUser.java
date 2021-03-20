@@ -646,7 +646,8 @@ public class ModifierUser {
         //double displayed = this.entity.getHealth();
         int damagee = (int)damage;
         double ratio = (this.currHealth - damage) / this.maxHealth;
-        double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
+        double health = ratio > 1.0 ? 20.0 : getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
+        health = health < 0 ? 0 : health;
         if(set) {
             this.currHealth = this.currHealth - damagee < 0 ? 0 : this.currHealth - damagee;
             this.currHealth = this.currHealth > this.maxHealth ? this.maxHealth : this.currHealth;

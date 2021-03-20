@@ -27,19 +27,12 @@ public class VampireCarvingItem implements SwordSkillProvider {
         this.quantity = quantity;
         this.type = SwordSkillType.PASSIVE;
         this.desc = new SwordSkillDesc(tier, type);
+
+        setModifiers();
+
         desc.add("Drain the health of your foes");
         desc.add("with each strike.");
-        switch (this.tier) {
-            case RARE:
-                desc.add("Life Drain on Hit: 0.1x");
-            break; case LEGENDARY:
-                desc.add("Life Drain on Hit: 0.12x");
-            break; case ETHEREAL:
-                desc.add("Life Drain on Hit: 0.14x");
-            break; case GODLIKE:
-                desc.add("Life Drain on Hit: 0.15x");
-            default:
-        }
+        desc.add("Life Drain on Hit: " + lifeDrain + "x");
     }
 
     @Override
@@ -59,7 +52,7 @@ public class VampireCarvingItem implements SwordSkillProvider {
 
     @Override
     public Material getMaterial() {
-        return Material.REDSTONE_WIRE;
+        return Material.REDSTONE;
     }
 
     @Override
@@ -132,11 +125,11 @@ public class VampireCarvingItem implements SwordSkillProvider {
             case RARE:
                 this.lifeDrain = 0.1;
             break; case LEGENDARY:
-                this.lifeDrain = 0.12;
+                this.lifeDrain = 0.15;
             break; case ETHEREAL:
-                this.lifeDrain = 0.14;
+                this.lifeDrain = 0.20;
             break; case GODLIKE:
-                this.lifeDrain = 0.16;
+                this.lifeDrain = 0.25;
             default:
                 this.lifeDrain = 0;
         }

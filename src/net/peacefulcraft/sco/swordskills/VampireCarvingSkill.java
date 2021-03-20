@@ -9,7 +9,7 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class VampireCarvingSkill extends SwordSkill {
 
-    private double healAdd;
+    private Double healAdd;
     private ItemTier tier;
 
     public VampireCarvingSkill(SwordSkillCaster c, Double modifier, SwordSkillProvider provider, ItemTier tier) {
@@ -34,11 +34,14 @@ public class VampireCarvingSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        if(!(ev instanceof EntityDamageByEntityEvent)) { return; }
+        if(healAdd == null) { return; }
+
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         ModifierUser mu = (ModifierUser)c;
         
         int addHealth = evv.getDamage() * healAdd < 1 ? 1 : (int) (evv.getDamage() * healAdd);
-        mu.setHealth(mu.getHealth() + addHealth);
+        mu.convertHealth(-addHealth, true);
         SkillAnnouncer.messageSkill(
             mu, 
             "Healed for " + addHealth + " HP.", 
