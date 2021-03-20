@@ -22,7 +22,7 @@ public class HeavyClothItem implements SwordSkillProvider {
     private SwordSkillDesc desc;
     private int armorModifier;
 
-    public HeavyClothItem(ItemTier tier, int quantity) {
+    public HeavyClothItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = tier;
         this.type = SwordSkillType.PASSIVE;

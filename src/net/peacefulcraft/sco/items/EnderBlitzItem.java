@@ -113,7 +113,7 @@ public class EnderBlitzItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new EnderBlitzSkill(caster, (SwordSkillProvider)this);
+        return new EnderBlitzSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override
