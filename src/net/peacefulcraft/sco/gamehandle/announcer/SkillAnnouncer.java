@@ -3,6 +3,8 @@ package net.peacefulcraft.sco.gamehandle.announcer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
@@ -137,8 +139,11 @@ public class SkillAnnouncer {
     public static void messageSkill(SCOPlayer s, String skillName, ItemTier tier, List<Pair<String, Integer>> potionEffects) {
         String message = "";
         for(Pair<String, Integer> pair : potionEffects) {
-            String temp = PositivePotionUtil.isEffectPositive(pair.getFirst()) ? "Recieved " : "Inflicted ";
-            message += temp + pair.getFirst() + " for " + pair.getSecond() + " seconds, ";
+            String effect = StringUtils.substringBetween(pair.getFirst(), ", ", "]");
+            effect = effect.substring(0,1) + effect.substring(1).toLowerCase();
+
+            String temp = PositivePotionUtil.isEffectPositive(effect.toUpperCase()) ? "Recieved " : "Inflicted ";
+            message += temp + effect + " for " + pair.getSecond() + " seconds, ";
         }
         message = message.substring(0, message.length() - 2) + ".";
         messageSkill(s, message, skillName, tier);
