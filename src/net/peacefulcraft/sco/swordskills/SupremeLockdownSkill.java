@@ -20,7 +20,7 @@ public class SupremeLockdownSkill extends SwordSkill {
         super(c, provider);
         this.tier = tier;
         
-        this.useModule(new TimedCooldown(25000));
+        this.useModule(new TimedCooldown(25000, (ModifierUser)c, SwordSkillType.SECONDARY));
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
@@ -43,10 +43,10 @@ public class SupremeLockdownSkill extends SwordSkill {
                 ModifierUser vic = ModifierUser.getModifierUser(e);
                 if(vic == null) { continue; }
                 vic.getLivingEntity().addPotionEffect(
-                    new PotionEffect(PotionEffectType.SLOW, 7, 999)
+                    new PotionEffect(PotionEffectType.SLOW, 140, 999)
                 );
                 SkillAnnouncer.messageSkill(
-                    mu, 
+                    vic, 
                     "Locked down for 7 seconds.", 
                     "Supreme Lockdown", 
                     tier);
