@@ -4,23 +4,35 @@ import java.util.HashMap;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.EffectCombo;
+import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 
 public class ThiefKingsDemonLedgerComboSkill extends SwordSkill {
 
-    public ThiefKingsDemonLedgerComboSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    private ItemTier tier;
+
+    public ThiefKingsDemonLedgerComboSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
-        
+        this.tier = tier;
+
         HashMap<Integer, PotionEffectType> effects = new HashMap<>();
         effects.put(1, PotionEffectType.WEAKNESS);
         effects.put(2, PotionEffectType.POISON);
         effects.put(3, PotionEffectType.WITHER);
 
-        this.useModule(new Trigger(SwordSkillType.PRIMARY));
-        this.useModule(new EffectCombo(this, 4, effects, 4, 6));
+        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
+        this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
+
+        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new EffectCombo(this, 3, effects, 4, 80, tier, "Thief Kings Demon Ledger Combo"));
+        this.useModule(new TimedCooldown(45000, null, "PlayerInteractEvent"));
     }
 
     @Override
@@ -35,8 +47,15 @@ public class ThiefKingsDemonLedgerComboSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        if(ev instanceof PlayerInteractEvent) { return; }
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         evv.setDamage(evv.getDamage() * 3);
+
+        SkillAnnouncer.messageSkill(
+            s, 
+            "Combo completed", 
+            "Thief Kings Demon Ledger Combo", 
+            tier);
     }
 
     @Override

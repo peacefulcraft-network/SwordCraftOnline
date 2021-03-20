@@ -24,7 +24,7 @@ public class ThiefKingsDemonLedgerComboItem implements SwordSkillProvider {
     public ThiefKingsDemonLedgerComboItem(ItemTier tier, Integer quantity) {
         this.quantity = quantity;
         this.tier = ItemTier.ETHEREAL;
-        this.type = SwordSkillType.PRIMARY;
+        this.type = SwordSkillType.SWORD;
         this.desc = new SwordSkillDesc(tier, type);
         desc.add("The signature 4 hit combo of the thief king.");
         desc.add("First hit: Inflicts weakness IV");
@@ -110,7 +110,7 @@ public class ThiefKingsDemonLedgerComboItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new ThiefKingsDemonLedgerComboSkill(caster, (SwordSkillProvider)this);
+        return new ThiefKingsDemonLedgerComboSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override
