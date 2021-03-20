@@ -5,6 +5,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
@@ -29,22 +30,31 @@ public class PerfectGiftSkill extends SwordSkill {
 
     @Override
     public boolean skillPreconditions(Event ev) {
-        return true;
+        EntityDamageEvent evv = (EntityDamageEvent)ev;
+        double damage = evv.getFinalDamage();
+
+        ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
+        if(mu == null) { return false; }
+
+        SwordCraftOnline.logDebug("[Perfect Gift] Health: " + mu.getHealth() + ", Damage: " + damage + ", Math: " + (mu.getHealth() - damage));
+        
+        if(mu.getHealth() - damage <= 0) { return true; } 
+
+        return false;
     }
 
     @Override
     public void triggerSkill(Event ev) {
         EntityDamageEvent evv = (EntityDamageEvent)ev;
-        double damage = evv.getFinalDamage();
 
         ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
-        if(mu.getHealth() - damage <= 0) {
-            mu.setHealth(mu.getMaxHealth());
-            mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 5, 3));             
-            evv.setCancelled(true);
+        if(mu == null) { return; }
 
-            SkillAnnouncer.messageSkill(mu, "Death prevented.", "Perfect Gift", tier);
-        }
+        mu.setHealth(mu.getMaxHealth());
+        mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 100, 3));             
+        evv.setCancelled(true);
+
+        SkillAnnouncer.messageSkill(mu, "Death prevented.", "Perfect Gift", tier);
     }
 
     @Override
