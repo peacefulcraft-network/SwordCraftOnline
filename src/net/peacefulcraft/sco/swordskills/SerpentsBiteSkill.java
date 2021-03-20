@@ -8,6 +8,7 @@ import org.bukkit.potion.PotionEffectType;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class SerpentsBiteSkill extends SwordSkill {
 
@@ -39,9 +40,13 @@ public class SerpentsBiteSkill extends SwordSkill {
         if(mu == null) { return; }
 
         mu.getLivingEntity().addPotionEffect(
-            new PotionEffect(PotionEffectType.POISON, poisonModifier, 5)
+            new PotionEffect(PotionEffectType.POISON, 100, poisonModifier)
         );
-        SkillAnnouncer.messageSkill(mu, "Inflicted poison for 5 seconds.", "Serpents Bite", tier);
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "Serpents Bite", 
+            tier, 
+            new Pair<String, Integer>(PotionEffectType.POISON.toString(), 5));
     }
 
     @Override
