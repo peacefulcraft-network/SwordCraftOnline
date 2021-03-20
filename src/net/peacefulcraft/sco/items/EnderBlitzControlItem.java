@@ -116,7 +116,7 @@ public class EnderBlitzControlItem implements SwordSkillProvider, EphemeralAttri
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new EnderBlitzControlSkill(caster, (SwordSkillProvider)this);
+        return new EnderBlitzControlSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override
