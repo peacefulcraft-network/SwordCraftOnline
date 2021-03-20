@@ -25,7 +25,7 @@ public class GuardianSkill extends SwordSkill {
         this.armorModifier = armorModifier;
         this.tier = tier;
         
-        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
+        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
     }
 

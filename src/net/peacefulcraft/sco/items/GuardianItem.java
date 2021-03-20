@@ -25,7 +25,7 @@ public class GuardianItem implements SwordSkillProvider {
     public GuardianItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
-        this.type = SwordSkillType.PRIMARY;
+        this.type = SwordSkillType.SECONDARY;
         this.desc = new SwordSkillDesc(tier, type);
         desc.add(ItemTier.getTierColor(this.tier) + "Protect you and your allies for 20 seconds.");
         switch(this.tier) {
