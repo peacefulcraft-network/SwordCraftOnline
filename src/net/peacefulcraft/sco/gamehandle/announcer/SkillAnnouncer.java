@@ -3,8 +3,6 @@ package net.peacefulcraft.sco.gamehandle.announcer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.potion.PotionEffectType;
-
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
@@ -160,7 +158,7 @@ public class SkillAnnouncer {
      */
     public static void messageSkill(SCOPlayer s, String message, String skillName, ItemTier tier) {
         if(!s.doesReceiveSkillMessages()) { return; }
-        String prefix = ChatColor.DARK_RED + "[" + ItemTier.getTierColor(tier) + skillName + ChatColor.DARK_RED + "]";
+        String prefix = ChatColor.DARK_RED + "[" + ItemTier.getTierColor(tier) + skillName + ChatColor.DARK_RED + "] ";
         s.getPlayer().sendMessage(prefix + ChatColor.DARK_GRAY + message);
     }
 }
