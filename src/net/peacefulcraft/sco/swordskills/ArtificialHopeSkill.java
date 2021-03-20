@@ -41,11 +41,11 @@ public class ArtificialHopeSkill extends SwordSkill {
             -1);
         change2 = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            1 + (0.2 + valueModifier), 
+            ModifierUser.getBaseGenericMovement(mu) * (0.12 + valueModifier), 
             -1);
         change3 = mu.queueChange(
             Attribute.GENERIC_ARMOR, 
-            2, 
+            -2, 
             -1);
     }
 

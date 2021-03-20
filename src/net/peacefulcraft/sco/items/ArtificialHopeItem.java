@@ -34,22 +34,22 @@ public class ArtificialHopeItem implements SwordSkillProvider {
         switch(this.tier) {
             case COMMON:
                 desc.add("True Damage: +1.2");
-                desc.add("Movement Speed: +1.2");
+                desc.add("Movement Speed: +10%");
             break; case UNCOMMON:
                 desc.add("True Damage: +1.3");
-                desc.add("Movement Speed: +1.3");
+                desc.add("Movement Speed: +13%");
             break; case RARE:
                 desc.add("True Damage: +1.4");
-                desc.add("Movement Speed: +1.4");
+                desc.add("Movement Speed: +14%");
             break; case LEGENDARY:
                 desc.add("True Damage: +1.5");
-                desc.add("Movement Speed: +1.5");
+                desc.add("Movement Speed: +15%");
             break; case ETHEREAL:
                 desc.add("True Damage: +1.6");
-                desc.add("Movement Speed: +1.6");
+                desc.add("Movement Speed: +16%");
             break; case GODLIKE:
                 desc.add("True Damage: +1.7");
-                desc.add("Movement Speed: +1.7");
+                desc.add("Movement Speed: +17%");
         }
         desc.add("Armor: -2");
     }
