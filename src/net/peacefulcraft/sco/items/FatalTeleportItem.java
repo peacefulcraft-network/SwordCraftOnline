@@ -31,8 +31,10 @@ public class FatalTeleportItem implements SwordSkillProvider {
         setModifiers();
 
         this.desc = new SwordSkillDesc(tier, type);
-        desc.add("hit enemy and strike them down.");
-        desc.add("Teleport behind your last");
+        desc.add("Appear behind your last hit");
+        desc.add("enemy. On trigger, teleport");
+        desc.add("directly behind and strike");
+        desc.add("them down.");
         switch(this.tier) {
             case RARE:
                 desc.add("Damage: x2.0 after teleport.");
@@ -67,7 +69,7 @@ public class FatalTeleportItem implements SwordSkillProvider {
 
     @Override
     public Material getMaterial() {
-        return Material.END_GATEWAY;
+        return Material.END_STONE;
     }
 
     @Override
@@ -132,7 +134,7 @@ public class FatalTeleportItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new FatalTeleportSkill(caster, this.damageModifier, this.cooldown, (SwordSkillProvider)this);
+        return new FatalTeleportSkill(caster, this.damageModifier, this.cooldown, (SwordSkillProvider)this, tier);
     }
 
     @Override
