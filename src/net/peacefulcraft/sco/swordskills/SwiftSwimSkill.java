@@ -46,7 +46,7 @@ public class SwiftSwimSkill extends SwordSkill {
         if(loc.getWorld().hasStorm() && !rainBoosted) {
             change1 = mu.queueChange(
                 Attribute.GENERIC_MOVEMENT_SPEED, 
-                3, 
+                ModifierUser.getBaseGenericMovement(mu) * 0.2, 
                 -1);
             rainBoosted = true;
             SkillAnnouncer.messageSkill(
