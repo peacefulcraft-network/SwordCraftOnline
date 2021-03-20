@@ -34,7 +34,7 @@ public class LegDaySkill extends SwordSkill {
         ModifierUser mu = (ModifierUser)c;
         mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            2 + movementModifier, 
+            ModifierUser.getBaseGenericMovement(mu) * (0.2 + movementModifier), 
             -1);
     }
 

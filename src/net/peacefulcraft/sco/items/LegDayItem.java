@@ -29,22 +29,10 @@ public class LegDayItem implements SwordSkillProvider {
         this.desc = new SwordSkillDesc(tier, type);
         desc.add("Train your legs to increase");
         desc.add("your movement speed.");
-        switch(this.tier) {
-            case COMMON:
-                desc.add("Movement Speed: +2.0");
-            case UNCOMMON:
-                desc.add("Movement Speed: +2.2");
-            case RARE:
-                desc.add("Movement Speed: +2.4");
-            case LEGENDARY:
-                desc.add("Movement Speed: +2.6");
-            case ETHEREAL:
-                desc.add("Movement Speed: +2.8");
-            case GODLIKE:
-                desc.add("Movement Speed: +3.0");
-        }
 
         setModifiers();
+
+        desc.add("Movement Speed: +" + ( 20 + (100 * movementModifier) + "%") );
     }
 
     @Override
@@ -140,15 +128,15 @@ public class LegDayItem implements SwordSkillProvider {
             case COMMON:
                 this.movementModifier = 0.0;
             break; case UNCOMMON:
-                this.movementModifier = 0.2;
+                this.movementModifier = 0.02;
             break; case RARE:
-                this.movementModifier = 0.4;
+                this.movementModifier = 0.04;
             break; case LEGENDARY:
-                this.movementModifier = 0.6;
+                this.movementModifier = 0.06;
             break; case ETHEREAL:
-                this.movementModifier = 0.8;
+                this.movementModifier = 0.08;
             break; case GODLIKE:
-                this.movementModifier = 1.0;
+                this.movementModifier = 0.1;
         }
     }
     
