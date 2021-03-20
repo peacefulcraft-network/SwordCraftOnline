@@ -96,7 +96,9 @@ public class SkillAnnouncer {
             String stat = pair.getFirst().replace("GENERIC_", "").replace("Generic_", "");
             stat = stat.replace("_", " ");
             stat = stat.substring(0, 1).toUpperCase() + stat.substring(1).toLowerCase();
-            message += stat + " changed by: " + pair.getSecond() + ", ";
+
+            String statt = pair.getSecond() < 0 ? " decreased by: " + -pair.getSecond() : " increased by: " + pair.getSecond();
+            message += stat + statt + ", ";
         }
         message = message.substring(0, message.length() - 2) + ".";
         messageSkill(s, message, skillName, tier);
