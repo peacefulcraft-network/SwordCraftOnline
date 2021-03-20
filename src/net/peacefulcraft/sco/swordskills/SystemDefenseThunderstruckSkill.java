@@ -3,12 +3,11 @@ package net.peacefulcraft.sco.swordskills;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
@@ -25,8 +24,8 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
         super(c, provider);
         this.tier = tier;
         
-        this.useModule(new TimedCooldown(30000));
-        this.useModule(new Trigger(SwordSkillType.PASSIVE));
+        this.useModule(new TimedCooldown(30000, (ModifierUser)c, SwordSkillType.SECONDARY));
+        this.useModule(new Trigger(SwordSkillType.SECONDARY));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 
@@ -42,17 +41,11 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        EntityInteractEvent evv = (EntityInteractEvent)ev;
-
-        ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
-        if(mu == null) {
-            SwordCraftOnline.logDebug("System Defense: Thunderstruck failed.");
-            return;
-        }
+        ModifierUser mu = (ModifierUser)c;
         List<Location> blocks = LocationUtil.getCylinderLocations(
-            mu.getLivingEntity().getLocation(), 0, 7, true);
-        for(Location loc : blocks) {
-            mu.getLivingEntity().getLocation().getWorld().strikeLightning(loc);
+            mu.getLivingEntity().getLocation(), 1, 7, true);
+        for(Block b : LocationUtil.locationsToBlocks(blocks)) {
+            mu.getLivingEntity().getLocation().getWorld().strikeLightning(b.getLocation());
         }
 
         if(tier.equals(ItemTier.ETHEREAL)) {
@@ -62,7 +55,7 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
                 mu, 
                 "System Defense: Thunderstruck",
                 tier, 
-                new Pair<String, Integer>(PotionEffectType.REGENERATION.toString(), 2));
+                new Pair<String, Integer>(PotionEffectType.REGENERATION.toString(), 5));
         } else if(tier.equals(ItemTier.GODLIKE)) {
             mu.getLivingEntity().addPotionEffect(
                 new PotionEffect(PotionEffectType.REGENERATION, 100, 3));
@@ -70,7 +63,7 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
                 mu, 
                 "System Defense: Thunderstruck",
                 tier, 
-                new Pair<String, Integer>(PotionEffectType.REGENERATION.toString(), 3));
+                new Pair<String, Integer>(PotionEffectType.REGENERATION.toString(), 5));
         }
     }
 
