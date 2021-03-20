@@ -29,6 +29,10 @@ public class OverCriticalItem implements SwordSkillProvider {
         this.desc = new SwordSkillDesc(tier, type);
         desc.add("A hidden technique that");
         desc.add("releases your true potential.");
+        setModifiers();
+
+        desc.add("Critical Chance: +" + (0.2 + criticalModifier));
+
         switch(this.tier) {
             case RARE:
                 desc.add("Critical Chance: +20%");
