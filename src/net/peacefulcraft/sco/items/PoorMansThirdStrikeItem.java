@@ -107,7 +107,7 @@ public class PoorMansThirdStrikeItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new PoorMansThirdStrikeSkill(caster, (SwordSkillProvider)this);
+        return new PoorMansThirdStrikeSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

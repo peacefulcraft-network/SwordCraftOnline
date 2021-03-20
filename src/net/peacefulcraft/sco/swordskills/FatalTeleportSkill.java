@@ -7,6 +7,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -15,10 +17,12 @@ public class FatalTeleportSkill extends SwordSkill {
 
     private ModifierUser lastHit = null;
     private double damageModifier;
+    private ItemTier tier;
 
-    public FatalTeleportSkill(SwordSkillCaster c, double damageModifier, int cooldown, SwordSkillProvider provider) {
+    public FatalTeleportSkill(SwordSkillCaster c, double damageModifier, int cooldown, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         this.damageModifier = damageModifier;
+        this.tier = tier;
 
         this.useModule(new TimedCooldown(cooldown));
         this.useModule(new Trigger(SwordSkillType.SWORD));
@@ -56,6 +60,12 @@ public class FatalTeleportSkill extends SwordSkill {
 
             Vector inverse = lastHit.getLivingEntity().getLocation().getDirection().normalize().multiply(-1);
             Location behind = lastHit.getLivingEntity().getLocation().add(inverse);
+
+            SkillAnnouncer.messageSkill(
+                mu, 
+                "Look behind you...", 
+                "Fatal Teleport", 
+                tier);
 
             mu.getLivingEntity().teleport(behind);
             mu.queueChange(
