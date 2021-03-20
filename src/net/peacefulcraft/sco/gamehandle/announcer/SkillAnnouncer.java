@@ -93,7 +93,9 @@ public class SkillAnnouncer {
      */
     public static void messageSkill(SCOPlayer s, List<Pair<String, Double>> changedStats, String message, String skillName, ItemTier tier) {
         for (Pair<String, Double> pair : changedStats) {
-            String stat = pair.getFirst().replace("GENERIC", "").replace("Generic", "");
+            String stat = pair.getFirst().replace("GENERIC_", "").replace("Generic_", "");
+            stat = stat.replace("_", " ");
+            stat = stat.substring(0, 1).toUpperCase() + stat.substring(1).toLowerCase();
             message += stat + " changed by: " + pair.getSecond() + ", ";
         }
         message = message.substring(0, message.length() - 2) + ".";
@@ -159,6 +161,6 @@ public class SkillAnnouncer {
     public static void messageSkill(SCOPlayer s, String message, String skillName, ItemTier tier) {
         if(!s.doesReceiveSkillMessages()) { return; }
         String prefix = ChatColor.DARK_RED + "[" + ItemTier.getTierColor(tier) + skillName + ChatColor.DARK_RED + "] ";
-        s.getPlayer().sendMessage(prefix + ChatColor.DARK_GRAY + message);
+        s.getPlayer().sendMessage(prefix + ChatColor.GRAY + message);
     }
 }
