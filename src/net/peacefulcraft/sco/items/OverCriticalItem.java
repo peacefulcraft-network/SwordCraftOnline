@@ -33,18 +33,6 @@ public class OverCriticalItem implements SwordSkillProvider {
 
         desc.add("Critical Chance: +" + (0.2 + criticalModifier));
 
-        switch(this.tier) {
-            case RARE:
-                desc.add("Critical Chance: +20%");
-            break; case LEGENDARY:
-                desc.add("Critical Chance: +22%");
-            break; case ETHEREAL:
-                desc.add("Critical Chance: +24%");
-            break; case GODLIKE:
-                desc.add("Critcial Chance: +30%");
-            default:
-        }
-
         setModifiers();
     }
 
