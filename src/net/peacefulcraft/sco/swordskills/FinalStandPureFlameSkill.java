@@ -2,12 +2,9 @@ package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
@@ -22,7 +19,7 @@ public class FinalStandPureFlameSkill extends SwordSkill {
         this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.useModule(new TimedCooldown(35000));
+        this.useModule(new TimedCooldown(35000, (ModifierUser)c, SwordSkillType.PRIMARY));
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
     }
 
@@ -45,16 +42,23 @@ public class FinalStandPureFlameSkill extends SwordSkill {
                 LivingEntity liv = (LivingEntity)e;
                 liv.setFireTicks(200);
             }
-            if(e instanceof Player) {
-                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
-                if(s == null) { continue; }
-                SkillAnnouncer.messageSkill(s, "Burn in the pure flame!", "Final Stand: Pure Flame", tier);
-            }
+            ModifierUser vic = ModifierUser.getModifierUser(e);
+            if(vic == null) { continue; }
+            SkillAnnouncer.messageSkill(
+                vic, 
+                "Burn in the pure flame!", 
+                "Final Stand: Pure Flame", 
+                tier);
         }
 
         mu.queueChange(
             -(int)(mu.getHealth() * 0.2), 
             10);
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "Fizzled", 
+            "Final Stand: Pure Flame", 
+            tier);
     }
 
     @Override
