@@ -16,6 +16,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class DangerousGameExplosionTagSkill extends SwordSkill {
 
@@ -31,7 +32,7 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.useModule(new Trigger(SwordSkillType.SWORD, "EntityDamageByEntityEvent"));
-        this.useModule(new TimedCooldown(40000, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(40000, null, "PlayerInteractEvent"));
     }
 
     @Override
@@ -48,6 +49,14 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         if(ev instanceof PlayerInteractEvent) {
             this.tracking = true;
+
+            ModifierUser mu = (ModifierUser)c;
+            SkillAnnouncer.messageSkill(
+                mu, 
+                "Rune activated.", 
+                "Dangerous Game: Explosion Tag", 
+                tier);
+
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
                 public void run() {
                     for(LivingEntity liv : tagList) {
@@ -65,11 +74,14 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
             EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
             if(evv.getEntity() instanceof LivingEntity) {
                 tagList.add((LivingEntity)evv.getEntity());
-            }
-            if(evv.getEntity() instanceof Player) {
-                SCOPlayer s = GameManager.findSCOPlayer((Player)evv.getEntity());
-                if(s == null) { return; }
-                SkillAnnouncer.messageSkill(s, "You have been marked.", "Danger Game: Explosion Tag", tier);
+                
+                ModifierUser vic = ModifierUser.getModifierUser(evv.getEntity());
+                if(vic == null) { return; }
+                SkillAnnouncer.messageSkill(
+                    vic, 
+                    "You have been marked.", 
+                    "Dangerous Game: Explosion Tag", 
+                    tier);
             }
         }
     }
