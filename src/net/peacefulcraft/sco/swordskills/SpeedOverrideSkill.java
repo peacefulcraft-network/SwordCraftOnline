@@ -38,7 +38,7 @@ public class SpeedOverrideSkill extends SwordSkill {
             -1);
         movSpeedChange = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED,
-            3, 
+            ModifierUser.getBaseGenericMovement(mu) * 0.3, 
             -1);
     }
 

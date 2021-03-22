@@ -29,7 +29,7 @@ public class SpeedOverrideItem implements SwordSkillProvider {
         desc.add("Override your bodys max");
         desc.add("speed abilities.");
         desc.add("Attack Speed: +4");
-        desc.add("Movement Speed: +3");
+        desc.add("Movement Speed: +30%");
     }
 
     @Override
