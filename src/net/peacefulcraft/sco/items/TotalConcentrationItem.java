@@ -14,7 +14,7 @@ import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.TotalConcentrationSkill;
 
-public class TotalConcetrationItem implements SwordSkillProvider {
+public class TotalConcentrationItem implements SwordSkillProvider {
 
     private ItemTier tier;
     private int quantity;
@@ -22,7 +22,7 @@ public class TotalConcetrationItem implements SwordSkillProvider {
     private SwordSkillDesc desc;
     private int levelModifier;
 
-    public TotalConcetrationItem(ItemTier tier, Integer quantity) {
+    public TotalConcentrationItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
         this.quantity = quantity;
         this.type = SwordSkillType.PASSIVE;
@@ -40,7 +40,7 @@ public class TotalConcetrationItem implements SwordSkillProvider {
                 desc.add("Attack Speed: +5");
             default:
         }
-        desc.add("Movement Speed: -3");
+        desc.add("Movement Speed: -30%");
 
         setModifiers();
     }
@@ -52,7 +52,7 @@ public class TotalConcetrationItem implements SwordSkillProvider {
 
     @Override
     public String getDisplayName() {
-        return ItemTier.getTierColor(tier) + "Total Concetration";
+        return ItemTier.getTierColor(tier) + "Total Concentration";
     }
 
     @Override
