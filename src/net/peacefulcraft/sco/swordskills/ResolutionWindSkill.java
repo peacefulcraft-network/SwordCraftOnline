@@ -5,6 +5,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -12,13 +14,18 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class ResolutionWindSkill extends SwordSkill {
 
     private double vectorModifier;
+    private ItemTier tier;
 
-    public ResolutionWindSkill(SwordSkillCaster c, double vectorModifier, SwordSkillProvider provider) {
+    public ResolutionWindSkill(SwordSkillCaster c, double vectorModifier, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.vectorModifier = vectorModifier;
+
+        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
+
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(15000));
+        this.useModule(new TimedCooldown(15000, (ModifierUser)c, SwordSkillType.SECONDARY, null, "PlayerInteractEvent"));
     }
 
     @Override
@@ -47,6 +54,14 @@ public class ResolutionWindSkill extends SwordSkill {
                 t.multiply(2 + vectorModifier);
 
                 liv.setVelocity(t.toVector());
+
+                ModifierUser vic = ModifierUser.getModifierUser(liv);
+                if(vic == null) { continue; }
+                SkillAnnouncer.messageSkill(
+                    mu, 
+                    "Get back!", 
+                    "Resolution Wind", 
+                    tier);
             }
         }
     }
