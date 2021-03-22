@@ -41,12 +41,21 @@ public class SystemChainWitchDoctorSkill extends SwordSkill {
             ModifierUser vic = ModifierUser.getModifierUser(e);
             if(vic == null) { continue; }
 
-            vic.setHealth(vic.getHealth() - 20);
-            healthTotal += 17;
+            vic.convertHealth(15, true);
+            healthTotal += 12;
 
-            SkillAnnouncer.messageSkill(mu, "Health drained by 20!", "System Chain: Witch Doctor", tier);
+            SkillAnnouncer.messageSkill(
+                mu, 
+                "Health drained by 15!", 
+                "System Chain: Witch Doctor", 
+                tier);
         }
-        mu.setHealth(mu.getHealth() + healthTotal);
+        mu.convertHealth(-healthTotal, true);
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "Healed by " + healthTotal + "health", 
+            "System Chain: Witch Doctor", 
+            tier);
     }
 
     @Override

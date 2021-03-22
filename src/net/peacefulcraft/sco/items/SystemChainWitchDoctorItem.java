@@ -28,9 +28,9 @@ public class SystemChainWitchDoctorItem implements SwordSkillProvider {
         this.desc = new SwordSkillDesc(tier, type);
         desc.add("Draw out the power of the");
         desc.add("grand witch doctor.");
-        desc.add("On trigger: deal 20 true");
+        desc.add("On trigger: deal 15 true");
         desc.add("damage to nearby entities.");
-        desc.add("Heals user for 17 health per");
+        desc.add("Heals user for 12 health per");
         desc.add("effected entity.");
         desc.add("Cooldown: 55 seconds");
     }
