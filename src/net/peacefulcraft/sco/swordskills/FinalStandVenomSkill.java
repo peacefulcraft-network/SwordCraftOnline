@@ -2,18 +2,16 @@ package net.peacefulcraft.sco.swordskills;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class FinalStandVenomSkill extends SwordSkill {
 
@@ -24,7 +22,7 @@ public class FinalStandVenomSkill extends SwordSkill {
         this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.useModule(new TimedCooldown(35000));
+        this.useModule(new TimedCooldown(35000, (ModifierUser)c, SwordSkillType.PRIMARY));
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
     }
 
@@ -50,16 +48,23 @@ public class FinalStandVenomSkill extends SwordSkill {
                     200, 
                     3));
             }
-            if(e instanceof Player) {
-                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
-                if(s == null) { continue; }
-                SkillAnnouncer.messageSkill(s, "Beguiled.", "Final Stand: Venom", tier);
-            }
+            ModifierUser vic = ModifierUser.getModifierUser(e);
+            if(vic == null) { continue; }
+            SkillAnnouncer.messageSkill(
+                vic, 
+                "Final Stand: Venom", 
+                tier, 
+                new Pair<String,Integer>(PotionEffectType.POISON.toString(), 3));
         }
 
         mu.queueChange(
             -(int)(mu.getHealth() * 0.2), 
             10);
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "Beguiled.", 
+            "Final Stand: Venom", 
+            tier);
     }
 
     @Override
