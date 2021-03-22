@@ -94,6 +94,7 @@ public class SkillAnnouncer {
      * sword skill message w/ opening message
      */
     public static void messageSkill(SCOPlayer s, List<Pair<String, Double>> changedStats, String message, String skillName, ItemTier tier) {
+        message += " ";
         for (Pair<String, Double> pair : changedStats) {
             String stat = pair.getFirst().replace("GENERIC_", "").replace("Generic_", "");
             stat = stat.replace("_", " ");
