@@ -3,18 +3,16 @@ package net.peacefulcraft.sco.swordskills;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class GodOfIsolationRepelSkill extends SwordSkill {
 
@@ -22,10 +20,11 @@ public class GodOfIsolationRepelSkill extends SwordSkill {
 
     public GodOfIsolationRepelSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
-        
+        this.tier = tier;
+    
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
-        this.useModule(new TimedCooldown(20000));
+        this.useModule(new TimedCooldown(20000, (ModifierUser)c, SwordSkillType.PRIMARY));
     }
 
     @Override
@@ -59,17 +58,24 @@ public class GodOfIsolationRepelSkill extends SwordSkill {
                     PotionEffectType.BLINDNESS, 
                     100, 
                     2));
-            }
-            if(e instanceof Player) {
-                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
-                if(s == null) { continue; }
-                SkillAnnouncer.messageSkill(s, "Inflicted Blindness II", "God of Isolation: Repel", tier);
+                ModifierUser vic = ModifierUser.getModifierUser(e);
+                if(vic == null) { continue; }
+                SkillAnnouncer.messageSkill(
+                    vic, 
+                    "God of Isolation: Repel",
+                    tier, 
+                    new Pair<String, Integer>(PotionEffectType.BLINDNESS.toString(), 2));
             }
         }
         mu.getLivingEntity().addPotionEffect(new PotionEffect(
             PotionEffectType.BLINDNESS,
             60,
             2));
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "God of Isolation: Repel", 
+            tier, 
+            new Pair<String, Integer>(PotionEffectType.BLINDNESS.toString(), 2));
     }
 
     @Override
