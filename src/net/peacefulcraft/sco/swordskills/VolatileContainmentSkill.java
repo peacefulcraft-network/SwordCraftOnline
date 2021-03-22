@@ -27,7 +27,7 @@ public class VolatileContainmentSkill extends SwordSkill {
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
-        this.useModule(new TimedCooldown(27000));
+        this.useModule(new TimedCooldown(27000, (ModifierUser)c, SwordSkillType.PRIMARY));
     }
 
     @Override
