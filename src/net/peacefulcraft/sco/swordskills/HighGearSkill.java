@@ -41,7 +41,7 @@ public class HighGearSkill extends SwordSkill {
             -1);
         change2 = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            2 + (1 * levelModifier), 
+            ModifierUser.getBaseGenericMovement(mu) * (0.2 + (0.02 * levelModifier)), 
             -1);
         change3 = mu.queueChange(
             CombatModifier.PARRY_CHANCE, 

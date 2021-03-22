@@ -32,19 +32,19 @@ public class HighGearItem implements SwordSkillProvider {
         switch(tier) {
             case RARE:
                 desc.add("True Damage: +3");
-                desc.add("Movement Speed: +2");
+                desc.add("Movement Speed: +20%");
                 desc.add("Parry Chance: -20%");
             break; case LEGENDARY:
                 desc.add("True Damage: +4");
-                desc.add("Movement Speed: +3");
+                desc.add("Movement Speed: +22%");
                 desc.add("Parry Chance: -22%");
             break; case ETHEREAL:
                 desc.add("True Damage: +5");
-                desc.add("Movement Speed: +4");
+                desc.add("Movement Speed: +24%");
                 desc.add("Parry Chance: -24%");
             break; case GODLIKE:
                 desc.add("True Damage: +6");
-                desc.add("Movement Speed: +5");
+                desc.add("Movement Speed: +26%");
                 desc.add("Parry Chance: -26%");
             default:
         }
