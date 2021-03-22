@@ -56,7 +56,7 @@ public class ParryItem implements SwordSkillProvider {
         public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
     @Override
-    public boolean isDroppable() { return false; }
+    public boolean isDroppable() { return true; }
 
     @Override
     public boolean isMovable() { return true; }

@@ -89,7 +89,7 @@ public class SoulsOfTheFallenItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

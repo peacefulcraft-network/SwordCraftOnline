@@ -84,7 +84,7 @@ public class LegDayItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

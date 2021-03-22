@@ -78,7 +78,7 @@ public class SystemBreakAccelerantBurstItem implements SwordSkillProvider, Ephem
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

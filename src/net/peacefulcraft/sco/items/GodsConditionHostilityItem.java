@@ -76,7 +76,7 @@ public class GodsConditionHostilityItem implements SwordSkillProvider, Ephemeral
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

@@ -78,7 +78,7 @@ public class SystemDefenseAccelerantGuardItem implements SwordSkillProvider, Eph
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

@@ -74,7 +74,7 @@ public class HunterSightItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

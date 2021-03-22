@@ -81,7 +81,7 @@ public class EnderBlitzControlItem implements SwordSkillProvider, EphemeralAttri
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

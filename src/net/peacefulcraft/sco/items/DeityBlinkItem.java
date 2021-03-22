@@ -75,7 +75,7 @@ public class DeityBlinkItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

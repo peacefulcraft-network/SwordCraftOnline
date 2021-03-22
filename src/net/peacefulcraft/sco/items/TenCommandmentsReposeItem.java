@@ -75,7 +75,7 @@ public class TenCommandmentsReposeItem implements SwordSkillProvider, EphemeralA
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

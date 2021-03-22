@@ -78,7 +78,7 @@ public class SystemChainAccelerantDriveItem implements SwordSkillProvider, Ephem
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

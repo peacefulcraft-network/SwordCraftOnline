@@ -95,7 +95,7 @@ public class QuickHandsItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

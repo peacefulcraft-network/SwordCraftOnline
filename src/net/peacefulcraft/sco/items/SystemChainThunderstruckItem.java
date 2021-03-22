@@ -89,7 +89,7 @@ public class SystemChainThunderstruckItem implements SwordSkillProvider, Ephemer
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

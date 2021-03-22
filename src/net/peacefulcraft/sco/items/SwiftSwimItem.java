@@ -72,7 +72,7 @@ public class SwiftSwimItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

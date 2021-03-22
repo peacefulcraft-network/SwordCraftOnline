@@ -103,7 +103,7 @@ public class ArtificialHopeItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

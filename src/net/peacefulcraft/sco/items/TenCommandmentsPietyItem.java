@@ -74,7 +74,7 @@ public class TenCommandmentsPietyItem implements SwordSkillProvider, EphemeralAt
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

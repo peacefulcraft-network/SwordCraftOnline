@@ -93,7 +93,7 @@ public class SerpentsBiteItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

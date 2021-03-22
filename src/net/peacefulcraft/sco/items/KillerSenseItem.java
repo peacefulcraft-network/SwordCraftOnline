@@ -104,7 +104,7 @@ public class KillerSenseItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

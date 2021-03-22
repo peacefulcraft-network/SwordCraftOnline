@@ -74,7 +74,7 @@ public class SupremeLockdownItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

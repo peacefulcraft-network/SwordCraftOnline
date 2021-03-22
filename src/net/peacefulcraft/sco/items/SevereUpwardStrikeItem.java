@@ -87,7 +87,7 @@ public class SevereUpwardStrikeItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

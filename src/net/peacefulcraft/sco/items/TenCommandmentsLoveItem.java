@@ -75,7 +75,7 @@ public class TenCommandmentsLoveItem implements SwordSkillProvider, EphemeralAtt
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

@@ -75,7 +75,7 @@ public class TenCommandmentsPatienceItem implements SwordSkillProvider, Ephemera
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

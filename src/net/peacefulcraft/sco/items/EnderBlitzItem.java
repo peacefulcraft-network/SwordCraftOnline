@@ -78,7 +78,7 @@ public class EnderBlitzItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override

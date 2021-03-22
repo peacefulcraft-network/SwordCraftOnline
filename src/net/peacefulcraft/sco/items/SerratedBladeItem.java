@@ -55,7 +55,7 @@ public class SerratedBladeItem implements SwordSkillProvider {
     public ItemTier getTier() { return tier; }
 
   @Override
-  public boolean isDroppable() { return false; }
+  public boolean isDroppable() { return true; }
 
   @Override
   public boolean isMovable() { return true; }

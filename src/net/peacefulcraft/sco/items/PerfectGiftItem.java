@@ -74,7 +74,7 @@ public class PerfectGiftItem implements SwordSkillProvider, EphemeralAttributeHo
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override
