@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.swordskills;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
@@ -18,7 +19,8 @@ public class FullCounterSkill extends SwordSkill {
         this.tier = tier;
         
         this.useModule(new Trigger(SwordSkillType.SWORD));
-        this.useModule(new TimedCooldown(45000));
+        this.useModule(new TimedCooldown(45000, null, "PlayerInteractEvent"));
+
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_RECIEVE);
     }
@@ -42,9 +44,22 @@ public class FullCounterSkill extends SwordSkill {
 
             ModifierUser mu = ModifierUser.getModifierUser(evv.getDamager());
             if(mu == null) { return; }
-            mu.setHealth((int)(mu.getHealth() - (damage * 2)));
 
-            SkillAnnouncer.messageSkill(mu, damage*2,"Damage returned twofold.", "Full Counter", tier);    
+            SwordCraftOnline.logDebug("[Full Counter] Health: " + mu.getHealth() + ", Ret Damage: " + (damage * 2));
+            //mu.setHealth((int)(mu.getHealth() - (damage * 2)));
+            mu.convertHealth(damage * 2, true);
+
+            SkillAnnouncer.messageSkill(
+                mu, 
+                damage*2,
+                "Damage returned twofold.", 
+                "Full Counter", 
+                tier);
+            SkillAnnouncer.messageSkill(
+                (ModifierUser)c, 
+                "Damage returned", 
+                "Full Counter", 
+                tier);    
         }
     }
 
