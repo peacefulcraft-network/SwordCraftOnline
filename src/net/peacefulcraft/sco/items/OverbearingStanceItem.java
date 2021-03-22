@@ -40,7 +40,7 @@ public class OverbearingStanceItem implements SwordSkillProvider {
                 desc.add("Knockback Resistance: +7");
             default:
         }
-        desc.add("Movement Speed: -1");
+        desc.add("Movement Speed: -25%");
         
         setModifiers();
     }
