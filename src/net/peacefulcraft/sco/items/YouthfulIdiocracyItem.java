@@ -31,19 +31,19 @@ public class YouthfulIdiocracyItem implements SwordSkillProvider {
         desc.add("power of youth!");
         switch(tier) {
             case RARE:
-                desc.add("Movement Speed: +2");
+                desc.add("Movement Speed: +5%");
                 desc.add("Max Health: +20%");
                 desc.add("Armor: -1");
             break; case LEGENDARY:
-                desc.add("Movement Speed: +3");
+                desc.add("Movement Speed: +7%");
                 desc.add("Max Health: +25%");
                 desc.add("Armor: -2");
             break; case ETHEREAL:
-                desc.add("Movement Speed: +4");
+                desc.add("Movement Speed: +9%");
                 desc.add("Max Health: +30%");
                 desc.add("Armor: -3");
             break; case GODLIKE:
-                desc.add("Movement Speed: +5");
+                desc.add("Movement Speed: +11%");
                 desc.add("Max Health: +35%");
                 desc.add("Armor: -4");
             default:

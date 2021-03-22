@@ -40,7 +40,7 @@ public class YouthfulIdiocracySkill extends SwordSkill {
             -1);
         speedChange = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            2 + this.levelModifier, 
+            ModifierUser.getBaseGenericMovement(mu) * (0.05 + (0.02 * this.levelModifier)), 
             -1);
         armorChange = mu.queueChange(
             Attribute.GENERIC_ARMOR, 
