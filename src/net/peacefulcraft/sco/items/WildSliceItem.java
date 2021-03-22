@@ -24,7 +24,7 @@ public class WildSliceItem implements SwordSkillProvider {
     public WildSliceItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.RARE;
         this.quantity = quantity;
-        this.type = SwordSkillType.PRIMARY;
+        this.type = SwordSkillType.SWORD;
         this.desc = new SwordSkillDesc(tier, type);
         desc.add("Strike your foe hapharzardly.");
         desc.add("Next hit deals: 0.5x, 2x, or 4x");
@@ -109,7 +109,7 @@ public class WildSliceItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new WildSliceSkill(caster, (SwordSkillProvider) this);
+        return new WildSliceSkill(caster, (SwordSkillProvider) this, tier);
     }
 
     @Override
