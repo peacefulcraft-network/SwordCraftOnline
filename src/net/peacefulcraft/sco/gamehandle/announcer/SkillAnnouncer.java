@@ -99,7 +99,7 @@ public class SkillAnnouncer {
             stat = stat.replace("_", " ");
             stat = stat.substring(0, 1).toUpperCase() + stat.substring(1).toLowerCase();
 
-            String statt = pair.getSecond() < 0 ? " decreased by: " + -pair.getSecond() : " increased by: " + pair.getSecond();
+            String statt = pair.getSecond() < 0 ? " decreased by: " + -pair.getSecond() : " increased by: " + String.format("%.2f", pair.getSecond());
             message += stat + statt + ", ";
         }
         message = message.substring(0, message.length() - 2) + ".";

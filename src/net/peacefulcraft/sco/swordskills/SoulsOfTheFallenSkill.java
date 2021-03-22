@@ -22,7 +22,7 @@ public class SoulsOfTheFallenSkill extends SwordSkill {
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SWORD));
-        this.useModule(new TimedCooldown(60000));
+        this.useModule(new TimedCooldown(60000, null, "PlayerInteractEvent"));
     }
 
     @Override
