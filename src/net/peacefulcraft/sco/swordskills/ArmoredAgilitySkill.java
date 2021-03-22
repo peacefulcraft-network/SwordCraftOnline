@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class ArmoredAgilitySkill extends SwordSkill {
@@ -35,18 +34,14 @@ public class ArmoredAgilitySkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
 
-        SwordCraftOnline.logDebug("Player data static: " + mu.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)
-            + ", " + mu.getAttribute(Attribute.GENERIC_ARMOR));
         speedChange = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            2 + levelModifier, 
+            ModifierUser.getBaseGenericMovement(mu) * (0.05 + (0.01 * this.levelModifier)), 
             -1);
         armorChange = mu.queueChange(
             Attribute.GENERIC_ARMOR, 
-            2 + levelModifier, 
+            3 + levelModifier, 
             -1);
-        SwordCraftOnline.logDebug("Player data modified: " + mu.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)
-            + ", " + mu.getAttribute(Attribute.GENERIC_ARMOR));
     }
 
     @Override

@@ -34,17 +34,17 @@ public class ArmoredAgilityItem implements SwordSkillProvider {
         desc.add("tougher, more mobile metal.");
         switch(tier) {
             case RARE:
-                desc.add("Movement Speed: +2");
-                desc.add("Armor: +2");
-            break; case LEGENDARY:
-                desc.add("Movement Speed: +3");
+                desc.add("Movement Speed: +5%");
                 desc.add("Armor: +3");
-            break; case ETHEREAL:
-                desc.add("Movement Speed: +4");
+            break; case LEGENDARY:
+                desc.add("Movement Speed: +6%");
                 desc.add("Armor: +4");
-            break; case GODLIKE:
-                desc.add("Movement Speed: +5");
+            break; case ETHEREAL:
+                desc.add("Movement Speed: +7%");
                 desc.add("Armor: +5");
+            break; case GODLIKE:
+                desc.add("Movement Speed: +8%");
+                desc.add("Armor: +6");
             default:
         }
     }
