@@ -8,6 +8,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -17,14 +19,16 @@ public class EnderBlitzSkill extends SwordSkill {
 
     private int repetitions = 0;
     private int id;
+    private ItemTier tier;
 
-    public EnderBlitzSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public EnderBlitzSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
 
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(25000));
+        this.useModule(new TimedCooldown(25000, (ModifierUser)c, SwordSkillType.SECONDARY));
     }
 
     @Override
@@ -50,7 +54,7 @@ public class EnderBlitzSkill extends SwordSkill {
                     Bukkit.getServer().getScheduler().cancelTask(id);
                     return;
                 }
-                mu.getLivingEntity().teleport(locs.get(repetitions));
+                mu.getLivingEntity().teleport(locs.get(repetitions).add(0, 1, 0));
                 mu.queueChange(
                     Attribute.GENERIC_ATTACK_DAMAGE, 
                     mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE), 
@@ -58,6 +62,12 @@ public class EnderBlitzSkill extends SwordSkill {
                 repetitions++;
             }
         }, 5, 60);
+
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "Blitz triggered", 
+            "Ender Blitz", 
+            tier);
     }
 
     @Override

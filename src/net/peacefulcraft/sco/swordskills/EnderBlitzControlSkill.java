@@ -7,10 +7,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.DirectionTracker;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil.Movement;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
@@ -18,14 +21,16 @@ public class EnderBlitzControlSkill extends SwordSkill {
 
     private int repetitions = 0;
     private int id;
+    private ItemTier tier;
 
-    public EnderBlitzControlSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public EnderBlitzControlSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
+        this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
 
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(32000));
+        this.useModule(new TimedCooldown(32000, (ModifierUser)c, SwordSkillType.SECONDARY));
         this.useModule(new DirectionTracker(s));
     }
 
@@ -41,6 +46,7 @@ public class EnderBlitzControlSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        ModifierUser mu = (ModifierUser)c;
         id = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
             public void run() {
                 if(repetitions == 4) {
@@ -54,35 +60,36 @@ public class EnderBlitzControlSkill extends SwordSkill {
 
                 switch(move){
                     case FORWARD:
-                        SwordCraftOnline.logDebug(s.getName() + ": Forward teleport triggered.");
                         centered = getCentered(rotation, 5);
                     break; case FORWARD_SPRINT:
-                        SwordCraftOnline.logDebug(s.getName() + ": Forward sprint teleport triggered.");
                         centered = getCentered(rotation, 8);
                     break; case LEFT:
-                        SwordCraftOnline.logDebug(s.getName() + ": Left teleport triggered.");
                         centered = getCentered(rotation - 90, 5);
                     break; case RIGHT:
-                        SwordCraftOnline.logDebug(s.getName() + ": Right teleport triggered.");
                         centered = getCentered(rotation + 90, 5);
                     break; case BACKWARD:
-                        SwordCraftOnline.logDebug(s.getName() + ": Back teleport triggered.");
                         centered = getCentered(rotation + 180, 5);
                     default:
                         centered = curr;
                 }
 
-                s.getLivingEntity().teleport(
-                    LocationUtil.getRandomLocations(centered, 5, 1).get(0)
+                mu.getLivingEntity().teleport(
+                    LocationUtil.getRandomLocations(centered, 5, 1).get(0).add(0, 1, 0)
                 );
 
-                s.queueChange(
+                mu.queueChange(
                     Attribute.GENERIC_ATTACK_DAMAGE, 
                     s.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE), 
                     2);
                 repetitions++;
             }
         }, 5, 60);
+
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "Blitz triggered", 
+            "Ender Blitz: Control", 
+            tier);
     }
 
     @Override
