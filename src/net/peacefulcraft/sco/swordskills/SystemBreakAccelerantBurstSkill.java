@@ -64,7 +64,7 @@ public class SystemBreakAccelerantBurstSkill extends SwordSkill {
         if(fireCount == 0) { return; }
         List<Location> explodeLocs = LocationUtil.getRandomLocations(
             mu.getLivingEntity().getLocation(), 
-            10, 
+            20, 
             fireCount);
         for(Location loc : explodeLocs) {
             loc.getWorld().createExplosion(
@@ -73,6 +73,12 @@ public class SystemBreakAccelerantBurstSkill extends SwordSkill {
                 false,
                 false);
         }
+        
+        SkillAnnouncer.messageSkill(
+            mu, 
+            "BURST", 
+            "System Break: Accelerant Burst", 
+            tier);
 
         if(SwordCraftOnline.r.nextInt(5) <= 3) {
             mu.getLivingEntity().setFireTicks(100);

@@ -45,6 +45,8 @@ public class OverheatSkill extends SwordSkill {
             6, 
             false);
         for(Block curr : LocationUtil.locationsToBlocks(locs)) {
+            if(SwordCraftOnline.r.nextBoolean()) { continue; }
+
             if(!curr.getType().equals(Material.AIR)) {
                 if(!curr.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
                     curr = curr.getRelative(BlockFace.UP);
