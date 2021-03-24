@@ -13,6 +13,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class UnfortunateDivisorSkill extends SwordSkill {
 
@@ -25,7 +26,7 @@ public class UnfortunateDivisorSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 
-        this.useModule(new TimedCooldown(30000));
+        this.useModule(new TimedCooldown(30000, null, "PlayerInteractEvent"));
         this.useModule(new Trigger(SwordSkillType.SWORD));
     }
 
@@ -44,24 +45,18 @@ public class UnfortunateDivisorSkill extends SwordSkill {
         if(ev instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
             Entity vic = evv.getEntity();
-            if(vic instanceof Player) {
-                SCOPlayer s = GameManager.findSCOPlayer((Player)vic);
-                if(s == null) { return; }
-                s.setHealth(s.getHealth() / 2);
 
-                SkillAnnouncer.messageSkill(
-                    s, 
-                    "Health divided by two.", 
-                    "Unfortunate Divisor",
-                    tier);
-            } else {
-                ActiveMob am = SwordCraftOnline.getPluginInstance()
-                    .getMobManager()
-                    .getMobRegistry()
-                    .get(vic.getUniqueId());
-                if(am == null) { return; }
-                am.setHealth(s.getHealth() / 2);
-            }
+            ModifierUser mu = ModifierUser.getModifierUser(vic);
+            if(mu == null) { return; }
+
+            mu.convertHealth(
+                mu.getHealth() / 2,
+                true);
+            SkillAnnouncer.messageSkill(
+                mu, 
+                "Health Divided.", 
+                "Unfortunate Divisor", 
+                tier);
         }
     }
 

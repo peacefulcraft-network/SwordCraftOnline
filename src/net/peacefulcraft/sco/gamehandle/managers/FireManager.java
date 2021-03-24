@@ -49,6 +49,7 @@ public class FireManager implements Runnable {
         
         long cooldownEnd = System.currentTimeMillis() + cooldownDelay;
         fireMap.put(cooldownEnd, loc);
+        SwordCraftOnline.logDebug("[Fire Manager] Fire placed at: " + loc.toString());
         return true;
     }
 

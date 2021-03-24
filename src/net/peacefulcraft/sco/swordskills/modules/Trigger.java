@@ -5,7 +5,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.swordskills.SwordSkill;

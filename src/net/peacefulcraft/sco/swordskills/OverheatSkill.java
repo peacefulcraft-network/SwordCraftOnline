@@ -20,8 +20,9 @@ public class OverheatSkill extends SwordSkill {
         super(c, provider);
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
+
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(17000));
+        this.useModule(new TimedCooldown(17000, (ModifierUser)c, SwordSkillType.SECONDARY));
     }
 
     @Override
@@ -43,17 +44,18 @@ public class OverheatSkill extends SwordSkill {
             1, 
             6, 
             false);
-        for(Location loc : locs) {
-            Block curr = loc.getBlock();
+        for(Block curr : LocationUtil.locationsToBlocks(locs)) {
             if(!curr.getType().equals(Material.AIR)) {
                 if(!curr.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
                     curr = curr.getRelative(BlockFace.UP);
+                } else if(!curr.getRelative(BlockFace.DOWN).getType().equals(Material.AIR)) {
+                    curr = curr.getRelative(BlockFace.DOWN);
                 } else {
                     continue;
                 }
             }
 
-            SwordCraftOnline.getPluginInstance().getFireManager().registerFire(14000, loc);
+            SwordCraftOnline.getPluginInstance().getFireManager().registerFire(14000, curr.getLocation());
         }
     }
 

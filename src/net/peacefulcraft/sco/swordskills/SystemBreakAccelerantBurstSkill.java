@@ -26,7 +26,7 @@ public class SystemBreakAccelerantBurstSkill extends SwordSkill {
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
-        this.useModule(new TimedCooldown(45000));
+        this.useModule(new TimedCooldown(45000, (ModifierUser)c, SwordSkillType.PRIMARY));
     }
 
     @Override

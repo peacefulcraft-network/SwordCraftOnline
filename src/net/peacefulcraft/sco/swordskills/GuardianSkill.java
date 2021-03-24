@@ -12,7 +12,9 @@ import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class GuardianSkill extends SwordSkill {
@@ -25,8 +27,9 @@ public class GuardianSkill extends SwordSkill {
         this.armorModifier = armorModifier;
         this.tier = tier;
         
-        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
+        this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
+        this.useModule(new TimedCooldown(45000, (ModifierUser)c, SwordSkillType.SECONDARY));
     }
 
     @Override
@@ -41,6 +44,7 @@ public class GuardianSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        // TODO: Clean up this iteration style to one loop
         if(c instanceof SCOPlayer) {
             for(Entity entity : ((SCOPlayer)c).getLivingEntity().getNearbyEntities(10, 10, 10)) {
                 if(entity instanceof Player) {

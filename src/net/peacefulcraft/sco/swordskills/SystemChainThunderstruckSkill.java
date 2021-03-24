@@ -25,7 +25,7 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
         super(c, provider);
         this.rangeModifier = rangeModifier;        
 
-        this.useModule(new TimedCooldown(30000));
+        this.useModule(new TimedCooldown(30000, (ModifierUser)c, SwordSkillType.PRIMARY));
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }

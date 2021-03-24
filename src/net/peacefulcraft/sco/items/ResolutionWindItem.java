@@ -91,7 +91,7 @@ public class ResolutionWindItem implements SwordSkillProvider {
 
     @Override
     public boolean isDroppable() {
-        return false;
+        return true;
     }
 
     @Override
@@ -126,7 +126,7 @@ public class ResolutionWindItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new ResolutionWindSkill(caster, vectorModifier, (SwordSkillProvider)this);
+        return new ResolutionWindSkill(caster, vectorModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override

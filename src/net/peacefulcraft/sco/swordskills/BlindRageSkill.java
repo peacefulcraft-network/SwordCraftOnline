@@ -23,7 +23,7 @@ public class BlindRageSkill extends SwordSkill {
         this.tier = tier;
         
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(25000));
+        this.useModule(new TimedCooldown(25000, (ModifierUser)c, SwordSkillType.SECONDARY));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 

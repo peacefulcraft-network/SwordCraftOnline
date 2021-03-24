@@ -30,6 +30,7 @@ import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
+import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
@@ -342,5 +343,39 @@ public class PlayerInventory extends BukkitInventoryBase {
       }
     }
     return null;
+  }
+
+  /**
+   * Checks hotbar for relative skill type 
+   * trigger items
+   * 
+   * @param type Type of trigger item we are looking for
+   * @return Index of that trigger item, -1 if it doesnt exist
+   */
+  public int getSkillTriggerIndex(SwordSkillType type) {
+    if (type.equals(SwordSkillType.SWORD) || type.equals(SwordSkillType.PASSIVE)) { return -1; }
+
+    // Basically these items should be in the hotbar.
+    // For consistency we use this method to find their
+    // exact location in the hotbar. Returns index of item
+
+    for (int i = 0; i < 9; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      if(item == null || item.getMaterial().equals(Material.AIR)) { continue; }
+
+      if(type.equals(SwordSkillType.PRIMARY)) {
+        if(item.getName().equalsIgnoreCase("Primary Skill Activated") || item.getName().equalsIgnoreCase("Primary Skill Cooldown")) {
+          return i;
+        }
+      }
+
+      if(type.equals(SwordSkillType.SECONDARY)) {
+        if(item.getName().equalsIgnoreCase("Secondary Skill Activated") || item.getName().equalsIgnoreCase("Secondary Skill Cooldown")) {
+          return i;
+        }
+      }
+    }
+
+    return -1;
   }
 }
