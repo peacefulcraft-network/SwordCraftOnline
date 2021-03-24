@@ -388,19 +388,6 @@ public class ModifierUser {
     }
 
 	/**
-	 * Safely removes modifier of same type from list
-	 * @param type Modifier to be removed
-	 */
-	private boolean removeDamageModifier(ModifierType type, boolean incoming) {        
-        try {
-            this.damageModifiers.get(type).remove(incoming);
-            return true;
-        } catch(NullPointerException ex) {
-            return false;
-        }
-	}
-
-	/**
 	 * Searches for modifier of same type
      * Note: returns a clone wanted modifier
 	 * @param type Type to be searched for

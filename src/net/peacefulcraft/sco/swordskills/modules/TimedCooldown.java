@@ -2,7 +2,6 @@ package net.peacefulcraft.sco.swordskills.modules;
 
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
@@ -16,7 +15,6 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class TimedCooldown implements SwordSkillModule {
 
     private long cooldownDelay;
-        private void setCooldownDelay(long delay) { this.cooldownDelay = delay; }
     
     private long cooldownEnd = 0L;
         private boolean isCoolingDown() { return this.cooldownEnd > System.currentTimeMillis(); }
