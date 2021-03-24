@@ -171,4 +171,15 @@ public class SkillAnnouncer {
         String prefix = ChatColor.DARK_RED + "[" + ItemTier.getTierColor(tier) + skillName + ChatColor.DARK_RED + "] ";
         s.getPlayer().sendMessage(prefix + ChatColor.GRAY + message);
     }
+
+    /**
+     * SCOPlayer message cooldown
+     * 
+     * Sends player message to hotbar.
+     */
+    public static void messageSkillCooldown(SCOPlayer s, String skillName, ItemTier tier, long cooldown) {
+        String message = ChatColor.DARK_RED + "[" + ItemTier.getTierColor(tier) + skillName + ChatColor.DARK_RED + "] ";
+        message += ChatColor.GRAY + "on cooldown for: " + cooldown + " seconds.";
+        Announcer.messagePlayerActionBar(s.getPlayer(), message, 0);
+    }
 }

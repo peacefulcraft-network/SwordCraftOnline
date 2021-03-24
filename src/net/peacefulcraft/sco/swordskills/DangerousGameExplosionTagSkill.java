@@ -28,8 +28,8 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
-        this.useModule(new Trigger(SwordSkillType.SWORD, "EntityDamageByEntityEvent"));
-        this.useModule(new TimedCooldown(40000, null, "PlayerInteractEvent"));
+        this.useModule(new Trigger(SwordSkillType.SWORD, true));
+        this.useModule(new TimedCooldown(40000, (ModifierUser)c, "Dangerous Game: Explosion Tag", tier, null, "PlayerInteractEvent"));
     }
 
     @Override

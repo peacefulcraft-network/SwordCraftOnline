@@ -25,7 +25,7 @@ public class ResolutionWindSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
 
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(15000, (ModifierUser)c, SwordSkillType.SECONDARY, null, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(15000, (ModifierUser)c, "Resolution Wind", tier, null, "PlayerInteractEvent"));
     }
 
     @Override

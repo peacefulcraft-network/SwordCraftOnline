@@ -109,7 +109,7 @@ public class OverheatItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new OverheatSkill(caster, (SwordSkillProvider)this);
+        return new OverheatSkill(caster, (SwordSkillProvider)this, tier);
     }
 
     @Override

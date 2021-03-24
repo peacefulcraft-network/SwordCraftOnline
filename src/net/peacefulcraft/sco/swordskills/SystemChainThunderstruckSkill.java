@@ -12,6 +12,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityInteractEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -21,11 +22,11 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
 
     private int rangeModifier;
 
-    public SystemChainThunderstruckSkill(SwordSkillCaster c, int rangeModifier, SwordSkillProvider provider) {
+    public SystemChainThunderstruckSkill(SwordSkillCaster c, int rangeModifier, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         this.rangeModifier = rangeModifier;        
 
-        this.useModule(new TimedCooldown(30000, (ModifierUser)c, SwordSkillType.PRIMARY));
+        this.useModule(new TimedCooldown(30000, (ModifierUser)c, "System Chain: Thunderstruck", tier));
         this.useModule(new Trigger(SwordSkillType.PRIMARY));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
@@ -45,10 +46,7 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
         EntityInteractEvent evv = (EntityInteractEvent)ev;
 
         ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
-        if(mu == null) { 
-            SwordCraftOnline.logDebug("System Chain: Thunderstruck failed.");
-            return; 
-        }
+        if(mu == null) { return; }
         Location start = mu.getLivingEntity().getLocation();
         Location end = mu.getLivingEntity().getTargetBlock((Set<Material>)null, rangeModifier).getLocation();
 

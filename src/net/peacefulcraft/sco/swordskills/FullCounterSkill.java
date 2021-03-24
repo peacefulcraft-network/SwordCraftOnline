@@ -19,7 +19,7 @@ public class FullCounterSkill extends SwordSkill {
         this.tier = tier;
         
         this.useModule(new Trigger(SwordSkillType.SWORD));
-        this.useModule(new TimedCooldown(45000, null, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(45000, (ModifierUser)c, "Full Counter", tier, null, "PlayerInteractEvent"));
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_RECIEVE);

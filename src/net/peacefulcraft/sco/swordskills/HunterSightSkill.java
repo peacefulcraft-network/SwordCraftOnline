@@ -24,7 +24,7 @@ public class HunterSightSkill extends SwordSkill {
         this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.useModule(new TimedCooldown(43000, (ModifierUser)c, SwordSkillType.SECONDARY));
+        this.useModule(new TimedCooldown(43000, (ModifierUser)c, "Hunter Sight", tier));
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
     }
 

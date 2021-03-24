@@ -28,7 +28,7 @@ public class SystemDefenseAccelerantGuardSkill extends SwordSkill {
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(45000, (ModifierUser)c, SwordSkillType.SECONDARY));
+        this.useModule(new TimedCooldown(45000, (ModifierUser)c, "System Defense Accelerant Guard", tier));
     }
 
     @Override

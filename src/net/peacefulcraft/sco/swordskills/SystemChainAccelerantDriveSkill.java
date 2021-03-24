@@ -29,7 +29,7 @@ public class SystemChainAccelerantDriveSkill extends SwordSkill {
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SWORD));
-        this.useModule(new TimedCooldown(45000, null, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(45000, (ModifierUser)c, "System Chain: Accelerant Drive", tier, null, "PlayerInteractEvent"));
     }
 
     @Override

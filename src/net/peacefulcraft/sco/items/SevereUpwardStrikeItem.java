@@ -126,7 +126,8 @@ public class SevereUpwardStrikeItem implements SwordSkillProvider {
             caster, 
             this.vectorMultiplier, 
             this.cooldown * 1000, 
-            (SwordSkillProvider) this
+            (SwordSkillProvider) this,
+            tier
         );
     }
     

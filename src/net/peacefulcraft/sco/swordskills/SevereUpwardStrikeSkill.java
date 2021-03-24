@@ -5,15 +5,17 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class SevereUpwardStrikeSkill extends SwordSkill {
 
     private int cooldown;
     private double vectorMultiplier;
 
-    public SevereUpwardStrikeSkill(SwordSkillCaster c, double vectorMultiplier, int cooldown, SwordSkillProvider provider) {
+    public SevereUpwardStrikeSkill(SwordSkillCaster c, double vectorMultiplier, int cooldown, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         this.vectorMultiplier = vectorMultiplier;
         this.cooldown = cooldown;
@@ -22,7 +24,7 @@ public class SevereUpwardStrikeSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 
         this.useModule(new Trigger(SwordSkillType.SWORD));
-        this.useModule(new TimedCooldown(this.cooldown, null, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(this.cooldown, (ModifierUser)c, "Severe Upward Strike", tier,null, "PlayerInteractEvent"));
     }
 
     @Override

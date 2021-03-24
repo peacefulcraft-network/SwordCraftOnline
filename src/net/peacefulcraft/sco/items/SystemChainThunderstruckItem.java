@@ -124,7 +124,7 @@ public class SystemChainThunderstruckItem implements SwordSkillProvider, Ephemer
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new SystemChainThunderstruckSkill(caster, this.rangeModifier, (SwordSkillProvider)this);
+        return new SystemChainThunderstruckSkill(caster, this.rangeModifier, (SwordSkillProvider)this, tier);
     }
 
     @Override

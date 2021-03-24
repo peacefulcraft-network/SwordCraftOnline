@@ -8,6 +8,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class SoulsOfTheFallenSkill extends SwordSkill {
@@ -22,7 +23,7 @@ public class SoulsOfTheFallenSkill extends SwordSkill {
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SWORD));
-        this.useModule(new TimedCooldown(60000, null, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(60000, (ModifierUser)c, "Souls of the Fallen", tier, null, "PlayerInteractEvent"));
     }
 
     @Override

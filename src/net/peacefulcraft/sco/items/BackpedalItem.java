@@ -130,7 +130,7 @@ public class BackPedalItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        return new BackPedalSkill(caster, this.vectorMultiplier, (SwordSkillProvider) this);
+        return new BackPedalSkill(caster, this.vectorMultiplier, (SwordSkillProvider) this, tier);
     }
 
     public void setModifiers() {

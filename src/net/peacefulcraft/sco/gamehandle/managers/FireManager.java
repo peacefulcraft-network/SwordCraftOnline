@@ -48,7 +48,6 @@ public class FireManager implements Runnable {
         
         long cooldownEnd = System.currentTimeMillis() + cooldownDelay + SwordCraftOnline.r.nextInt(3000);
         fireMap.put(loc, cooldownEnd);
-        //SwordCraftOnline.logDebug("[Fire Manager] Fire placed at: " + loc.toString());
         return true;
     }
 
@@ -61,10 +60,8 @@ public class FireManager implements Runnable {
             Entry<Location, Long> entry = iter.next();
             if(entry.getValue() <= System.currentTimeMillis()) {
                 entry.getKey().getBlock().setType(Material.AIR);
-                SwordCraftOnline.logDebug("[Fire Manager] Cooldown. Fire Removed.");
                 iter.remove();
             } else if(!entry.getKey().getBlock().getType().equals(Material.FIRE)) {
-                SwordCraftOnline.logDebug("[Fire Manager] Defaulted. Fire Removed.");
                 iter.remove();
             }
         }

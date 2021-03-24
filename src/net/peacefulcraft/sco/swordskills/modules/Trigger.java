@@ -5,6 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
@@ -18,7 +19,7 @@ public class Trigger implements SwordSkillModule {
         private boolean getTriggered() { return this.triggered; }
 
     private SwordSkillType type;
-    private String passedEvent;
+    private Boolean doesPass;
 
     /**
      * @param type of SwordSkill we are triggering
@@ -26,7 +27,7 @@ public class Trigger implements SwordSkillModule {
      */
     public Trigger(SwordSkillType type) {
         this.type = type;
-        this.passedEvent = null;
+        this.doesPass = false;
     }
 
     /**
@@ -34,9 +35,9 @@ public class Trigger implements SwordSkillModule {
      * changes which item we detect for
      * @param event type we pass through triggering
      */
-    public Trigger(SwordSkillType type, String event) {
+    public Trigger(SwordSkillType type, Boolean doesPass) {
         this.type = type;
-        this.passedEvent = event;
+        this.doesPass = doesPass;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class Trigger implements SwordSkillModule {
     @Override
     public boolean beforeTriggerSkill(SwordSkill ss, Event ev) {
         // Checking if event should pass
-        if(passedEvent != null && ev.getEventName().equalsIgnoreCase(passedEvent)) { return true; }
+        if(doesPass && !(ev instanceof PlayerInteractEvent)) { return true; }
 
         if((ev instanceof PlayerInteractEvent) && getTriggered() == false) {
             PlayerInteractEvent evv = (PlayerInteractEvent)ev;
@@ -77,8 +78,9 @@ public class Trigger implements SwordSkillModule {
 
     @Override
     public void afterTriggerSkill(SwordSkill ss, Event ev) {
-        if(!(ev instanceof PlayerInteractEvent)) {
+        if(!doesPass && ev instanceof PlayerInteractEvent) {
             setTriggered(false);
+            SwordCraftOnline.logDebug("[Trigger] Reset.");
         }
     }
 

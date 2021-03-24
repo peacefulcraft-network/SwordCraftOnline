@@ -9,6 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -16,13 +17,13 @@ import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class OverheatSkill extends SwordSkill {
 
-    public OverheatSkill(SwordSkillCaster c, SwordSkillProvider provider) {
+    public OverheatSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
 
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(17000, (ModifierUser)c, SwordSkillType.SECONDARY));
+        this.useModule(new TimedCooldown(17000, (ModifierUser)c, "Overheat", tier));
     }
 
     @Override

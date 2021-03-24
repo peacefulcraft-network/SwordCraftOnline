@@ -24,7 +24,7 @@ public class FatalTeleportSkill extends SwordSkill {
         this.damageModifier = damageModifier;
         this.tier = tier;
 
-        this.useModule(new TimedCooldown(cooldown));
+        this.useModule(new TimedCooldown(cooldown, (ModifierUser)c, "Fatal Teleport", tier));
         this.useModule(new Trigger(SwordSkillType.SWORD));
         
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);

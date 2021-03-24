@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.EffectCombo;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class ThiefKingsDemonLedgerComboSkill extends SwordSkill {
 
@@ -31,7 +32,7 @@ public class ThiefKingsDemonLedgerComboSkill extends SwordSkill {
 
         this.useModule(new Trigger(SwordSkillType.SWORD));
         this.useModule(new EffectCombo(this, 3, effects, 4, 80, tier, "Thief Kings Demon Ledger Combo"));
-        this.useModule(new TimedCooldown(45000, null, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(45000, (ModifierUser)c, "Thief Kinds Demon Ledger Combo", tier, null, "PlayerInteractEvent"));
     }
 
     @Override

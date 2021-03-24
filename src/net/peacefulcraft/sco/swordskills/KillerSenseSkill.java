@@ -31,7 +31,7 @@ public class KillerSenseSkill extends SwordSkill {
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new Trigger(SwordSkillType.SECONDARY));
-        this.useModule(new TimedCooldown(35000, (ModifierUser)c, SwordSkillType.SECONDARY));
+        this.useModule(new TimedCooldown(35000, (ModifierUser)c, "Killer Sense", tier));
     }
 
     @Override

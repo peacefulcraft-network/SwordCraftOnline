@@ -137,20 +137,7 @@ public class ForwardLungeItem implements SwordSkillProvider {
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        switch (this.tier) {
-            case UNCOMMON:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case RARE:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case LEGENDARY:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case ETHEREAL:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case GODLIKE:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            default:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-        }
+        return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider)this, tier);
     }
     
 }
