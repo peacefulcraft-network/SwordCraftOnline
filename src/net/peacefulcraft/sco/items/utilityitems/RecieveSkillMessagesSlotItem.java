@@ -12,14 +12,14 @@ import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 
-public class RecieveSkillMessagesSlot implements ItemIdentifier, CustomDataHolder {
+public class RecieveSkillMessagesSlotItem implements ItemIdentifier, CustomDataHolder {
 
     private ItemTier tier;
     private int quantity;
     private JsonObject customData;
     private Material mat;
 
-    public RecieveSkillMessagesSlot(ItemTier tier, Integer quantity) {
+    public RecieveSkillMessagesSlotItem(ItemTier tier, Integer quantity) {
         this.tier = ItemTier.LEGENDARY;
         this.quantity = quantity;
         this.mat = Material.GREEN_DYE;

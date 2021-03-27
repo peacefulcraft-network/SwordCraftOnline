@@ -49,7 +49,18 @@ public class PlayerDataInventory extends BukkitInventoryBase {
         while(iter.hasNext()) {
             JsonObject temp = iter.next().getAsJsonObject();
             for(Entry<String, JsonElement> entry : temp.entrySet()) {
-                sCombat += entry.getKey() + ": " + entry.getValue().getAsString() + "%\n";
+                String[] split = entry.getKey().split("_");
+                String splitt = entry.getKey();
+                if(split.length == 2) {
+                    splitt = split[0].substring(0,1) + split[0].substring(1).toLowerCase() + 
+                    " " + split[1].substring(0,1) + split[1].substring(1).toLowerCase();
+                } else if(split.length == 1) {
+                    splitt = split[0].substring(0,1) + split[0].substring(1).toLowerCase();
+                }
+
+                double rounded = Math.round(entry.getValue().getAsDouble() * 100.0)/100.0;
+
+                sCombat += "ChatColor{WHITE}" + splitt + ": " + rounded + "%\n";
             }
         }    
         JsonArray modifierArr = obj.get("damageModifier").getAsJsonArray();
