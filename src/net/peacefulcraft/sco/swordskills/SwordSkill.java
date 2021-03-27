@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 
@@ -44,7 +45,7 @@ public abstract class SwordSkill {
 		this.c = c;
 		LivingEntity caster = c.getSwordSkillManager().getSCOPlayer().getPlayer();
 		if (caster instanceof Player) {
-			this.s = SwordCraftOnline.getPluginInstance().getGameManager().findSCOPlayer((Player) caster);
+			this.s = GameManager.findSCOPlayer((Player) caster);
 		}
 		this.manager = c.getSwordSkillManager();
 		this.provider = provider;
