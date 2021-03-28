@@ -39,6 +39,7 @@ import net.peacefulcraft.sco.structures.structures.Pillar;
 import net.peacefulcraft.sco.structures.structures.Wall;
 import net.peacefulcraft.sco.structures.structures.WallWave;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
@@ -67,6 +68,16 @@ public class SCOAdmin implements CommandExecutor {
 				s.getPlayerInventory().addItem(item);
 				return true;
 			}
+
+			if (args[0].equalsIgnoreCase("sslist")) {
+				int page = 1;
+				if (args.length == 2) {
+					page = Integer.valueOf(args[1]);
+				}
+				Player p = (Player) sender;
+				p.spigot().sendMessage(SwordCraftOnline.getPluginInstance().getSwordSkillDataManager().getInfoPage(page));
+				return true;
+			}			
 
 			if (args[0].equalsIgnoreCase("inventory")) {
 				if(args[1].equalsIgnoreCase("craft")) {

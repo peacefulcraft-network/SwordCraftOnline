@@ -49,6 +49,7 @@ import net.peacefulcraft.sco.quests.listeners.QuestOpenInventoryListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerInteractEntityListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerMoveListener;
 import net.peacefulcraft.sco.storage.HikariManager;
+import net.peacefulcraft.sco.swordskills.SwordSkillDataManager;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityAsyncPlayerChatListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
@@ -110,6 +111,9 @@ public class SwordCraftOnline extends JavaPlugin{
 	private FireManager fireManager;
 		public FireManager getFireManager() { return this.fireManager; }
 
+	private SwordSkillDataManager swordSkillDataManager;
+		public SwordSkillDataManager getSwordSkillDataManager() { return this.swordSkillDataManager; }
+
 	public SwordCraftOnline() {
 
 		sco = this;
@@ -145,6 +149,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.fireManager = new FireManager();
 
 		effectManager = new EffectManager(this);
+
+		this.swordSkillDataManager = new SwordSkillDataManager();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
