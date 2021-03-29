@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,11 +25,17 @@ public class SwordSkillDataManager {
 
     private static HashMap<SwordSkillType, List<String>> ssType = new HashMap<>();
 
+    private static HashMap<ItemTier, List<String>> ssTier = new HashMap<>();
+
     public SwordSkillDataManager() {
 
         // Initialize ssType lists
         for (SwordSkillType type : SwordSkillType.values()) {
             ssType.put(type, new ArrayList<>());
+        }
+
+        for (ItemTier tier : ItemTier.values()) {
+            ssTier.put(tier, new ArrayList<>());
         }
 
         // Processing type organization
@@ -43,6 +50,10 @@ public class SwordSkillDataManager {
 
             SwordSkillProvider prov = (SwordSkillProvider)identifier;
             ssType.get(prov.getType()).add(name);
+
+            for (ItemTier tier : prov.getAllowedTiers()) {
+                ssTier.get(tier).add(name);
+            }
         }
 
         SwordCraftOnline.logDebug("[SwordSkill Data Manager] Loading complete!");
@@ -104,6 +115,24 @@ public class SwordSkillDataManager {
         out.addExtra(page);
 
         return out;
+    }
+
+    /**
+     * Fetches sword skills organized by type
+     * @param type we search against
+     * @return List of string names
+     */
+    public List<String> getSwordSkills(SwordSkillType type) {
+        return Collections.unmodifiableList(ssType.get(type));
+    }
+
+    /**
+     * Fetches swordskills organized by tier
+     * @param tier we search against
+     * @return List of string names
+     */
+    public List<String> getSwordSkills(ItemTier tier) {
+        return Collections.unmodifiableList(ssTier.get(tier));
     }
 
     static {

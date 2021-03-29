@@ -1,7 +1,6 @@
 package net.peacefulcraft.sco.gamehandle.listeners;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -9,9 +8,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.GameManager;
-import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 /**
@@ -20,7 +16,7 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
  */
 public class ModifierUserDamageListener implements Listener {
     
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void modDamage(EntityDamageEvent e) {
         Entity vic = e.getEntity();
 
