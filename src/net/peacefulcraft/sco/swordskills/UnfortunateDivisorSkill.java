@@ -22,7 +22,7 @@ public class UnfortunateDivisorSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 
         this.useModule(new TimedCooldown(30000, (ModifierUser)c, "Unfortunate Divisor", tier, null, "PlayerInteractEvent"));
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
     }
 
     @Override

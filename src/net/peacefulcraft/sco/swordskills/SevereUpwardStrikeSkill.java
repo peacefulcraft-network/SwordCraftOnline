@@ -23,7 +23,7 @@ public class SevereUpwardStrikeSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
         this.useModule(new TimedCooldown(this.cooldown, (ModifierUser)c, "Severe Upward Strike", tier,null, "PlayerInteractEvent"));
     }
 

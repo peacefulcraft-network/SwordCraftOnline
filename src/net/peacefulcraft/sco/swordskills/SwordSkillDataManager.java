@@ -41,6 +41,7 @@ public class SwordSkillDataManager {
         // Processing type organization
         for (String name : ssLis) {
             name = name.replaceAll(":", "");
+            name = name.replaceAll(" ", "");
 
             ItemIdentifier identifier = ItemIdentifier.generateIdentifier(name, 1);
             if(identifier == null) { 

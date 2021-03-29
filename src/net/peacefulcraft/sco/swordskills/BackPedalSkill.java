@@ -22,7 +22,7 @@ public class BackPedalSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
         this.useModule(new TimedCooldown(10000, (ModifierUser)c, "Back Pedal", this.tier, null, "PlayerInteractEvent"));
     }
 

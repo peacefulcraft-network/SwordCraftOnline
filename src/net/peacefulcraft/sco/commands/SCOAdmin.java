@@ -41,7 +41,6 @@ import net.peacefulcraft.sco.structures.structures.WallWave;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
-import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.CriticalHit;
 import net.peacefulcraft.sco.swordskills.utilities.Parry;
@@ -623,11 +622,7 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					return true;
 
-				} else if(args[2].equalsIgnoreCase("dummyskill")) {
-					new SwordSkillTest(s, null);
-					sender.sendMessage("Registered Dummy Skill");
-					return true;
-				} else {
+				} else  {
 					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
 					return true;
 				}

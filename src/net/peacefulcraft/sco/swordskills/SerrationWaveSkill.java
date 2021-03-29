@@ -18,6 +18,7 @@ import net.peacefulcraft.sco.items.utilities.ItemAttribute;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class SerrationWaveSkill extends SwordSkill {
 
@@ -31,7 +32,7 @@ public class SerrationWaveSkill extends SwordSkill {
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new TimedCooldown(this.cooldown));
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
     }
 
     @Override
@@ -46,6 +47,9 @@ public class SerrationWaveSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+
+        //TODO: Clean up this if statement to use Modifier User
+
         List<Entity> entities = new ArrayList<Entity>();
         double damage = 1;
         if(this.c instanceof SCOPlayer) {

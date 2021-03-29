@@ -22,7 +22,7 @@ public class SoulsOfTheFallenSkill extends SwordSkill {
         this.tier = tier;
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
         this.useModule(new TimedCooldown(60000, (ModifierUser)c, "Souls of the Fallen", tier, null, "PlayerInteractEvent"));
     }
 
@@ -33,8 +33,7 @@ public class SoulsOfTheFallenSkill extends SwordSkill {
 
     @Override
     public boolean skillPreconditions(Event ev) {
-        if(c instanceof SCOPlayer) { return true; }
-        return false;
+        return c instanceof SCOPlayer;
     }
 
     @Override

@@ -1,8 +1,5 @@
 package net.peacefulcraft.sco.swordskills;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
@@ -76,7 +73,7 @@ public interface SwordSkillProvider extends ItemIdentifier, CustomDataHolder {
     try {
       String parts[] = configString.split("-");
       String name = parts[0].replaceAll(" ", "");
-      ItemTier tier = ItemTier.valueOf(parts[2]);
+      ItemTier tier = ItemTier.valueOf(parts[1]);
     
       return SwordSkillProvider.generateProvider(name, tier);
     
@@ -90,43 +87,11 @@ public interface SwordSkillProvider extends ItemIdentifier, CustomDataHolder {
   }
 
   /**
-   * Generates a SwordSkillProvider instance when given attributes of a valid SwordSkill.
-   * @param shortName The shortname / base name of the skill IE: Critial Strike
-   * @param tier the requested ItemTier
-   * @return An instance of the requested SwordSkillprovider
-   */
-  public static SwordSkillProvider generateProvider(String shortName, ItemTier tier) throws RuntimeException {
-    return SwordSkillProvider.generateProvider(SwordSkillProvider.getProviderName(shortName, tier));
-  }
-
-  /**
    * Generates a SwordSkillProvider instance when given a valid SwordSkillProvider longname
    * @param name The long-form name of the SwordSkillProvider class (from .getProviderName())
    * @return An instance of the requested SwordSkillProvider
    */
-  public static SwordSkillProvider generateProvider(String name) throws RuntimeException {
-    try {
-      Class<?> classs = Class.forName("net.peacefulcraft.sco.swordskills." + name);
-      Constructor<?> constructor = classs.getConstructor();
-      
-      return ((SwordSkillProvider) constructor.newInstance());
-
-		} catch (ClassNotFoundException e) {
-			SwordCraftOnline.logSevere("Attempted to create item " + name + ", but no coresponding class was found in net.peacefulcraft.sco.items");
-		} catch (NoSuchMethodException e) {
-			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must have a constuctor with arguments (int, ItemTier)");
-		} catch (SecurityException e) {
-			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " does not have a public constructor.");
-		} catch (InstantiationException | InvocationTargetException e) {
-			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " generated exception during reflective instantiation:");
-		} catch (IllegalAccessException e) {
-			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " is an abstract class and cannot be instantiated.");
-		} catch (IllegalArgumentException e) {
-			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " received an invalid arguement type during insantiation. Arguements must be of type (int, ItemTier).");
-		} catch (ClassCastException e) {
-			SwordCraftOnline.logSevere("net.peacefulcraft.sco.items." + name + " must implement SwordSkillProvider.");
-    }
-
-    throw new RuntimeException();
+  public static SwordSkillProvider generateProvider(String name, ItemTier tier) throws RuntimeException {
+    return (SwordSkillProvider) ItemIdentifier.generateIdentifier(name, tier, 1);
   }
 }

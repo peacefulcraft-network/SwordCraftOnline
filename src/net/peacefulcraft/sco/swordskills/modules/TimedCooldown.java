@@ -102,7 +102,8 @@ public class TimedCooldown implements SwordSkillModule {
      */
     @Override
     public void afterTriggerSkill(SwordSkill ss, Event ev) {
-        if(( this.eventName != null && ev.getEventName().equalsIgnoreCase(this.eventName) )
+        if( (ev == null)
+            || ( this.eventName != null && ev.getEventName().equalsIgnoreCase(this.eventName) )
             || ( this.deniedEvent != null && !ev.getEventName().equalsIgnoreCase(this.deniedEvent) )
             || ( this.deniedEvent == null && this.eventName == null )) {
             

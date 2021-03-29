@@ -25,7 +25,7 @@ public class ForwardLungeSkill extends SwordSkill {
 
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT);
         this.useModule(new TimedCooldown(delay, (ModifierUser)c, "Forward Lunge", this.tier));
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
     }
 
     @Override

@@ -28,7 +28,7 @@ public class GuardianSkill extends SwordSkill {
         this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.useModule(new Trigger(SwordSkillType.SECONDARY));
+        this.useModule(new Trigger(SwordSkillType.SECONDARY, (ModifierUser)c));
         this.useModule(new TimedCooldown(45000, (ModifierUser)c, "Guardian", tier));
     }
 

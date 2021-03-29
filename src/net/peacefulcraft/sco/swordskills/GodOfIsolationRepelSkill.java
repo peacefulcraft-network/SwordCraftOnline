@@ -23,7 +23,7 @@ public class GodOfIsolationRepelSkill extends SwordSkill {
         this.tier = tier;
     
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.useModule(new Trigger(SwordSkillType.PRIMARY));
+        this.useModule(new Trigger(SwordSkillType.PRIMARY, (ModifierUser)c));
         this.useModule(new TimedCooldown(20000, (ModifierUser)c, "God of Isolation: Repel", tier));
     }
 

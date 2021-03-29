@@ -20,9 +20,9 @@ public class PoorMansThirdStrikeSkill extends SwordSkill {
         super(c, provider);
         this.tier = tier;
 
-        this.useModule(new TimedCooldown(17000, (ModifierUser)c, "Poor Mans Third Strike", tier,null, "PlayerInteractEvent"));
+        this.useModule(new TimedCooldown(17000, (ModifierUser)c, "Poor Mans Third Strike", tier, null, "PlayerInteractEvent"));
         this.useModule(new BasicCombo(this, SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, 3));
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
 
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);

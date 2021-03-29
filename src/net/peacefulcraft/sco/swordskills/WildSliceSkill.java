@@ -18,7 +18,7 @@ public class WildSliceSkill extends SwordSkill {
         super(c, provider);
         this.tier = tier;
         
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
         this.useModule(new TimedCooldown(32000, (ModifierUser)c, "Wild Slice", tier, null, "PlayerInteractEvent"));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);

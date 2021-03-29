@@ -53,6 +53,8 @@ import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 import net.peacefulcraft.sco.particles.effect.SmokeEffect;
+import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
 
 /**
@@ -253,28 +255,6 @@ public class MythicMob implements Comparable<MythicMob> {
 
     private List<String> aiTSelectors;
 
-    /*
-    private Queue<SkillMechanic> mSkills = new LinkedList<>();
-
-    private Queue<SkillMechanic> mSpawnSkills = new LinkedList<>();
-
-    private Queue<SkillMechanic> mDeathSkills = new LinkedList<>();
-
-    private Queue<SkillMechanic> mPlayerDeathSkills = new LinkedList<>();
-
-    private Queue<SkillMechanic> mTimerSkills = new LinkedList<>();
-
-    private Queue<SkillMechanic> mGenericSignalSkills = new LinkedList<>();
-
-    private Queue<SkillMechanic> mSpawnerReadySkills = new LinkedList<>();
-
-    private Map<String, SkillMechanic> mSignalSkills = new HashMap<>();
-
-    private List<String> legacySkills;
-
-    public List<LegacyMythicTimerSkill> legacyTimerSkills;
-    */
-
     public boolean usingTimers = false;
 
     /**Size of mob. I.e. Large slimes */
@@ -294,13 +274,6 @@ public class MythicMob implements Comparable<MythicMob> {
 
     /**Determines show name on damage. Default true */
     private boolean showNameOnDamage = true;
-
-    /*
-    private Boolean repeatAllSkills = Boolean.valueOf(false);
-
-    public boolean getRepeatAllSkills() {
-        return this.repeatAllSkills;
-    }*/
 
     /**Prevents vanilla drops. Default false */
     private Boolean preventOtherDrops = Boolean.valueOf(false);
@@ -513,7 +486,7 @@ public class MythicMob implements Comparable<MythicMob> {
         /**Returns if mob has faction targets */
         public boolean hasFactionTargets() { return this.factionTargets.size() > 0; }
 
-    /**Stores skill information */
+    /**Stores skill information in unparsed strings*/
     protected List<String> skills;
         /**Returns list of mobs skills */
         public List<String> getSkills() { return this.skills; }
@@ -749,9 +722,7 @@ public class MythicMob implements Comparable<MythicMob> {
         //Boss Mob Handling
         this.isBossLocked = mc.getBoolean("Boss.IsBossLocked", false);
         
-
         //Mob Skill handling
-        //TODO: Load sword skills from naming convetion and apply to mob.
         this.skills = mc.getStringList("Skills");
 
         //Loading mob faction details.
@@ -960,8 +931,16 @@ public class MythicMob implements Comparable<MythicMob> {
      */
     public ActiveMob applySkills(ActiveMob am) {
         for(String s : this.skills) {
-            // TODO: Generator.readSkill(s, am);
+            try{
+                SwordSkillProvider prov = SwordSkillProvider.generateProviderFromLongString(s);
+                prov.registerSwordSkill(am);
+            } catch(RuntimeException e) {
+                SwordCraftOnline.logDebug("[Mythic Mob] Error registering skill " + s + " to mob: " + this.internalName);
+                continue;
+            }
         }
+        am.getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.PASSIVE, null);
+
         return am;
     }
 

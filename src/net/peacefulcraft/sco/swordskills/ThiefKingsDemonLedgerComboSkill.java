@@ -30,7 +30,7 @@ public class ThiefKingsDemonLedgerComboSkill extends SwordSkill {
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_GIVE);
 
-        this.useModule(new Trigger(SwordSkillType.SWORD));
+        this.useModule(new Trigger(SwordSkillType.SWORD, (ModifierUser)c));
         this.useModule(new EffectCombo(this, 3, effects, 4, 80, tier, "Thief Kings Demon Ledger Combo"));
         this.useModule(new TimedCooldown(45000, (ModifierUser)c, "Thief Kinds Demon Ledger Combo", tier, null, "PlayerInteractEvent"));
     }
@@ -47,12 +47,14 @@ public class ThiefKingsDemonLedgerComboSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        if(ev instanceof PlayerInteractEvent) { return; }
+        if(ev == null || ev instanceof PlayerInteractEvent) { return; }
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         evv.setDamage(evv.getDamage() * 3);
 
+        ModifierUser mu = (ModifierUser)c;
+
         SkillAnnouncer.messageSkill(
-            s, 
+            mu, 
             "Combo completed", 
             "Thief Kings Demon Ledger Combo", 
             tier);

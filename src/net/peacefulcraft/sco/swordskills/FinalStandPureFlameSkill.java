@@ -20,7 +20,7 @@ public class FinalStandPureFlameSkill extends SwordSkill {
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
         this.useModule(new TimedCooldown(35000, (ModifierUser)c, "Final Stand: Pure Flame", tier));
-        this.useModule(new Trigger(SwordSkillType.PRIMARY));
+        this.useModule(new Trigger(SwordSkillType.PRIMARY, (ModifierUser)c));
     }
 
     @Override

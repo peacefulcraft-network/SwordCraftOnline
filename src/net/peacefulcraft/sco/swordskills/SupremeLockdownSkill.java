@@ -21,7 +21,7 @@ public class SupremeLockdownSkill extends SwordSkill {
         this.tier = tier;
         
         this.useModule(new TimedCooldown(25000, (ModifierUser)c, "Supreme Lockdown", tier));
-        this.useModule(new Trigger(SwordSkillType.SECONDARY));
+        this.useModule(new Trigger(SwordSkillType.SECONDARY, (ModifierUser)c));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 

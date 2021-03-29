@@ -27,7 +27,7 @@ public class EnderBlitzSkill extends SwordSkill {
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
 
-        this.useModule(new Trigger(SwordSkillType.SECONDARY));
+        this.useModule(new Trigger(SwordSkillType.SECONDARY, (ModifierUser)c));
         this.useModule(new TimedCooldown(25000, (ModifierUser)c, "Ender Blitz", tier));
     }
 

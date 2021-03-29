@@ -8,6 +8,7 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.DirectionTracker;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
@@ -26,12 +27,16 @@ public class EnderBlitzControlSkill extends SwordSkill {
     public EnderBlitzControlSkill(SwordSkillCaster c, SwordSkillProvider provider, ItemTier tier) {
         super(c, provider);
         this.tier = tier;
+
+        if(!(c instanceof SCOPlayer)) {
+            throw new RuntimeException("Failed to register EnderBlitzControlSkill. Caster not SCOPlayer.");
+        }
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
 
-        this.useModule(new Trigger(SwordSkillType.SECONDARY));
+        this.useModule(new Trigger(SwordSkillType.SECONDARY, (ModifierUser)c));
         this.useModule(new TimedCooldown(32000, (ModifierUser)c, "Ender Blits: Control", tier));
-        this.useModule(new DirectionTracker(s));
+        this.useModule(new DirectionTracker((SCOPlayer)c));
     }
 
     @Override
@@ -46,7 +51,7 @@ public class EnderBlitzControlSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        ModifierUser mu = (ModifierUser)c;
+        SCOPlayer s = (SCOPlayer)c;
         id = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
             public void run() {
                 if(repetitions == 4) {
@@ -73,11 +78,11 @@ public class EnderBlitzControlSkill extends SwordSkill {
                         centered = curr;
                 }
 
-                mu.getLivingEntity().teleport(
+                s.getLivingEntity().teleport(
                     LocationUtil.getRandomLocations(centered, 5, 1).get(0).add(0, 1, 0)
                 );
 
-                mu.queueChange(
+                s.queueChange(
                     Attribute.GENERIC_ATTACK_DAMAGE, 
                     s.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE), 
                     2);
@@ -86,7 +91,7 @@ public class EnderBlitzControlSkill extends SwordSkill {
         }, 5, 60);
 
         SkillAnnouncer.messageSkill(
-            mu, 
+            s, 
             "Blitz triggered", 
             "Ender Blitz: Control", 
             tier);
@@ -103,6 +108,7 @@ public class EnderBlitzControlSkill extends SwordSkill {
     }
 
     private Location getCentered(double rotation, int range) {
+        SCOPlayer s = (SCOPlayer)c;
         BlockFace relativeDir = DirectionalUtil.getRelativeBlockFace(s.getPlayer(), rotation);
         Location curr = s.getLocation();
         Location end = curr;

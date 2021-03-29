@@ -25,7 +25,7 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
         this.tier = tier;
         
         this.useModule(new TimedCooldown(30000, (ModifierUser)c, "System Defense: Thunderstruck", tier));
-        this.useModule(new Trigger(SwordSkillType.SECONDARY));
+        this.useModule(new Trigger(SwordSkillType.SECONDARY, (ModifierUser)c));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 

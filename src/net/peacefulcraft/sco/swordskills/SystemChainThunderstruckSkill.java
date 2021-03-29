@@ -27,7 +27,7 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
         this.rangeModifier = rangeModifier;        
 
         this.useModule(new TimedCooldown(30000, (ModifierUser)c, "System Chain: Thunderstruck", tier));
-        this.useModule(new Trigger(SwordSkillType.PRIMARY));
+        this.useModule(new Trigger(SwordSkillType.PRIMARY, (ModifierUser)c));
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
     }
 

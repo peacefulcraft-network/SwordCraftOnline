@@ -26,7 +26,7 @@ public class VolatileContainmentSkill extends SwordSkill {
         this.tier = tier;
         
         this.listenFor(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK);
-        this.useModule(new Trigger(SwordSkillType.PRIMARY));
+        this.useModule(new Trigger(SwordSkillType.PRIMARY, (ModifierUser)c));
         this.useModule(new TimedCooldown(27000, (ModifierUser)c, "Volatile Containment", tier));
     }
 
