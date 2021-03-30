@@ -8,7 +8,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
+import net.peacefulcraft.sco.swordskills.utilities.CriticalHit;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Parry;
 
 /**
  * Holds relevant event handling for modifier user
@@ -18,19 +20,23 @@ public class ModifierUserDamageListener implements Listener {
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void modDamage(EntityDamageEvent e) {
-        Entity vic = e.getEntity();
-
-        ModifierUser mu = ModifierUser.getModifierUser(vic);
-        if(mu == null) { return; }
+        ModifierUser vicMu = ModifierUser.getModifierUser(e.getEntity());
+        if(vicMu == null) { return; }
 
         // Getting damage from event then setting to 0
         // 0 set might be redudant
         double damage = e.getFinalDamage();
         e.setDamage(0);
+
+        // Calculating parry chance of MU
+        if(Parry.parryCalc(null, vicMu, 0)) {
+            e.setCancelled(true);
+            return;
+        }
         
         String cause = e.getCause().toString();
         // Checking incoming damage from cause
-        damage = mu.checkModifier(cause, damage, true);
+        damage = vicMu.checkModifier(cause, damage, true);
         if(e instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent ev = (EntityDamageByEntityEvent)e;
             
@@ -38,14 +44,17 @@ public class ModifierUserDamageListener implements Listener {
             if(damager != null) {
                 // Checking outgoing damage calculation
                 damage = damager.checkModifier(ev.getEntity().getType().toString().toUpperCase(), damage, false);
+
+                // Calculating critical damage of MU
+                damage = CriticalHit.damageCalc(damager, damage, 0, 0);
             }
 
             // Checking incoming damage from entity
-            damage = mu.checkModifier(ev.getDamager().getType().toString().toUpperCase(), damage, true);
+            damage = vicMu.checkModifier(ev.getDamager().getType().toString().toUpperCase(), damage, true);
         }
 
         // Converting health to appropriate amount
-        mu.convertHealth(damage, true);     
+        vicMu.convertHealth(damage, true);     
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
