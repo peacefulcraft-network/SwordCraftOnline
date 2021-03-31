@@ -10,6 +10,7 @@ import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.particles.effect.FlameEffect;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -39,6 +40,11 @@ public class OverheatSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+
+        FlameEffect fe = new FlameEffect(SwordCraftOnline.getEffectManager());
+        fe.setEntity(mu.getLivingEntity());
+        fe.iterations = 800;
+        fe.start();
 
         List<Location> locs = LocationUtil.getCylinderLocations(
             mu.getLivingEntity().getLocation(), 
