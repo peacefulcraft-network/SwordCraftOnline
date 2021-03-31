@@ -1,28 +1,22 @@
 package net.peacefulcraft.sco.swordskills;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import java.util.UUID;
 
-import net.peacefulcraft.sco.swordskills.modules.BasicCombo;
-import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
-import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
+import org.bukkit.event.Event;
+
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class CriticalStrikeSkill extends SwordSkill{
 	
-	private long delay;
-	private double damageToDeal;
-	private double hitsToTrigger;
+	private Integer increase;
+	private UUID change1 = null;
 
-	public CriticalStrikeSkill(SwordSkillCaster c, long delay, SkillProvider provider, int hitsToTrigger, double damageToDeal) {
+	public CriticalStrikeSkill(SwordSkillCaster c, Integer increase, long delay, SwordSkillProvider provider) {
 		super(c, provider);
-		this.delay = delay;
-		this.hitsToTrigger = hitsToTrigger;
-		this.damageToDeal = damageToDeal;
+		this.increase = increase;
 
-		this.listenFor(SwordSkillType.ENTITY_DAMAGE_ENTITY_GIVE);
-		this.useModule(new TimedCooldown(delay));
-		this.useModule(new BasicCombo(this, SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, hitsToTrigger));
+		this.listenFor(SwordSkillTrigger.PASSIVE);
 	}
 
 	@Override
@@ -34,15 +28,15 @@ public class CriticalStrikeSkill extends SwordSkill{
 
 	@Override
 	public boolean skillPreconditions(Event ev) {
-		// No extra checks required
-		return true;
+		return change1 == null;
 	}
 	
 	@Override
 	public void triggerSkill(Event ev) {
-		EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ev;
-		ede.setDamage( ede.getFinalDamage() + damageToDeal);
-		((Player) ede.getDamager()).sendMessage("Critial Hit!");
+		if(this.c instanceof ModifierUser) {
+			ModifierUser mu = (ModifierUser)c;
+			change1 = mu.queueChange(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
+		}
 	}
 
 	@Override
@@ -52,6 +46,9 @@ public class CriticalStrikeSkill extends SwordSkill{
 
 	@Override
 	public void unregisterSkill() {
-		// No player data changes. No unregister.
+		if(this.c instanceof ModifierUser) {
+			ModifierUser mu = (ModifierUser)c;
+			mu.dequeueChange(change1);
+		}
 	}
 }

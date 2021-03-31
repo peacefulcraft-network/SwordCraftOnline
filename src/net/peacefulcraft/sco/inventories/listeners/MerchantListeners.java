@@ -18,10 +18,13 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.AlchemistInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 
 public class MerchantListeners implements Listener {
     private final String alchemistTag = ChatColor.BLUE + "[" + ChatColor.GOLD + "Bill the Alchemist" + ChatColor.BLUE + "]";
     
+    /*
+
     @EventHandler
     public void interactVillager(PlayerInteractEntityEvent e) {
         Entity entity = e.getRightClicked();
@@ -33,7 +36,7 @@ public class MerchantListeners implements Listener {
         if(s == null) { return; }
 
         if(entity.getCustomName().equalsIgnoreCase("Alchemist")) {
-            new AlchemistInventory(s).openInventory();
+            new AlchemistInventory(s).openInventory(s);
         }
     }
 
@@ -58,8 +61,8 @@ public class MerchantListeners implements Listener {
         if(!(s.withdrawWallet(price))) {
             s.getPlayer().sendMessage(alchemistTag + " Seems you don't have enough money for my wares... Come back with more coin...");
             return;
-        } 
-        ItemStack bought = ItemIdentifier.generate(split[0], Integer.valueOf(1), Boolean.valueOf(false));
+        }
+        ItemStack bought = ItemIdentifier.generateItem(split[0], ItemTier.COMMON, 1);
         if(bought == null || bought.getType().equals(Material.AIR)) { return; }
 
         if(!(s.getPlayer().getInventory().addItem(bought).isEmpty())) {
@@ -77,4 +80,5 @@ public class MerchantListeners implements Listener {
             s.getPlayer().sendMessage(alchemistTag + " Enjoy ye' wares.");
         }
     }
+    */
 }

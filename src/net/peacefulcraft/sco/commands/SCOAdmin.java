@@ -1,24 +1,25 @@
 package net.peacefulcraft.sco.commands;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.inventories.CraftingInventory;
+import net.peacefulcraft.sco.inventories.InfusionInventory;
 import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.inventories.PlayerDataInventory;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
 import net.peacefulcraft.sco.mythicmobs.drops.LootBag;
@@ -38,13 +39,11 @@ import net.peacefulcraft.sco.structures.structures.Pillar;
 import net.peacefulcraft.sco.structures.structures.Wall;
 import net.peacefulcraft.sco.structures.structures.WallWave;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
-import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.CriticalHit;
-import net.peacefulcraft.sco.swordskills.utilities.Generator;
 import net.peacefulcraft.sco.swordskills.utilities.Parry;
-import net.peacefulcraft.sco.swordskills.utilities.Validator;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class SCOAdmin implements CommandExecutor {
@@ -57,36 +56,69 @@ public class SCOAdmin implements CommandExecutor {
 				return true;
 			}
 
-			if (args[0].equalsIgnoreCase("swordskillbook")) {
+			if (args[0].equalsIgnoreCase("generateitem")) {
 				Player p = (Player) sender;
-				SwordCraftOnline.getGameManager();
-				SwordSkillInventory inv = (SwordSkillInventory) GameManager.findSCOPlayer(p)
-						.getInventory(InventoryType.SWORD_SKILL);
-
-				inv.openInventory();
-
+				SCOPlayer s = GameManager.findSCOPlayer(p);
+				ItemIdentifier item = ItemIdentifier.generateIdentifier(args[1], ItemTier.valueOf(args[2]), Integer.valueOf(args[3]));
+				if(item == null || item.getMaterial().equals(Material.AIR)) {
+					p.sendMessage("Failed to create item: " + args[1]);
+					return true;
+				}
+				s.getPlayerInventory().addItem(item);
 				return true;
 			}
 
-			if (args[0].equalsIgnoreCase("generateitem")) {
-				Player p = (Player) sender;
-				// TODO: ITEM VALIDATION
-				// if(!Item.itemExists(args[1])) { return false; }
-
-				// TODO: MAKE UTIL ITEMS SKILLPROVIDERS WITH NO EQUIP ABILITY
+			if (args[0].equalsIgnoreCase("sslist")) {
+				int page = 1;
 				if (args.length == 2) {
-					// p.getInventory().addItem(Item.giveItem(args[1], null));
-					return true;
+					page = Integer.valueOf(args[1]);
 				}
-				if (args.length == 3) {
-					if (!Validator.teirExists(args[2])) {
-						return false;
-					}
+				Player p = (Player) sender;
+				p.spigot().sendMessage(SwordCraftOnline.getPluginInstance().getSwordSkillDataManager().getInfoPage(page));
+				return true;
+			}			
 
-					p.getInventory().addItem(Generator.generateItem(args[1], 1, ItemTier.valueOf(args[2])));
+			if (args[0].equalsIgnoreCase("inventory")) {
+				if(args[1].equalsIgnoreCase("craft")) {
+					Player p = (Player) sender;
+					SCOPlayer s = GameManager.findSCOPlayer(p);
+
+					try{
+						if(args[2].equalsIgnoreCase("display") || args[2].equalsIgnoreCase("d")) {
+							new CraftingInventory(s, args[3]).openInventory(s);
+							return true;
+						}
+					} catch (IndexOutOfBoundsException ex) {
+						SwordCraftOnline.logInfo("[SCOAdmin] IndexOutOfBoundsError running command.");
+						new CraftingInventory(s).openInventory(s);
+						return true;
+					}
+					SwordCraftOnline.logInfo("[SCOAdmin] Hit this end point for some reason.");
+					new CraftingInventory(s).openInventory(s);
 					return true;
 				}
-				return false;
+				if(args[1].equalsIgnoreCase("infusion")) {
+					Player p = (Player) sender;
+					SCOPlayer s = GameManager.findSCOPlayer(p);
+
+					new InfusionInventory(s).openInventory(s);
+					return true;
+				}
+				if(args[1].equalsIgnoreCase("data")) {
+					Player p = (Player) sender;
+					SCOPlayer s = GameManager.findSCOPlayer(p);
+
+					new PlayerDataInventory(s).openInventory(s);
+					return true;
+				}
+			}
+
+			if (args[0].equalsIgnoreCase("crafting")) {
+				if(args[1].equals("reload")) {
+					SwordCraftOnline.getPluginInstance().getCraftingManager().load();
+					return true;
+				}
+				return true;
 			}
 
 			if (args[0].equalsIgnoreCase("playerdata")) {
@@ -98,13 +130,12 @@ public class SCOAdmin implements CommandExecutor {
 					return true;
 				}
 
-				if (args.length > 2) {
-					if (args[2].equalsIgnoreCase("inventory")) {
-
-						if (args.length > 3) {
-							if (args[3].equalsIgnoreCase("swordskill")) {
-								p.openInventory(
-										s.getInventoryManager().getInventory(InventoryType.SWORD_SKILL).getInventory());
+				if(args.length > 2) {
+					if(args[2].equalsIgnoreCase("inventory")) {
+						
+						if(args.length > 3) {
+							if(args[3].equalsIgnoreCase("swordskill")) {
+								s.getSwordSkillInventory().openInventory(s);
 								return true;
 							} else {
 								p.sendMessage(ChatColor.GOLD + "Valid agruments" + ChatColor.RED + " swordskill");
@@ -117,8 +148,6 @@ public class SCOAdmin implements CommandExecutor {
 						return true;
 					}
 				}
-
-				p.sendMessage(s.getPlayerData());
 				return true;
 			}
 
@@ -145,6 +174,7 @@ public class SCOAdmin implements CommandExecutor {
 				}
 
 				String data = args[2];
+				/*
 				if (data.equalsIgnoreCase("critical_chance") || data.equalsIgnoreCase("crit_chance")) {
 					s.setCombatModifier(CombatModifier.CRITICAL_CHANCE,(int) i, -1);
 					p.sendMessage(ChatColor.GOLD + "Critical Chance set to: " + ChatColor.RED + i);
@@ -171,6 +201,7 @@ public class SCOAdmin implements CommandExecutor {
 							+ "player_kills, parry, admin_override, admin_over");
 					return true;
 				}
+				*/
 			}
 
 			if (args[0].equalsIgnoreCase("swordskills")) {
@@ -591,11 +622,7 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					return true;
 
-				} else if(args[2].equalsIgnoreCase("dummyskill")) {
-					new SwordSkillTest(s, null);
-					sender.sendMessage("Registered Dummy Skill");
-					return true;
-				} else {
+				} else  {
 					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
 					return true;
 				}

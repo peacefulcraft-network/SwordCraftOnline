@@ -53,7 +53,7 @@ public class Path extends Structure {
         }
 
         int halfWidth = width/2;
-        BlockFace sideFace = DirectionalUtil.getSideDirections(target);
+        BlockFace sideFace = DirectionalUtil.getRelativeBlockFace(target, 90);
         Location start = target.getLocation();
         Location end = target.getTargetBlock((Set<Material>) null, length).getLocation();
 

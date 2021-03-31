@@ -4,7 +4,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.swordskills.SwordSkill;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 /**
  * BasicCombo
@@ -14,7 +14,7 @@ public class BasicCombo implements SwordSkillModule {
     private double activationThreshold;
         public boolean hasMetActivationThreshold() { return comboAccumulation > activationThreshold; }
 
-    private double comboAccumulation = 0.0;
+    protected double comboAccumulation = 0.0;
         public void resetComboAccumulation() { this.comboAccumulation = 0.0; }
         public void comboAccumulate(double value) { comboAccumulation += value; }
 
@@ -27,7 +27,7 @@ public class BasicCombo implements SwordSkillModule {
             comboType == SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE
             || comboType == SwordSkillComboType.CUMULATIVE_DAMAGE_WITHOUT_TAKING_DAMAGE
         ) {
-            ss.listenFor(SwordSkillType.ENTITY_DAMAGE_ENTITY_RECIEVE, this);
+            ss.listenFor(SwordSkillTrigger.ENTITY_DAMAGE_ENTITY_RECIEVE, this);
         }
     }
 
@@ -37,7 +37,7 @@ public class BasicCombo implements SwordSkillModule {
     
     */
     @Override
-    public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
+    public void executeSupportLifecycle(SwordSkillTrigger type, SwordSkill ss, Event ev) {
         resetComboAccumulation();
     }
 

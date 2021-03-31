@@ -1,26 +1,23 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class ParrySkill extends SwordSkill {
 
-    private SCOPlayer s;
-    private int increase;
-    private long delay;
+    private Integer increase;
+    private UUID change1;
 
-    public ParrySkill(SCOPlayer s, long delay, SkillProvider p, int increase) {
-        super(s, p);
-
-        this.s = s;
+    public ParrySkill(SwordSkillCaster c, Integer increase, Long delay, SwordSkillProvider provider) {
+        super(c, provider);
         this.increase = increase;
-        this.delay = delay;
 
-        this.listenFor(SwordSkillType.PASSIVE);
-        this.useModule(new TimedCooldown(delay));
+        this.listenFor(SwordSkillTrigger.PASSIVE);
     }
 
     @Override
@@ -37,9 +34,10 @@ public class ParrySkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        if(this.c instanceof SCOPlayer) {
-            SCOPlayer s = (SCOPlayer)c;
-            s.addCombatModifier(CombatModifier.PARRY_CHANCE, this.increase, -1);
+        if(this.c instanceof ModifierUser) {
+            ModifierUser mu = (ModifierUser)c;
+            change1 = mu.queueChange(CombatModifier.PARRY_CHANCE, this.increase, -1);
+            SwordCraftOnline.logDebug("Parry chance set: " + mu.getCombatModifier(CombatModifier.PARRY_CHANCE));
         }
     }
 
@@ -50,9 +48,9 @@ public class ParrySkill extends SwordSkill {
 
     @Override
     public void unregisterSkill() {
-        if(this.c instanceof SCOPlayer) {
-            SCOPlayer s = (SCOPlayer)c;
-            s.addCombatModifier(CombatModifier.PARRY_CHANCE, -this.increase, -1);
+        if(this.c instanceof ModifierUser) {
+            ModifierUser mu = (ModifierUser)c;
+            mu.dequeueChange(change1);
         }
     }
     

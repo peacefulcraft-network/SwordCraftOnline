@@ -21,6 +21,21 @@ import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 public class LocationUtil {
     
     /**
+     * Compresses list of locations to list of blocks
+     * @param lis Input 
+     * @return Converted list of blocks
+     */
+    public static List<Block> locationsToBlocks(List<Location> lis) {
+        List<Block> out = new ArrayList<>();
+        for(Location loc : lis) {
+            Block temp = loc.getBlock();
+            if(out.contains(temp)) { continue; }
+            out.add(temp);
+        }
+        return out;
+    }
+
+    /**
      * Given location, calculates and logs nearby locations in square shape
      * @param sideLength Side length of square
      * @param loc Location to be checked

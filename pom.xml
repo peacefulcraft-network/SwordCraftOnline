@@ -55,13 +55,13 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.15.2-R0.1-SNAPSHOT</version>
+			<version>1.16.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.tr7zw</groupId>
 			<artifactId>item-nbt-api-plugin</artifactId>
-			<version>2.2.0</version>
+			<version>2.6.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -75,10 +75,10 @@
 			<version>2.1.2</version>
 		</dependency>
 		<dependency>
-            <groupId>net.objecthunter</groupId>
-            <artifactId>exp4j</artifactId>
-            <version>0.4.5</version>
-            <scope>compile</scope>
-        </dependency>
+			<groupId>net.objecthunter</groupId>
+			<artifactId>exp4j</artifactId>
+			<version>0.4.5</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>

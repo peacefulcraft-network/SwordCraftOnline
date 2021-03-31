@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
@@ -53,7 +54,7 @@ public class DeliverQuestStep extends QuestStep {
         // Custom item validation
         for(String s : items) {
             int amount = Integer.valueOf(s.split(" ")[1]);
-            ItemStack item = ItemIdentifier.generate(s, amount, false);
+            ItemStack item = ItemIdentifier.generateItem(s, ItemTier.COMMON, amount);
             if (item.getType().equals(Material.FIRE) || item == null) {
                 this.logInfo("Invalid Item field in config.");
                 return;

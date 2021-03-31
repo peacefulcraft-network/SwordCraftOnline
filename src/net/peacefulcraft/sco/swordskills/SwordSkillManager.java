@@ -3,36 +3,25 @@ package net.peacefulcraft.sco.swordskills;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
-import net.peacefulcraft.sco.items.SkillIdentifier;
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.inventories.SCOInventory;
+import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
 public class SwordSkillManager
 {
-	private SCOPlayer s;
-		public SCOPlayer getSCOPlayer() { return this.s; }
+	private SwordSkillCaster c;
 
-	private LivingEntity e;
-		public LivingEntity getLivingEntity() { return this.e; }
-		
-	private HashMap<SwordSkillType, ArrayList<SwordSkill>> skills = new HashMap<SwordSkillType, ArrayList<SwordSkill>>();
+	private HashMap<SwordSkillTrigger, ArrayList<SwordSkill>> skills = new HashMap<SwordSkillTrigger, ArrayList<SwordSkill>>();
 
 	/**Stores instance of SCOPlayer */
-	public SwordSkillManager(SCOPlayer s) {
-		this.s = s;
-		this.e = (LivingEntity) s.getPlayer();
-	}
-
-	/**Converts ActiveMob into LivingEntity and stores. */
-	public SwordSkillManager(ActiveMob am) {
-		this.e = am.getLivingEntity();
+	public SwordSkillManager(SwordSkillCaster c) {
+		this.c = c;
 	}
 	
-	public void registerSkill(SwordSkillType type, SwordSkill skill) throws IllegalStateException {
+	public void registerSkill(SwordSkillTrigger type, SwordSkill skill) throws IllegalStateException {
 		if(skills.get(type) == null) {
 			skills.put(type, new ArrayList<SwordSkill>());
 		} else {
@@ -51,7 +40,7 @@ public class SwordSkillManager
 	 * @param type The event loop type to register on
 	 * @param skill The SwordSkill instance which needs to be notified of the given event type
 	 */
-	public void registerListener(SwordSkillType type, SwordSkill skill) {
+	public void registerListener(SwordSkillTrigger type, SwordSkill skill) {
 		ArrayList<SwordSkill> listeners = skills.get(type);
 		
 		// Create the list for this loop type and add the skill if the list doesn't exist
@@ -75,7 +64,7 @@ public class SwordSkillManager
 	 * Used by SwordSkill to dynamically unregister itself from listeners for SwordSkillModules
 	 * @param skill The SwordSkill instance which needs to be removed from the notifier list
 	 */
-	public void unregisterListener(SwordSkillType type, SwordSkill skill) {
+	public void unregisterListener(SwordSkillTrigger type, SwordSkill skill) {
 		ArrayList<SwordSkill> listeners = skills.get(type);
 		listeners.remove(skill);
 
@@ -84,20 +73,29 @@ public class SwordSkillManager
 		}
 	}
 
-	public void abilityExecuteLoop(SwordSkillType type, Event ev) {
+	public void abilityExecuteLoop(SwordSkillTrigger type, Event ev) {
 		if(skills.get(type) == null) {
 			return;
 		}
 
-		for(SwordSkill skill : skills.get(type)) {
+		if(this.c instanceof ActiveMob) {
+			SwordCraftOnline.logDebug("[Sword Skill Manager] Active Mob skill select hit.");
+
+			ArrayList<SwordSkill> skillss = skills.get(type);
+			SwordSkill skill = skillss.get(SwordCraftOnline.r.nextInt(skillss.size()));
 			skill.execSkillSupportLifecycle(type, ev);
 			skill.execPrimaryLifecycle(type, ev);
+		} else {
+			for(SwordSkill skill : skills.get(type)) {
+				skill.execSkillSupportLifecycle(type, ev);
+				skill.execPrimaryLifecycle(type, ev);
+			}
 		}
 	}
 	
 	/**Returns true if skill exists in map */
 	public boolean isSkillRegistered(SwordSkill skill) {
-		for(SwordSkillType type : skills.keySet()) {
+		for(SwordSkillTrigger type : skills.keySet()) {
 			if(skills.get(type).contains(skill)) {
 				return true;
 			}
@@ -105,6 +103,9 @@ public class SwordSkillManager
 		return false;
 	}
 
+	/**
+	 * Get list of all registered skills
+	 */
 	public ArrayList<SwordSkill> getSkills() {
 		ArrayList<SwordSkill> dummy = new ArrayList<SwordSkill>();
 		for(ArrayList<SwordSkill> s : skills.values()) {
@@ -117,7 +118,7 @@ public class SwordSkillManager
 		for(SwordSkill skill : getSkills()) {
 			unregisterSkill(skill);
 		}
-		skills = new HashMap<SwordSkillType, ArrayList<SwordSkill>>();
+		skills = new HashMap<SwordSkillTrigger, ArrayList<SwordSkill>>();
 	}
 	
 		/**
@@ -137,11 +138,12 @@ public class SwordSkillManager
 	 * Unregisters all of a player's SwordSkills, then re-registers a new
 	 * set of abilities based off of what is currently in the player's SwordSkill Inventory
 	 */
-	public void syncSkillInventory(SwordSkillInventory inv) {
+	public void syncSkillInventory(SCOInventory inv) {
 		unregisterAllSkills();
-		for(SkillIdentifier identifier : inv.generateSkillIdentifiers()) {
-			identifier.getProvider().registerSkill(s);
+		for(ItemIdentifier identifier : inv.generateItemIdentifiers()) {
+			if (identifier instanceof SwordSkillProvider) {
+				((SwordSkillProvider) identifier).registerSwordSkill(c);
+			}
 		}
 	}
-
 }

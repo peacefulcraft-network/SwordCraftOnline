@@ -5,8 +5,6 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.items.SkillIdentifier;
-import net.peacefulcraft.sco.swordskills.utilities.Generator;
 
 /**
  * Supporting rewards class. Used in questing
@@ -33,12 +31,12 @@ public class Reward {
             String[] split = line.split(" ");
             if(split[0].contains("-")) {
                 String[] split2 = split[0].split("-");
-                if(SkillIdentifier.itemExists(split2[0])) {
-                    this.item = Generator.generateItem(split2[0], 1, ItemTier.valueOf(split2[1]));
+                if(ItemIdentifier.itemExists(split2[0])) {
+                    this.item = ItemIdentifier.generateItem(split2[0], ItemTier.valueOf(split2[1]), 1);
                     this.amount = Integer.valueOf(split[1]);
                 }
             } else if(ItemIdentifier.itemExists(split[0])) {
-                this.item = ItemIdentifier.generate(split[0]);
+                this.item = ItemIdentifier.generateItem(split[0], ItemTier.COMMON, 1);
                 this.amount = Integer.valueOf(split[1]);
             } else if(split[0].equalsIgnoreCase("Experience") || split[0].equalsIgnoreCase("Exp")){
                 this.experience = Integer.valueOf(split[1]);

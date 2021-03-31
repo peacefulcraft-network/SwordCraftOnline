@@ -19,14 +19,14 @@ public class BukkitPigZombie extends MythicEntity {
     }
     
     public Entity spawn(MythicMob mm, Location location) {
-        PigZombie e = (PigZombie)location.getWorld().spawnEntity(location, EntityType.PIG_ZOMBIE);
+        PigZombie e = (PigZombie)location.getWorld().spawnEntity(location, EntityType.PIGLIN_BRUTE);
         e.setBaby(false); 
         e = (PigZombie)applyOptions((Entity)e);
         return (Entity)e;
     }
     
     public Entity spawn(Location location) {
-        PigZombie e = (PigZombie)location.getWorld().spawnEntity(location, EntityType.PIG_ZOMBIE);
+        PigZombie e = (PigZombie)location.getWorld().spawnEntity(location, EntityType.PIGLIN_BRUTE);
         e.setBaby(false);
         return (Entity)e;
     }

@@ -133,14 +133,6 @@ public abstract class Announcer {
 			}
 		}
     }
-    
-    /**
-     * Messages all players in gamemanager 
-     * @param cooldown Cooldown timer of message in ms. Set to 0 means no cooldown
-     */
-    public static void messageInGame(String message, int cooldown) {
-        messageGroup(GameManager.getPlayers().values(), message, cooldown);
-    }
 
     /**
      * Messages all online players in a party 
@@ -216,51 +208,78 @@ public abstract class Announcer {
         cooldowns.clear();
     }
 
-    public static void sendCountdown(Player p, int seconds, String preRunMessage, String postRunMessage) {
-        Announcer.messagePlayer(p,preRunMessage, 0);
-        (new CountdownTimer(seconds, p, postRunMessage)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
+    public static void messageCountdown(Player p, int seconds, String preRunMessage, String postRunMessage, boolean isTitle) {
+        if(isTitle) {
+            Announcer.messageTitleBar(p, preRunMessage, " ");
+        } else {
+            Announcer.messagePlayer(p,preRunMessage, 0);
+        }
+        (new CountdownTimer(seconds, p, postRunMessage, isTitle)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
     }
 
-    public static void sendCountdown(List<Player> lis, int seconds, String preRunMessage, String postRunMessage){
+    public static void messageCountdown(List<Player> lis, int seconds, String preRunMessage, String postRunMessage, boolean isTitle){
         Announcer.messageGroup(GameManager.findSCOPlayers(lis), preRunMessage, 0);
-        (new CountdownTimer(seconds, lis, postRunMessage)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
+        (new CountdownTimer(seconds, lis, postRunMessage, isTitle)).runTaskTimer(SwordCraftOnline.getPluginInstance(), 20L, 20L);
     }
 
     private static class CountdownTimer extends BukkitRunnable {
         private int seconds;
         private List<Player> lis;
         private String countdownMessage;
+        private boolean isTitle;
 
-        public CountdownTimer(int seconds, Player p, String postMessage) {
+        public CountdownTimer(int seconds, Player p, String postMessage, boolean isTitle) {
             this.seconds = seconds;
             lis = new ArrayList<>();
             lis.add(p);
             this.countdownMessage = postMessage;
+            this.isTitle = isTitle;
         }
 
-        public CountdownTimer(int seconds, List<Player> lis, String postMessage) {
+        public CountdownTimer(int seconds, List<Player> lis, String postMessage, boolean isTitle) {
             this.seconds = seconds;
             this.lis = lis;
             this.countdownMessage = postMessage;
+            this.isTitle = isTitle;
         }
 
         @Override
         public void run() {
             if(seconds < 1) {
-                Announcer.messageGroup(GameManager.findSCOPlayers(lis), countdownMessage, 0);
+                if(isTitle) {
+                    Announcer.messageTitleBar(lis, countdownMessage, " ");
+                } else {
+                    Announcer.messageGroup(GameManager.findSCOPlayers(lis), countdownMessage, 0);
+                }
                 this.cancel();
                 return;
             }
             String message = String.valueOf(seconds) + "...";
-            Announcer.messageGroup(GameManager.findSCOPlayers(lis), message, 0);
+            if(isTitle) {
+                Announcer.messageTitleBar(lis, message, " ");
+            } else {
+                Announcer.messageGroup(GameManager.findSCOPlayers(lis), message, 0);
+            }
             seconds--;
         }
         
     }
 
     /**Sends player a title bar message */
-    public static void sendTitle(Player p, String message, String subMessage) {
+    public static void messageTitleBar(Player p, String message, String subMessage) {
         p.sendTitle(message, subMessage, 10, 70, 20);
+    }
+
+    /**Sends player a title bar message */
+    public static void messageTitleBar(SCOPlayer s, String message, String subMessage) {
+        Announcer.messageTitleBar(s.getPlayer(), message, subMessage);
+    }
+
+    /**Sends players a title bar message */
+    public static void messageTitleBar(List<Player> lis, String message, String subMessage) {
+        for(Player p : lis) {
+            Announcer.messageTitleBar(p, message, subMessage);
+        }
     }
 
     /**@return Square icon */

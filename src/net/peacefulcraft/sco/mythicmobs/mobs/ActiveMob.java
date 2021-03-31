@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Creature;
@@ -24,6 +23,7 @@ import net.peacefulcraft.sco.mythicmobs.healthbar.HealthBar;
 import net.peacefulcraft.sco.quests.Quest;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 /**
@@ -32,6 +32,7 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class ActiveMob extends ModifierUser implements SwordSkillCaster {
     
     private long aliveTime = 0L;
+        public long getAliveTime() { return aliveTime; }
     
     private UUID uuid;
         public UUID getUUID() { return uuid; }
@@ -96,16 +97,12 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         public String getStance() { return stance; }
         public void setStance(String s) { this.stance = s; }
 
-    private String lastSignal = "";
-
     private int noDamageTicks;
         public int getNoDamageTicks() { return this.noDamageTicks; }
 
     /**Active mobs target to follow */
     private LivingEntity target = null;
         public LivingEntity getTarget() { return this.target; }
-
-    private double lastDamageSkillAmount = 0.0D;
 
     private ActiveMob parent;
         public ActiveMob getParent() { return this.parent; }
@@ -192,11 +189,11 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
 
         this.canGiveQuests = type.canGiveQuests();
       
-        /**Setting combat modifiers to type instance */      
-        setCombatModifier(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);
-        setCombatModifier(CombatModifier.CRITICAL_MULTIPLIER, type.getCriticalMultiplier(), -1);
-        setCombatModifier(CombatModifier.PARRY_CHANCE, type.getParryChance(), -1);
-        setCombatModifier(CombatModifier.PARRY_MULTIPLIER, type.getParryMultiplier(), -1);
+        /**Setting combat modifiers to type instance */   
+        queueChange(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);   
+        queueChange(CombatModifier.CRITICAL_MULTIPLIER, type.getCriticalMultiplier(), -1); 
+        queueChange(CombatModifier.PARRY_CHANCE, type.getParryChance(), -1); 
+        queueChange(CombatModifier.PARRY_MULTIPLIER, type.getParryMultiplier(), -1); 
 
         this.duringNightwave = isNightwave;
     }
@@ -210,6 +207,11 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         this(uuid, e, type, level, false);
     }
 
+    /**
+     * Ticks active instance.
+     * Handles updates and active skill triggering
+     * @param c Time passed since last tick
+     */
     public void tick(int c) {
         if(getEntity() != null && !getEntity().isValid() && !isDead()) {
             setUnloaded();
@@ -219,13 +221,31 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         if(this.gcd > 0) { this.gcd -= c; }
         updateBossBar();
         this.children.removeIf(child -> (child.isDead() || !child.isValid()));
+
+        // Triggering skills
+        // 66% chance to trigger skill in general
+        if(SwordCraftOnline.r.nextInt(2) < 1) {
+            this.getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.PLAYER_INTERACT_RIGHT_CLICK, null);
+        }
     }
 
+    /**
+     * Fetches abstract entity conversion of Mob
+     * @return Abstract entity
+     */
     public AbstractEntity getEntity() {
         if(this.entity == null) {
             this.entity = BukkitAdapter.adapt(SwordCraftOnline.getPluginInstance().getServer().getEntity(this.uuid));
         }
         return this.entity;
+    }
+
+    /**
+     * Sets abstract entity of mob
+     * @param e Abstract entity type
+     */
+    public void setEntity(AbstractEntity e) {
+        this.entity = e;
     }
 
     @Override
@@ -236,10 +256,11 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         return null;
     }
 
-    public void setEntity(AbstractEntity e) {
-        this.entity = e;
-    }
-
+    /**
+     * Fetches Mythic Mob this Active instance is
+     * based on
+     * @return Mythic Mob
+     */
     public MythicMob getType() {
         if(this.type == null) {
             this.type = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(this.mobType);
@@ -247,27 +268,50 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         return this.type;
     }
 
+    /**
+     * Sets child mount
+     */
     public void setMount(ActiveMob am) {
         this.mount = Optional.of(am);
     }
 
+    /**
+     * Fetches child mount
+     * @return Optional Active Mob
+     */
     public Optional<ActiveMob> getMount() {
         return this.mount;
     }
 
+    /**
+     * Fetches display name
+     * @return String name if exists, null otherwise
+     */
     public String getDisplayName() {
         String display = this.type.getDisplayName();
         return (display == null) ? null : display;
     }
 
+    /**
+     * Fetches current location of active instance
+     * @return Abstract Location
+     */
     public AbstractLocation getLocation() {
         return this.entity.getLocation();
     }
 
+    /**
+     * Fetches current Bukkit location of active instance
+     * @return Bukkit Location
+     */
     public Location getBukkitLocation() {
         return this.entity.getBukkitEntity().getLocation();
     }
 
+    /**
+     * Fetches Active Mob damage attribute based on level
+     * @return calculate damage attribute
+     */
     public double getDamage() {
         double damage = getType().getBaseDamage();
         if(this.level > 1 && getType().getPerLevelDamage() > 0.0D) {
@@ -276,6 +320,10 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         return damage;
     }
 
+    /**
+     * Fetches Active Mob armor attribute based on level
+     * @return calculate armor attribute
+     */
     public double getArmor() {
         double armor = getType().getBaseArmor();
         if(this.level > 1 && getType().getPerLevelArmor() > 0.0D) {
@@ -284,11 +332,18 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         return armor;
     }
 
+    /**
+     * Sets level of active mob instance
+     * @param level Desired level
+     */
     public void setLevel(int level) {
         this.level = level;
         getType().applyMobOptions(this, level);
     }   
     
+    /**
+     * Unregisters mob and removes from world
+     */
     public void unregister() {
         if(this.bossBar.isPresent()) {
             this.bossBar.get().removeAll();
@@ -297,13 +352,9 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         SwordCraftOnline.getPluginInstance().getMobManager().unregisterActiveMob(this.uuid);
     }
 
-    /*
-    public double getHealth() {
-        return getEntity().getHealth();
-    }
-    */
-
-    /**Call to update health on in display name health bar */
+    /**
+     * Call to update health on in display name health bar 
+     */
     public void updateHealthBar() {
         if(!this.type.usesHealthBar()) { return; }
         if(this.type.usesBossBar()) { return;}

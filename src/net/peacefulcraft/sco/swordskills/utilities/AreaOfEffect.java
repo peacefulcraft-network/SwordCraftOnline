@@ -14,7 +14,7 @@ public class AreaOfEffect {
 	
 	public AreaOfEffect(SwordSkill skill) {
 		this.skill = skill;
-		range = skill.getProvider().getSkillLevel();
+		
 	}
 	
     private final int getRange() {

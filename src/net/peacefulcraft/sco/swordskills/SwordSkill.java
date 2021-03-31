@@ -6,46 +6,33 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 
 public abstract class SwordSkill {
 	
-	/**
-	 * General ability properties
-	 */
-	protected SCOPlayer s;
-		public final SCOPlayer getSCOPlayer() { return s; }
-
 	protected SwordSkillCaster c;
 		public final SwordSkillCaster getSwordSkillCaster() { return c; }
 		
-	protected SkillProvider provider;
-		public final SkillProvider getProvider() { return provider; }
+	protected SwordSkillProvider provider;
+		public final SwordSkillProvider getProvider() { return provider; }
 
 	protected SwordSkillManager manager;
 		public final SwordSkillManager getSwordSkillManager() { return manager; }
 
 	// List of event loops which the SkillLogic is listening on
-	private final ArrayList<SwordSkillType> primaryListeners = new ArrayList<SwordSkillType>();
+	private final ArrayList<SwordSkillTrigger> primaryListeners = new ArrayList<SwordSkillTrigger>();
 
 	// List of modules on which lifecycle hooks need triggered
 	private final ArrayList<SwordSkillModule> modules = new ArrayList<SwordSkillModule>();
 
 	// Map of event loops and the corisponding SwordSkillModules which need to run when those loops are triggered
-	private final HashMap<SwordSkillType, ArrayList<SwordSkillModule>> supportListeners = new HashMap<SwordSkillType, ArrayList<SwordSkillModule>>();
+	private final HashMap<SwordSkillTrigger, ArrayList<SwordSkillModule>> supportListeners = new HashMap<SwordSkillTrigger, ArrayList<SwordSkillModule>>();
 
-	public SwordSkill(SwordSkillCaster c, SkillProvider provider) {
+	public SwordSkill(SwordSkillCaster c, SwordSkillProvider provider) {
 		this.c = c;
-		LivingEntity caster = c.getSwordSkillManager().getSCOPlayer().getPlayer();
-		if (caster instanceof Player) {
-			this.s = SwordCraftOnline.getPluginInstance().getGameManager().findSCOPlayer((Player) caster);
-		}
 		this.manager = c.getSwordSkillManager();
 		this.provider = provider;
 	}
@@ -75,7 +62,7 @@ public abstract class SwordSkill {
 	 * Used by SwordSkills to register their primary listeners
 	 * @param type The event loop to listen on
 	 */
-	protected final void listenFor(SwordSkillType type) {
+	protected final void listenFor(SwordSkillTrigger type) {
 		primaryListeners.add(type);
 		this.manager.registerListener(type, this);
 	}
@@ -86,7 +73,7 @@ public abstract class SwordSkill {
 	 * @param type The event loop to listen on
 	 * @param module The module which needs to be notified
 	 */
-	public final void listenFor(SwordSkillType type, SwordSkillModule module) {
+	public final void listenFor(SwordSkillTrigger type, SwordSkillModule module) {
 		if (primaryListeners.contains(type)) {
 			/*
 			 * A warning to indicate a module has registered itself to receive events for the same 
@@ -112,8 +99,8 @@ public abstract class SwordSkill {
 
 	public final List<SwordSkillModule> getModules() {
 		ArrayList<SwordSkillModule> modules = new ArrayList<SwordSkillModule>();
-		for(SwordSkillType type : supportListeners.keySet()) {
-			modules.addAll((Collection) supportListeners.get(type));
+		for(SwordSkillTrigger type : supportListeners.keySet()) {
+			modules.addAll((Collection<? extends SwordSkillModule>) supportListeners.get(type));
 		}
 
 		return Collections.unmodifiableList(modules);
@@ -124,7 +111,7 @@ public abstract class SwordSkill {
 	 * @param type The event loop on which the even has occured
 	 * @param ev The triggering event
 	 */
-	public final void execSkillSupportLifecycle(SwordSkillType type, Event ev) {
+	public final void execSkillSupportLifecycle(SwordSkillTrigger type, Event ev) {
 		ArrayList<SwordSkillModule> listeners = supportListeners.get(type);
 		if(listeners == null) {
 			return;
@@ -140,7 +127,7 @@ public abstract class SwordSkill {
 	 * @param type The event loop on which the event occured
 	 * @param ev The triggering event
 	 */
-	public final void execPrimaryLifecycle(SwordSkillType type, Event ev) {
+	public final void execPrimaryLifecycle(SwordSkillTrigger type, Event ev) {
 		if(primaryListeners.contains(type)) {
 
 			// Check if this skill needs to know about this event
@@ -210,7 +197,7 @@ public abstract class SwordSkill {
 	 * SwordSkill and its modules that they've been unregistered
 	 */
 	public final void execSkillUnregistration() {
-		for(SwordSkillType type : supportListeners.keySet()) {
+		for(SwordSkillTrigger type : supportListeners.keySet()) {
 			for(SwordSkillModule module : supportListeners.get(type)) {
 				module.onUnregistration(this);
 			}

@@ -28,6 +28,8 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.gamehandle.regions.Region;
+import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
@@ -71,7 +73,7 @@ public class MobManager implements Runnable {
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
-        this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 20);
+        this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 100);
 
         loadMobs();
     }
@@ -221,8 +223,10 @@ public class MobManager implements Runnable {
     }
 
     @Override
-    //Mob managers herculean run task
     public void run() {
+        // 
+        //  Handling Herculean mob announcements
+        //
         HashMap<SCOPlayer, Integer> map = new HashMap<>();
         
         //Iterating over every registered herculean level AM
@@ -249,6 +253,13 @@ public class MobManager implements Runnable {
             } else {
                 Announcer.messagePlayer(s, "There is a Herculean level mob nearby...", 60000);
             }
+        }
+
+        //
+        //  Ticking all active mobs
+        //
+        for(ActiveMob am : mobRegistry.values()) {
+            am.tick(100);
         }
     }
 
@@ -368,6 +379,18 @@ public class MobManager implements Runnable {
     public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level, List<SpawnFields> fields) {
         MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
         if(mm != null) {
+            
+            // Checking region flags
+            Region r = RegionManager.getRegion(BukkitAdapter.adapt(loc));
+            if(r != null) {
+                if(MythicEntity.isPassive(mm.getStrMobType()) && r.doesPreventPassive()) {
+                    return null;
+                }
+                if(!MythicEntity.isPassive(mm.getStrMobType()) && r.doesPreventHostile()) {
+                    return null;
+                }
+            }
+
             //If mob is hostile and gamemode peaceful we abort spawn
             if(BukkitAdapter.adapt(loc).getWorld().getDifficulty().equals(Difficulty.PEACEFUL) 
                 && !MythicEntity.isPassive(mm.getStrMobType())) {
@@ -420,7 +443,7 @@ public class MobManager implements Runnable {
         List<MetadataValue> list = l.getBukkitEntity().getMetadata("mobname");
         MythicMob mm = null;
         for(MetadataValue mv : list) {
-            mm = this.mmList.get(mv);
+            mm = this.mmList.get(mv.asString());
             if(mm != null) { return mm; }
         }
         if(l.getCustomName() == null) { return null; }
@@ -445,7 +468,7 @@ public class MobManager implements Runnable {
         while(iterator.hasNext()) {
             ActiveMob am = iterator.next();
             if(am.getType().isPersistent() && !ignorePersistent) { continue; }
-            am.setDespawned();
+            //am.setDespawned();
             am.getEntity().remove();
             iterator.remove();
             amount++;

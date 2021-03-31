@@ -6,7 +6,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
-import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 /**
  * TimedCombo
@@ -25,7 +25,7 @@ public class TimedCombo extends BasicCombo {
     }
 
     @Override
-    public void executeSupportLifecycle(SwordSkillType type, SwordSkill ss, Event ev) {
+    public void executeSupportLifecycle(SwordSkillTrigger type, SwordSkill ss, Event ev) {
         resetComboAccumulation();
         resetObjectiveTimer();
     }
