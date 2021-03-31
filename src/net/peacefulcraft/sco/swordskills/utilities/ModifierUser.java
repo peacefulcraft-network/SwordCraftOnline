@@ -1,17 +1,24 @@
 package net.peacefulcraft.sco.swordskills.utilities;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
+
+import com.google.gson.JsonObject;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
@@ -23,7 +30,8 @@ import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModif
 public class ModifierUser {
 
     /**List of Modifiers user has */
-    private List<Modifier> damageModifiers = new ArrayList<>();
+    //private List<Modifier> damageModifiers = new ArrayList<>();
+    protected HashMap<ModifierType, HashMap<Boolean, Modifier>> damageModifiers = new HashMap<>();
 
     /**Instance of living entity using this class */
     private LivingEntity entity;
@@ -53,7 +61,10 @@ public class ModifierUser {
     /**CombatModifier: Damage dampener on incoming damage */
     protected double parryMultiplier = 1.2;
 
-    /**Holds weapon modifiers of user */
+    /**
+     * Holds weapon modifiers of user 
+     * Weapon name -> Map of modifier by passve / active
+     */
     protected HashMap<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> weaponModifiers = new HashMap<>();
     
     /**
@@ -63,10 +74,170 @@ public class ModifierUser {
     public LivingEntity getLivingEntity() { return this.entity; }
 
     /**
-     * Fetches copy of damage modifiers
-     * @return Unmodifiable copy of DamageModifiers list
+     * Checks if user is dead
+     * @return True if user is dead, false otherwise
      */
-    public List<Modifier> getDamageModifiers() { return Collections.unmodifiableList(this.damageModifiers); }
+    public boolean isDead() {
+        return getLivingEntity().isDead();
+    }
+
+    /**
+     * Queued up stat changes for user
+     */
+    private HashMap<UUID, JsonObject> queuedChanges = new HashMap<>();
+
+    /**
+     * Queue an attribute data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
+    public UUID queueChange(Attribute attribute, Double amount, int duration) {
+        UUID id = UUID.randomUUID();
+        JsonObject obj = _queueChange_(
+            attribute.toString(), 
+            "ATTRIBUTE", 
+            amount, 
+            null
+        );
+        this.queuedChanges.put(id, obj);
+        addToAttribute(attribute, amount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Attribute " + attribute.toString() + ". Set to " + getAttribute(attribute));
+
+        return id;
+    }
+
+    /**
+     * Queue an attribute data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
+    public UUID queueChange(Attribute attribute, Integer amount, int duration) {
+        return queueChange(attribute, Double.valueOf(amount), duration);
+    }
+
+    /**
+     * Queue an damage modifier data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
+    public UUID queueChange(ModifierType modifier, Double amount, boolean incoming, int duration) {
+        UUID id = UUID.randomUUID();
+        JsonObject obj = _queueChange_(
+            modifier.toString(), 
+            "DAMAGE_MODIFIER", 
+            amount, 
+            null
+        );
+        obj.addProperty("incoming", incoming);
+        this.queuedChanges.put(id, obj);
+        addToMultiplier(modifier, incoming, amount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Modifier " + modifier.toString() + ". Set to " + getDamageModifier(modifier, incoming));
+
+        return id;
+    }
+
+    /**
+     * Queue n combat modifier data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
+    public UUID queueChange(CombatModifier modifier, Double amount, int duration) {
+        UUID id = UUID.randomUUID();
+        JsonObject obj = _queueChange_(
+            modifier.toString(), 
+            "COMBAT_MODIFIER", 
+            amount, 
+            null
+        );
+        this.queuedChanges.put(id, obj);
+        addToCombatModifier(modifier, amount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Combat Modifier " + modifier.toString() + ". Set to " + getCombatModifier(modifier));
+
+        return id;
+    }
+
+    /**
+     * Queue n combat modifier data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
+    public UUID queueChange(CombatModifier modifier, Integer amount, int duration) {
+        return queueChange(modifier, Double.valueOf(amount), duration);
+    }
+
+    /**
+     * Queue a max health data field change
+     * @param amount we are changing the field by
+     * @param duration in seconds we are doing the change for. -1 for permanent change.
+     * @return UUID of change in queue
+     */
+    public UUID queueChange(Integer healthAmount, int duration) {
+        UUID id = UUID.randomUUID();
+        JsonObject obj = _queueChange_(
+            "MAX_HEALTH", 
+            "MAX_HEALTH", 
+            healthAmount, 
+            getMaxHealth()
+        );
+        this.queuedChanges.put(id, obj);
+        addToMaxHealth(healthAmount, duration, id);
+        SwordCraftOnline.logDebug("[Modifier User] Max Health set to:" + getMaxHealth());
+
+        return id;
+    }
+
+    private JsonObject _queueChange_(String changedField, String fieldType, Integer value, Integer baseValue) {
+        return _queueChange_(changedField, fieldType, (double)value, baseValue);
+    }
+
+    private JsonObject _queueChange_(String changedField, String fieldType, Double value, Integer baseValue) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("changed_field", changedField);
+        obj.addProperty("changed_field_type", fieldType);
+        obj.addProperty("changed_value", value);
+        if(baseValue != null) {
+            obj.addProperty("base_value", baseValue);
+        }
+        return obj;
+    }
+
+    /**
+     * Dequeues and reverts data field change
+     * @param id of change in queue
+     */
+    public void dequeueChange(UUID id) {
+        JsonObject obj = this.queuedChanges.get(id);
+        if(obj == null) { 
+            SwordCraftOnline.logDebug("No matching UUID in Modifier User Queued Changes.");
+            return;
+        }
+
+        String changedField = obj.get("changed_field").getAsString();
+        String changedFieldType = obj.get("changed_field_type").getAsString();
+        double changedValue = obj.get("changed_value").getAsDouble();
+
+        if(changedFieldType.equalsIgnoreCase("ATTRIBUTE")) {
+            addToAttribute(Attribute.valueOf(changedField), -changedValue, -1, id);
+        } else if(changedFieldType.equalsIgnoreCase("COMBAT_MODIFIER")) {
+            addToCombatModifier(CombatModifier.valueOf(changedField), -changedValue, -1, id);
+        } else if(changedField.equalsIgnoreCase("DAMAGE_MODIFIER")) {
+            boolean incoming = obj.get("incoming").getAsBoolean();
+            addToMultiplier(ModifierType.valueOf(changedField), incoming, -changedValue, -1, id);
+        } else if(changedField.equalsIgnoreCase("MAX_HEALTH")) {
+            addToMaxHealth(-((int) changedValue), -1, id);
+        }else {
+            SwordCraftOnline.logDebug("No matching field change for obj in Modifier User.");
+            return;
+        }
+        SwordCraftOnline.logDebug("[ModifierUser] Change dequeued.");
+
+        this.queuedChanges.remove(id);
+    }
 
     /**
      * Applies weapon modifiers to user. 
@@ -135,7 +306,7 @@ public class ModifierUser {
         }
 
         // Applying non-applied weapon modifiers to player
-        if(wModifiers.entrySet().isEmpty()) { return; }
+        if(wModifiers == null || wModifiers.entrySet() == null || wModifiers.entrySet().isEmpty()) { return; }
         Iterator<Entry<String, ArrayList<WeaponModifier>>> iterr = wModifiers.entrySet().iterator();
         while(iterr.hasNext()) {
             Entry<String, ArrayList<WeaponModifier>> entryy = iterr.next();
@@ -179,7 +350,7 @@ public class ModifierUser {
         try{
             return calculateDamage(ModifierType.valueOf(type), damage, incoming);
         } catch(IllegalArgumentException ex) {
-            SwordCraftOnline.logDebug("[ModifierUser] IllegalArgumentException thrown in checkModifier method.");
+            SwordCraftOnline.logDebug("[ModifierUser] IllegalArgumentException thrown in checkModifier method. Input: " + type);
             return damage;
         }
     }
@@ -193,108 +364,28 @@ public class ModifierUser {
      * @param value
      * @param duration
      */
-    public void addToMultiplier(ModifierType type, boolean incoming, double value, int duration) {
+    private void addToMultiplier(ModifierType type, boolean incoming, double value, int duration, UUID id) {
         Modifier m = getDamageModifier(type, incoming);
-        if(m != null) {
-            setMultiplier(type, incoming, m.getMultiplier() + value, duration);
+        value = m != null ? m.getMultiplier() + value : 1 + value;
+
+        if(m == null) {
+            HashMap<Boolean, Modifier> inputMap = new HashMap<>();
+            inputMap.put(incoming, new Modifier(type, value, incoming));
+            this.damageModifiers.put(type, inputMap);
         } else {
-            setMultiplier(type, incoming, value, duration);
-        }
-    }
-
-    /**
-     * Temporarily set value of multiplier to value.
-     * Also used to permanently set value via duration value.
-     * @param type ModifierType to be searched for
-     * @param multiplier Value to be set
-     * @param duration Duration of set, if -1 it is permanent.
-     */
-    public void setMultiplier(ModifierType type, boolean incoming, double multiplier, int duration) {
-        Double initial = null;
-        for(Modifier m : this.damageModifiers) {
-			if(m.getType().equals(type) && m.isIncoming() == incoming) {
-                initial = m.getMultiplier();
-				m.setMultiplier(multiplier);
-				break;
-			}
-        }
-        if(initial == null && type != null) {
-            addDamageModifier(new Modifier(type, multiplier, incoming));
-        }
-        
-        // If not perm change and we found the modifier
-        if(duration != -1 && initial != null) {
-            double copy = initial;
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-                public void run() {
-                    setMultiplier(type, incoming, copy, -1);
-                }
-            }, duration * 20);
-        }
-    }
-
-    /**
-     * Temporarily sets multiplier value of all modifiers
-     * @param multipler Value to be set
-     * @param duration Duration of change, if -1 change is permanent
-     */
-    public void setAllMultipliers(double multipler, int duration) {
-        List<Modifier> copy = new ArrayList<Modifier>(this.damageModifiers);
-        for(Modifier m : this.damageModifiers) {
-            m.setMultiplier(multipler);
+            m.setMultiplier(value);
         }
 
         if(duration != -1) {
+            double copy = m.getMultiplier();
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    addDamageModifiers(copy);
+                    addToMultiplier(type, incoming, copy, -1, id);
+                    dequeueChange(id);
                 }
             }, duration * 20);
         }
     }
-    
-    /**
-     * Adds list of modifiers to list
-     * @param lis List of modifiers to be added
-     */
-    public void addDamageModifiers(List<Modifier> lis) {
-        for(Modifier m : lis) {
-            addDamageModifier(m);
-        }
-    }
-
-	/**
-	 * Safely adds modifier to list. 
-	 * If modifier already contains modifier we replace it
-	 * @param m Modifier to be added.
-	 */
-	public void addDamageModifier(Modifier m) { 
-		removeDamageModifier(m, m.isIncoming());
-		this.damageModifiers.add(m);
-	}
-
-	/**
-	 * Safely removes modifier of same type from list
-	 * @param m Modifier to be removed
-	 */
-	public void removeDamageModifier(Modifier m, boolean incoming) {
-		removeDamageModifier(m.getType(), incoming);
-	}
-
-	/**
-	 * Safely removes modifier of same type from list
-	 * @param type Modifier to be removed
-	 */
-	public void removeDamageModifier(ModifierType type, boolean incoming) {
-		// If modifier of same type exists we remove
-		Iterator<Modifier> iter = this.damageModifiers.iterator();
-		while(iter.hasNext()) {
-			Modifier mod = iter.next();
-			if(mod.getType().equals(type) && mod.isIncoming() == incoming) {
-				iter.remove();
-			}
-		}
-	}
 
 	/**
 	 * Searches for modifier of same type
@@ -303,65 +394,12 @@ public class ModifierUser {
 	 * @return Clone of Modifier if found. Null otherwise
 	 */
 	public Modifier getDamageModifier(ModifierType type, boolean incoming) {
-		// If type exists we return
-		for(Modifier m : this.damageModifiers) {
-			if(m.getType().equals(type)) {
-				return m.clone();
-			}
-		}
-		return null;
+        try {
+            return this.damageModifiers.get(type).get(incoming);
+        } catch(NullPointerException ex) {
+            return null;
+        }
 	}
-
-	/**
-	 * Searches for modifier of same type
-	 * @param m Modifier to search for same type
-	 * @return Modifier of type if found. Null otherwise
-	 */
-	public Modifier getDamageModifier(Modifier m, boolean incoming) {
-		return getDamageModifier(m.getType(), incoming);
-    }
-    
-    /**
-     * Clears the modifier list
-     */
-    public void clearList() {
-        this.damageModifiers.clear();
-    }
-
-    /**
-     * Temporarily removes modifier from list
-     * @param type Type of modifier to be removed
-     * @param duration Time in seconds for modifier to be removed
-     */
-    public void disableModifier(ModifierType type, int duration, boolean incoming) {
-        // Copying modifier we want and removing it
-        Modifier m = getDamageModifier(type, incoming);
-        removeDamageModifier(type, incoming);
-
-        // Adding modifier back after duration in ticks
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-            public void run() {
-                addDamageModifier(m);
-            }
-        }, duration * 20);
-    }
-
-    /**
-     * Temporarily removes all modifiers
-     * @param duration Time in seconds for list to be cleared
-     */
-    public void disableAllModifiers(int duration) {
-        // Cloning list and clearing
-        List<Modifier> clone = new ArrayList<Modifier>(this.damageModifiers);
-        clearList();
-
-        // Adding modifiers back after duration in ticks
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-            public void run() {
-                addDamageModifiers(clone);
-            }
-        }, duration * 20);
-    }
 
     /*
      * 
@@ -381,68 +419,26 @@ public class ModifierUser {
     }
 
     /**
-     * Sets given attribute to value
-     * @param attribute Attribute to be set
-     * @param amount Value to be set
-     * @param duration Resets value after this time in seconds. If -1 it does not
-     */
-    public void setAttribute(Attribute attribute, double amount, int duration) {
-        double d = getAttribute(attribute);
-
-        getLivingEntity().getAttribute(attribute).setBaseValue(amount);
-        if(duration != -1) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-                public void run() {
-                    setAttribute(attribute, d, -1);
-                }
-            }, duration * 20);
-        }
-    }
-
-    /**
-     * Multiplies given attribute by amount
-     * @param attribute Attribute to be set
-     * @param amount Value to be set
-     * @param duration Resets value after this time in seconds. If -1 it does not
-     */
-    public void multiplyAttribute(Attribute attribute, double amount, int duration) {
-        double d = getAttribute(attribute);
-
-        getLivingEntity().getAttribute(attribute).setBaseValue(amount * getAttribute(attribute));
-        if(duration != -1) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-                public void run() {
-                    setAttribute(attribute, d, -1);
-                }
-            }, duration * 20);
-        }
-    }
-
-    /**
      * Adds a double value to a set attribute
      * @param attribute Attribute to be set
      * @param amount Value to be added. I.e. 0.2, 0.4, 1, etc.
      * @param duration Resets value after this time in seconds. If -1 it does not
      */
-    public void addToAttribute(Attribute attribute, double amount, int duration) {
+    private void addToAttribute(Attribute attribute, double amount, int duration, UUID id) {
         double d = getAttribute(attribute);
 
-        getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
+        if(d + amount <= 0.0) {
+            getLivingEntity().getAttribute(attribute).setBaseValue(0.0);
+        } else {
+            getLivingEntity().getAttribute(attribute).setBaseValue(d + amount);
+        }
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
-                    setAttribute(attribute, d, -1);
+                    dequeueChange(id);
                 }
             }, duration * 20);
         }
-    }
-
-    /**
-     * Checks if user is dead
-     * @return True if user is dead, false otherwise
-     */
-    public boolean isDead() {
-        return getLivingEntity().isDead();
     }
 
     /*
@@ -474,28 +470,12 @@ public class ModifierUser {
     }
 
     /**
-     * Helper method for delayed resetting of attributes to a value
-     * @param mod Modifier we want to set
-     * @param amount Amount to be set
-     * @param duration Time in seconds for value to be set
-     */
-    protected void _setCombatModifier(CombatModifier mod, double amount, int duration) {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
-            public void run() {
-                setCombatModifier(mod, amount, -1);
-            }
-        }, duration * 20);
-    }
-
-    /**
      * Sets CombatModifier to value for duration
      * @param mod Modifier we want to set
      * @param amount Amount to be set
      * @param duration Resets value after this time in seconds. If -1 it does not.
      */
-    public void setCombatModifier(CombatModifier mod, double amount, int duration) {
-        double d = getCombatModifier(mod);
-
+    protected void setCombatModifier(CombatModifier mod, double amount, int duration, UUID id) {
         switch(mod) {
             case CRITICAL_CHANCE:
                 criticalChance = (int)amount;
@@ -510,22 +490,11 @@ public class ModifierUser {
         }
 
         if(duration != -1) {
-            _setCombatModifier(mod, d, duration);
-        }
-    }
-
-    /**
-     * Multiplies given combat modifier by amount.
-     * @param mod CombatModifier we want to adjust
-     * @param amount Amount to be multiplied by
-     * @param duration Resets value after this time in seconds. If -1 it does not.
-     */
-    public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
-        double d = getCombatModifier(mod);
-
-        setCombatModifier(mod, d * amount, -1);
-        if(duration != -1) {
-            _setCombatModifier(mod, d, duration);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    dequeueChange(id);
+                }
+            }, duration * 20);
         }
     }
 
@@ -535,11 +504,26 @@ public class ModifierUser {
      * @param amount Amount to be multiplied by
      * @param duration Resets value after this time in seconds. If -1 it does not.
      */
-    public void addToCombatModifier(CombatModifier mod, double amount, int duration) {
-        double d = getCombatModifier(mod);
-        setCombatModifier(mod, d + amount, -1);
+    protected void addToCombatModifier(CombatModifier mod, double amount, int duration, UUID id) {
+        switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance += (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier += amount;
+            case PARRY_CHANCE:
+                parryChance += (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier += amount;
+            default:
+                SwordCraftOnline.logInfo("[Modifier User] Attempted to set player specific combat modifier on super class. " + mod.toString());
+        }
+
         if(duration != -1) {
-            _setCombatModifier(mod, d, duration);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    dequeueChange(id);
+                }
+            }, duration * 20);
         }
     }
 
@@ -587,12 +571,27 @@ public class ModifierUser {
         return this.currHealth;
     }
 
-    /**
-     * Sets current health of user
-     * @param h Amount to be set
-     */
-    public void setHealth(Integer h) {
-        this.currHealth = h;
+    public void setHealth(Integer amount) {
+        this.currHealth = amount >= this.maxHealth ? this.maxHealth : amount;
+        double ratio = this.currHealth / this.maxHealth;
+        double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
+
+        getLivingEntity().setHealth(health);
+    }
+
+    private void addToMaxHealth(Integer amount, int duration, UUID id) {
+        this.maxHealth += amount;
+        if(this.currHealth > this.maxHealth) {
+            this.currHealth = this.maxHealth;
+            getLivingEntity().setHealth(20);
+        }
+        if(duration != -1) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    dequeueChange(id);
+                }
+            }, duration * 20);
+        }
     }
 
     /**
@@ -600,10 +599,14 @@ public class ModifierUser {
      * @param amount Amount we set max health to
      * @param duration Duration in seconds of change, -1 if no timer
      */
-    public void setMaxHealth(Integer amount, int duration) {
+    protected void setMaxHealth(Integer amount, int duration) {
         int copy = this.maxHealth;
 
         this.maxHealth = amount;
+        if(this.currHealth > this.maxHealth) {
+            this.currHealth = this.maxHealth;
+            getLivingEntity().setHealth(20);
+        }
         if(duration != -1) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
                 public void run() {
@@ -623,14 +626,165 @@ public class ModifierUser {
     public Double convertHealth(double damage, boolean set) {
         // Ratio of current health to max health
         // Ex: (100-2) / 100 = 0.98
+        // DisplayedHealth = 20 * ratio
+        // DisplayedHealth = 20 * ( (currHealth - damage) / maxhealth )
+        // currHealth = (displayed * max) / 20 + damage
+        
+        //double displayed = this.entity.getHealth();
+        int damagee = (int)damage;
         double ratio = (this.currHealth - damage) / this.maxHealth;
-        double health = getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
-
+        double health = ratio > 1.0 ? 20.0 : getAttribute(Attribute.GENERIC_MAX_HEALTH) * ratio;
+        health = health < 0 ? 0 : health;
         if(set) {
-            this.currHealth -= (int)damage;
+            this.currHealth = this.currHealth - damagee < 0 ? 0 : this.currHealth - damagee;
+            this.currHealth = this.currHealth > this.maxHealth ? this.maxHealth : this.currHealth;
             getLivingEntity().setHealth(health);
         }
 
         return health;
+    }
+
+    /*
+     * 
+     * ===============================================================================================
+     * MODIFIER USER STATIC METHODS
+     * ===============================================================================================
+     * 
+     */
+
+    /**
+     * Given entity we return the Modifier User
+     * or null if not valid.
+     * 
+     * @param e
+     * @return
+     */
+    public static ModifierUser getModifierUser(Entity e) {
+        if(e instanceof LivingEntity) {
+            if(e instanceof Player) {
+                SCOPlayer s = GameManager.findSCOPlayer((Player)e);
+                if(s == null) { return null; }
+                return (ModifierUser) s;
+            } else {
+                ActiveMob am = SwordCraftOnline.getPluginInstance()
+                    .getMobManager()
+                    .getMobRegistry()
+                    .get(e.getUniqueId());
+                if(am == null) { return null; }
+                return (ModifierUser) am;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets constant base damage attribute
+     * for all mobs
+     */
+    public static Double getBaseGenericAttack() {
+        return 2.0;
+    }
+
+    /**
+     * Gets constant base movement attribute
+     * for all used mobs
+     */
+    public static Double getBaseGenericMovement(ModifierUser mu) {
+        /**
+         * This code is gross but is a workaround for
+         * having to temporarily spawn in a new entity
+         * every time we do a check.
+         * 
+         * Solution is to hard code these values to check against
+         */
+
+        if(mu instanceof SCOPlayer) {
+            return 0.1;
+        }
+
+        ActiveMob am = (ActiveMob)mu;
+        switch(am.getEntity().getBukkitEntity().getType()) {
+            case PANDA:
+                return 0.15;
+            case DONKEY:
+            case LLAMA:
+            case MULE:
+            case STRIDER:
+                return 0.175;
+            case SLIME:
+                int size = ((Slime)am.getEntity().getBukkitEntity()).getSize();
+                return 0.2 + (0.1 * size);
+            case COW:
+            case MAGMA_CUBE:
+            case MUSHROOM_COW:
+            case PARROT:
+            case SKELETON_HORSE:
+            case SNOWMAN:
+            case ZOMBIE_HORSE:
+                return 0.2;
+            case BLAZE:
+            case DROWNED:
+            case HUSK:
+            case SHEEP:
+            case ZOMBIE:
+            case ZOMBIE_VILLAGER:
+            case ZOMBIFIED_PIGLIN:
+                return 0.23;
+            case CHICKEN:
+            case CREEPER:
+            case ENDERMITE:
+            case IRON_GOLEM:
+            case PIG:
+            case POLAR_BEAR:
+            case SILVERFISH:
+            case SKELETON:
+            case STRAY:
+            case TURTLE:
+            case WITCH:
+            case WITHER_SKELETON:
+                return 0.25;
+            case BEE:
+            case CAT:
+            case CAVE_SPIDER:
+            case ELDER_GUARDIAN:
+            case ENDERMAN:
+            case FOX:
+            case OCELOT:
+            case RABBIT:
+            case RAVAGER:
+            case SPIDER:
+            case WOLF:
+                return 0.3;
+            case PILLAGER:
+            case VINDICATOR:
+                return 0.35;
+            case HOGLIN:
+                return 0.4;
+            case EVOKER:
+            case GIANT:
+            case GUARDIAN:
+            case ILLUSIONER:
+            case PIGLIN:
+            case VILLAGER:
+            case WANDERING_TRADER:
+                return 0.5;
+            case WITHER:
+                return 0.6;
+            case BAT:
+            case COD:
+            case ENDER_DRAGON:
+            case GHAST:
+            case PUFFERFISH:
+            case SALMON:
+            case SHULKER:
+            case SQUID:
+            case TROPICAL_FISH:
+            case VEX:
+                return 0.7;
+            case DOLPHIN:
+                return 1.2;
+            default:
+                return 0.0;
+        }
     }
 }

@@ -3,35 +3,22 @@ package net.peacefulcraft.sco.swordskills;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.SCOInventory;
-import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 
 public class SwordSkillManager
 {
-	private SCOPlayer s;
-		public SCOPlayer getSCOPlayer() { return this.s; }
+	private SwordSkillCaster c;
 
-	private LivingEntity e;
-		public LivingEntity getLivingEntity() { return this.e; }
-		
 	private HashMap<SwordSkillTrigger, ArrayList<SwordSkill>> skills = new HashMap<SwordSkillTrigger, ArrayList<SwordSkill>>();
 
 	/**Stores instance of SCOPlayer */
-	public SwordSkillManager(SCOPlayer s) {
-		this.s = s;
-		this.e = (LivingEntity) s.getPlayer();
-	}
-
-	/**Converts ActiveMob into LivingEntity and stores. */
-	public SwordSkillManager(ActiveMob am) {
-		this.e = am.getLivingEntity();
+	public SwordSkillManager(SwordSkillCaster c) {
+		this.c = c;
 	}
 	
 	public void registerSkill(SwordSkillTrigger type, SwordSkill skill) throws IllegalStateException {
@@ -91,9 +78,18 @@ public class SwordSkillManager
 			return;
 		}
 
-		for(SwordSkill skill : skills.get(type)) {
+		if(this.c instanceof ActiveMob) {
+			SwordCraftOnline.logDebug("[Sword Skill Manager] Active Mob skill select hit.");
+
+			ArrayList<SwordSkill> skillss = skills.get(type);
+			SwordSkill skill = skillss.get(SwordCraftOnline.r.nextInt(skillss.size()));
 			skill.execSkillSupportLifecycle(type, ev);
 			skill.execPrimaryLifecycle(type, ev);
+		} else {
+			for(SwordSkill skill : skills.get(type)) {
+				skill.execSkillSupportLifecycle(type, ev);
+				skill.execPrimaryLifecycle(type, ev);
+			}
 		}
 	}
 	
@@ -107,6 +103,9 @@ public class SwordSkillManager
 		return false;
 	}
 
+	/**
+	 * Get list of all registered skills
+	 */
 	public ArrayList<SwordSkill> getSkills() {
 		ArrayList<SwordSkill> dummy = new ArrayList<SwordSkill>();
 		for(ArrayList<SwordSkill> s : skills.values()) {
@@ -143,7 +142,7 @@ public class SwordSkillManager
 		unregisterAllSkills();
 		for(ItemIdentifier identifier : inv.generateItemIdentifiers()) {
 			if (identifier instanceof SwordSkillProvider) {
-				((SwordSkillProvider) identifier).registerSwordSkill(s);
+				((SwordSkillProvider) identifier).registerSwordSkill(c);
 			}
 		}
 	}

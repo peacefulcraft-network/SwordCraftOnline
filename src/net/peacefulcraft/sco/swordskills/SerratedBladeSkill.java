@@ -1,7 +1,10 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.UUID;
+
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 /**
@@ -11,6 +14,7 @@ public class SerratedBladeSkill extends SwordSkill {
 
     private SwordSkillCaster c;
     private int increase;
+    private UUID change1;
 
     public SerratedBladeSkill(SwordSkillCaster c, SwordSkillProvider provider, int increase) {
         super(c, provider);
@@ -29,7 +33,8 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
-        s.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, this.increase, -1);
+        ModifierUser mu = (ModifierUser)c;
+        change1 = mu.queueChange(CombatModifier.CRITICAL_CHANCE, this.increase, -1);       
     }
 
     @Override
@@ -45,6 +50,7 @@ public class SerratedBladeSkill extends SwordSkill {
 
     @Override
     public void unregisterSkill() {
-        s.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, -this.increase, -1);
+        ModifierUser mu = (ModifierUser)c;
+        mu.dequeueChange(change1);
     }
 }

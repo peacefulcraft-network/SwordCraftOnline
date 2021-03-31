@@ -1,5 +1,9 @@
 package net.peacefulcraft.sco.swordskills.weaponskills;
 
+import java.util.UUID;
+
+import com.google.gson.JsonObject;
+
 import org.bukkit.attribute.Attribute;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -9,6 +13,8 @@ import net.peacefulcraft.sco.utilities.RomanNumber;
 public class ExtremePrecision implements WeaponModifier {
 
     private String level;
+    private UUID change1;
+    private UUID change2;
 
     @Override
     public String getName() {
@@ -27,14 +33,14 @@ public class ExtremePrecision implements WeaponModifier {
 
     @Override
     public void applyEffects(ModifierUser user) {
-        user.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, -getModifierAmount(), -1);
-        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, getModifierAmount(), -1);
+        change1 = user.queueChange(Attribute.GENERIC_ATTACK_DAMAGE, -getModifierAmount(), -1);
+        change2 = user.queueChange(CombatModifier.CRITICAL_CHANCE, getModifierAmount(), -1);
     }
 
     @Override
     public void removeEffects(ModifierUser user) {
-        user.addToAttribute(Attribute.GENERIC_ATTACK_DAMAGE, getModifierAmount(), -1);
-        user.addToCombatModifier(CombatModifier.CRITICAL_CHANCE, -getModifierAmount(), -1);
+        user.dequeueChange(change2);
+        user.dequeueChange(change1);
     }
 
     @Override
@@ -45,6 +51,14 @@ public class ExtremePrecision implements WeaponModifier {
     @Override
     public Integer getMaxPlayerLevel() {
         return 3;
+    }
+
+    @Override
+    public JsonObject getModifiedStats() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(Attribute.GENERIC_ATTACK_DAMAGE.toString(), -getModifierAmount());
+        obj.addProperty(CombatModifier.CRITICAL_CHANCE.toString(), getModifierAmount());
+        return obj;
     }
     
 }

@@ -119,6 +119,28 @@ public interface ItemIdentifier {
     }
   }
 
+    /**
+   * Generates the requested ItemIdenfiier w/o tier
+   * @param name of the identiifer
+   * @param quantity Number of items this identifier represents
+   */
+  public static ItemIdentifier generateIdentifier(String name, int quantity) throws RuntimeException {
+    ItemIdentifier identifier = null;
+    for(ItemTier tier : ItemTier.values()) {
+      try {
+        identifier = ItemIdentifier.generateIdentifier(name, tier, quantity);
+        if(identifier != null) { break; }
+      } catch(RuntimeException e) {
+        continue;
+      }
+    }
+    if(identifier != null) {
+      return identifier;
+    }
+
+    throw new RuntimeException("Failed to generate ItemIdentifier with requested scope " + name);
+  }
+
   /**
    * Generates the requested ItemIdenfiier.
    * @param name of the identiifer
@@ -149,7 +171,7 @@ public interface ItemIdentifier {
       if(clas != null) {
         Class<?> params[] = new Class[] { ItemTier.class, Integer.class };
         Constructor<?> constructor = clas.getConstructor(params);
-      
+
         ItemIdentifier identiifer = ((ItemIdentifier) constructor.newInstance(tier, quantity));
   
         // Check that the requested item tier is allowed

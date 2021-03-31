@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Bukkit;
@@ -29,6 +30,7 @@ import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
+import net.peacefulcraft.sco.swordskills.SwordSkillType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
@@ -149,13 +151,21 @@ public class PlayerInventory extends BukkitInventoryBase {
   public void onClickThisInventory(InventoryClickEvent ev, ItemIdentifier cursorItem, ItemIdentifier clickedItem) {
     // Only check if we click hotbar and not drop click
     if(ev.getSlotType().equals(SlotType.QUICKBAR) && !ev.getClick().equals(ClickType.DROP)) {
+      // Json Element null safety
+      String cursorWeaponType = "";
+      if(cursorItem instanceof CustomDataHolder) {
+        try {
+          ((CustomDataHolder)cursorItem).getCustomData().get("weapon").getAsString();
+        } catch(NullPointerException exx) {}
+      }
+      String clickedWeaponType = "";
+      if(clickedItem instanceof CustomDataHolder) {
+        try {
+          ((CustomDataHolder)clickedItem).getCustomData().get("weapon").getAsString();
+        } catch(NullPointerException exx) {}
+      }
 
-      String cursorWeaponType = (cursorItem instanceof CustomDataHolder) ? 
-        ((CustomDataHolder)cursorItem).getCustomData().get("weapon").getAsString() : "";
-      String clickedWeaponType = (clickedItem instanceof CustomDataHolder) ?
-        ((CustomDataHolder)clickedItem).getCustomData().get("weapon").getAsString() : "";
-
-      HashMap<String, Integer> checked = checkHotbar();
+      HashMap<String, Integer> checked = getHotbarWeapons();
 
       if(checked.get("sword") >= 1 && cursorWeaponType.equalsIgnoreCase("sword")) {
         ev.setCancelled(true);
@@ -191,7 +201,7 @@ public class PlayerInventory extends BukkitInventoryBase {
 
     // If hotbar is modified and the item is a weapon
     if(containsHotbar && !weaponType.equalsIgnoreCase("")) {
-      HashMap<String, Integer> checked = checkHotbar();
+      HashMap<String, Integer> checked = getHotbarWeapons();
 
       if(checked.get(weaponType) != null && checked.get(weaponType) >= 1) {
         ev.setCancelled(true);
@@ -216,7 +226,7 @@ public class PlayerInventory extends BukkitInventoryBase {
     String weaponType = (item instanceof CustomDataHolder) ? 
       ((CustomDataHolder)item).getCustomData().get("weapon").getAsString() : "";
 
-    HashMap<String, Integer> checked = checkHotbar();
+    HashMap<String, Integer> checked = getHotbarWeapons();
     if(checked.get(weaponType) != null && checked.get(weaponType) >= 1) {
       for(int i = 9; i <= 35; i++) {
         ItemIdentifier temp = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
@@ -260,7 +270,7 @@ public class PlayerInventory extends BukkitInventoryBase {
       }
     }
 
-    HashMap<String, Integer> check = checkHotbar();
+    HashMap<String, Integer> check = getHotbarWeapons();
     if(check.get("sword") == 0 && check.get("knife") == 0 && check.get("range") == 0) {
       passives = null;
     }
@@ -281,7 +291,7 @@ public class PlayerInventory extends BukkitInventoryBase {
    * Checks players hotbar for weapon types
    * @return Map of weapon type with amount of weapons
    */
-  private HashMap<String, Integer> checkHotbar() {
+  public HashMap<String, Integer> getHotbarWeapons() {
     int swordCount = 0;
     int knifeCount = 0;
     int rangeCount = 0;
@@ -292,7 +302,12 @@ public class PlayerInventory extends BukkitInventoryBase {
       if(item instanceof CustomDataHolder) {
         // Handling limiting items. If count exceeds 1 we move it to main inventory
         JsonObject obj = ((CustomDataHolder)item).getCustomData();
-        switch(obj.get("weapon").getAsString()) {
+        if(obj == null) { continue; }
+
+        // Json element safety
+        JsonElement weapElement = obj.get("weapon");
+        if(weapElement == null) { continue; }
+        switch(weapElement.getAsString()) {
           case "sword":
               swordCount++; 
           break; case "knife":
@@ -308,4 +323,59 @@ public class PlayerInventory extends BukkitInventoryBase {
     out.put("range", rangeCount);
     return out;
   }  
+
+  /**
+   * Checks inventory hotbar for weapon type
+   * 
+   * @param weapon
+   * @return
+   */
+  public ItemIdentifier getHotbarWeapon(String weapon) {
+    for(int i = 0; i < 9; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      if(item.getMaterial().equals(Material.AIR)) { continue; }
+
+      if(item instanceof CustomDataHolder) {
+        JsonObject obj = ((CustomDataHolder)item).getCustomData();
+        if(obj.get("weapon") != null && obj.get("weapon").getAsString().equalsIgnoreCase(weapon)) {
+          return item;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Checks hotbar for relative skill type 
+   * trigger items
+   * 
+   * @param type Type of trigger item we are looking for
+   * @return Index of that trigger item, -1 if it doesnt exist
+   */
+  public int getSkillTriggerIndex(SwordSkillType type) {
+    if (type.equals(SwordSkillType.SWORD) || type.equals(SwordSkillType.PASSIVE)) { return -1; }
+
+    // Basically these items should be in the hotbar.
+    // For consistency we use this method to find their
+    // exact location in the hotbar. Returns index of item
+
+    for (int i = 0; i < 9; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      if(item == null || item.getMaterial().equals(Material.AIR)) { continue; }
+
+      if(type.equals(SwordSkillType.PRIMARY)) {
+        if(item.getName().equalsIgnoreCase("Primary Skill Activated") || item.getName().equalsIgnoreCase("Primary Skill Cooldown")) {
+          return i;
+        }
+      }
+
+      if(type.equals(SwordSkillType.SECONDARY)) {
+        if(item.getName().equalsIgnoreCase("Secondary Skill Activated") || item.getName().equalsIgnoreCase("Secondary Skill Cooldown")) {
+          return i;
+        }
+      }
+    }
+
+    return -1;
+  }
 }

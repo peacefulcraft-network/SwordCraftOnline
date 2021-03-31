@@ -7,10 +7,10 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.swordskills.ForwardLungeSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -26,28 +26,7 @@ public class ForwardLungeItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        switch (this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 20% for 2 seconds.");
-                break;
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 30% for 2 seconds.");
-                break;
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 40% for 2 seconds.");
-                break;
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 50% for 2 seconds.");
-                break;
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 60% for 2 seconds.");
-                break;
-            case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Damage Increased 70% for 2 seconds.");
-        }
-
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -77,28 +56,41 @@ public class ForwardLungeItem implements SwordSkillProvider {
         public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
     @Override
-    public boolean isDroppable() { return false; }
+    public boolean isDroppable() { return true; }
 
     @Override
     public boolean isMovable() { return true; }
 
     private Double increase;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public ForwardLungeItem(ItemTier tier, Integer level) {
+    public ForwardLungeItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
-        this.level = level;
-        this.quantity = 1;
+        this.quantity = quantity;
+        this.type = SwordSkillType.SWORD;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("Lunge forward with a burst");
+        desc.add("of strength.");
+        switch (this.tier) {
+            case COMMON:
+                desc.add("Damage Increased 20% for 2 seconds.");
+            break; case UNCOMMON:
+                desc.add("Damage Increased 30% for 2 seconds.");
+            break; case RARE:
+                desc.add("Damage Increased 40% for 2 seconds.");
+            break; case LEGENDARY:
+                desc.add("Damage Increased 50% for 2 seconds.");
+            break; case ETHEREAL:
+                desc.add("Damage Increased 60% for 2 seconds.");
+            break; case GODLIKE:
+                desc.add("Damage Increased 70% for 2 seconds.");
+        }
+
         this.setModifiers();
     }
 
-    public ForwardLungeItem(ItemTier tier, Integer level, Integer quanity) {
-        this.tier = tier;
-        this.level = level;
-        this.quantity = quanity;
-        this.setModifiers();
-    }
-
-    private void setModifiers() {
+    public void setModifiers() {
         switch (this.tier) {
             case COMMON:
                 this.increase = 1.2;
@@ -122,58 +114,30 @@ public class ForwardLungeItem implements SwordSkillProvider {
 
     @Override
     public JsonObject getCustomData() {
-        JsonObject json = new JsonObject();
-        json.addProperty("level", this.level);
-        return json;
+        return new JsonObject();
     }
 
     @Override
     public void setCustomData(JsonObject data) {
-        this.level = data.get("level").getAsInt();
+
     }
 
     @Override
     public void parseCustomItemData(ItemStack item) {
-        NBTItem nbti = new NBTItem(item);
-        this.level = nbti.getInteger("level");
+
     }
 
     @Override
     public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
-        NBTItem nbti = new NBTItem(item);
-        nbti.setInteger("level", data.get("level").getAsInt());
-        return nbti.getItem();
+        return item;
     }
 
     @Override
-    public SwordSkillType getType() { return SwordSkillType.SECONDARY; }
-
-    private Integer level;
-        @Override
-        public Integer[] getAllowedLevels() { return new Integer[]{ 1, 2, 3 }; }
-
-        @Override
-        public Integer getLevel() { return this.level; }
-
-        @Override
-        public void setLevel(Integer level) { this.level = level; }
+    public SwordSkillType getType() { return type; }
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {
-        switch (this.tier) {
-            case UNCOMMON:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case RARE:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case LEGENDARY:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case ETHEREAL:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            case GODLIKE:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-            default:
-                return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider) this);
-        }
+        return new ForwardLungeSkill(caster, this.increase, 15000L, (SwordSkillProvider)this, tier);
     }
     
 }

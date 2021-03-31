@@ -7,10 +7,10 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.swordskills.ParrySkill;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
+import net.peacefulcraft.sco.swordskills.SwordSkillDesc;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
 
@@ -26,29 +26,7 @@ public class ParryItem implements SwordSkillProvider {
 
     @Override
     public ArrayList<String> getLore() {
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ItemTier.getTierColor(this.tier) + "A beginners parry technique.");
-        switch (this.tier) {
-            case COMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +5%");
-                break;
-            case UNCOMMON:
-                lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +7%");
-                break;
-            case RARE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +9%");
-                break;
-            case LEGENDARY:
-                lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +11%");
-                break;
-            case ETHEREAL:
-                lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +13%");
-                break;
-            case GODLIKE:
-                lore.add(ItemTier.getTierColor(this.tier) + "Parry Chance: +15%");
-        }
-
-        return lore;
+        return desc.getDesc();
     }
 
     @Override
@@ -78,24 +56,37 @@ public class ParryItem implements SwordSkillProvider {
         public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
     @Override
-    public boolean isDroppable() { return false; }
+    public boolean isDroppable() { return true; }
 
     @Override
     public boolean isMovable() { return true; }
 
-    private Integer level;
     private int increase;
+    private SwordSkillType type;
+    private SwordSkillDesc desc;
 
-    public ParryItem(ItemTier tier, Integer level) {
+    public ParryItem(ItemTier tier, Integer quantity) {
         this.tier = tier;
-        this.level = level;
-        this.quantity = 1;
-    }
-
-    public ParryItem(ItemTier tier, Integer level, Integer quantity) {
-        this.tier = tier;
-        this.level = level;
         this.quantity = quantity;
+        this.type = SwordSkillType.PASSIVE;
+        this.desc = new SwordSkillDesc(tier, type);
+        desc.add("A beginners parry technique.");
+        switch (this.tier) {
+            case COMMON:
+                desc.add("Parry Chance: +5%");
+            break; case UNCOMMON:
+                desc.add("Parry Chance: +7%");
+            break; case RARE:
+                desc.add("Parry Chance: +9%");
+            break; case LEGENDARY:
+                desc.add("Parry Chance: +11%");
+            break; case ETHEREAL:
+                desc.add("Parry Chance: +13%");
+            break; case GODLIKE:
+                desc.add("Parry Chance: +15%");
+        }
+
+        setModifiers();
     }
 
     public void setModifiers() {
@@ -122,40 +113,24 @@ public class ParryItem implements SwordSkillProvider {
 
     @Override
     public JsonObject getCustomData() {
-        JsonObject json = new JsonObject();
-        json.addProperty("level", this.level);
-        return json;
+        return new JsonObject();
     }
 
     @Override
     public void setCustomData(JsonObject data) {
-        this.level = data.get("level").getAsInt();
     }
 
     @Override
     public void parseCustomItemData(ItemStack item) {
-        NBTItem nbti = new NBTItem(item);
-        this.level = nbti.getInteger("level");
     }
 
     @Override
     public ItemStack applyCustomItemData(ItemStack item, JsonObject data) {
-        NBTItem nbti = new NBTItem(item);
-        nbti.setInteger("level", data.get("level").getAsInt());
-        return nbti.getItem();
+        return item;
     }
 
     @Override
-    public SwordSkillType getType() { return SwordSkillType.PASSIVE; }
-
-    @Override
-    public Integer[] getAllowedLevels() { return new Integer[]{ 1, 2, 3}; }
-
-    @Override
-    public Integer getLevel() { return this.level; }
-
-    @Override
-    public void setLevel(Integer level) { this.level = level; }
+    public SwordSkillType getType() { return type; }
 
     @Override
     public SwordSkill registerSwordSkill(SwordSkillCaster caster) {

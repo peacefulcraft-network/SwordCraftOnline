@@ -1,19 +1,28 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.PlayerInventory;
@@ -22,19 +31,21 @@ import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.inventories.utilities.EmptyIdentifierGenerator;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
-import net.peacefulcraft.sco.quests.QuestBookManager;
-import net.peacefulcraft.sco.gamehandle.duel.Duel;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
 import net.peacefulcraft.sco.particles.DisplayType;
+import net.peacefulcraft.sco.quests.QuestBookManager;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
 import net.peacefulcraft.sco.storage.tasks.InventoryRegistryLookupTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
-import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 {
@@ -172,6 +183,11 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	/**Players chance to get extra crops */
 	private Integer farmingChance = 0;
 		public Integer getFarmingChance() { return farmingChance; }
+
+	/**Player receives messages related to skill stat changes */
+	private Boolean doesReceiveSkillMessages = true;
+		public Boolean doesReceiveSkillMessages() { return doesReceiveSkillMessages; }
+		public void setReceiveSkillMessages(Boolean b) { this.doesReceiveSkillMessages = b; }
 
 	/**
 	 * Loads all of an SCO Player's data.
@@ -343,9 +359,7 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 	}
 
 	@Override
-	public void setCombatModifier(CombatModifier mod, double amount, int duration) {
-		double d = this.getCombatModifier(mod);
-
+	protected void setCombatModifier(CombatModifier mod, double amount, int duration, UUID id) {
 		switch(mod) {
             case CRITICAL_CHANCE:
                 criticalChance = (int)amount;
@@ -364,49 +378,102 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		}
 		
 		if(duration != -1) {
-			_setCombatModifier(mod, d, duration);
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    dequeueChange(id);
+                }
+            }, duration * 20);
 		}
 	}
 
 	@Override
-	public void multiplyCombatModifier(CombatModifier mod, double amount, int duration) {
-		double d = this.getCombatModifier(mod);
+	protected void addToCombatModifier(CombatModifier mod, double amount, int duration, UUID id) {
+		switch(mod) {
+            case CRITICAL_CHANCE:
+                criticalChance += (int)amount;
+            case CRITICAL_MULTIPLIER:
+                criticalMultiplier += amount;
+            case PARRY_CHANCE:
+                parryChance += (int)amount;
+            case PARRY_MULTIPLIER:
+                parryMultiplier += amount;
+			case ITEM_LEVEL:
+				this.bonusLevelMod += amount;
+			case BONUS_DROP:
+				this.bonusDropMod += amount;
+			case BONUS_EXP:
+				this.expMod += amount;
+		}
 
-		this.setCombatModifier(mod, d * amount, -1);
 		if(duration != -1) {
-			_setCombatModifier(mod, d, duration);
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable() {
+                public void run() {
+                    dequeueChange(id);
+                }
+            }, duration * 20);
 		}
 	}
 
-	@Override
-	public void addToCombatModifier(CombatModifier mod, double amount, int duration) {
-		double d = this.getCombatModifier(mod);
-
-		this.setCombatModifier(mod, d + amount, -1);
-		if(duration != -1) {
-			_setCombatModifier(mod, d, duration);
-		}
-	}
-
-	public String getPlayerData() {		
-		String header = repeat(5, " ") + ChatColor.GOLD + "[" + ChatColor.BLUE + "SCOPlayer" + ChatColor.GOLD + "]" + ChatColor.BLUE + getName() + "'s Data" + '\n' 
-		+ ChatColor.GOLD + repeat(40, "-") + '\n';
-		String partyName = ChatColor.GOLD + "Party Name: " + ChatColor.BLUE + getPartyName() + '\n';
-		String playerKills = ChatColor.GOLD + "Player Kills: " + ChatColor.BLUE + getPlayerKills() + '\n';
-		String critChance = ChatColor.GOLD + "Critical Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_CHANCE) + '\n';
-		String critMult = ChatColor.GOLD + "Critical Multiplier: " + ChatColor.BLUE + getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER) + '\n'; 
-		String pChance = ChatColor.GOLD + "Parry Chance: " + ChatColor.BLUE + getCombatModifier(CombatModifier.PARRY_CHANCE) + '\n';
-		String override = ChatColor.GOLD + "Admin Override: " + ChatColor.BLUE + hasOverride() + '\n';
+	/**
+	 * Compiles all relevant player data into
+	 * single json object
+	 * @return
+	 */
+	public JsonObject getPlayerData() {
+		JsonObject obj = new JsonObject();
+		obj.addProperty("playerKills", this.playerKills);
 		
-		String skills = ChatColor.GOLD + "Active Skills: " + ChatColor.BLUE;
-		for(SwordSkill s : swordSkillManager.getSkills()) {
-			skills.concat(s.getProvider().getName() + ", ");
+		// Combat modifier values to Json
+		JsonArray combatArr = new JsonArray();
+		for (CombatModifier cm : CombatModifier.values()) {
+			JsonObject temp = new JsonObject();
+			temp.addProperty(cm.toString(), getCombatModifier(cm));
+			combatArr.add(temp);
 		}
-
-			return header + partyName + playerKills + critChance + critMult + pChance + override + skills;
+		obj.add("combatModifier", combatArr);
+		
+		// Damage modifier values to Json
+		JsonArray damageArr = new JsonArray();
+		for (Entry<ModifierType, HashMap<Boolean, Modifier>> entry : this.damageModifiers.entrySet()) {
+			for (Entry<Boolean, Modifier> entryy : entry.getValue().entrySet()) {
+				JsonObject temp = new JsonObject();
+				temp.addProperty("incoming", entryy.getKey());
+				temp.addProperty("modifierType", entry.getKey().toString());
+				temp.addProperty("multiplier", entryy.getValue().getMultiplier());
+				damageArr.add(temp);
+			}
 		}
+		obj.add("damageModifier", damageArr);
 
-	private String repeat(int count, String with) {
-		return new String(new char[count]).replace("\0", with);
-	}	
+		// Weapon modifier values to Json
+		// There has to be a cleaner way to do this
+		// TODO: Clean this iteration
+		JsonArray weaponArr = new JsonArray();
+		for (Entry<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> entry : this.weaponModifiers.entrySet()) {
+			for (Entry<WeaponModifierType, ArrayList<WeaponModifier>> entryy : entry.getValue().entrySet()) {
+				for (WeaponModifier wm : entryy.getValue()) {
+					JsonObject temp = new JsonObject();
+					temp.addProperty("weaponName", entry.getKey());
+					temp.addProperty("name", wm.getName());
+					for (Entry<String, JsonElement> entryyy : wm.getModifiedStats().entrySet()) {
+						temp.add(entryyy.getKey(), entryyy.getValue());
+					}
+					weaponArr.add(temp);
+				}
+			}
+		}
+		obj.add("weaponModifier", weaponArr);
+
+		obj.addProperty("farmingChance", this.farmingChance);
+
+		// Toggleable player data
+		obj.addProperty("recieveSkillMessages", this.doesReceiveSkillMessages);
+		obj.addProperty("displayType", this.displayType.toString());
+
+		// Wallet bank to Json
+		obj.addProperty("bank", this.bank);
+		obj.addProperty("wallet", this.wallet);
+
+		return obj;
+	}
 }

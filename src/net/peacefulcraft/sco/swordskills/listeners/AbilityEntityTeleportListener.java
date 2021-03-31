@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTeleportEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
@@ -18,7 +19,7 @@ public class AbilityEntityTeleportListener implements Listener{
   @EventHandler
   public void onEntityTeleport(EntityTeleportEvent ev) {
     if(ev.getEntity() instanceof Player) {
-      SwordCraftOnline.getGameManager().findSCOPlayer((Player) ev.getEntity())
+      GameManager.findSCOPlayer((Player) ev.getEntity())
       .getSwordSkillManager().abilityExecuteLoop(SwordSkillTrigger.ENTITY_TELEPORT, ev);
 
     } else if(ev.getEntity() instanceof LivingEntity) {

@@ -20,7 +20,7 @@ public enum ItemTier
 			case LEGENDARY:
 			return "Legendary";
 			case GODLIKE:
-			return "Mastery";
+			return "Godlike";
 			case ETHEREAL:
 			return "Ethereal";
 			default:

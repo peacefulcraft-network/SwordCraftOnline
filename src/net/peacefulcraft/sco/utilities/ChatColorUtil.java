@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 
-import net.peacefulcraft.sco.SwordCraftOnline;
-
 
 
 /**

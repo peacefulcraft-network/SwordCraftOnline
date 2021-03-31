@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
 import net.peacefulcraft.sco.inventories.InfusionInventory;
 import net.peacefulcraft.sco.inventories.InventoryType;
+import net.peacefulcraft.sco.inventories.PlayerDataInventory;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
@@ -38,8 +39,8 @@ import net.peacefulcraft.sco.structures.structures.Pillar;
 import net.peacefulcraft.sco.structures.structures.Wall;
 import net.peacefulcraft.sco.structures.structures.WallWave;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
+import net.peacefulcraft.sco.swordskills.SwordSkillDataManager;
 import net.peacefulcraft.sco.swordskills.SwordSkillManager;
-import net.peacefulcraft.sco.swordskills.SwordSkillTest;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 import net.peacefulcraft.sco.swordskills.utilities.CriticalHit;
 import net.peacefulcraft.sco.swordskills.utilities.Parry;
@@ -67,6 +68,16 @@ public class SCOAdmin implements CommandExecutor {
 				return true;
 			}
 
+			if (args[0].equalsIgnoreCase("sslist")) {
+				int page = 1;
+				if (args.length == 2) {
+					page = Integer.valueOf(args[1]);
+				}
+				Player p = (Player) sender;
+				p.spigot().sendMessage(SwordCraftOnline.getPluginInstance().getSwordSkillDataManager().getInfoPage(page));
+				return true;
+			}			
+
 			if (args[0].equalsIgnoreCase("inventory")) {
 				if(args[1].equalsIgnoreCase("craft")) {
 					Player p = (Player) sender;
@@ -91,6 +102,13 @@ public class SCOAdmin implements CommandExecutor {
 					SCOPlayer s = GameManager.findSCOPlayer(p);
 
 					new InfusionInventory(s).openInventory(s);
+					return true;
+				}
+				if(args[1].equalsIgnoreCase("data")) {
+					Player p = (Player) sender;
+					SCOPlayer s = GameManager.findSCOPlayer(p);
+
+					new PlayerDataInventory(s).openInventory(s);
 					return true;
 				}
 			}
@@ -130,8 +148,6 @@ public class SCOAdmin implements CommandExecutor {
 						return true;
 					}
 				}
-
-				p.sendMessage(s.getPlayerData());
 				return true;
 			}
 
@@ -158,6 +174,7 @@ public class SCOAdmin implements CommandExecutor {
 				}
 
 				String data = args[2];
+				/*
 				if (data.equalsIgnoreCase("critical_chance") || data.equalsIgnoreCase("crit_chance")) {
 					s.setCombatModifier(CombatModifier.CRITICAL_CHANCE,(int) i, -1);
 					p.sendMessage(ChatColor.GOLD + "Critical Chance set to: " + ChatColor.RED + i);
@@ -184,6 +201,7 @@ public class SCOAdmin implements CommandExecutor {
 							+ "player_kills, parry, admin_override, admin_over");
 					return true;
 				}
+				*/
 			}
 
 			if (args[0].equalsIgnoreCase("swordskills")) {
@@ -604,11 +622,7 @@ public class SCOAdmin implements CommandExecutor {
 					}
 					return true;
 
-				} else if(args[2].equalsIgnoreCase("dummyskill")) {
-					new SwordSkillTest(s, null);
-					sender.sendMessage("Registered Dummy Skill");
-					return true;
-				} else {
+				} else  {
 					sender.sendMessage(ChatColor.RED + "Valid Options: " + ChatColor.GOLD + "[ hud | info ]");
 					return true;
 				}

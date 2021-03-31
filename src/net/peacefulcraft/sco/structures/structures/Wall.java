@@ -65,7 +65,7 @@ public class Wall extends Structure {
                 SwordCraftOnline.logInfo("Attempted to construct Wall with no target entity.");
                 return;
             }
-            sideFace = DirectionalUtil.getSideDirections(target);
+            sideFace = DirectionalUtil.getRelativeBlockFace(target, 90);
             upBlock = target.getTargetBlock((Set<Material>) null, 4).getRelative(BlockFace.UP);
             Location conformed = conformToTerrain(upBlock.getLocation());
             upBlock = conformed.getBlock();

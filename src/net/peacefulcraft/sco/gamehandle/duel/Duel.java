@@ -148,7 +148,7 @@ public class Duel {
         List<Player> temp = new ArrayList<>();
         temp.add(challenged.getPlayer());
         temp.add(challenger.getPlayer());
-        Announcer.sendCountdown(temp, 3, "The duel is beginning in...", "BEGIN", true);
+        Announcer.messageCountdown(temp, 3, "The duel is beginning in...", "BEGIN", true);
 
         this.inSetup = false;
     }

@@ -1,5 +1,9 @@
 package net.peacefulcraft.sco.swordskills.weaponskills;
 
+import java.util.UUID;
+
+import com.google.gson.JsonObject;
+
 import org.bukkit.attribute.Attribute;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
@@ -8,6 +12,7 @@ import net.peacefulcraft.sco.utilities.RomanNumber;
 public class EnhancedGuard implements WeaponModifier {
 
     private String level;
+    private UUID change;
 
     @Override
     public String getName() {
@@ -26,12 +31,12 @@ public class EnhancedGuard implements WeaponModifier {
 
     @Override
     public void applyEffects(ModifierUser user) {
-        user.addToAttribute(Attribute.GENERIC_ARMOR, getModifierAmount(), -1);
+        change = user.queueChange(Attribute.GENERIC_ARMOR, getModifierAmount(), -1);
     }
 
     @Override
     public void removeEffects(ModifierUser user) {
-        user.addToAttribute(Attribute.GENERIC_ARMOR, getModifierAmount(), -1);
+        user.dequeueChange(change);
     }
 
     @Override
@@ -42,6 +47,13 @@ public class EnhancedGuard implements WeaponModifier {
     @Override
     public Integer getMaxPlayerLevel() {
         return 5;
+    }
+
+    @Override
+    public JsonObject getModifiedStats() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(Attribute.GENERIC_ARMOR.toString(), getModifierAmount());
+        return obj;
     }
     
 }

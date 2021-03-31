@@ -6,22 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.swordskills.modules.SwordSkillModule;
 
 public abstract class SwordSkill {
 	
-	/**
-	 * General ability properties
-	 */
-	protected SCOPlayer s;
-		public final SCOPlayer getSCOPlayer() { return s; }
-
 	protected SwordSkillCaster c;
 		public final SwordSkillCaster getSwordSkillCaster() { return c; }
 		
@@ -42,10 +33,6 @@ public abstract class SwordSkill {
 
 	public SwordSkill(SwordSkillCaster c, SwordSkillProvider provider) {
 		this.c = c;
-		LivingEntity caster = c.getSwordSkillManager().getSCOPlayer().getPlayer();
-		if (caster instanceof Player) {
-			this.s = SwordCraftOnline.getPluginInstance().getGameManager().findSCOPlayer((Player) caster);
-		}
 		this.manager = c.getSwordSkillManager();
 		this.provider = provider;
 	}
@@ -113,7 +100,7 @@ public abstract class SwordSkill {
 	public final List<SwordSkillModule> getModules() {
 		ArrayList<SwordSkillModule> modules = new ArrayList<SwordSkillModule>();
 		for(SwordSkillTrigger type : supportListeners.keySet()) {
-			modules.addAll((Collection) supportListeners.get(type));
+			modules.addAll((Collection<? extends SwordSkillModule>) supportListeners.get(type));
 		}
 
 		return Collections.unmodifiableList(modules);

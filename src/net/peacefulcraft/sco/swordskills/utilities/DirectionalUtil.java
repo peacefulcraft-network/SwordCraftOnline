@@ -138,13 +138,13 @@ public class DirectionalUtil implements Listener{
         }
     }
 
-    /**
-     * Returns relative blockface directions of entity location 
-     * TODO: Rename to signify the method better
-     */
-    public static BlockFace getSideDirections(LivingEntity e) {
-		double rot = (e.getLocation().getYaw() - 90) % 360;
-		return getRelativeBlockFace(rot);
+    public static BlockFace getRelativeBlockFace(LivingEntity e, double offset) {
+        double rot = (e.getLocation().getY() - offset) % 360;
+        return getRelativeBlockFace(rot); 
+    }
+
+    public static BlockFace getRelativeBlockFace(Player p, double offset) {
+        return getRelativeBlockFace((LivingEntity)p, offset);
     }
 
     /**
@@ -170,14 +170,6 @@ public class DirectionalUtil implements Listener{
 		} else {
 			return null;
 		}
-    }
-    
-    /**
-     * Returns relative blockface directions of player location 
-     * TODO: Rename to signify the method better
-     */
-    public static BlockFace getSideDirections(Player p) {
-        return getSideDirections((LivingEntity) p);
     }
 
     /**

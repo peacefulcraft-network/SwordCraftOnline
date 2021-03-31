@@ -113,7 +113,8 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
         
         JsonElement reforgeCount = parsedWeaponObj.get("Reforge Count");
         reforgeCount = reforgeCount == null ? data.get("Reforge Count") : reforgeCount;
-        this.weaponObj.addProperty("Reforge Count", reforgeCount.getAsInt());
+        int reforgeCountt = reforgeCount == null ? 0 : reforgeCount.getAsInt();
+        this.weaponObj.addProperty("Reforge Count", reforgeCountt);
         return nbti.getItem();
     }
 

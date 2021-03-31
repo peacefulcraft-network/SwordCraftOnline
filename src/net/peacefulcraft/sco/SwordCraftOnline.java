@@ -23,12 +23,14 @@ import net.peacefulcraft.sco.gamehandle.listeners.QuitGameListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionCheckListener;
 import net.peacefulcraft.sco.gamehandle.listeners.RegionDamageListener;
 import net.peacefulcraft.sco.gamehandle.listeners.SCOPlayerDamageListener;
+import net.peacefulcraft.sco.gamehandle.managers.FireManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.inventories.crafting.CraftingManager;
 import net.peacefulcraft.sco.inventories.listeners.CustomInventoryListeners;
 import net.peacefulcraft.sco.inventories.listeners.InventoryListeners;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
+import net.peacefulcraft.sco.inventories.listeners.TomeListener;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
 import net.peacefulcraft.sco.mythicmobs.drops.DropManager;
@@ -47,6 +49,7 @@ import net.peacefulcraft.sco.quests.listeners.QuestOpenInventoryListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerInteractEntityListener;
 import net.peacefulcraft.sco.quests.listeners.QuestPlayerMoveListener;
 import net.peacefulcraft.sco.storage.HikariManager;
+import net.peacefulcraft.sco.swordskills.SwordSkillDataManager;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityAsyncPlayerChatListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityClickListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityEntityDamageEntityListener;
@@ -105,6 +108,12 @@ public class SwordCraftOnline extends JavaPlugin{
 	private CraftingManager craftingManager;
 		public CraftingManager getCraftingManager() { return this.craftingManager; }
 	
+	private FireManager fireManager;
+		public FireManager getFireManager() { return this.fireManager; }
+
+	private SwordSkillDataManager swordSkillDataManager;
+		public SwordSkillDataManager getSwordSkillDataManager() { return this.swordSkillDataManager; }
+
 	public SwordCraftOnline() {
 
 		sco = this;
@@ -137,7 +146,11 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		this.craftingManager = new CraftingManager();
 
+		this.fireManager = new FireManager();
+
 		effectManager = new EffectManager(this);
+
+		this.swordSkillDataManager = new SwordSkillDataManager();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
@@ -194,6 +207,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		// Register Menu Opener
 		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
 		getServer().getPluginManager().registerEvents(new CustomInventoryListeners(), this);
+		getServer().getPluginManager().registerEvents(new TomeListener(), this);
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);

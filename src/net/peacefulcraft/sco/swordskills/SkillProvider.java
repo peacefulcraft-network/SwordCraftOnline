@@ -2,13 +2,11 @@ package net.peacefulcraft.sco.swordskills;
 
 import java.util.ArrayList;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.tr7zw.nbtapi.NBTItem;
-import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 
 /**
@@ -103,27 +101,4 @@ public abstract class SkillProvider{
 	 * Used to set modifiers. I.e. damage and cooldown.
 	 */
 	public abstract void setModifiers();
-	
-	public static ArrayList<String> addDesc(String tier){
-		return addDesc(ItemTier.valueOf(tier));
-	}
-	
-	public static ArrayList<String> addDesc(ItemTier tier) {
-		ArrayList<String> desc = new ArrayList<String>();
-		switch(tier) {
-		case COMMON:
-			desc.add(ItemTier.getTierColor(tier) + "Common Sword Skill");
-		break;case UNCOMMON:
-			desc.add(ItemTier.getTierColor(tier) + "Uncommon Sword Skill");
-		break;case RARE:
-			desc.add(ItemTier.getTierColor(tier) + "Rare Sword Skill");
-		break;case LEGENDARY:
-			desc.add(ItemTier.getTierColor(tier) + "Legendary Sword Skill");
-		break;case ETHEREAL:
-			desc.add(ItemTier.getTierColor(tier) + "Mastery Sword Skill");
-		break;case GODLIKE:
-			desc.add(ItemTier.getTierColor(tier) + "Godlike Sword Skill");
-		}
-		return desc;
-	}
 }
