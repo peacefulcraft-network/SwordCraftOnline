@@ -45,7 +45,10 @@ public class Reward {
                 return;
             }
         } catch(IllegalArgumentException ex) {
-            SwordCraftOnline.logInfo("Failed to load reward. Invalid item, tier, amount value.");
+            SwordCraftOnline.logDebug("Failed to load reward. Invalid item, tier, amount value.");
+            return;
+        } catch(NullPointerException exx) {
+            SwordCraftOnline.logDebug("NullPointer loading reward.");
             return;
         }
     }

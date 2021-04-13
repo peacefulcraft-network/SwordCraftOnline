@@ -21,16 +21,21 @@ public class KillQuestStep extends QuestStep {
 
     private HashMap<MythicMob, Integer> targets = new HashMap<>();
 
-    private HashMap<MythicMob, Integer> kills;
+    private HashMap<MythicMob, Integer> kills = new HashMap<>();
 
     public KillQuestStep(MythicConfig mc) {
         super(mc);
 
         List<String> targetLis = mc.getStringList("Targets");
+        if(targetLis == null || targetLis.isEmpty()) {
+            this.logInfo("Invalid Target List Size");
+            return;
+        }
+
         for (String s : targetLis) {
             try {
                 String[] split = s.split(" ");
-                int amount = Integer.valueOf(split[1]);
+                Integer amount = Integer.valueOf(split[1]);
 
                 MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(split[0]);
                 if (mm == null) {
@@ -60,7 +65,7 @@ public class KillQuestStep extends QuestStep {
 
         // If quest is not activated we use find npc description
         if (!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in [] to start quest");
+            this.setDescription("Talk to " + npcName + " in\n " + this.getGiverRegion().getName() +" to start quest");
             return;
         }
 

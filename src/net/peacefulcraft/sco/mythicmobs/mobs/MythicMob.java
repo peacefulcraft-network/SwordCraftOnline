@@ -556,16 +556,11 @@ public class MythicMob implements Comparable<MythicMob> {
         this.strMobType = mc.getString("MobType", this.strMobType);
         this.strMobType = mc.getString("MobType", this.strMobType);
         if(this.strMobType == null) {
-            MythicEntity me = MythicEntity.getMythicEntity(internalName);
-            if(me == null) {
-                SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Could not load MythicMob " + this.internalName);
-                this.strMobType = "NULL";
-                this.mobType = MythicEntity.getMythicEntity("SKELETON");
-                this.displayName = "ERROR: MOB TYPE FOR '" + this.internalName + "' IS NOT OPTIONAL";
-                return;
-            }
-            SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "EntityType is vanilla override for " + this.strMobType);
-            this.mobType = me;
+            SwordCraftOnline.logInfo("[Mythic Mob] Failed to load MythicMob: " + this.internalName + ", strMobType null.");
+            this.strMobType = "NULL";
+            this.mobType = MythicEntity.getMythicEntity("SKELETON");
+            this.displayName = "ERROR: MOB TYPE FOR '" + this.internalName + "' IS NOT OPTIONAL.";
+            return;
         } 
         this.mobType = MythicEntity.getMythicEntity(this.strMobType);
 
@@ -1207,7 +1202,7 @@ public class MythicMob implements Comparable<MythicMob> {
 
             //If villager has profession set it. If not nitwit
             if(e instanceof Villager) {
-                if((!this.villagerType.isEmpty())) {
+                if(this.villagerType != null && (!this.villagerType.isEmpty())) {
                     try {
                         ((Villager)e).setProfession(Profession.valueOf(this.villagerType));
                     } catch(IllegalArgumentException ex) {

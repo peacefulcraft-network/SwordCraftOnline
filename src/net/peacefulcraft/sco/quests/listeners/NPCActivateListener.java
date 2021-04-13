@@ -13,6 +13,7 @@ import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.quests.ActiveQuest;
+import net.peacefulcraft.sco.quests.Quest;
 
 /***
  * Main class to handle activating quests via NPC interaction.
@@ -41,6 +42,14 @@ public class NPCActivateListener implements Listener {
                     return;
                 }
             }
+        }
+
+        // Checking if NPC is a registered current quest giver
+        // If they are we give the player a new quest
+        if(SwordCraftOnline.getPluginInstance().getQuestManager().isCurrentQuestGiver(am) && am.getQuest() != null) {
+            Quest q = am.getQuest();
+            SwordCraftOnline.logDebug("[NPC Activate Listener] Registering quest: " + q.getQuestName());
+            s.getQuestBookManager().registerQuest(q.getQuestName());
         }
     }
     

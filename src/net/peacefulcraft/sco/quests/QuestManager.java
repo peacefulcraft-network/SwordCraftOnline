@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -40,7 +41,7 @@ public class QuestManager implements Runnable {
         this.invalidQuests = new HashMap<>();
         loadQuests();
 
-        this.questTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 2400);
+        this.questTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 200);
     }
 
     public void reload() {
@@ -103,6 +104,7 @@ public class QuestManager implements Runnable {
             //We save all invalid quests for reference
             if(q.isInvalid()) { 
                 this.invalidQuests.put(qName, q);
+                SwordCraftOnline.logDebug("[Quest Manager] Marked invalid: " + qName);
             } else {
                 this.questMap.put(qName, q);
                 SwordCraftOnline.logInfo("[Quest Manager] Loaded: " + qName);
@@ -113,31 +115,47 @@ public class QuestManager implements Runnable {
 
     @Override
     public void run() {
+        //SwordCraftOnline.logDebug("[Quest Manager] Starting assignment task.");
+
         ArrayList<ActiveMob> lis = SwordCraftOnline.getPluginInstance().getMobManager().getQuestGivers();
         ArrayList<Quest> nonStory = getNonStoryQuests();
         
-        //Checking all current quest givers for expired quests
-        for(ActiveMob am : currentQuestGivers) {
-            //If there is a quest and it has expired
-            if(am.getQuest() != null && am.checkQuestAssignment()) { 
-                //Setting mobs quest to null and removing quest from available quests
+        //SwordCraftOnline.logDebug("[Quest Manager] List of quest givers: " + lis);
+        //SwordCraftOnline.logDebug("[Quest Manager] Current quest givers: " + currentQuestGivers);
+        //SwordCraftOnline.logDebug("[Quest Manager] Non Story Quests: " + nonStory);
+
+        // Checking all current quest givers for expired quests
+        Iterator<ActiveMob> iter = currentQuestGivers.iterator();
+        while(iter.hasNext()) {
+            ActiveMob am = iter.next();
+
+            if(am.getQuest() != null && am.checkQuestAssignment()) {
                 am.setQuest(null);
                 availableQuests.remove(am.getQuest().getQuestName());
+                iter.remove();
+
+                SwordCraftOnline.logDebug("[Quest Manager] Removing assigned quest on: " + am.getDisplayName());
             }
         }
 
-        //Checking 1/4th of the quest givers
-        for(int i = 0; i < lis.size()/4; i++) {
-            //Selecting random AM and checking if it has quest
+        // Checking situational fraction of available quest givers
+        // If for some reason there is less than 4 we default to max size
+        int upperLimit = lis.size() < 4 ? lis.size() : lis.size()/4;
+        for(int i = 0; i < upperLimit; i++) {
+            // Selecting random AM and checking if it has quest
             ActiveMob am = lis.get(SwordCraftOnline.r.nextInt(lis.size()));
             if(am.getQuest() != null) { continue; }
 
-            //If quest is already available we don't care
+            // If quest is already available we don't care
+            if(nonStory.size() <= 0) { continue; }
             Quest q = nonStory.get(SwordCraftOnline.r.nextInt(nonStory.size()));
             if(availableQuests.containsKey(q.getQuestName())) { continue; }
 
             am.setQuest(q);
             availableQuests.put(q.getQuestName(), q);
+            this.currentQuestGivers.add(am);            
+
+            SwordCraftOnline.logDebug("[Quest Manager] Assigning quest: " + q.getQuestName() + ", to: " + am.getDisplayName());
         }
     }
 
@@ -186,6 +204,7 @@ public class QuestManager implements Runnable {
     private ArrayList<Quest> getNonStoryQuests() {
         ArrayList<Quest> ret = new ArrayList<>();
         for(Quest q : questMap.values()) {
+            SwordCraftOnline.logDebug("[Quest Manager] Checking: " + q.getQuestName());
             if(q.isStoryQuest() || q.isDeleted()) { continue; }
             ret.add(q);
         }
@@ -213,5 +232,14 @@ public class QuestManager implements Runnable {
     /**@return Quest from map or null if does not exist */
     public Quest getQuest(String quest) {
         return questMap.get(quest);
+    }
+
+    /**
+     * Checks if Active Mob is registered current quest giver
+     * @param am Active Mob we are checking against
+     * @return True if registered, false otherwise
+     */
+    public boolean isCurrentQuestGiver(ActiveMob am) {
+        return this.currentQuestGivers.contains(am);
     }
 }

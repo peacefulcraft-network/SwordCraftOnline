@@ -198,6 +198,7 @@ public abstract class MythicEntity {
         passive.put(EntityType.SNOWMAN, MythicEntityType.SNOWMAN);
         passive.put(EntityType.SQUID, MythicEntityType.SQUID);
         passive.put(EntityType.TROPICAL_FISH, MythicEntityType.TROPICAL_FISH);
+        passive.put(EntityType.VILLAGER, MythicEntityType.VILLAGER);
 
         //entities.put(MythicEntityType.ARMOR_STAND, (Class) ArmorStand.class);
         entities.put(MythicEntityType.BABY_DROWNED, BukkitBabyDrowned.class);

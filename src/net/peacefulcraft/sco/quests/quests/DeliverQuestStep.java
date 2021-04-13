@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.quests.quests;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import net.peacefulcraft.sco.quests.QuestStep;
 
 public class DeliverQuestStep extends QuestStep {
 
-    private List<ItemStack> deliverables;
+    private List<ItemStack> deliverables = new ArrayList<>();
 
     public List<ItemStack> getDeliverables() {
         return this.deliverables;
@@ -53,8 +54,9 @@ public class DeliverQuestStep extends QuestStep {
 
         // Custom item validation
         for(String s : items) {
+            String name = s.split(" ")[0];
             int amount = Integer.valueOf(s.split(" ")[1]);
-            ItemStack item = ItemIdentifier.generateItem(s, ItemTier.COMMON, amount);
+            ItemStack item = ItemIdentifier.generateItem(name, ItemTier.COMMON, amount);
             if (item.getType().equals(Material.FIRE) || item == null) {
                 this.logInfo("Invalid Item field in config.");
                 return;

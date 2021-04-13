@@ -39,6 +39,7 @@ import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntity;
 import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
+import net.peacefulcraft.sco.utilities.Pair;
 
 public class MobManager implements Runnable {
     private final SwordCraftOnline s;
@@ -71,11 +72,28 @@ public class MobManager implements Runnable {
     /** Main task logic for mob manager*/
     private BukkitTask mobTask;
 
+    private ArrayList<Pair<String, Location>> postInitialSpawnLis = new ArrayList<>();
+
     public MobManager(SwordCraftOnline s) {
         this.s = s;
         this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 100);
 
         loadMobs();
+    }
+
+    /**
+     * Handles post manager initialize tasks
+     * 
+     * Spawns any persistent mobs
+     */
+    public void postInitializeTask() {
+        for(Pair<String, Location> pair : postInitialSpawnLis) {
+            ActiveMob am = spawnMob(pair.getFirst(), pair.getSecond());
+            if(am == null) {
+                SwordCraftOnline.logInfo("[Mob Manager] Error loading: " + pair.getFirst() + " from PersistentMobConfig.yml in post initialize task.");
+                continue;
+            }
+        }
     }
 
     /**Loads mobs from files*/
@@ -99,6 +117,9 @@ public class MobManager implements Runnable {
                         MobSpawnHandler.addVanillaMobs(name, mc);
                         continue;
                     }
+
+                    // Skip Persistence
+                    if(file.contains("PersistentMobConfig")) { continue; }
 
                     if(MythicEntity.getMythicEntity(name) != null) {
                         MythicEntityType met = MythicEntityType.get(name);
@@ -136,11 +157,7 @@ public class MobManager implements Runnable {
                     Double.parseDouble(String.valueOf(m.get("y"))),
                     Double.parseDouble(String.valueOf(m.get("z"))));
 
-                ActiveMob am = spawnMob(internal, loc);
-                if(am == null) {
-                    SwordCraftOnline.logInfo("[Mob Manager] Error loading: " + internal + " from PersistentMobConfig.yml");
-                    continue;
-                }
+                postInitialSpawnLis.add(new Pair<String, Location>(internal, loc));
             }
         }
 
@@ -377,7 +394,7 @@ public class MobManager implements Runnable {
     }
 
     public ActiveMob spawnMob(String mobName, AbstractLocation loc, int level, List<SpawnFields> fields) {
-        MythicMob mm = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(mobName);
+        MythicMob mm = getMythicMob(mobName);
         if(mm != null) {
             
             // Checking region flags

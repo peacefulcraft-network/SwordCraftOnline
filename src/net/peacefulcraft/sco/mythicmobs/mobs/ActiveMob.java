@@ -157,7 +157,7 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         }
 
     /**Cooldown for quest assignment */
-    private Long questAssignTime;
+    private Long questAssignTime = 1000L;
         public void setQuestAssignmentTime(Long l) { this.questAssignTime = l; }
         /**@return True if quest assignment has expired */
         public boolean checkQuestAssignment() {

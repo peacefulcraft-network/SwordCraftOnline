@@ -1,16 +1,12 @@
 package net.peacefulcraft.sco.quests;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
@@ -26,6 +22,7 @@ public class ActiveQuest {
         public boolean isLocked() { return this.locked; }
 
     private int currentStep;
+        public int getCurrentStep() { return this.currentStep; }
 
     private boolean completed;
         public boolean isCompleted() { return this.completed; }
@@ -108,6 +105,15 @@ public class ActiveQuest {
         return ret;
     }
 
+    /**
+     * Fetches the current description
+     * of the quest step
+     * @return String description
+     */
+    public String getItemDescription() {
+        return getQuestStep().getDescription();
+    }
+
     /**Sends player announce title of quest completed */
     private void sendCompletedTitle() {
         Announcer.messageTitleBar(s.getPlayer(), "Quest Completed!", "Completed: \"" + getName() + "\"");
@@ -182,43 +188,22 @@ public class ActiveQuest {
         }
     }
 
-    /**@return Item represent of quest at current step */
-    public ItemStack getItem() {
-        ItemStack icon = new ItemStack(Material.PAPER, 1);
-        ItemMeta meta = icon.getItemMeta();
-
-        QuestStep qs = quest.getQuestStep(this.currentStep);
-        
-        ArrayList<String> desc = new ArrayList<>();
-        desc.add(qs.getDescription());
-
-        if(this.locked) {
-            meta.setDisplayName(ChatColor.RED + "" + quest.getQuestName());
-            desc.add(ChatColor.RED + "" + qs.getDescription());
-        } else {
-            meta.setDisplayName(ChatColor.AQUA + "" + quest.getQuestName());
-            desc.add(ChatColor.WHITE + "" + qs.getDescription());
-        }
-
-        desc.add("");
-        desc.add(ChatColor.DARK_PURPLE + getProgress());
-        desc.add("");
-        desc.add(getRewardStr());
-        meta.setLore(desc);
-        icon.setItemMeta(meta);
-
-        return icon;
-    }
-
-    /**Helper function gets current progress as string bar */
-    private String getProgress() {
-        String ret = "[" + new String(new char[this.currentStep]).replace("\0", Announcer.getSquare());
-        ret += new String(new char[this.quest.getSize()-this.currentStep]).replace("\0", "-") + "]";
+    /**
+     * Gets progress bar string of the active quest
+     * @return Square bar
+     */
+    public String getProgressBar() {
+        String ret = "[" + new String(new char[this.currentStep]).replace('\0', (char)0x25A0);
+        ret += new String(new char[this.quest.getSize()-this.currentStep]).replace('\0', (char)0x25A1);
+        ret += "]";
         return ret;
     }
 
-    /**Helper function gets rewards as string */
-    private String getRewardStr() {
+    /**
+     * Gets rewards for item description
+     * @return Complete formatted string of rewards
+     */
+    public String getRewardStr() {
         String ret = "Rewards: ";
         for(Reward r : getQuestStep().getRewards()) {
             if(r.getReward() == null) {

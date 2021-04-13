@@ -309,7 +309,7 @@ public class SCOAdmin implements CommandExecutor {
 
 				// Kills all active instances of mobs
 				if (args[1].equalsIgnoreCase("killall")) {
-					int amount = SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs(false);
+					int amount = SwordCraftOnline.getPluginInstance().getMobManager().removeAllMobs(true);
 					if (sender instanceof Player) {
 						sender.sendMessage(ChatColor.GREEN + "Removed " + amount + " Mythic Mobs!");
 					}

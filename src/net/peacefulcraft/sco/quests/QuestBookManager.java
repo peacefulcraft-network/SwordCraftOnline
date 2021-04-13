@@ -6,14 +6,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.bukkit.event.Event;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import com.google.gson.JsonObject;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.event.Event;
+
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.QuestBookInventory;
+import net.peacefulcraft.sco.items.CustomDataHolder;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
 
 public class QuestBookManager {
@@ -61,6 +63,19 @@ public class QuestBookManager {
         }
 
         quests.get(qt).add(aq);
+
+        // Giving quest item to player
+        JsonObject obj = new JsonObject();
+        obj.addProperty("questName", aq.getName());
+        obj.addProperty(
+            "description", 
+            aq.getItemDescription() + "\n" + aq.getRewardStr() + "\n\n" + aq.getProgressBar()
+        );
+        obj.addProperty("step", 0);
+
+        ItemIdentifier ident = ItemIdentifier.generateIdentifier("Quest", ItemTier.COMMON, 1);
+        ((CustomDataHolder)ident).setCustomData(obj);
+        s.getPlayerInventory().addItem(ident);
     }
 
     /**Unregisters quest to player */
@@ -108,14 +123,27 @@ public class QuestBookManager {
             } else {
                 //If quest was not completed we want to update item in their inventory
                 QuestBookInventory base = s.getQuestBookInventory();
-                Inventory inv = base.getInventory();
-                for(ItemStack i : inv.getContents()) {
-                    String name = ChatColor.stripColor(i.getItemMeta().getDisplayName());
+
+                int index = 0;
+                for(ItemIdentifier ident : base.generateItemIdentifiers()) {
+                    if(!ident.getName().equalsIgnoreCase("Quest")) { continue; }
+
+                    CustomDataHolder cus = (CustomDataHolder)ident;
+                    JsonObject obj = cus.getCustomData();
+
+                    String name = obj.get("questName").getAsString();
                     if(name.equalsIgnoreCase(aq.getName())) {
-                        int index = inv.first(i);
-                        inv.setItem(index, aq.getItem());
-                        return;
+                        obj.addProperty(
+                            "description", 
+                            aq.getItemDescription() + "\n" + aq.getRewardStr() + "\n\n" + aq.getProgressBar()
+                        );
+                        obj.addProperty("step", aq.getCurrentStep());
+                        cus.setCustomData(obj);
+
+                        base.setItem(index, ident);
                     }
+
+                    index++;
                 }
             }
         }

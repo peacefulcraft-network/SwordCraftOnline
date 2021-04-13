@@ -1,5 +1,6 @@
 package net.peacefulcraft.sco.quests;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public abstract class QuestStep {
         public void setInvalid() { this.isInvalid = true; }
 
     /**List of rewards given on completion of step */
-    private List<Reward> rewards;
+    private List<Reward> rewards = new ArrayList<>();
         public List<Reward> getRewards() { return this.rewards; }
 
     /**Description displayed on item in quest book */

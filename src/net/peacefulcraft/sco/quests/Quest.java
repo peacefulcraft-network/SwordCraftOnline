@@ -1,9 +1,11 @@
 package net.peacefulcraft.sco.quests;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.attribute.Attribute;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.quests.QuestStep.QuestType;
@@ -89,6 +91,7 @@ public class Quest {
     public Quest(String file, String internalName, List<MythicConfig> steps, MythicConfig data) {
         this.file = file;
         this.internalName = internalName;
+        this.questSteps = new ArrayList<>();
         
         //Config is main requirement data, stepConfigs is individual steps.
         this.config = data;
@@ -137,13 +140,16 @@ public class Quest {
     private void validateStep(QuestStep qs) {
         if(qs.isInvalid()) { 
             this.isInvalid = true; 
+            SwordCraftOnline.logDebug("[Quest] Step marked invalid: " + qs.getName());
         }
         
         // If null pointer is thrown it means a step went bad.
         try {
             this.questSteps.add(qs);
+            qs.updateDescription();
         } catch(NullPointerException ex) {
             this.isInvalid = true;
+            SwordCraftOnline.logDebug("[Quest] Step marked invalid, null: " + qs.getName());
             return;
         }
 
@@ -151,6 +157,7 @@ public class Quest {
         if(this.questSteps.indexOf(qs) == 0) {
             if(qs.getGiverName().isEmpty() || qs.getGiverName() == null) {
                 this.isInvalid = true;
+                SwordCraftOnline.logDebug("[Quest] Step marked invalid, giver: " + qs.getName());
             } else {
                 qs.setUsesGiver(true);
             }
