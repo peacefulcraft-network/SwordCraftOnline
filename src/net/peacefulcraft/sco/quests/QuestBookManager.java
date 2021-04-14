@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.QuestBookInventory;
 import net.peacefulcraft.sco.items.CustomDataHolder;
@@ -57,6 +58,7 @@ public class QuestBookManager {
             for(ActiveQuest temp : quests.get(qt)) {
                 //Double register somehow. We don't care
                 if(temp.getName().equals(questName)) {
+                    Announcer.messagePlayer(s, "You have already accepted " + aq.getName() + ", check your Quest Book.", 0);
                     return;
                 }
             }

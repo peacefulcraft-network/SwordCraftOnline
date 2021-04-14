@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 
 public class Region {
     
     private String file;
+        public String getFile() { return file; }
 
     private String internalName;
+        public String getInternalName() { return internalName; }
 
     private MythicConfig config;
 
@@ -53,6 +55,9 @@ public class Region {
     private Boolean preventPlayerDeath;
         public Boolean doesPreventPlayerDeath() { return this.preventPlayerDeath; }
 
+    private Boolean sendsTitle;
+        public Boolean doesSendTitle() { return this.sendsTitle; }
+
     /**Parent region this region is contained in */
     private Region parent = null;
 
@@ -86,6 +91,7 @@ public class Region {
         this.preventPassiveSpawn = config.getBoolean("PreventPassiveSpawn", false);
         this.preventSwordSkills = config.getBoolean("PreventSwordSkills", false);
         this.preventPlayerDeath = config.getBoolean("PreventPlayerDeath", false);
+        this.sendsTitle = config.getBoolean("SendTitle", false);
 
         // Parent - child relationships
         this.silentParentTransfer = config.getBoolean("SilentParentTransfer", false);
@@ -142,8 +148,8 @@ public class Region {
     }
 
     /**Sends player title of name and desc */
-    public void sendTitle(Player p) {
-        Announcer.messageTitleBar(p, name, description);
+    public void sendTitle(SCOPlayer s) {
+        Announcer.messageTitleBar(s, name, description);
     }
 
     /**

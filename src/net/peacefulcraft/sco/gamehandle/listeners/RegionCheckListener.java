@@ -40,19 +40,25 @@ public class RegionCheckListener implements Listener {
 
         // Is players floor invalid
         if (s.getFloor() == 0) {
-            return;
+            //SwordCraftOnline.logDebug("[Region Check Listener] Player floor 0.");
+            //return;
         }
 
         // Are there regions on the floor. Possible redundant check
         ArrayList<Region> regions = RegionManager.getFloorRegionsMap().get(s.getFloor());
         if (regions == null || regions.isEmpty()) {
+            SwordCraftOnline.logDebug("[Region Check Listener] Region map empty on floor " + s.getFloor());
             return;
         }
 
         Location locTo = e.getTo();
+        boolean set = false;
+        boolean sameRegion = false;
+        Region playerRegion = s.getRegion();
         for (Region r : regions) {
             // If player has entered a new region
-            if (s.getRegion() != r && r.isInRegion(locTo)) {
+            if ((playerRegion == null || !playerRegion.getName().equalsIgnoreCase(r.getName())) && r.isInRegion(locTo)) {
+                if(playerRegion == null) { SwordCraftOnline.logDebug("[Region Check Listener] Player region null."); }
 
                 // Fetching child if it exists
                 Region child = r.getChild(locTo);
@@ -60,13 +66,19 @@ public class RegionCheckListener implements Listener {
                     s.setRegion(child, r.isSilentParentTransfer());
                 } else {
                     s.setRegion(r, false);
+                    SwordCraftOnline.logDebug("[Region Check Listener] Moving player to " + r.getName());
                 }
-                return;
+                set = true;
+            } else if(playerRegion != null && playerRegion.getName().equalsIgnoreCase(r.getName()) && r.isInRegion(locTo)) {
+                sameRegion = true;
             }
         }
 
         // Player is not in any region
-        s.setRegion(null, true);
+        if(!set && playerRegion != null && !sameRegion) {
+            s.setRegion(null, true);
+            SwordCraftOnline.logDebug("[Region Check Listener] Player region set to null.");
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

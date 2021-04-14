@@ -159,7 +159,7 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		public Region getRegion() { return this.r; }
 		public void setRegion(Region r, boolean silent) { 
 			this.r = r; 
-			if(!silent) { r.sendTitle(this.user); }
+			if(!silent) { r.sendTitle(this); }
 		}
 
 	/**Players level of particle display. Defaulted to full effect */
