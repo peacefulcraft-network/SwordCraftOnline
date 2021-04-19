@@ -75,7 +75,7 @@ public class EscortQuestStep extends QuestStep implements Runnable {
             return;
         }
 
-        if (this.getDescriptionRaw() == null) {
+        if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
             this.setDescription("Help " + npcName + " get to " + targetRegion + " safely!");
         } else {
             try {

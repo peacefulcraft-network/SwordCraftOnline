@@ -522,6 +522,8 @@ public class MythicMob implements Comparable<MythicMob> {
     private Boolean canGiveQuests;
         /**@return True if mob can give quests */
         public Boolean canGiveQuests() { return this.canGiveQuests; }
+    private Boolean givesStoryQuests;
+        public Boolean givesStoryQuests() { return this.givesStoryQuests; }
 
     /**
      * Determines if mob is herculean level 
@@ -683,7 +685,8 @@ public class MythicMob implements Comparable<MythicMob> {
          * Quest options
          * If mob is a quest giver they cannot move, are safe between reloads, and are invincible
          */
-        this.canGiveQuests = mc.getBoolean("Options.CanGiveQuests", false);
+        this.givesStoryQuests = mc.getBoolean("Options.GivesStoryQuests", false);
+        this.canGiveQuests = mc.getBoolean("Options.CanGiveQuests", this.givesStoryQuests);
         if(this.canGiveQuests) { 
             this.optionNoAI = true;
             this.optionPersistent = true;

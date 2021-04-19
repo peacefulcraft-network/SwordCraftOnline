@@ -154,6 +154,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		
 		// Handling post initialize tasks in managers
 		this.mobManager.postInitializeTask();
+		this.questManager.postInitializeTask();
 
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}

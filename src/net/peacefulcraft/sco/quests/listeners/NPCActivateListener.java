@@ -37,7 +37,11 @@ public class NPCActivateListener implements Listener {
         for(ArrayList<ActiveQuest> lis : s.getQuestBookManager().getQuests().values()) {
             for(ActiveQuest aq : lis) {
                 //If match and step was not activated by NPC
+                SwordCraftOnline.logDebug("[NPC Activate Listener] Active Quest: " + aq.getName() + ", Activated: " + aq.isStepActivated());
+
                 if(aq.getNPCName().equalsIgnoreCase(am.getDisplayName()) && !aq.isStepActivated()) {
+                    SwordCraftOnline.logDebug("[NPC Activate Listener] Active Quest: " + aq.getName() + ", setting activated.");
+
                     aq.setStepActivated();
                     return;
                 }

@@ -165,7 +165,7 @@ public class ActiveQuest {
         step.startupLifeCycle(this.s);
 
         //Updates step item description to match quest
-        step.updateDescription();
+        step.updateDescription(this.s, this);
     }
 
     /**Gives player associated with quest rewards */

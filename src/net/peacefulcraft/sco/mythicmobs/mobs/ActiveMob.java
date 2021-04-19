@@ -143,6 +143,9 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
     private Boolean canGiveQuests;
         public Boolean canGiveQuests() { return this.canGiveQuests; }
 
+    private Boolean givesStoryQuests;
+        public Boolean givesStoryQuests() { return this.givesStoryQuests; }
+
     /**Active mobs quest to give to players if it can */
     private Quest quest = null;
         public Quest getQuest() { return this.quest; }
@@ -188,6 +191,7 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
         this.swordSkillManager = new SwordSkillManager(this);
 
         this.canGiveQuests = type.canGiveQuests();
+        this.givesStoryQuests = type.givesStoryQuests();
       
         /**Setting combat modifiers to type instance */   
         queueChange(CombatModifier.CRITICAL_CHANCE, type.getCriticalChance(), -1);   

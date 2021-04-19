@@ -113,23 +113,36 @@ public class QuestManager implements Runnable {
         SwordCraftOnline.logInfo("[Quest Manager] Loading complete!");
     }
 
+    public void postInitializeTask() {
+        // Once quests are loaded we go through and assign
+        // story quests to their relative quest givers
+        // At this point all persistent mobs should be loaded
+        ArrayList<ActiveMob> lis = SwordCraftOnline.getPluginInstance().getMobManager().getStoryQuestGivers();
+        for(Quest q : getStoryQuests()) {
+            for(ActiveMob am : lis) {
+                for(int i = 0; i < q.getSize(); i++) {
+                    if(am.getDisplayName().equalsIgnoreCase(q.getQuestStep(i).getGiverName()) && am.getQuest() == null) {
+                        SwordCraftOnline.logDebug("[Quest Manager] Assigning: " + q.getQuestStep(i).getName() + ", to: " + am.getDisplayName());
+                        am.setQuest(q);
+                        this.currentQuestGivers.add(am);
+                    }
+                }
+            }
+        }
+        SwordCraftOnline.logDebug("[Quest Manager] Post initizalization complete!");
+    }
+
     @Override
     public void run() {
-        //SwordCraftOnline.logDebug("[Quest Manager] Starting assignment task.");
-
         ArrayList<ActiveMob> lis = SwordCraftOnline.getPluginInstance().getMobManager().getQuestGivers();
         ArrayList<Quest> nonStory = getNonStoryQuests();
-        
-        //SwordCraftOnline.logDebug("[Quest Manager] List of quest givers: " + lis);
-        //SwordCraftOnline.logDebug("[Quest Manager] Current quest givers: " + currentQuestGivers);
-        //SwordCraftOnline.logDebug("[Quest Manager] Non Story Quests: " + nonStory);
 
         // Checking all current quest givers for expired quests
         Iterator<ActiveMob> iter = currentQuestGivers.iterator();
         while(iter.hasNext()) {
             ActiveMob am = iter.next();
 
-            if(am.getQuest() != null && am.checkQuestAssignment()) {
+            if(am.getQuest() != null && !am.getQuest().isStoryQuest() && am.checkQuestAssignment()) {
                 am.setQuest(null);
                 availableQuests.remove(am.getQuest().getQuestName());
                 iter.remove();
@@ -204,9 +217,22 @@ public class QuestManager implements Runnable {
     private ArrayList<Quest> getNonStoryQuests() {
         ArrayList<Quest> ret = new ArrayList<>();
         for(Quest q : questMap.values()) {
-            SwordCraftOnline.logDebug("[Quest Manager] Checking: " + q.getQuestName());
             if(q.isStoryQuest() || q.isDeleted()) { continue; }
             ret.add(q);
+        }
+        return ret;
+    }
+
+    /**
+     * Fetches all story quests in map
+     * @return List of quests
+     */
+    private ArrayList<Quest> getStoryQuests() {
+        ArrayList<Quest> ret = new ArrayList<>();
+        for(Quest q : questMap.values()) {
+            if(q.isStoryQuest()) {
+                ret.add(q);
+            }
         }
         return ret;
     }
@@ -226,7 +252,7 @@ public class QuestManager implements Runnable {
     public ActiveQuest activateQuest(String quest, SCOPlayer s) {
         Quest q = questMap.get(quest);
         if(q == null) { return null; }
-        return new ActiveQuest(s, q);
+        return new ActiveQuest(s, q.copy());
     }
 
     /**@return Quest from map or null if does not exist */

@@ -45,7 +45,7 @@ public class TravelQuestStep extends QuestStep {
             return;
         }
 
-        if (this.getDescriptionRaw() == null) {
+        if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
             this.setDescription("Travel to " + target + ".");
         } else {
             try {

@@ -63,6 +63,15 @@ public class KillQuestStep extends QuestStep {
         }
         targetStr = targetStr.substring(0, targetStr.length() - 2);
 
+        String progressStr = "Progress: ";
+        for (MythicMob mm : targets.keySet()) {
+            String dis = mm.getDisplayName();
+            String num = String.valueOf(targets.get(mm));
+            String killed = String.valueOf(kills.get(mm));
+            progressStr += killed + "/" + num + " " + dis;
+        }
+        progressStr = progressStr.substring(0, progressStr.length() - 2);
+
         // If quest is not activated we use find npc description
         if (!this.isActivated()) {
             this.setDescription("Talk to " + npcName + " in\n " + this.getGiverRegion().getName() +" to start quest");
@@ -70,8 +79,8 @@ public class KillQuestStep extends QuestStep {
         }
 
         // If there is no description to format
-        if (this.getDescriptionRaw() == null) {
-            this.setDescription("You are tasked to kill " + targetStr + ".");
+        if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
+            this.setDescription("You are tasked to kill " + targetStr + ".\n" + progressStr);
         } else {
             try {
                 this.setDescription(String.format(this.getDescriptionRaw(), targetStr));
@@ -109,7 +118,7 @@ public class KillQuestStep extends QuestStep {
         }
 
         // Did mob die
-        if (am.getHealth() > 0) {
+        if (am.getHealth() > 0 || !am.isDead()) {
             return false;
         }
 

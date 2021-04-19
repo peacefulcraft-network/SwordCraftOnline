@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.utilities.Glow;
 
 /**
@@ -106,6 +107,9 @@ public class QuestItem implements ItemIdentifier, CustomDataHolder, EphemeralAtt
 
         this.questObj.addProperty("questName", display);
         this.questObj.addProperty("description", sLore);
+
+        // Setting dynamic display name from json
+        this.displayName = display;
     }
 
     @Override

@@ -109,7 +109,7 @@ public class DeliverQuestStep extends QuestStep {
             return;
         }
 
-        if (this.getDescriptionRaw() == null) {
+        if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
             this.setDescription(
                     "Deliver these " + itemNames + " to " + npcName + " in " + deliverRegionName + ".");
         } else {

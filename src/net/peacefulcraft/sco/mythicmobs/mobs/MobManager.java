@@ -510,12 +510,27 @@ public class MobManager implements Runnable {
     }
 
     /**
+     * Fetches list of all quest givers, excluding story line quest givers
      * @return List of all registered mobs that can give quests
      */
     public ArrayList<ActiveMob> getQuestGivers() {
         ArrayList<ActiveMob> ret = new ArrayList<>();
         for(ActiveMob am : mobRegistry.values()) {
-            if(am.canGiveQuests()) {
+            if(am.canGiveQuests() && !am.givesStoryQuests()) {
+                ret.add(am);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Fetches list of all story quest givers
+     * @return List of active mobs
+     */
+    public ArrayList<ActiveMob> getStoryQuestGivers() {
+        ArrayList<ActiveMob> ret = new ArrayList<>();
+        for(ActiveMob am : mobRegistry.values()) {
+            if(am.givesStoryQuests()) {
                 ret.add(am);
             }
         }

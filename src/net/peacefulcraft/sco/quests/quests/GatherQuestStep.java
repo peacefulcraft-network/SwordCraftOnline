@@ -100,7 +100,7 @@ public class GatherQuestStep extends QuestStep {
             return;
         }
 
-        if (this.getDescriptionRaw() == null) {
+        if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
             this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + " in " + regionName + ". ");
         } else {
             try {

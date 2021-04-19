@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
+import net.peacefulcraft.sco.items.CustomDataHolder;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
@@ -130,18 +135,37 @@ public abstract class QuestStep {
         }
     }
 
-    /**Protected call to reset description */
     public void updateDescription() {
-        //TODO: Update actual item dsecription associated with quest
-        this._setDescription();
+        updateDescription(null, null);
     }
 
-    /**
-     * Sends response message to player
-     * @param resName Name of response
-     */
-    public void sendResponse(String resName, SCOPlayer s) {
-        messageHandler.sendMessage(resName, s);
+    /**Protected call to reset description */
+    public void updateDescription(SCOPlayer s, ActiveQuest aq) {
+        this._setDescription();
+
+        if(s == null) { return; }
+
+        // TODO: Replace player inventory for quest book
+        int index = 0;
+        for(ItemIdentifier ident : s.getPlayerInventory().generateItemIdentifiers()) {
+            if(ident.getName().equalsIgnoreCase("Quest") && ident.getDisplayName().equalsIgnoreCase(aq.getName())) {
+                break;
+            }
+            index++;
+        }
+
+        // Giving quest item to player
+        JsonObject obj = new JsonObject();
+        obj.addProperty("questName", aq.getName());
+        obj.addProperty(
+            "description", 
+            aq.getItemDescription() + "\n" + aq.getRewardStr() + "\n\n" + aq.getProgressBar()
+        );
+        obj.addProperty("step", 0);
+
+        ItemIdentifier ident = ItemIdentifier.generateIdentifier("Quest", ItemTier.COMMON, 1);
+        ((CustomDataHolder)ident).setCustomData(obj);
+        s.getPlayerInventory().setItem(index, ident);
     }
 
     /**Logs info regarding Step loading in console and sets step invalid*/
@@ -172,6 +196,7 @@ public abstract class QuestStep {
      * @param s Player we send message to
      */
     protected void startupMessage(SCOPlayer s) {
+        if(messageHandler == null) { return; }
         messageHandler.sendStartup(s);
     }
 
@@ -180,7 +205,17 @@ public abstract class QuestStep {
      * @param s Player we send message to
      */
     protected void completeMessage(SCOPlayer s) {
+        if(messageHandler == null) { return; }
         messageHandler.sendComplete(s);
+    }
+
+    /**
+     * Sends response message to player
+     * @param resName Name of response
+     */
+    public void sendResponse(String resName, SCOPlayer s) {
+        if(messageHandler == null) { return; }
+        messageHandler.sendMessage(resName, s);
     }
 
     /**Type of quest step. Determines how loading is handled */

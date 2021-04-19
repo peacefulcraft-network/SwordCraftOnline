@@ -146,7 +146,7 @@ public class Quest {
         // If null pointer is thrown it means a step went bad.
         try {
             this.questSteps.add(qs);
-            qs.updateDescription();
+            qs.updateDescription(null, null);
         } catch(NullPointerException ex) {
             this.isInvalid = true;
             SwordCraftOnline.logDebug("[Quest] Step marked invalid, null: " + qs.getName());
@@ -181,6 +181,15 @@ public class Quest {
         //TODO: Check sword skill is in player inventory
         //TODO: Check if player has completed a quest
         return true;
+    }
+
+    /**
+     * Returns deep copy of quest
+     * @return
+     */
+    public Quest copy() {
+        Quest copy = new Quest(file, internalName, this.stepConfigs, this.config);
+        return copy;
     }
 
 }
