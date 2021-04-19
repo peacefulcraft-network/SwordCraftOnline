@@ -234,6 +234,15 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 			this.swordSkillInventory = new SwordSkillInventory(this, inventoryId, this.playerRegistryId);
 		}
 
+		// Load the QuestBookInventory
+		if (inventoryTypeIdMap.containsKey(InventoryType.QUEST_BOOK)) {
+			this.questBookInventory = new QuestBookInventory(this, inventoryTypeIdMap.get(InventoryType.QUEST_BOOK), this.playerRegistryId);
+		} else {
+			// Create new inventory if one does not exist
+			Long inventoryID = new InventorySaveTask(-1, this.playerRegistryId, InventoryType.QUEST_BOOK, EmptyIdentifierGenerator.generateEmptyIdentifierList(9)).saveInventory().get();
+			this.questBookInventory = new QuestBookInventory(this, inventoryID, this.playerRegistryId);
+		}
+
 		CompletableFuture.allOf(
 			this.playerInventory.inventoryLoadPromise(),
 			this.swordSkillInventory.inventoryReadyPromise()

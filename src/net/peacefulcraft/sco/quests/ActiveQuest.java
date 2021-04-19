@@ -23,6 +23,7 @@ public class ActiveQuest {
 
     private int currentStep;
         public int getCurrentStep() { return this.currentStep; }
+        public void setCurrentStep(int step) { this.currentStep = step; }
 
     private boolean completed;
         public boolean isCompleted() { return this.completed; }

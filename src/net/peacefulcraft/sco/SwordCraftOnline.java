@@ -30,6 +30,7 @@ import net.peacefulcraft.sco.inventories.crafting.CraftingManager;
 import net.peacefulcraft.sco.inventories.listeners.CustomInventoryListeners;
 import net.peacefulcraft.sco.inventories.listeners.InventoryListeners;
 import net.peacefulcraft.sco.inventories.listeners.MerchantListeners;
+import net.peacefulcraft.sco.inventories.listeners.QuestBookListener;
 import net.peacefulcraft.sco.inventories.listeners.TomeListener;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitServer;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.ServerInterface;
@@ -212,6 +213,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
 		getServer().getPluginManager().registerEvents(new CustomInventoryListeners(), this);
 		getServer().getPluginManager().registerEvents(new TomeListener(), this);
+		getServer().getPluginManager().registerEvents(new QuestBookListener(), this);
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);

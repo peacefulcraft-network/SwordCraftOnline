@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.JsonObject;
@@ -41,13 +42,26 @@ public class QuestBookManager {
         this.s = s;
     }
 
-    /**Registers quest to player */
+    /**
+     * Registers quest with base step count
+     * @param questName
+     */
     public void registerQuest(String questName) {
+        registerQuest(questName, 0, -1);
+    }
+
+    /**
+     * Registers quest to player 
+     */
+    public void registerQuest(String questName, int step, int index) {
         ActiveQuest aq = SwordCraftOnline.getPluginInstance().getQuestManager().activateQuest(questName, this.s);
         if(aq == null) {
             SwordCraftOnline.logInfo("Failed to register quest + " + questName + " to player " + s.getName());
             return;
         }
+
+        // Set loaded step value
+        aq.setCurrentStep(step);
 
         //Fetching quests current step type
         //Storing quest by quest step type
@@ -73,11 +87,15 @@ public class QuestBookManager {
             "description", 
             aq.getItemDescription() + "\n" + aq.getRewardStr() + "\n\n" + aq.getProgressBar()
         );
-        obj.addProperty("step", 0);
+        obj.addProperty("step", step);
 
         ItemIdentifier ident = ItemIdentifier.generateIdentifier("Quest", ItemTier.COMMON, 1);
         ((CustomDataHolder)ident).setCustomData(obj);
-        s.getPlayerInventory().addItem(ident);
+        if(index != -1) {
+            s.getQuestBookInventory().setItem(index, ident);
+        } else {
+            s.getQuestBookInventory().addItem(ident);
+        }
     }
 
     /**Unregisters quest to player */
@@ -151,47 +169,22 @@ public class QuestBookManager {
         }
     }
 
-    /**
-     * Creates map of player data relative to their quests and completed quests
-     */
-    public void save() {
-        //Map of String,? to store by quest name
-        //Object will be another map of containing necessary information of step
-        //CurrentStep, QuestStep(Step data), etc.
-        
-        Map<String,Object> saveMap = new HashMap<>();
-
-        //Iterating over all registered active quests
-        Map<String, Object> actives = new HashMap<>();
-        for(QuestType type : quests.keySet()) {
-            for(ActiveQuest aq : quests.get(type)) {
-                String name = aq.getName();
-                actives.put(name, aq.getSaveData());
-            }
-        }
-
-        //Saving active quests to map
-        saveMap.put("ActiveQuests", actives);
-        
-        //Saving completed quests to map
-        saveMap.put("CompletedQuests", this.completedQuests);
-    }
-
-    /**
-     * Loads player data from map object
-     */
-    public void load() {
-        //Load map object created from save() somehow
-        //Iterate over ActiveQuests key. Read in CurrentStep, StepData key
-        //Read in CompletedQuests key
-        //TODO: This^
-    }
-
     public boolean isQuestRegistered(String name) {
         Quest q = SwordCraftOnline.getPluginInstance().getQuestManager().getQuest(name);
         if(q == null) { return false; }
 
         return isQuestRegistered(q);
+    }
+
+    public boolean isQuestRegistered(Quest q) {
+        for(QuestType type : quests.keySet()) {
+            for(ActiveQuest aq : quests.get(type)) {
+                if(aq.getName().equals(q.getQuestName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -211,15 +204,32 @@ public class QuestBookManager {
         return null;
     }
 
-    public boolean isQuestRegistered(Quest q) {
-        for(QuestType type : quests.keySet()) {
-            for(ActiveQuest aq : quests.get(type)) {
-                if(aq.getName().equals(q.getQuestName())) {
-                    return true;
-                }
+    /**
+     * Force clear the registered quests
+     */
+    public void unregisterAllQuests() {
+        this.quests = new HashMap<QuestType, ArrayList<ActiveQuest>>();
+    }
+ 
+    public void syncQuestBookInventory(QuestBookInventory inv) {
+        unregisterAllQuests();
+        
+        List<ItemIdentifier> identLis = inv.generateItemIdentifiers();
+        for(int i = 0; i < identLis.size(); i++) {
+            ItemIdentifier identifier = identLis.get(i);
+            if (identifier instanceof CustomDataHolder) {
+                SwordCraftOnline.logDebug("[Quest Book Manager] Sync Task: " + identifier.getDisplayName());
+
+                CustomDataHolder cus = (CustomDataHolder)identifier;
+
+                this.registerQuest(
+                    cus.getCustomData().get("questName").getAsString(), 
+                    cus.getCustomData().get("step").getAsInt(),
+                    i
+                    );
             }
         }
-        return false;
+
     }
 
     /**Helper function: Safely removes quest from active to completed */

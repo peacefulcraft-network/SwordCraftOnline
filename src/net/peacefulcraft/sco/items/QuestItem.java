@@ -12,8 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.items.utilities.Glow;
 
 /**
@@ -104,9 +102,17 @@ public class QuestItem implements ItemIdentifier, CustomDataHolder, EphemeralAtt
         String display = ChatColor.stripColor(meta.getDisplayName());
         List<String> lore = meta.getLore();
         String sLore = String.join("\n", lore);
+        int step = 0;
+
+        for(String s : lore) {
+            if(s.contains("[") && s.contains("]")) {
+                step = (int)s.chars().filter(ch -> ch == (char)0x25A0).count();
+            }
+        }
 
         this.questObj.addProperty("questName", display);
         this.questObj.addProperty("description", sLore);
+        this.questObj.addProperty("step", step);
 
         // Setting dynamic display name from json
         this.displayName = display;
