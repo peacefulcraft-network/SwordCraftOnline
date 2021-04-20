@@ -38,34 +38,38 @@ public class HealthBar {
         //barNumber represents number of "x" to be filled in.
         //this.density - barNumber is number of "x" to be different color.
         int barNumber = (int)(percent * this.density);
-        if(SwordCraftOnline.getSCOConfig().getHealthBarConfig().equals(HealthBarType.BAR)) {
-            if(this.am != null && am.duringNightwave()) {
-                String b = ChatColor.DARK_GRAY + " [";
-                b += ChatColor.DARK_RED + new String(new char[barNumber]).replace("\0", "x");
-                b += ChatColor.RED + new String(new char[this.density - barNumber]).replace("\0", "x");
-                b += ChatColor.DARK_GRAY + "]";
-                this.bar = b;
+        try {
+            if(SwordCraftOnline.getSCOConfig().getHealthBarConfig().equals(HealthBarType.BAR)) {
+                if(this.am != null && am.duringNightwave()) {
+                    String b = ChatColor.DARK_GRAY + " [";
+                    b += ChatColor.DARK_RED + new String(new char[barNumber]).replace("\0", "x");
+                    b += ChatColor.RED + new String(new char[this.density - barNumber]).replace("\0", "x");
+                    b += ChatColor.DARK_GRAY + "]";
+                    this.bar = b;
+                } else {
+                    String b = ChatColor.GOLD + " [";
+                    b += ChatColor.BLUE + new String(new char[barNumber]).replace("\0", "x");
+                    b += ChatColor.AQUA + new String(new char[this.density - barNumber]).replace("\0", "x");
+                    b += ChatColor.GOLD + "]";
+                    this.bar = b;
+                }
+            } else if(SwordCraftOnline.getSCOConfig().getHealthBarConfig().equals(HealthBarType.NUMBER)) {
+                if(this.am != null && am.duringNightwave()) {
+                    String b = ChatColor.DARK_GRAY + " [";
+                    b += ChatColor.DARK_RED + String.valueOf(Math.round(health));
+                    b += ChatColor.DARK_GRAY + "]";
+                    this.bar = b;
+                } else {
+                    String b = ChatColor.GOLD + " [";
+                    b += ChatColor.BLUE + String.valueOf(Math.round(health));
+                    b += ChatColor.GOLD + "]";
+                    this.bar = b;
+                }
             } else {
-                String b = ChatColor.GOLD + " [";
-                b += ChatColor.BLUE + new String(new char[barNumber]).replace("\0", "x");
-                b += ChatColor.AQUA + new String(new char[this.density - barNumber]).replace("\0", "x");
-                b += ChatColor.GOLD + "]";
-                this.bar = b;
+                this.bar = "";
             }
-        } else if(SwordCraftOnline.getSCOConfig().getHealthBarConfig().equals(HealthBarType.NUMBER)) {
-            if(this.am != null && am.duringNightwave()) {
-                String b = ChatColor.DARK_GRAY + " [";
-                b += ChatColor.DARK_RED + String.valueOf(Math.round(health));
-                b += ChatColor.DARK_GRAY + "]";
-                this.bar = b;
-            } else {
-                String b = ChatColor.GOLD + " [";
-                b += ChatColor.BLUE + String.valueOf(Math.round(health));
-                b += ChatColor.GOLD + "]";
-                this.bar = b;
-            }
-        } else {
-            this.bar = "";
+        } catch(NegativeArraySizeException ex) {
+            
         }
     }
 
