@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
 import net.peacefulcraft.sco.items.utilities.Glow;
 
 /**
@@ -103,16 +104,51 @@ public class QuestItem implements ItemIdentifier, CustomDataHolder, EphemeralAtt
         List<String> lore = meta.getLore();
         String sLore = String.join("\n", lore);
         int step = 0;
+        boolean activated = false;
 
+        // Processing current step
         for(String s : lore) {
             if(s.contains("[") && s.contains("]")) {
                 step = (int)s.chars().filter(ch -> ch == (char)0x25A0).count();
             }
         }
 
+        // Processing if step is activated
+        // 
+        // Changed to "not contain" talk to phrases
+        if(!(lore.get(1).contains("Talk to") && lore.get(2).contains("to start quest"))) {
+            activated = true;
+        }
+
+        // Processing step relevant data
+        // TODO: Finalize this statment for all quest steps
+        // Currently only process kill steps
+        JsonObject stepData = new JsonObject();
+        for(int i = 0; i < lore.size(); i++) {
+            String s = lore.get(i);
+            if(s.equals("Kill Progress:")) {
+                stepData.addProperty("stepType", "kill");
+
+                // Parsing strings
+                JsonObject killObj = new JsonObject();
+                String ss = lore.get(i + 1);
+                while(!ss.isEmpty() || !ss.contains("Rewards:")) {
+                    int killed = Integer.valueOf(StringUtils.substringBetween(ss, " ", "/"));
+                    //int goal = Integer.valueOf(StringUtils.substringBetween(ss, "/", " "));
+                    String target = StringUtils.substringBetween(ss, " ", "(s)");
+
+                    killObj.addProperty(target, killed);
+                }
+
+                stepData.add("killData", killObj);
+            }
+        }
+
         this.questObj.addProperty("questName", display);
         this.questObj.addProperty("description", sLore);
         this.questObj.addProperty("step", step);
+        this.questObj.add("stepData", stepData);
+        this.questObj.addProperty("activated", activated);
 
         // Setting dynamic display name from json
         this.displayName = display;

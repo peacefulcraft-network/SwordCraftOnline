@@ -404,7 +404,7 @@ public class ActiveMob extends ModifierUser implements SwordSkillCaster {
     public void setDespawned() {
         if(!this.dead) {
             this.dead = true;
-            //TODO: Handling death events and skills.
+            this.getLivingEntity().remove();
         }
         unregister();
     }

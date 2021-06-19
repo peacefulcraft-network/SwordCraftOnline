@@ -87,6 +87,7 @@ public class MobManager implements Runnable {
      * Spawns any persistent mobs
      */
     public void postInitializeTask() {
+        //SwordCraftOnline.logDebug("[Mob Manager] Preparing to spawn: " + postInitialSpawnLis);
         for(Pair<String, Location> pair : postInitialSpawnLis) {
             ActiveMob am = spawnMob(pair.getFirst(), pair.getSecond());
             if(am == null) {
@@ -94,6 +95,7 @@ public class MobManager implements Runnable {
                 continue;
             }
         }
+        SwordCraftOnline.logDebug("[Mob Manager] Post initialization complete!");
     }
 
     /**Loads mobs from files*/
@@ -209,8 +211,8 @@ public class MobManager implements Runnable {
             return;
         } 
 
-        removeAllMobs(true);
-        SwordCraftOnline.logInfo("[Mob Manager] PersistentMobConfig.yml saved!");
+        int removed = removeAllMobs(true);
+        SwordCraftOnline.logInfo("[Mob Manager] PersistentMobConfig.yml saved! Removed: " + removed + " mobs.");
     }
   
     /**Clears lists but keeps persistent mobs */
@@ -481,14 +483,23 @@ public class MobManager implements Runnable {
      */
     public int removeAllMobs(boolean ignorePersistent) {
         int amount = 0;
+        ArrayList<ActiveMob> copy = new ArrayList<>();
+
         Iterator<ActiveMob> iterator = this.mobRegistry.values().iterator();
         while(iterator.hasNext()) {
             ActiveMob am = iterator.next();
             if(am.getType().isPersistent() && !ignorePersistent) { continue; }
             //am.setDespawned();
-            am.getEntity().remove();
+            //am.getEntity().remove();
+
+            copy.add(am);
             iterator.remove();
             amount++;
+        }
+
+        for(ActiveMob am : copy) {
+            am.setDespawned();
+            am.getEntity().remove();
         }
 
         return amount;

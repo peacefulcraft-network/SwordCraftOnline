@@ -47,21 +47,29 @@ public class QuestBookManager {
      * @param questName
      */
     public void registerQuest(String questName) {
-        registerQuest(questName, 0, -1);
+        registerQuest(questName, null, -1);
     }
 
     /**
      * Registers quest to player 
      */
-    public void registerQuest(String questName, int step, int index) {
+    public void registerQuest(String questName, JsonObject data, int index) {
         ActiveQuest aq = SwordCraftOnline.getPluginInstance().getQuestManager().activateQuest(questName, this.s);
         if(aq == null) {
             SwordCraftOnline.logInfo("Failed to register quest + " + questName + " to player " + s.getName());
             return;
         }
 
-        // Set loaded step value
-        aq.setCurrentStep(step);
+        if(data != null) {
+            aq.setCurrentStep(data.get("step").getAsInt());
+            if(data.get("activated").getAsBoolean()) {
+                aq.setStepActivated();
+            }
+
+            if(data.get("stepData").getAsJsonObject().size() != 0) {
+                aq.passStepData(data);
+            }
+        }
 
         //Fetching quests current step type
         //Storing quest by quest step type
@@ -81,16 +89,12 @@ public class QuestBookManager {
         quests.get(qt).add(aq);
 
         // Giving quest item to player
-        JsonObject obj = new JsonObject();
-        obj.addProperty("questName", aq.getName());
-        obj.addProperty(
-            "description", 
-            aq.getItemDescription() + "\n" + aq.getRewardStr() + "\n\n" + aq.getProgressBar()
-        );
-        obj.addProperty("step", step);
+        ItemIdentifier ident = generateQuestItem(aq);
+        CustomDataHolder cus = (CustomDataHolder)ident;
+        if(data != null) {
+            cus.setCustomData(data);
+        }
 
-        ItemIdentifier ident = ItemIdentifier.generateIdentifier("Quest", ItemTier.COMMON, 1);
-        ((CustomDataHolder)ident).setCustomData(obj);
         if(index != -1) {
             s.getQuestBookInventory().setItem(index, ident);
         } else {
@@ -135,6 +139,7 @@ public class QuestBookManager {
         if(quests.get(type) == null) { return; }
 
         for(ActiveQuest aq : quests.get(type)) {
+            SwordCraftOnline.logDebug("[Quest Book Manager] Life Cycle: " + aq.getName());
             aq.execLifeCycle(type, ev);
             
             //Is active quest completed
@@ -142,29 +147,20 @@ public class QuestBookManager {
                 completeQuest(aq);
             } else {
                 //If quest was not completed we want to update item in their inventory
+                // This logic is handled in the quest steps
+                int xx = 0;
+                /*
                 QuestBookInventory base = s.getQuestBookInventory();
 
-                int index = 0;
-                for(ItemIdentifier ident : base.generateItemIdentifiers()) {
+                List<ItemIdentifier> identLis = base.generateItemIdentifiers();
+                for(int i = 0; i < identLis.size(); i++) {
+                    ItemIdentifier ident = identLis.get(i);
                     if(!ident.getName().equalsIgnoreCase("Quest")) { continue; }
+                    if(!ident.getDisplayName().equalsIgnoreCase(aq.getName())) { continue; }
 
-                    CustomDataHolder cus = (CustomDataHolder)ident;
-                    JsonObject obj = cus.getCustomData();
-
-                    String name = obj.get("questName").getAsString();
-                    if(name.equalsIgnoreCase(aq.getName())) {
-                        obj.addProperty(
-                            "description", 
-                            aq.getItemDescription() + "\n" + aq.getRewardStr() + "\n\n" + aq.getProgressBar()
-                        );
-                        obj.addProperty("step", aq.getCurrentStep());
-                        cus.setCustomData(obj);
-
-                        base.setItem(index, ident);
-                    }
-
-                    index++;
-                }
+                    ItemIdentifier identt = generateQuestItem(aq);
+                    base.setItem(i, identt);
+                }*/
             }
         }
     }
@@ -218,18 +214,41 @@ public class QuestBookManager {
         for(int i = 0; i < identLis.size(); i++) {
             ItemIdentifier identifier = identLis.get(i);
             if (identifier instanceof CustomDataHolder) {
-                SwordCraftOnline.logDebug("[Quest Book Manager] Sync Task: " + identifier.getDisplayName());
-
                 CustomDataHolder cus = (CustomDataHolder)identifier;
+
+                SwordCraftOnline.logDebug("[Quest Book Manager] Sync Task: " + identifier.getDisplayName() + ".Data: " + cus.getCustomData().toString());
 
                 this.registerQuest(
                     cus.getCustomData().get("questName").getAsString(), 
-                    cus.getCustomData().get("step").getAsInt(),
+                    cus.getCustomData(),
                     i
                     );
             }
         }
 
+    }
+
+    /**
+     * Static method.
+     * Formats and creates a quest item for the inventory
+     * @param aq ActiveQuest we are formatting item for
+     * @return ItemIdentifier quest item
+     */
+    public static ItemIdentifier generateQuestItem(ActiveQuest aq) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("questName", aq.getName());
+        
+        String desc = aq.isCompleted() 
+            ? "Completed.\n" + aq.getProgressBar()
+            : aq.getItemDescription() + "\n" + aq.getRewardStr() + "\n\n" + aq.getProgressBar();  
+        obj.addProperty("description", desc);
+        obj.addProperty("step", aq.getCurrentStep());
+        obj.addProperty("activated", aq.isStepActivated());
+        obj.addProperty("completed", aq.isCompleted());
+
+        ItemIdentifier ident = ItemIdentifier.generateIdentifier("Quest", ItemTier.COMMON, 1);
+        ((CustomDataHolder)ident).setCustomData(obj);
+        return ident;
     }
 
     /**Helper function: Safely removes quest from active to completed */

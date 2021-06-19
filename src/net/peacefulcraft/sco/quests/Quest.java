@@ -119,15 +119,15 @@ public class Quest {
                 QuestType type = QuestType.valueOf(sConfig.getString("Type").toUpperCase());
                 switch(type) {
                     case KILL:
-                        validateStep(new KillQuestStep(sConfig));
+                        validateStep(new KillQuestStep(sConfig, this.questName));
                     break; case ESCORT:
-                        validateStep(new EscortQuestStep(sConfig));
+                        validateStep(new EscortQuestStep(sConfig, this.questName));
                     break; case DELIVER:
-                        validateStep(new DeliverQuestStep(sConfig));
+                        validateStep(new DeliverQuestStep(sConfig, this.questName));
                     break; case GATHER:
-                        validateStep(new GatherQuestStep(sConfig));
+                        validateStep(new GatherQuestStep(sConfig, this.questName));
                     break; case TRAVEL:
-                        validateStep(new TravelQuestStep(sConfig));
+                        validateStep(new TravelQuestStep(sConfig, this.questName));
                 }
 
             } catch(IllegalArgumentException ex) {

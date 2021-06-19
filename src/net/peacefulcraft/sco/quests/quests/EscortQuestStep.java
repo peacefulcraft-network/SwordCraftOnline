@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.quests.quests;
 
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Player;
@@ -33,8 +35,8 @@ public class EscortQuestStep extends QuestStep implements Runnable {
 
     private SCOPlayer s;
 
-    public EscortQuestStep(MythicConfig mc) {
-        super(mc);
+    public EscortQuestStep(MythicConfig mc, String questname) {
+        super(mc, questname);
 
         String npcName = mc.getString("npc", "");
         npcName = mc.getString("NPC", npcName);
@@ -71,17 +73,17 @@ public class EscortQuestStep extends QuestStep implements Runnable {
 
         // If quest is not activated we use find npc description
         if (!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in " + startRegion + " to start quest");
+            this.setDescription(this.name + "\nTalk to " + npcName + " in " + startRegion + " to start quest");
             return;
         }
 
         if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
-            this.setDescription("Help " + npcName + " get to " + targetRegion + " safely!");
+            this.setDescription(this.name + "\nHelp " + npcName + " get to " + targetRegion + " safely!");
         } else {
             try {
                 this.setDescription(String.format(this.getDescriptionRaw(), npcName, targetRegion));
             } catch (Exception ex) {
-                this.setDescription("Help " + npcName + " get to " + targetRegion + " safely!");
+                this.setDescription(this.name + "\nHelp " + npcName + " get to " + targetRegion + " safely!");
             }
         }
     }
@@ -148,6 +150,12 @@ public class EscortQuestStep extends QuestStep implements Runnable {
         //No data necessary for player progression
         //Escort quests are done at quest completion or death
         return null;
+    }
+
+    @Override
+    public void processStepData(JsonObject data) {
+        // TODO Auto-generated method stub
+        
     }
     
 }

@@ -3,6 +3,7 @@ package net.peacefulcraft.sco.swordskills.listeners;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -13,7 +14,7 @@ import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
 
 public class AbilityEntityDamageEntityListener implements Listener {
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityDamageEntity(EntityDamageByEntityEvent ev) {        
         SwordSkillCaster attacker = null;
         SwordSkillCaster victim = null;

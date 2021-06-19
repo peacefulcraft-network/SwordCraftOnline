@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -42,8 +44,8 @@ public class DeliverQuestStep extends QuestStep {
     /** Location NPC can be found */
     private Region npcRegion;
 
-    public DeliverQuestStep(MythicConfig mc) {
-        super(mc);
+    public DeliverQuestStep(MythicConfig mc, String questName) {
+        super(mc, questName);
 
         // Item name validation
         List<String> items = mc.getStringList("Items");
@@ -105,19 +107,20 @@ public class DeliverQuestStep extends QuestStep {
 
         // If quest is not activated we use find npc description
         if (!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in " + giverRegionName + " to start quest");
+            this.setDescription(this.name + "\nTalk to " + npcName + " in " + giverRegionName + " to start quest");
             return;
         }
 
         if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
             this.setDescription(
-                    "Deliver these " + itemNames + " to " + npcName + " in " + deliverRegionName + ".");
+                this.name + "\nDeliver these " + itemNames + " to " + npcName + " in " + deliverRegionName + ".");
         } else {
             try {
                 this.setDescription(
                         String.format(this.getDescriptionRaw(), itemNames, npcName, deliverRegionName));
             } catch (Exception ex) {
-                this.setDescription("Deliver these " + itemNames + " to " + npcName + " in "
+                this.setDescription(
+                    this.name + "\nDeliver these " + itemNames + " to " + npcName + " in "
                         + deliverRegionName + ".");
             }
         }
@@ -188,5 +191,11 @@ public class DeliverQuestStep extends QuestStep {
         //No data necessary for player progression
         //Item checks are done at quest completion
         return null;
+    }
+
+    @Override
+    public void processStepData(JsonObject data) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -3,10 +3,13 @@ package net.peacefulcraft.sco.quests;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.drops.Reward;
@@ -47,11 +50,6 @@ public class ActiveQuest {
         //Updates quest position in questMap
         s.getQuestBookManager().updateQuest(quest.getQuestName());
 
-        //If the quest doesn't use NPC we auto activate
-        if(!getQuestStep().usesGiver()) {
-            setStepActivated();
-        }
-
         //If quest is completed
         if(this.currentStep == quest.getSize()) {
             sendCompletedTitle();
@@ -64,6 +62,11 @@ public class ActiveQuest {
             s.getQuestBookManager().addCompletedQuest(quest.getQuestName());
         } else {
             sendProgressedTitle();
+
+            //If the quest doesn't use NPC we auto activate
+            if(!getQuestStep().usesGiver()) {
+                setStepActivated();
+            }
         }
     }
 
@@ -80,7 +83,7 @@ public class ActiveQuest {
             //If yes, we set to deactivated and update the item description
             if(step.toReset()) {
                 step.setActivated(false);
-                step.updateDescription();
+                step.updateDescription(s, this);
             }
 
             //Checking if quest step is activated by NPC
@@ -95,6 +98,37 @@ public class ActiveQuest {
             //Progressing step
             this.progressQuest();
         }
+    }
+
+    /**Toggles startup lifecycle */
+    public void setStepActivated() {
+        QuestStep step = getQuestStep();
+
+        //Toggling activation
+        step.setActivated(true);
+
+        //Startup lifecycle of step
+        step.startupLifeCycle(this.s);
+
+        //Updates step item description to match quest
+        step.updateDescription(this.s, this);
+    }
+
+    /**
+     * Passes json object to current quest step for
+     * progress checking
+     * @param data
+     */
+    public void passStepData(JsonObject data) {
+        getQuestStep().processStepData(data);
+    }
+    
+    /**
+     * Protected call to update item description
+     * Items physical item in quest book inventory
+     */
+    public void updateItemDescription() {
+        getQuestStep().updateDescription(this.s, this);
     }
 
     /**@return Map of relative save data */
@@ -155,20 +189,6 @@ public class ActiveQuest {
         step.sendResponse(resName, s);
     }
 
-    /**Toggles startup lifecycle */
-    public void setStepActivated() {
-        QuestStep step = getQuestStep();
-
-        //Toggling activation
-        step.setActivated(true);
-
-        //Startup lifecycle of step
-        step.startupLifeCycle(this.s);
-
-        //Updates step item description to match quest
-        step.updateDescription(this.s, this);
-    }
-
     /**Gives player associated with quest rewards */
     public void giveRewards() {
         for(Reward r : getQuestStep().getRewards()) {
@@ -194,10 +214,15 @@ public class ActiveQuest {
      * @return Square bar
      */
     public String getProgressBar() {
-        String ret = "[" + new String(new char[this.currentStep]).replace('\0', (char)0x25A0);
-        ret += new String(new char[this.quest.getSize()-this.currentStep]).replace('\0', (char)0x25A1);
-        ret += "]";
-        return ret;
+        if (this.isCompleted()) {
+            SwordCraftOnline.logDebug("[Active Quest] Completed progress bar.");
+            return "[" + new String(new char[this.quest.getSize()]).replace('\0', (char)0x25A0) + "]";
+        } else {
+            String ret = "[" + new String(new char[this.currentStep]).replace('\0', (char)0x25A0);
+            ret += new String(new char[this.quest.getSize()-this.currentStep]).replace('\0', (char)0x25A1);
+            ret += "]";
+            return ret;
+        }
     }
 
     /**

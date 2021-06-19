@@ -33,6 +33,7 @@ public class NPCActivateListener implements Listener {
         ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().getMobRegistry().get(entity.getUniqueId());
         if(am == null) { return; }
 
+
         //Checking if NPC name is matched
         for(ArrayList<ActiveQuest> lis : s.getQuestBookManager().getQuests().values()) {
             for(ActiveQuest aq : lis) {

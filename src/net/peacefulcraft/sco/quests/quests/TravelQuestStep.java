@@ -2,6 +2,8 @@ package net.peacefulcraft.sco.quests.quests;
 
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -16,8 +18,8 @@ public class TravelQuestStep extends QuestStep {
 
     private Region targetRegion;
 
-    public TravelQuestStep(MythicConfig mc) {
-        super(mc);
+    public TravelQuestStep(MythicConfig mc, String questName) {
+        super(mc, questName);
 
         String regionStr = mc.getString("TargetRegion", "");
         if (regionStr == null || regionStr.isEmpty()) {
@@ -41,17 +43,17 @@ public class TravelQuestStep extends QuestStep {
 
         // If quest is not activated we use find npc description
         if (!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in " + startRegion + " to start quest.");
+            this.setDescription(this.name + "\nTalk to " + npcName + " in " + startRegion + " to start quest.");
             return;
         }
 
         if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
-            this.setDescription("Travel to " + target + ".");
+            this.setDescription(this.name + "\nTravel to " + target + ".");
         } else {
             try {
                 this.setDescription(String.format(this.getDescriptionRaw(), target));
             } catch (Exception ex) {
-                this.setDescription("Travel to " + target + ".");
+                this.setDescription(this.name + "\nTravel to " + target + ".");
             }
         }
     }
@@ -90,5 +92,11 @@ public class TravelQuestStep extends QuestStep {
         //No data necessary for player progression
         //Location checks are done in lifecycle
         return null;
+    }
+
+    @Override
+    public void processStepData(JsonObject data) {
+        // TODO Auto-generated method stub
+        
     }
 }

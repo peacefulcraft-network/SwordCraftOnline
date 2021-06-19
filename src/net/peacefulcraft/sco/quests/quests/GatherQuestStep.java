@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -30,8 +32,8 @@ public class GatherQuestStep extends QuestStep {
 
     private Region npcRegion;
 
-    public GatherQuestStep(MythicConfig mc) {
-        super(mc);
+    public GatherQuestStep(MythicConfig mc, String questName) {
+        super(mc, questName);
 
         List<String> itemLis = mc.getStringList("Items");
 
@@ -96,19 +98,19 @@ public class GatherQuestStep extends QuestStep {
 
         // If quest is not activated we use find npc description
         if (!this.isActivated()) {
-            this.setDescription("Talk to " + npcName + " in " + giverRegion + " to start quest");
+            this.setDescription(this.name + "\nTalk to " + npcName + " in " + giverRegion + " to start quest");
             return;
         }
 
         if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
-            this.setDescription("Gather " + itemStr + " and deliver them to " + npcName + " in " + regionName + ". ");
+            this.setDescription(this.name + "\nGather " + itemStr + " and deliver them to " + npcName + " in " + regionName + ". ");
         } else {
             try {
                 // TODO: Add location string
                 this.setDescription(String.format(this.getDescriptionRaw(), itemStr, npcName, regionName));
             } catch (Exception ex) {
                 this.setDescription(
-                        "Gather " + itemStr + " and deliver them to " + npcName + " in " + regionName + ". ");
+                    this.name + "\nGather " + itemStr + " and deliver them to " + npcName + " in " + regionName + ". ");
             }
         }
     }
@@ -155,6 +157,12 @@ public class GatherQuestStep extends QuestStep {
         //No data necessary for player progression
         //Item checks are done when open inventory
         return null;
+    }
+
+    @Override
+    public void processStepData(JsonObject data) {
+        // TODO Auto-generated method stub
+        
     }
     
 }
