@@ -48,13 +48,28 @@ public class QuestBookManager {
      * @param questName
      */
     public void registerQuest(String questName) {
-        registerQuest(questName, null, -1);
+        registerQuest(questName, null, -1, true);
+    }
+
+    /**
+     * Registers new quest to player with new item toggle
+     * @param questName
+     * @param newItem
+     */
+    public void registerQuest(String questName, boolean newItem) {
+        registerQuest(questName, null, -1, newItem);
     }
 
     /**
      * Registers quest to player 
+     * Places new item instance in inventory
      */
-    public void registerQuest(String questName, JsonObject data, int index) {
+    public void registerQuest(String questName, JsonObject data, int index, boolean newItem) {
+        if (completedQuests.contains(questName)) { 
+            Announcer.messagePlayer(s, "You have already completed " + questName, 0);
+            return;
+        }
+
         ActiveQuest aq = SwordCraftOnline.getPluginInstance().getQuestManager().activateQuest(questName, this.s);
         if(aq == null) {
             SwordCraftOnline.logInfo("Failed to register quest + " + questName + " to player " + s.getName());
@@ -88,6 +103,8 @@ public class QuestBookManager {
         }
 
         quests.get(qt).add(aq);
+
+        if(!newItem) { return; }
 
         // Giving quest item to player
         ItemIdentifier ident = generateQuestItem(aq);
@@ -144,18 +161,18 @@ public class QuestBookManager {
             }
         }
         //Registering quest again in new location
-        registerQuest(questName);
+        registerQuest(questName, false);
     }
 
     public void executeLoop(QuestType type, Event ev) {
         if(quests.get(type) == null) { return; }
 
-        for(ActiveQuest aq : quests.get(type)) {
-            // Concurrent modification occurs on quest completion, unregistration, removal.
-            // Temporary fix is to ignore since the successful life cycle already hits
-            // Occurs most in Travel quests
-            // TODO: Remove try catch for more efficient removal model
-            try {
+        // Concurrent modification occurs on quest completion, unregistration, removal.
+        // Temporary fix is to ignore since the successful life cycle already hits
+        // Occurs most in Travel quests
+        // TODO: Remove try catch for more efficient removal model
+        try {
+            for(ActiveQuest aq : quests.get(type)) {
                 SwordCraftOnline.logDebug("[Quest Book Manager] Life Cycle: " + aq.getName());
                 aq.execLifeCycle(type, ev);
                 
@@ -163,10 +180,8 @@ public class QuestBookManager {
                 if(aq.isCompleted()) {
                     completeQuest(aq);
                 }
-            } catch(ConcurrentModificationException ex) {
-                continue;
             }
-        }
+        } catch(ConcurrentModificationException ex) {}
     }
 
     public boolean isQuestRegistered(String name) {
@@ -225,7 +240,8 @@ public class QuestBookManager {
                 this.registerQuest(
                     cus.getCustomData().get("questName").getAsString(), 
                     cus.getCustomData(),
-                    i
+                    i,
+                    true
                     );
             }
         }
