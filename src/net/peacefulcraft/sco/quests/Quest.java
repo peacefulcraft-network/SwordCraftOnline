@@ -88,6 +88,9 @@ public class Quest {
     private String questReq = null;
         public String getQuestReq() { return this.questReq; }
 
+    private String completeDesc;
+        public String getCompleteDesc() { return this.completeDesc; }
+
     public Quest(String file, String internalName, List<MythicConfig> steps, MythicConfig data) {
         this.file = file;
         this.internalName = internalName;
@@ -99,6 +102,8 @@ public class Quest {
 
         this.questName = config.getString("Name");
         this.size = stepConfigs.size();
+        this.completeDesc = config.getString("CompleteDesc", null);
+        this.completeDesc = config.getString("CompleteDescription", this.completeDesc);
         
         //Loading requirements
         this.levelReq = config.getInteger("Requirement.Level", 0);

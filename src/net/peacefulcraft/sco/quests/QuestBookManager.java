@@ -279,6 +279,26 @@ public class QuestBookManager {
         return ident;
     }
 
+    /**
+     * Static method
+     * Formats and creates default COMPLETE item for the complete item panel.
+     * @param name Name of quest
+     * @return ItemIdentifier
+     */
+    public static ItemIdentifier generateQuestItem(String name) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("questName", name);
+        obj.addProperty("completed", true);
+        obj.addProperty("description", 
+            SwordCraftOnline.getPluginInstance().getQuestManager().getQuest(name).getCompleteDesc() 
+            + "\nCompleted."
+        );
+
+        ItemIdentifier ident = ItemIdentifier.generateIdentifier("Quest", ItemTier.COMMON, 1);
+        ((CustomDataHolder)ident).setCustomData(obj);
+        return ident;
+    }
+
     /**Helper function: Safely removes quest from active to completed */
     public void completeQuest(ActiveQuest aq) {
         if(!aq.isCompleted()) { return; }

@@ -58,6 +58,8 @@ public class QuestBookInventory extends BukkitInventoryBase implements Listener 
                 });
             });
         });
+
+        //TODO: Create and load complete quest inventory
     }
 
     public void destroy() {
