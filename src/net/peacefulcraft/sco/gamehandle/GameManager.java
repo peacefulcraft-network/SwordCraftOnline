@@ -19,6 +19,7 @@ import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.player.Teleports;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.storage.tasks.PlayerRegistryLeaveGameTask;
 
 public class GameManager {
 	private static HashMap<UUID, SCOPlayer> preProcessedPlayers;
@@ -41,13 +42,14 @@ public class GameManager {
 	 * @param uuid
 	 * @param playerRegistryId
 	 */
-	public void preProcessPlayerJoin(UUID uuid, long playerRegistryId) throws RuntimeException {
+	public SCOPlayer preProcessPlayerJoin(UUID uuid, long playerRegistryId) throws RuntimeException {
 		if (players.containsKey(uuid))
 			throw new RuntimeException("Command executor is already in SCO");
 
 		try {
 			SCOPlayer s = new SCOPlayer(uuid, playerRegistryId);
 			preProcessedPlayers.put(uuid, s);
+			return s;
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			e.printStackTrace();
 			if (e.getCause() != null) {
@@ -103,6 +105,14 @@ public class GameManager {
 		
 		// Unregister the Player's personal inventory from the InventoryEvent routing system
 		SwordCraftOnline.getInventoryListeners().unregisterPlayerInventoryView(s, p.getOpenInventory());
+
+		try{
+			PlayerRegistryLeaveGameTask registryTask = new PlayerRegistryLeaveGameTask(s);
+			Long playerRegistryId = registryTask.writePlayerData().get();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+			SwordCraftOnline.logSevere(ex.getMessage());
+		}
 
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());

@@ -34,10 +34,18 @@ public class QuestBookManager {
      * Players completed quests 
      */
     private ArrayList<String> completedQuests = new ArrayList<>();
-        public void addCompletedQuest(String name) {
-            if(completedQuests.contains(name)) { return; }
+
+    public void processCompletedQuests(List<String> quests) {
+        if (quests == null) { return; }
+        for (String name : quests) {
+            if(completedQuests.contains(name)) { continue; }
             completedQuests.add(name);
         }
+    }
+    
+    public List<String> getCompletedQuests() {
+        return Collections.unmodifiableList(completedQuests);
+    }
 
     public QuestBookManager(SCOPlayer s) {
         this.s = s;

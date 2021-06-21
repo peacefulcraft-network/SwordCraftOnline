@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.storage.tasks.PlayerRegistryJoinGameTask;
 
 public class JoinGameListener implements Listener
@@ -20,7 +21,10 @@ public class JoinGameListener implements Listener
 			PlayerRegistryJoinGameTask registryTask = new PlayerRegistryJoinGameTask(e.getUniqueId(), e.getName());
 			Long playerRegistryId = registryTask.fetchPlayerRegistryId().get();
 			
-			SwordCraftOnline.getGameManager().preProcessPlayerJoin(e.getUniqueId(), playerRegistryId);
+			SCOPlayer s = SwordCraftOnline.getGameManager().preProcessPlayerJoin(e.getUniqueId(), playerRegistryId);
+			if (s != null) {
+				s.getQuestBookManager().processCompletedQuests(registryTask.getPlayerCompletedQuests());
+			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
 			SwordCraftOnline.logSevere(ex.getMessage());

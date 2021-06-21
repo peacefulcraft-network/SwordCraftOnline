@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -23,9 +25,14 @@ public class PlayerRegistryJoinGameTask {
 	private UUID uuid;
 	private String name;
 	private long playerRegistryId;
+	private List<String> playerCompletedQuests;
 
 	public long getPlayerRegistryId() {
 		return playerRegistryId;
+	}
+
+	public List<String> getPlayerCompletedQuests() {
+		return this.playerCompletedQuests;
 	}
 
 	public PlayerRegistryJoinGameTask(UUID uuid, String name) {
@@ -56,6 +63,24 @@ public class PlayerRegistryJoinGameTask {
 					stmt_update.executeUpdate();
 
 					SwordCraftOnline.logDebug("Updated player registery for user " + this.uuid.toString() + " | " + this.playerRegistryId);
+
+					// Querying player completed quest data
+					PreparedStatement stmt_selectt = con.prepareStatement(
+						"SELECT `completed_quests` FROM `player` WHERE `uuid`=?"
+					);
+					stmt_selectt.setString(1, this.uuid.toString().replaceAll("-",""));
+					res = stmt_selectt.executeQuery();
+
+					if (res.next()) {
+						String rawCompleted = res.getString("completed_quests");
+						if (rawCompleted == null || rawCompleted.isEmpty()) {
+							SwordCraftOnline.logDebug("Player(" + this.uuid + ") empty Completed_Quest data.");
+						} else {
+							this.playerCompletedQuests = Arrays.asList(rawCompleted.split("$$"));
+							SwordCraftOnline.logDebug("Player(" + this.uuid + ") compiled Completed_Quest data");
+						}
+					}
+
 				} else {
 					PreparedStatement stmt_insert = con.prepareStatement(
 						"INSERT INTO `player` (uuid, name) VALUES(?,?)",
