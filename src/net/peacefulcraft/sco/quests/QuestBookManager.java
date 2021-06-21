@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.quests;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -102,7 +103,10 @@ public class QuestBookManager {
         }
     }
 
-    /**Unregisters quest to player */
+    /**
+     * Unregisters quest to player 
+     * Removes quest from inventory
+     */
     public void unregisterQuest(String questName) {
         ActiveQuest aq = SwordCraftOnline.getPluginInstance().getQuestManager().activateQuest(questName, s);
         if(aq == null) { return; }
@@ -113,6 +117,14 @@ public class QuestBookManager {
 
         if(lis.size() == 0) {
             quests.remove(type);
+        }
+
+        List<ItemIdentifier> liss = s.getQuestBookInventory().generateItemIdentifiers();
+        for (int i = 0; i < liss.size(); i++) {
+            ItemIdentifier identifier = liss.get(i);
+            if (identifier.getDisplayName().equalsIgnoreCase(aq.getName())) {
+                s.getQuestBookInventory().removeItem(i);
+            }
         }
     }
 
@@ -139,28 +151,20 @@ public class QuestBookManager {
         if(quests.get(type) == null) { return; }
 
         for(ActiveQuest aq : quests.get(type)) {
-            SwordCraftOnline.logDebug("[Quest Book Manager] Life Cycle: " + aq.getName());
-            aq.execLifeCycle(type, ev);
-            
-            //Is active quest completed
-            if(aq.isCompleted()) {
-                completeQuest(aq);
-            } else {
-                //If quest was not completed we want to update item in their inventory
-                // This logic is handled in the quest steps
-                int xx = 0;
-                /*
-                QuestBookInventory base = s.getQuestBookInventory();
-
-                List<ItemIdentifier> identLis = base.generateItemIdentifiers();
-                for(int i = 0; i < identLis.size(); i++) {
-                    ItemIdentifier ident = identLis.get(i);
-                    if(!ident.getName().equalsIgnoreCase("Quest")) { continue; }
-                    if(!ident.getDisplayName().equalsIgnoreCase(aq.getName())) { continue; }
-
-                    ItemIdentifier identt = generateQuestItem(aq);
-                    base.setItem(i, identt);
-                }*/
+            // Concurrent modification occurs on quest completion, unregistration, removal.
+            // Temporary fix is to ignore since the successful life cycle already hits
+            // Occurs most in Travel quests
+            // TODO: Remove try catch for more efficient removal model
+            try {
+                SwordCraftOnline.logDebug("[Quest Book Manager] Life Cycle: " + aq.getName());
+                aq.execLifeCycle(type, ev);
+                
+                //Is active quest completed
+                if(aq.isCompleted()) {
+                    completeQuest(aq);
+                }
+            } catch(ConcurrentModificationException ex) {
+                continue;
             }
         }
     }
@@ -252,7 +256,7 @@ public class QuestBookManager {
     }
 
     /**Helper function: Safely removes quest from active to completed */
-    private void completeQuest(ActiveQuest aq) {
+    public void completeQuest(ActiveQuest aq) {
         if(!aq.isCompleted()) { return; }
         if(completedQuests.contains(aq.getName())) { return; }
         

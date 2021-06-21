@@ -34,7 +34,7 @@ public abstract class QuestStep {
         public void setInvalid() { this.isInvalid = true; }
 
     /**List of rewards given on completion of step */
-    private List<Reward> rewards = new ArrayList<>();
+    protected List<Reward> rewards = new ArrayList<>();
         public List<Reward> getRewards() { return this.rewards; }
 
     /**Description displayed on item in quest book */
@@ -51,12 +51,12 @@ public abstract class QuestStep {
         public void setReset(Boolean b) { this.toReset = b; }
 
     /**NPC quest giver */
-    private MythicMob giver;
+    protected MythicMob giver;
         public MythicMob getGiver() { return this.giver; }
         public String getGiverName() { return this.giver.getDisplayName(); }
 
     /**Key location npc can be found */
-    private Region giverRegion;
+    protected Region giverRegion;
         public Region getGiverRegion() { return this.giverRegion; }
 
     /**If NPC has given the quest. I.e. player interacted with quest NPC */
@@ -69,7 +69,7 @@ public abstract class QuestStep {
      * If false, step is activated on completion of previous step.
      * Beginning steps cannot be false
      */
-    private Boolean usesGiver;
+    protected Boolean usesGiver;
         public Boolean usesGiver() { return this.usesGiver; }
         public void setUsesGiver(boolean b) { this.usesGiver = b; }
 
@@ -88,31 +88,33 @@ public abstract class QuestStep {
             return;
         }
 
-        // Giver name validation
-        String giverName = mc.getString("GiverName", "");
-        giverName = mc.getString("Giver", giverName);
-        if(giverName == null || giverName.isEmpty()) {
-            this.logInfo("No GiverName field in config.");
-            return;
-        }
-        this.giver = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(giverName);
-        if(this.giver == null) {
-            this.logInfo("Invalid GiverName field in config.");
-            return;
-        }
-
-        // Region validation
         this.usesGiver = mc.getBoolean("UsesGiver", true);
 
-        String regionName = mc.getString("GiverRegion", "");
-        if(!usesGiver && (regionName == null || regionName.isEmpty())) {
-            this.logInfo("No GiverRegion field in config.");
-            return;
-        }
-        this.giverRegion = RegionManager.getRegion(regionName);
-        if(!usesGiver && this.giverRegion == null) {
-            this.logInfo("Invalid GiverRegion field in config.");
-            return;
+        if(this.usesGiver) {
+            // Giver name validation
+            String giverName = mc.getString("GiverName", "");
+            giverName = mc.getString("Giver", giverName);
+            if(giverName == null || giverName.isEmpty()) {
+                this.logInfo("No GiverName field in config.");
+                return;
+            }
+            this.giver = SwordCraftOnline.getPluginInstance().getMobManager().getMythicMob(giverName);
+            if(this.giver == null) {
+                this.logInfo("Invalid GiverName field in config.");
+                return;
+            }
+
+            // Region validation
+            String regionName = mc.getString("GiverRegion", "");
+            if(!usesGiver && (regionName == null || regionName.isEmpty())) {
+                this.logInfo("No GiverRegion field in config.");
+                return;
+            }
+            this.giverRegion = RegionManager.getRegion(regionName);
+            if(!usesGiver && this.giverRegion == null) {
+                this.logInfo("Invalid GiverRegion field in config.");
+                return;
+            }
         }
 
         this.descriptionRaw = mc.getString("Description", "");

@@ -7,11 +7,13 @@ import com.google.gson.JsonObject;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.gamehandle.regions.Region;
 import net.peacefulcraft.sco.gamehandle.regions.RegionManager;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.quests.ActiveQuest;
 import net.peacefulcraft.sco.quests.QuestStep;
 
 public class TravelQuestStep extends QuestStep {
@@ -37,17 +39,19 @@ public class TravelQuestStep extends QuestStep {
 
     @Override
     public void _setDescription() {
-        String npcName = getGiverName();
-        String startRegion = getGiverRegion().getName();
         String target = targetRegion.getName();
 
         // If quest is not activated we use find npc description
-        if (!this.isActivated()) {
+        //
+        // If no start region we use travel description
+        if (!this.isActivated() && this.usesGiver) {
+            String npcName = getGiverName();
+            String startRegion = getGiverRegion().getName();
             this.setDescription(this.name + "\nTalk to " + npcName + " in " + startRegion + " to start quest.");
             return;
         }
 
-        if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty()) {
+        if (this.getDescriptionRaw() == null || this.getDescriptionRaw().isEmpty() || !this.usesGiver) {
             this.setDescription(this.name + "\nTravel to " + target + ".");
         } else {
             try {
@@ -73,11 +77,19 @@ public class TravelQuestStep extends QuestStep {
         }
 
         // Is player in region
-        if (!s.getRegion().equals(targetRegion)) {
+        if (s.getRegion() == null || !s.getRegion().equals(targetRegion)) {
             return false;
         }
 
-        completeMessage(s);
+        
+        ActiveQuest aq = s.getQuestBookManager().getRegisteredQuest(this.name);
+        if(aq != null) {
+            SwordCraftOnline.logDebug("[Travel Quest Step] Protected update call.");
+            aq.updateItemDescription();
+        } else {
+            SwordCraftOnline.logDebug("[Travel Quest Step] Active quest not found.");
+        }
+
         return true;
     }
 

@@ -107,7 +107,7 @@ public class QuestManager implements Runnable {
                 SwordCraftOnline.logDebug("[Quest Manager] Marked invalid: " + qName);
             } else {
                 this.questMap.put(qName, q);
-                SwordCraftOnline.logInfo("[Quest Manager] Loaded: " + qName);
+                SwordCraftOnline.logInfo("[Quest Manager] Loaded: " + qName + ", size: " + q.getSize());
             }
         }
         SwordCraftOnline.logInfo("[Quest Manager] Loading complete!");
@@ -121,7 +121,10 @@ public class QuestManager implements Runnable {
         for(Quest q : getStoryQuests()) {
             for(ActiveMob am : lis) {
                 for(int i = 0; i < q.getSize(); i++) {
-                    if(am.getDisplayName().equalsIgnoreCase(q.getQuestStep(i).getGiverName()) && am.getQuest() == null) {
+                    if(!q.getQuestStep(i).usesGiver()) { continue; }
+                    String giverName = q.getQuestStep(i).getGiverName();
+                    if(giverName == null) { continue; } 
+                    if(am.getDisplayName().equalsIgnoreCase(giverName) && am.getQuest() == null) {
                         SwordCraftOnline.logDebug("[Quest Manager] Assigning: " + q.getQuestStep(i).getName() + ", to: " + am.getDisplayName());
                         am.setQuest(q);
                         this.currentQuestGivers.add(am);

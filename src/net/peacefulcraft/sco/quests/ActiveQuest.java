@@ -55,11 +55,12 @@ public class ActiveQuest {
             sendCompletedTitle();
             
             this.completed = true;
-            s.getQuestBookManager().unregisterQuest(quest.getQuestName());
+            s.getQuestBookManager().completeQuest(this);
+            //s.getQuestBookManager().unregisterQuest(quest.getQuestName());
             //TODO: Decide how we handle story quest progression. 
 
             //Adding quest name to completed quest list
-            s.getQuestBookManager().addCompletedQuest(quest.getQuestName());
+            //s.getQuestBookManager().addCompletedQuest(quest.getQuestName());
         } else {
             sendProgressedTitle();
 
