@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.setTeleport;
 import net.peacefulcraft.sco.commands.setWaystone;
+import net.peacefulcraft.sco.gambit.PlayerArenaManager;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
 import net.peacefulcraft.sco.gamehandle.dungeon.DungeonManager;
@@ -114,6 +115,9 @@ public class SwordCraftOnline extends JavaPlugin{
 	private SwordSkillDataManager swordSkillDataManager;
 		public SwordSkillDataManager getSwordSkillDataManager() { return this.swordSkillDataManager; }
 
+	private PlayerArenaManager playerArenaManager;
+		public PlayerArenaManager getPlayerArenaManager() { return this.playerArenaManager; }
+
 	public SwordCraftOnline() {
 
 		sco = this;
@@ -151,6 +155,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		effectManager = new EffectManager(this);
 
 		this.swordSkillDataManager = new SwordSkillDataManager();
+
+		this.playerArenaManager = new PlayerArenaManager();
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
@@ -208,6 +214,8 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
 		getServer().getPluginManager().registerEvents(new CustomInventoryListeners(), this);
 		getServer().getPluginManager().registerEvents(new TomeListener(), this);
+
+		getServer().getPluginManager().registerEvents(new PlayerArenaManager(), this);
 
 		//SwordSkill Util Listeners
 		getServer().getPluginManager().registerEvents(new DirectionalUtil(), this);

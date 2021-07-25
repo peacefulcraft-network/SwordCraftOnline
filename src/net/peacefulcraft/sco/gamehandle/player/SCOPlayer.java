@@ -189,6 +189,16 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 		public Boolean doesReceiveSkillMessages() { return doesReceiveSkillMessages; }
 		public void setReceiveSkillMessages(Boolean b) { this.doesReceiveSkillMessages = b; }
 
+	/** Experience for Greeds Gambit */
+	private Integer alphaExperience = 0;
+		public Integer getAlphaExperience() { return alphaExperience; }
+		public void setAlphaExperience(Integer i) { alphaExperience = i; } 
+
+	/** Greeds Gambit 1v1 win streak */
+	private Integer alphaWinStreak = 0;
+		public Integer getAlphaWinStreak() { return alphaWinStreak; }
+		public void setAlphaWinStreak(Integer i) { alphaWinStreak = i; }
+
 	/**
 	 * Loads all of an SCO Player's data.
 	 * This method performs several long-running, blocking tasks. Do not run this method on the main Bukkit thread.

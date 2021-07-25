@@ -6,5 +6,7 @@
         "**/.project": true,
         "**/.settings": true,
         "**/.factorypath": true
-    }
+    },
+    "java.configuration.maven.globalSettings": "",
+    "maven.executable.preferMavenWrapper": false
 }

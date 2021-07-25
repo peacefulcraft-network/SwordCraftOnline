@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.tr7zw.nbtapi.NBTItem;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.swordskills.SwordSkillInfoProvider;
 
 /**
  * Class to expose the necessary properties for saving a given to the inventory
@@ -247,8 +248,12 @@ public interface ItemIdentifier {
     nbti.setString("identifier", name.replaceAll(" ", ""));
     nbti.setString("tier", tier.toString());
 
-    // Reseting to apply ephemeral
     item = nbti.getItem();
+    if (data != null && data.has("isInfoProvider") && data.get("isInfoProvider").getAsBoolean()) {
+      item = SwordSkillInfoProvider.getInfoProvider(item, itemIdentifier);
+    }
+
+    // Reseting to apply ephemeral
     if (itemIdentifier instanceof EphemeralAttributeHolder) {
       item = ((EphemeralAttributeHolder) itemIdentifier).applyEphemeralAttributes(item);
     }

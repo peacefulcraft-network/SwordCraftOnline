@@ -32,6 +32,8 @@ public class SCOConfig {
 	private boolean autoTarget = true;
 
 	private HealthBarType healthBarConfig;
+
+	private boolean isAlpha = true;
 	
 	public SCOConfig(FileConfiguration c) {
 		
@@ -57,6 +59,8 @@ public class SCOConfig {
 		parties = c.getConfigurationSection("parties").getValues(false);
 
 		healthBarConfig = HealthBarType.valueOf(c.getString("healthbar").toUpperCase());
+
+		isAlpha = c.getBoolean("isAlpha");
 	}
 	
 	public Boolean getDebug() {
@@ -219,6 +223,14 @@ public class SCOConfig {
 
 	public boolean healthBarEnabled() {
 		return !(healthBarConfig.equals(HealthBarType.DISABLED));
+	}
+
+	public void setIsAlpha(boolean b) {
+		isAlpha = b;
+	}
+
+	public boolean isAlpha() {
+		return isAlpha;
 	}
 
 

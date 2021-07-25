@@ -327,7 +327,20 @@ public class ModifierUser {
     }
 
     /**
-     * Checks users modifiers for match
+     * Calculates potential damage on modifier user
+     * @param type
+     * @param damage
+     * @param incoming
+     * @return
+     */
+    public double calculateDamage(String type, double damage, boolean incoming) {
+        if (ModifierType.get(type) == null) { return damage; }
+
+        return calculateDamage(ModifierType.get(type), damage, incoming);
+    }
+
+    /**
+     * Calculates potential damage on modifier user
      * @param type Type of damage
      * @param damage FinalDamage from event
      * @return modified damage

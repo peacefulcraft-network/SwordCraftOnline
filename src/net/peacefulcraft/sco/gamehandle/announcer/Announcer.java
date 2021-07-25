@@ -65,6 +65,21 @@ public abstract class Announcer {
     }
 
     /**
+     * Messages single player with custom prefix plate
+     * @param s
+     * @param prefix
+     * @param message
+     * @param cooldown Set to 0 no cooldown.
+     */
+    public static void messagePlayer(SCOPlayer s, String prefix, String message, int cooldown) {
+        addCooldown(message, s, cooldown);
+
+        if(checkCooldown(message, s)) {
+            s.getPlayer().sendMessage(prefix + ChatColor.WHITE + message);
+        }
+    }
+
+    /**
      * Messages group of players 
      * @param cooldown Cooldown timer of message in ms. Set to 0 means no cooldown
      */

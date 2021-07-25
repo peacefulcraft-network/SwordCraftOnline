@@ -24,6 +24,7 @@ public class SwordSkillDataManager {
     private static List<String> ssLis = new ArrayList<>();
 
     private static HashMap<SwordSkillType, List<String>> ssType = new HashMap<>();
+        public static List<String> getByType(SwordSkillType type) { return Collections.unmodifiableList(ssType.get(type)); }
 
     private static HashMap<ItemTier, List<String>> ssTier = new HashMap<>();
 

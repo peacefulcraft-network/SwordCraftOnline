@@ -44,4 +44,8 @@ public class Pair<A, B> {
     public B getSecond() {
         return second;
     }
+
+    public Pair<A, B> clone() {
+        return new Pair<A, B>(first, second);
+    }
 }
