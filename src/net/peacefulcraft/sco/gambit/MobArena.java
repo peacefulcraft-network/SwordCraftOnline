@@ -31,11 +31,21 @@ public class MobArena {
     private int size;
         public int getSize() { return size; }
 
+    /**
+     * Spawn location coords
+     */
+
     private int spawnX;
-
     private int spawnY;
-
     private int spawnZ;
+
+    /**
+     * Death box location coords
+     */
+
+    private int deathX;
+    private int deathY;
+    private int deathZ;
 
     private HashMap<Integer, MobArenaLevel> levels;
     
@@ -50,6 +60,9 @@ public class MobArena {
         spawnX = mc.getInteger("spawnX");
         spawnY = mc.getInteger("spawnY");
         spawnZ = mc.getInteger("spawnZ");
+        deathX = mc.getInteger("deathBoxX");
+        deathY = mc.getInteger("deathBoxY");
+        deathZ = mc.getInteger("deathBoxZ");
 
 
         levels = new HashMap<>();
@@ -87,12 +100,21 @@ public class MobArena {
     }
 
     /**
-     * Creates new location from active world
+     * Fetches spawn location for active world
      * @param world Active Arena world
      * @return Spawn location
      */
     public Location getPlayerSpawn(World world) {
         return new Location(world, spawnX, spawnY, spawnZ);
+    }
+
+    /**
+     * Fetches death box location for active world
+     * @param world Active Arena world
+     * @return death box location
+     */
+    public Location getDeathBox(World world) {
+        return new Location(world, deathX, deathY, deathZ);
     }
 
     /**

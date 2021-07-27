@@ -1,13 +1,18 @@
 package net.peacefulcraft.sco.gambit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
@@ -15,27 +20,57 @@ import net.peacefulcraft.sco.gambit.MobArena.MobConfig;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WorldUtil;
 
 public class ActiveMobArena implements Listener {
     
+    /**Config instance */
     private MobArena ma;
 
+    /**Name of this world file */
     private String activeWorldName;
-        
+    
+    /**Actual world instance */
     private World activeWorld;
 
-    private Location spawn;
+    /**Active world spawn location */
+    private Location spawnLoc;
 
+    /**Active death box location */
+    private Location deathBoxLoc;
+
+    /**Player death tracker */
+    private HashMap<UUID, Integer> deathTracker;
+
+    /**Players currently in death box */
+    private List<SCOPlayer> deathBoxPlayers;
+
+    /**Regions we spawn mobs in */
     private List<Pair<Location, Location>> spawnRegions;
 
+    /**List of players */
     private List<SCOPlayer> players;
 
-    private List<ActiveMob> activeMobs;
+    /**Mobs spawn this round */
+    private HashMap<UUID, ActiveMob> activeMobs;
 
+    /**Current level */
     private int level;
+
+    /**Total kills in arena */
+    private int totalKills;
+
+    /**Experience gained from group kills */
+    private final int KILL_EXPERIENCE = 8;
+
+    /**Experience removed on death */
+    private final int DEATH_EXPERIENCE = -50;
+
+    /**Experience gained from round completion */
+    private final int LEVEL_EXPERIENCE = 10;
 
     /**
      * Initialize active mob arena instance
@@ -46,7 +81,10 @@ public class ActiveMobArena implements Listener {
     public ActiveMobArena(MobArena ma, UUID uuid) {
         this.ma = ma;
         level = 0;
+        totalKills = 0;
         players = new ArrayList<>();
+        deathBoxPlayers = new ArrayList<>();
+        deathTracker = new HashMap<>();
 
         String worldName = ma.getWorldName();
         activeWorldName = worldName + "-" + uuid.toString();
@@ -57,8 +95,10 @@ public class ActiveMobArena implements Listener {
             return;
         }
 
-        spawn = ma.getPlayerSpawn(activeWorld);
+        // Configured active locations
+        spawnLoc = ma.getPlayerSpawn(activeWorld);
         spawnRegions = ma.getSpawnRegions(activeWorld);
+        deathBoxLoc = ma.getDeathBox(activeWorld);
     }
 
     /**
@@ -70,6 +110,46 @@ public class ActiveMobArena implements Listener {
         players.add(s);
     }
 
+    @EventHandler (priority = EventPriority.LOWEST)
+    public void arenaDeathListener(EntityDamageEvent ev) {
+        Entity e = ev.getEntity();
+        ModifierUser mu = ModifierUser.getModifierUser(e);
+        if (mu == null) { return; }
+
+        double damage = mu.calculateDamage(ev.getCause().toString(), ev.getFinalDamage(), true);
+        if (mu.getHealth() - damage <= 0) {
+            if (mu instanceof SCOPlayer) {
+                ev.setCancelled(true);
+
+                SCOPlayer s = (SCOPlayer)mu;
+                if (!players.contains(s)) { return; }
+
+                s.setHealth(s.getMaxHealth());
+
+                // Death box logic
+                deathTracker.put(s.getUUID(), deathTracker.get(s.getUUID()) + 1);
+                deathBoxPlayers.add(s);
+                s.getPlayer().teleport(deathBoxLoc);
+
+                // All players died
+                if (deathBoxPlayers.size() == players.size()) {
+                    end();
+                }
+            } else if (mu instanceof ActiveMob) {
+                ActiveMob am = (ActiveMob)mu;
+                if (!activeMobs.keySet().contains(am.getUUID())) { return; }
+
+                activeMobs.remove(am.getUUID());
+                totalKills++;
+
+                // End of round logic
+                if (activeMobs.isEmpty()) {
+                    endRound();
+                }
+            }
+        }
+    }
+
     /**
      * Main starting sequence for active arena
      */
@@ -78,7 +158,7 @@ public class ActiveMobArena implements Listener {
         // Teleport players to spawn 
         // Send timer message
         for (SCOPlayer s : players) { 
-            s.getPlayer().teleport(spawn); 
+            s.getPlayer().teleport(spawnLoc); 
 
             Announcer.messagePlayer(
                 s, 
@@ -89,6 +169,68 @@ public class ActiveMobArena implements Listener {
                 s, 
                 PlayerArenaManager.getPrefix(), 
                 "You have 1 minute to prepare yourselves.", 
+                0);
+
+            deathTracker.put(s.getUUID(), 0);
+        }
+
+        startRound();
+    }
+
+    /**
+     * Main ending sequence for active arena
+     * Called when all players die in a round
+     */
+    private void end() {
+        for (SCOPlayer s : players) {
+            Announcer.messageTitleBar(
+                s, 
+                "Defeat!", 
+                "Level " + level);
+
+            int deaths = deathTracker.get(s.getUUID());
+            int exp = (totalKills * KILL_EXPERIENCE) + (level * LEVEL_EXPERIENCE) - (deaths * DEATH_EXPERIENCE);
+
+            s.setAlphaExperience(s.getAlphaExperience() + exp);
+
+            Announcer.messagePlayer(
+                s, 
+                PlayerArenaManager.getPrefix(),
+                "Match Summary!\n Group Kills: " + totalKills + 
+                    "\n Level Reached: " + level + "\n Deaths: " + deaths + "\n Total: " + exp,
+                0);
+        }
+
+        // TODO: Teleport players to base world
+        // TODO: Delete world and instance
+    }
+
+    /**
+     * Triggers end of round logic then begins
+     * timer for next round
+     */
+    private void endRound() {
+        // Teleporting any dead players out of death box
+        for (SCOPlayer s : deathBoxPlayers) {
+            s.getPlayer().teleport(spawnLoc);
+            Announcer.messagePlayer(
+                s, 
+                PlayerArenaManager.getPrefix(), 
+                "Fine! You get one more chance... But I'm taking my cut!", 
+                0);
+        }
+        deathBoxPlayers.clear();
+
+        for (SCOPlayer s : players) {
+            Announcer.messageTitleBar(
+                s, 
+                "Level " + level + " complete!", 
+                "One minute until next level.");
+
+            Announcer.messagePlayer(
+                s, 
+                PlayerArenaManager.getPrefix(), 
+                "You killed " + totalKills + " of my army that time!..", 
                 0);
         }
 
@@ -147,7 +289,9 @@ public class ActiveMobArena implements Listener {
                     return;
                 }
 
-                activeMobs.addAll(roundSpawns);
+                for (ActiveMob am : roundSpawns) {
+                    activeMobs.put(am.getUUID(), am);
+                }
             }
             
         }.runTaskTimer(SwordCraftOnline.getPluginInstance(), 20, 10);
