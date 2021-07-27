@@ -2,6 +2,7 @@ package net.peacefulcraft.sco.gambit;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -135,7 +136,42 @@ public class MobArenaManager implements Runnable, Listener {
             }
         }
     }
-    
+
+    /**
+     * Begins arena loading process and moves players to this arena
+     * @param leader
+     */
+    public void movePartyToArena(SCOPlayer leader, String arenaName) {
+        MobArenaParty map = parties.get(leader);
+        if (map == null) { return; }
+        
+        // We delay ten seconds from teleport to ensure world is configured.
+        ActiveMobArena ama = initializeArena(arenaName);
+        if (ama == null) {
+            Announcer.messagePlayer(leader, PlayerArenaManager.getPrefix(), "Issue loading your Gambit... Try again soon.", 0);
+            return;
+        }
+
+        for (SCOPlayer s : map.getMembers()) {
+            Announcer.messagePlayer(s, PlayerArenaManager.getPrefix(), "Creating your Gambit.. 10 seconds!", 0);
+        }
+
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(
+            SwordCraftOnline.getPluginInstance(), 
+            new Runnable(){
+
+                @Override
+                public void run() {
+                    
+                    for (SCOPlayer s : map.getMembers()) {
+                        ama.addPlayer(s);
+                    }
+
+                    ama.start();
+                }
+                
+            }, 200);
+    }
 
     /**
      * Creates new mob arena party
@@ -228,6 +264,7 @@ public class MobArenaManager implements Runnable, Listener {
         private SCOPlayer leader;
 
         private List<SCOPlayer> members;
+            public List<SCOPlayer> getMembers() { return Collections.unmodifiableList(members); }
 
         private HashMap<SCOPlayer, Long> invites;
 
