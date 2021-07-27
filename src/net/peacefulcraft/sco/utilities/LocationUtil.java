@@ -19,6 +19,57 @@ import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
  * I.e. All blocks near a location in X radius
  */
 public class LocationUtil {
+
+    /**
+     * Given two locations find a random location within them
+     * @param loc1
+     * @param loc2
+     * @return
+     */
+    public static Location getLocationsWithinSquare(Location loc1, Location loc2) {
+        int xMax;
+        int xMin;
+        int yMax;
+        int yMin;
+        int zMax;
+        int zMin;
+
+        // X min max
+        if (loc1.getBlockX() < loc2.getBlockX()) {
+            xMax = loc2.getBlockX();
+            xMin = loc1.getBlockX();
+        } else {
+            xMax = loc1.getBlockX();
+            xMin = loc2.getBlockX();
+        }
+
+        // Y min max
+        if (loc1.getBlockY() < loc2.getBlockY()) {
+            yMax = loc2.getBlockY();
+            yMin = loc1.getBlockY();
+        } else {
+            yMax = loc1.getBlockY();
+            yMin = loc2.getBlockY();
+        }
+
+        // Z min max
+        if (loc1.getBlockZ() < loc2.getBlockZ()) {
+            zMax = loc2.getBlockZ();
+            zMin = loc1.getBlockZ();
+        } else if (loc1.getBlockZ() > loc2.getBlockZ()) {
+            zMax = loc1.getBlockZ();
+            zMin = loc2.getBlockZ();
+        } else {
+            zMax = loc1.getBlockZ();
+            zMin = loc1.getBlockZ();
+        }
+
+        return new Location(
+            loc1.getWorld(), 
+            SwordCraftOnline.r.nextInt(xMax - xMin) + xMin, 
+            SwordCraftOnline.r.nextInt(yMax - yMin) + yMin, 
+            SwordCraftOnline.r.nextInt(zMax - zMin) + zMin);
+    }
     
     /**
      * Compresses list of locations to list of blocks
