@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.commands.SCOAdmin;
 import net.peacefulcraft.sco.commands.partyCommands;
 import net.peacefulcraft.sco.commands.setTeleport;
 import net.peacefulcraft.sco.commands.setWaystone;
+import net.peacefulcraft.sco.gambit.MobArenaManager;
 import net.peacefulcraft.sco.gambit.PlayerArenaManager;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.PartyManager;
@@ -118,6 +119,9 @@ public class SwordCraftOnline extends JavaPlugin{
 	private PlayerArenaManager playerArenaManager;
 		public PlayerArenaManager getPlayerArenaManager() { return this.playerArenaManager; }
 
+	private MobArenaManager mobArenaManager;
+		public MobArenaManager getMobArenaManager() { return this.mobArenaManager; }
+
 	public SwordCraftOnline() {
 
 		sco = this;
@@ -157,6 +161,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		this.swordSkillDataManager = new SwordSkillDataManager();
 
 		this.playerArenaManager = new PlayerArenaManager();
+		this.mobArenaManager = new MobArenaManager();	
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}

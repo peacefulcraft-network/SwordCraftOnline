@@ -87,7 +87,7 @@ public class ActiveMobArena implements Listener {
         deathTracker = new HashMap<>();
 
         String worldName = ma.getWorldName();
-        activeWorldName = worldName + "-" + uuid.toString();
+        activeWorldName = worldName + ":" + uuid.toString();
         activeWorld = WorldUtil.copyWorld(worldName, activeWorldName);
 
         if (activeWorld == null) {
@@ -199,10 +199,12 @@ public class ActiveMobArena implements Listener {
                 "Match Summary!\n Group Kills: " + totalKills + 
                     "\n Level Reached: " + level + "\n Deaths: " + deaths + "\n Total: " + exp,
                 0);
+
+            SwordCraftOnline.getPluginInstance().getMobArenaManager().teleportBaseSpawn(s);
         }
 
-        // TODO: Teleport players to base world
-        // TODO: Delete world and instance
+        // Queuing world unload
+        SwordCraftOnline.getPluginInstance().getMobArenaManager().addWorldRemove(activeWorldName);
     }
 
     /**
