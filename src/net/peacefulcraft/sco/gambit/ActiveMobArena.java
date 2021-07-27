@@ -15,6 +15,7 @@ import net.peacefulcraft.sco.gambit.MobArena.MobConfig;
 import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.utilities.LocationUtil;
 import net.peacefulcraft.sco.utilities.Pair;
 import net.peacefulcraft.sco.utilities.WorldUtil;
 
@@ -184,11 +185,39 @@ public class ActiveMobArena implements Listener {
             mm = mc.getMMName();
         }
 
+        /**
+         * Spawns a configured mob within one of the spawning regions
+         * @param regions
+         * @return List of mobs spawned in this pass
+         */
         public List<ActiveMob> spawn(List<Pair<Location, Location>> regions) {
             
+            // Back out if we are maxed out
+            List<ActiveMob> out = new ArrayList<>();
+            if (spawned >= amount) { return out; }
 
+            // Resetting spawn amount if we are about to max out
+            int spawnAmount = SwordCraftOnline.r.nextInt(10);
+            if (spawned + spawnAmount >= amount) {
+                spawnAmount = amount - spawned;
+            }
 
-            return null;
+            for (int i = 0; i <= spawnAmount; i++) {
+
+                Pair<Location, Location> p = regions.get(SwordCraftOnline.r.nextInt(regions.size() - 1));
+                Location first = p.getFirst();
+                Location second = p.getSecond();
+
+                ActiveMob am = SwordCraftOnline.getPluginInstance().getMobManager().spawnMob(
+                    mm, 
+                    LocationUtil.getLocationsWithinSquare(first, second), 
+                    level);
+                if (am == null) { continue; }
+                out.add(am);
+                spawned++;
+            }
+
+            return out;
         }
 
     }
