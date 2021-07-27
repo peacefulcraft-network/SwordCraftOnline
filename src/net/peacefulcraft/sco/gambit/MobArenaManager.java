@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.gambit;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,16 +9,22 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
 import net.peacefulcraft.sco.mythicmobs.io.IOLoader;
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
 import net.peacefulcraft.sco.utilities.WorldUtil;
 
-public class MobArenaManager implements Runnable {
+public class MobArenaManager implements Runnable, Listener {
     
     private HashMap<String, MobArena> arenas;
 
@@ -28,6 +35,8 @@ public class MobArenaManager implements Runnable {
     private BukkitTask arenaTask;
 
     private World baseWorld;
+
+    private HashMap<SCOPlayer, MobArenaParty> parties;
 
     public MobArenaManager() {
 
@@ -102,5 +111,203 @@ public class MobArenaManager implements Runnable {
             activeArenas.remove(uuid);
         }
         worldRemoveQueue.clear();
+    }
+
+    /*
+     * 
+     * Gambit party logic
+     *
+     */
+
+    @EventHandler
+    public void playerLogOff(PlayerQuitEvent ev) {
+        SCOPlayer s = GameManager.findSCOPlayer(ev.getPlayer());
+        if (s == null) { return; }
+
+        if (parties.containsKey(s)) {
+            disbandParty(s);
+            return;
+        }
+
+        for (MobArenaParty map : parties.values()) {
+            if (map.checkMembers(s)) {
+                map.leave(s);
+            }
+        }
+    }
+    
+
+    /**
+     * Creates new mob arena party
+     * @param leader Owner of the party
+     */
+    public void createParty(SCOPlayer leader) {
+        MobArenaParty map = new MobArenaParty(leader);
+        parties.put(leader, map);
+
+        Announcer.messagePlayer(
+            leader, 
+            PlayerArenaManager.getPrefix(), 
+            "You are now a Gambit Party leader..", 
+            0);
+    }
+
+    /**
+     * Creates new mob arena party
+     * @param leader
+     */
+    public void createParty(Player leader) {
+        SCOPlayer s = GameManager.findSCOPlayer(leader);
+        if (s == null) { return; }
+        createParty(s);
+    }
+
+    /**
+     * Sends party invite
+     * @param leader
+     * @param name
+     */
+    public void sendPartyInvite(SCOPlayer leader, String name) {
+        MobArenaParty map = parties.get(leader);
+
+        SCOPlayer invitee = GameManager.findSCOPlayer(name);
+        if (invitee == null) {
+            Announcer.messagePlayer(
+                leader, 
+                PlayerArenaManager.getPrefix(), 
+                "Cannot send invite to this person!", 
+                0);
+            return;
+        }
+        map.sendInvite(invitee);
+    }
+
+    /**
+     * Accepts / deny party invite
+     * @param invitee
+     * @param leader
+     * @param accept
+     */
+    public void acceptPartyInvite(SCOPlayer invitee, String leader, boolean accept) {
+        SCOPlayer s = GameManager.findSCOPlayer(leader);
+        if (s == null) {
+            Announcer.messagePlayer(invitee, PlayerArenaManager.getPrefix(), "Party not found..", 0);
+            return;
+        }
+
+        MobArenaParty map = parties.get(s);
+        if (map == null) {
+            Announcer.messagePlayer(invitee, PlayerArenaManager.getPrefix(), "Party not found..", 0);
+            return;
+        }
+
+        for (MobArenaParty mapp : parties.values()) {
+            if (mapp.checkMembers(invitee)) {
+                Announcer.messagePlayer(invitee, PlayerArenaManager.getPrefix(), "Idiot.. You cannot join another party.", 0);
+                return;
+            }
+        } 
+
+        map.acceptInvite(invitee, accept);
+    }
+
+    /**
+     * Disbands party by leader
+     * @param leader
+     */
+    public void disbandParty(SCOPlayer leader) {
+        MobArenaParty map = parties.get(leader);
+        if (map == null) { return; }
+
+        map.disband();
+        parties.remove(leader);
+    }
+
+    private class MobArenaParty {
+
+        private SCOPlayer leader;
+
+        private List<SCOPlayer> members;
+
+        private HashMap<SCOPlayer, Long> invites;
+
+        public MobArenaParty(SCOPlayer leader) {
+            this.leader = leader;
+            
+            members = new ArrayList<>();
+            invites = new HashMap<>();
+
+            members.add(leader);
+        }
+
+        /** 
+         * Verifies if player is member of this party
+         */
+        public boolean checkMembers(SCOPlayer s) {
+            return members.contains(s);
+        }
+
+        /**
+         * Removes player from party
+         * @param s
+         */
+        public void leave(SCOPlayer s) {
+            members.remove(s);
+        }
+
+        /**
+         * Sends disband messages to members
+         */
+        public void disband() {
+            for (SCOPlayer member : members) {
+                Announcer.messagePlayer(member, PlayerArenaManager.getPrefix(), "Party disbanded..", 0);
+            }
+        }
+
+        /**
+         * Sends player invite to party
+         * @param s
+         */
+        public void sendInvite(SCOPlayer s) {
+            invites.put(s, System.currentTimeMillis() + 60000);
+            Announcer.messagePlayer(
+                s, 
+                PlayerArenaManager.getPrefix(), 
+                "You have been invite to a Gambit..\nType: /gambit accept " + leader.getName() + 
+                "\n to accept or: /gambit deny " + leader.getName(), 
+                0);
+        }
+
+        public void acceptInvite(SCOPlayer s, boolean accept) {
+            Long time = invites.get(s);
+            if (time == null) { return; }
+
+            if (time < System.currentTimeMillis()) { 
+                Announcer.messagePlayer(s, PlayerArenaManager.getPrefix(), "Invite has expired!", 0);
+                invites.remove(s);
+             
+            } else if (accept) {
+                members.add(s);
+                for (SCOPlayer member : members) {
+                    Announcer.messagePlayer(
+                        member, 
+                        PlayerArenaManager.getPrefix(),
+                        s.getName() + " has joined the Gambit..", 
+                        0);
+                }
+                invites.remove(s);
+            } else {
+                invites.remove(s);
+                Announcer.messagePlayer(s, 
+                    PlayerArenaManager.getPrefix(), 
+                    "Denied " + leader.getName() + "'s invite.", 
+                    0);
+                Announcer.messagePlayer(
+                    leader, 
+                    PlayerArenaManager.getPrefix(), 
+                    s.getName() + " has denied your invite.", 
+                    0);
+            }
+        }
     }
 }
