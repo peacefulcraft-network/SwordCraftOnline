@@ -18,15 +18,15 @@ import org.bukkit.WorldCreator;
  */
 public class WorldUtil {
 
-    public static void copyWorld(String originalWorld, String newWorldName) {
+    public static World copyWorld(String originalWorld, String newWorldName) {
         World world = Bukkit.getServer().getWorld(originalWorld);
-        if (world == null) { return; }
-        copyWorld(world, newWorldName);
+        if (world == null) { return null; }
+        return copyWorld(world, newWorldName);
     }
 
-    public static void copyWorld(World originalWorld, String newWorldName) {
+    public static World copyWorld(World originalWorld, String newWorldName) {
         copyFileStructure(originalWorld.getWorldFolder(), new File(Bukkit.getWorldContainer(), newWorldName));
-        new WorldCreator(newWorldName).createWorld();
+        return new WorldCreator(newWorldName).createWorld();
     }
 
     public static boolean unloadWorld(String name) {
