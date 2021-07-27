@@ -2,10 +2,15 @@ package net.peacefulcraft.sco.gambit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+
 import net.peacefulcraft.sco.mythicmobs.io.MythicConfig;
+import net.peacefulcraft.sco.utilities.Pair;
 
 /**
  * Gambit mob arena configurations
@@ -20,18 +25,34 @@ public class MobArena {
 
     private String internalName;
 
+    private String worldName;
+        public String getWorldName() { return worldName; }
+
     private int size;
         public int getSize() { return size; }
 
+    private int spawnX;
+
+    private int spawnY;
+
+    private int spawnZ;
+
     private HashMap<Integer, MobArenaLevel> levels;
+    
+    private ArrayList<HashMap<String, Integer>> spawnRegions;
     
     public MobArena(String file, String internalName, MythicConfig mc) {
         config = mc;
         this.file = file;
         this.internalName = internalName;
 
-        levels = new HashMap<>();
+        worldName = mc.getString("WorldName");
+        spawnX = mc.getInteger("spawnX");
+        spawnY = mc.getInteger("spawnY");
+        spawnZ = mc.getInteger("spawnZ");
 
+
+        levels = new HashMap<>();
         for (int i = 1; i <= 10; i++) {
             List<String> levelConfigs = config.getStringList("level-" + i);
             if (levelConfigs == null || levelConfigs.isEmpty()) {
@@ -41,6 +62,66 @@ public class MobArena {
 
             levels.put(i, new MobArenaLevel(this, levelConfigs));
         }
+
+        spawnRegions = new ArrayList<>();
+        /**Might change above loop to this.. */
+        for (String s : config.getStringList("spawnRegions")) {
+            HashMap<String, Integer> loc = new HashMap<>();
+            for (String ss : s.split("$$")) {
+                if (ss.contains("x1")) {
+                    loc.put("x1", Integer.valueOf(ss.split(":")[1]));
+                } else if (ss.contains("x2")) {
+                    loc.put("x2", Integer.valueOf(ss.split(":")[1]));
+                } else if (ss.contains("y1")) {
+                    loc.put("y1", Integer.valueOf(ss.split(":")[1]));
+                } else if (ss.contains("y2")) {
+                    loc.put("y2", Integer.valueOf(ss.split(":")[1]));
+                } else if (ss.contains("z1")) {
+                    loc.put("z1", Integer.valueOf(ss.split(":")[1]));
+                } else if (ss.contains("z2")) {
+                    loc.put("z2", Integer.valueOf(ss.split(":")[1]));
+                }
+            }
+            spawnRegions.add(loc);
+        }
+    }
+
+    /**
+     * Creates new location from active world
+     * @param world Active Arena world
+     * @return Spawn location
+     */
+    public Location getPlayerSpawn(World world) {
+        return new Location(world, spawnX, spawnY, spawnZ);
+    }
+
+    /**
+     * Creates pairs of locations marking spawning regions
+     * @param world Active Arena world
+     * @return list of spawning regions
+     */
+    public List<Pair<Location, Location>> getSpawnRegions(World world) {
+        ArrayList<Pair<Location, Location>> out = new ArrayList<>();
+        for (HashMap<String, Integer> map : spawnRegions) {
+            Location loc1 = new Location(world, map.get("x1"), map.get("y1"), map.get("z1"));
+            Location loc2 = new Location(world, map.get("x2"), map.get("y2"), map.get("z2"));
+            out.add(new Pair<Location, Location>(loc1, loc2));
+        }
+        return out;
+    }
+
+    /**
+     * Gets arena level mob configs
+     * @param level Desired level, converted to within size
+     * @return Mob configs
+     */
+    public List<MobConfig> getMobConfigs(int level) {
+        if (level > size) {
+            while (level > size) {
+                level -= size;
+            }
+        }
+        return levels.get(level).getMobConfigs();
     }
 
     private class MobArenaLevel {
@@ -48,6 +129,7 @@ public class MobArena {
         private MobArena parent;
 
         private List<MobConfig> mobConfigs;
+            public List<MobConfig> getMobConfigs() { return Collections.unmodifiableList(mobConfigs); }
 
         public MobArenaLevel(MobArena ma, List<String> mobs) {
             parent = ma;
@@ -60,7 +142,7 @@ public class MobArena {
 
     }
 
-    private class MobConfig {
+    public class MobConfig {
 
         private String sConfig;
 

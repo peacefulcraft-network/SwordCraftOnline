@@ -1,9 +1,9 @@
 package net.peacefulcraft.sco.gambit;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.mythicmobs.io.IOHandler;
@@ -14,9 +14,12 @@ public class MobArenaManager {
     
     private HashMap<String, MobArena> arenas;
 
+    private HashMap<UUID, ActiveMobArena> activeArenas;
+
     public MobArenaManager() {
 
         arenas = new HashMap<>();
+        activeArenas = new HashMap<>();
         load();
 
     }
@@ -43,5 +46,19 @@ public class MobArenaManager {
                 }
             }
         }
+    }
+
+    /**
+     * Initializes active arena of desired map config
+     * @param arenaName wanted map config
+     * @return initialized active instance
+     */
+    public ActiveMobArena initializeArena(String arenaName) {
+        UUID uuid = UUID.randomUUID();
+        ActiveMobArena ama = new ActiveMobArena(
+            arenas.get(arenaName), 
+            uuid);
+        activeArenas.put(uuid, ama);
+        return ama;
     }
 }
