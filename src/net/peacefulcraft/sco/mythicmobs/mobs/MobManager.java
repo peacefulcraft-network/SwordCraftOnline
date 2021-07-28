@@ -71,9 +71,14 @@ public class MobManager implements Runnable {
     /** Main task logic for mob manager*/
     private BukkitTask mobTask;
 
+    /** Weeber mini boss manager */
+    private WeeberManager weeberManager;
+
     public MobManager(SwordCraftOnline s) {
         this.s = s;
         this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 100);
+
+        weeberManager = new WeeberManager();
 
         loadMobs();
     }
@@ -595,6 +600,16 @@ public class MobManager implements Runnable {
         } else {
             this.mobTask.cancel();
         }
+    }
+
+    /**
+     * Triggers any mob related night wave effects
+     * beyond spawn configurations
+     * 
+     * WeeberManager, etc.
+     */
+    public void triggerNightwaveEffects() {
+        weeberManager.trigger();
     }
 
     /**

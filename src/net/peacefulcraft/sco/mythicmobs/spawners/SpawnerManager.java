@@ -194,6 +194,7 @@ public class SpawnerManager implements Runnable {
         if(!this.isNightwave && !GameManager.isDay() && SwordCraftOnline.r.nextInt(199) == 1) {
             this.isNightwave = true; 
             Announcer.messageServer(ChatColor.BLACK + "[" + ChatColor.RED + "Nightwave" + ChatColor.BLACK + "]" + ChatColor.RED + " is approaching...", 0);
+            SwordCraftOnline.getPluginInstance().getMobManager().triggerNightwaveEffects();
         } else if(GameManager.isDay() && this.isNightwave) {
             this.isNightwave = false;
         }
