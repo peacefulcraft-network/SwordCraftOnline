@@ -72,13 +72,13 @@ public class MobManager implements Runnable {
     private BukkitTask mobTask;
 
     /** Weeber mini boss manager */
-    private WeeberManager weeberManager;
+    private WeeperManager weeberManager;
 
     public MobManager(SwordCraftOnline s) {
         this.s = s;
         this.mobTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 0, 100);
 
-        weeberManager = new WeeberManager();
+        weeberManager = new WeeperManager();
 
         loadMobs();
     }
