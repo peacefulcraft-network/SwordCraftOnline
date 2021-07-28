@@ -36,6 +36,7 @@ import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 public class WeeperManager implements Listener {
 
     private final String PREFIX = ChatColor.BLACK + "[" + ChatColor.MAGIC + "Weeper" + ChatColor.BLACK + "]";
+        public final String getPrefix() { return PREFIX; }
     
     private ArrayList<UUID> targets;
 

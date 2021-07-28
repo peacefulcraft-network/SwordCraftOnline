@@ -40,6 +40,7 @@ import net.peacefulcraft.sco.mythicmobs.listeners.MobOptions;
 import net.peacefulcraft.sco.mythicmobs.listeners.MobSpawnHandler;
 import net.peacefulcraft.sco.mythicmobs.listeners.MythicMobDeathEvent;
 import net.peacefulcraft.sco.mythicmobs.mobs.MobManager;
+import net.peacefulcraft.sco.mythicmobs.mobs.WeeperManager;
 import net.peacefulcraft.sco.mythicmobs.spawners.SpawnerManager;
 import net.peacefulcraft.sco.particles.EffectManager;
 import net.peacefulcraft.sco.quests.QuestManager;
@@ -203,6 +204,7 @@ public class SwordCraftOnline extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MobSpawnHandler(), this);
 		getServer().getPluginManager().registerEvents(new CentipedeDamage(), this);
 		getServer().getPluginManager().registerEvents(new HealthBarUpdate(), this);
+		getServer().getPluginManager().registerEvents(new WeeperManager(), this);
 		
 		// Register Menu Opener
 		getServer().getPluginManager().registerEvents(new MerchantListeners(), this);
