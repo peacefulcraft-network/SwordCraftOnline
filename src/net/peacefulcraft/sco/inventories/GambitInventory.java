@@ -98,6 +98,7 @@ public class GambitInventory extends BukkitInventoryBase {
                         1);
                     s.getPlayerInventory().addItem(ident);
                 }
+                ev.setCancelled(true);
             }
         }
 
@@ -200,7 +201,7 @@ public class GambitInventory extends BukkitInventoryBase {
                     data.addProperty("isInfoProvider", true);
                     ItemIdentifier ident = ItemIdentifier.generateIdentifier(name, 1);
 
-                    out.put(index, ItemIdentifier.generateItem(ident));
+                    out.put(index, ItemIdentifier.generateItem(ident.getName(), ident.getTier(), 1, data));
                 } catch(IndexOutOfBoundsException ex) {
                     if (isFirst) { return null; }
                     break row;

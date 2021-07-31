@@ -75,7 +75,7 @@ public abstract class Announcer {
         addCooldown(message, s, cooldown);
 
         if(checkCooldown(message, s)) {
-            s.getPlayer().sendMessage(prefix + ChatColor.WHITE + message);
+            s.getPlayer().sendMessage(prefix + ChatColor.WHITE + " "+ message);
         }
     }
 
