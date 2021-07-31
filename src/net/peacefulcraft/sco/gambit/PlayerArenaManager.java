@@ -38,7 +38,7 @@ public class PlayerArenaManager implements Runnable, Listener {
     private Pair<SCOPlayer, SCOPlayer> currentMatch;
 
     private final Location ARENA_LOC = new Location(Bukkit.getWorld("SwordCraftOnline"), 58, 5, 177);
-    private final Location SPAWN_LOC = new Location(Bukkit.getWorld("SwordCraftOnline", 58, 5, 166);
+    private final Location SPAWN_LOC = new Location(Bukkit.getWorld("SwordCraftOnline"), 58, 5, 166);
 
     public PlayerArenaManager() {
         playerQueue = new LinkedList<>();
