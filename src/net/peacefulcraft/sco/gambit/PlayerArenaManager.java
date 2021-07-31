@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,12 +37,10 @@ public class PlayerArenaManager implements Runnable, Listener {
 
     private Pair<SCOPlayer, SCOPlayer> currentMatch;
 
-    public PlayerArenaManager() {
-        if (!SwordCraftOnline.getSCOConfig().isAlpha()) {
-            SwordCraftOnline.logDebug("[PlayerArenaManager] Not Alpha. Aborting load.");
-            return;
-        }
+    private final Location ARENA_LOC = new Location(Bukkit.getWorld("SwordCraftOnline"), 58, 5, 177);
+    private final Location SPAWN_LOC = new Location(Bukkit.getWorld("SwordCraftOnline", 58, 5, 166);
 
+    public PlayerArenaManager() {
         playerQueue = new LinkedList<>();
         openChallenges = new HashMap<Pair<SCOPlayer, SCOPlayer>, Long>();
         currentMatch = null;
@@ -54,6 +53,7 @@ public class PlayerArenaManager implements Runnable, Listener {
 
     @Override
     public void run() {
+        SwordCraftOnline.logDebug("[PlayerArenaManager] Initiating task run.");
 
         // Clearing expired challenges
         Iterator<Entry<Pair<SCOPlayer, SCOPlayer>, Long>> iter = openChallenges.entrySet().iterator();
@@ -79,6 +79,7 @@ public class PlayerArenaManager implements Runnable, Listener {
         // Moving queue into arena
         if (currentMatch == null) {
             try {
+                SwordCraftOnline.logDebug("[PlayerArenaManager] Preparing new current match.");
                 Pair<SCOPlayer, SCOPlayer> pair = playerQueue.remove();
                 while (!pairHealthCheck(pair)) {
                     pair = playerQueue.remove();    
@@ -86,7 +87,8 @@ public class PlayerArenaManager implements Runnable, Listener {
 
                 currentMatch = pair;
 
-                // TODO: Teleport players to arena
+                pair.getFirst().getPlayer().teleport(ARENA_LOC);
+                pair.getSecond().getPlayer().teleport(ARENA_LOC);
 
             } catch(NoSuchElementException e) {}
         }
@@ -121,7 +123,8 @@ public class PlayerArenaManager implements Runnable, Listener {
     }
 
     private void endMatch(SCOPlayer winner, SCOPlayer loser) {
-        // TODO: Teleport outside of the arena
+        winner.getPlayer().teleport(SPAWN_LOC);
+        loser.getPlayer().teleport(SPAWN_LOC);
 
         winner.setHealth(winner.getMaxHealth());
         loser.setHealth(loser.getMaxHealth());
