@@ -103,6 +103,7 @@ public class MobOptions implements Listener {
         }
 
         if(mm.getPreventSlimeSplit()) {
+            SwordCraftOnline.logDebug("[Mob Options] Cancelled slime split.");
             e.setCancelled(true);
         }
     }

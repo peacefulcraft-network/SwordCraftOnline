@@ -60,6 +60,12 @@ public class MobManager implements Runnable {
     private HashMap<String, Centipede> centipedeList = new HashMap<String, Centipede>();
         public Map<String, Centipede> getCentipedeList() { return Collections.unmodifiableMap(this.centipedeList); }
 
+    private HashMap<String, TentacleMob> tentacleMobList = new HashMap<>();
+        public void removeAllTentacleMobs() { 
+            for(TentacleMob t : tentacleMobList.values()) { t.kill(); }
+        }
+        public void addTentacle(String name, TentacleMob t) { this.tentacleMobList.put(name, t); }
+
     /**Registry of active herculean level mobs */
     private HashMap<UUID, ActiveMob> herculeanRegistry = new HashMap<>();
         public Map<UUID, ActiveMob> getHerculeanRegistry() { return Collections.unmodifiableMap(this.herculeanRegistry); }

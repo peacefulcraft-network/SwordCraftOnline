@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockIterator;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
@@ -112,6 +113,29 @@ public class LocationUtil {
     }
 
     /**
+     * Gets locations in intervals around a hollow cylinder of height 1.
+     * @param loc
+     * @param radius
+     * @param degreeOffset
+     * @return
+     */
+    public static List<Location> getCylinderLocations(Location loc, int radius, int degreeOffset) {
+        List<Location> locations = new ArrayList<Location>();
+        int x;
+        int y = loc.getBlockY();
+        int z;
+        for(int j = 0; j <= 360; j += degreeOffset) {
+            double angle = j * Math.PI / 180;
+            x = (int)(loc.getX() + radius * Math.cos(angle));
+            z = (int)(loc.getZ() + radius * Math.sin(angle));
+
+            Location current = new Location(loc.getWorld(), x, y ,z);
+            locations.add(current);
+        }
+        return locations;
+    }
+
+    /**
      * Given location, returns all locations in cylinder shape of given dimensions
      * @param loc Location to be checked
      * @param height Height of cylinder
@@ -178,7 +202,7 @@ public class LocationUtil {
      * Helper method. Conforms location to ground
      * @return Location set to ground
      */
-    private static Location conform(Location loc) {
+    public static Location conform(Location loc) {
         Block block = loc.getBlock();
         if(block.getType().equals(Material.AIR) || block.getType() == null) {
             Location bLoc = block.getLocation();
@@ -201,6 +225,31 @@ public class LocationUtil {
             }
         }
         return block.getLocation();
+    }
+
+    public static Location faceLocation(Location from, Location to) {
+        double xDiff = to.getX() - from.getX();
+        double yDiff = to.getY() - from.getY();
+        double zDiff = to.getZ() - from.getZ();
+
+        double distanceXZ = Math.sqrt(xDiff * xDiff + zDiff * zDiff);
+        double distanceY = Math.sqrt(distanceXZ * distanceXZ + yDiff * yDiff);
+
+        double yaw = distanceXZ == 0 ? Math.toDegrees(Math.acos(xDiff)) : Math.toDegrees(Math.acos(xDiff / distanceXZ));
+        double pitch = distanceY == 0 ? Math.toDegrees(Math.acos(yDiff)) - 90.0D : Math.toDegrees(Math.acos(yDiff / distanceY)) - 90.0D;
+        if (zDiff < 0.0D) {
+            yaw += Math.abs(180.0D - yaw) * 2.0D;
+        }
+        Location loc = from.clone();
+        loc.setYaw((float) (yaw - 90.0F));
+        loc.setPitch((float) (pitch - 90.0F));
+        return loc;
+    }
+
+    public static boolean blockEqual(Location loc1, Location loc2) {
+        return loc1.getBlockX() == loc2.getBlockX() 
+            && loc1.getBlockY() == loc2.getBlockY()
+            && loc1.getBlockZ() == loc2.getBlockZ();
     }
 
 }

@@ -27,6 +27,7 @@ import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.Centipede;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
+import net.peacefulcraft.sco.mythicmobs.mobs.TentacleMob;
 import net.peacefulcraft.sco.mythicmobs.mobs.bosses.BossIdentifier;
 import net.peacefulcraft.sco.mythicmobs.mobs.bosses.MythicBoss;
 import net.peacefulcraft.sco.mythicmobs.spawners.ActiveSpawner;
@@ -651,6 +652,24 @@ public class SCOAdmin implements CommandExecutor {
 					SwordCraftOnline.getPluginInstance().getMobManager().removeAllCentipede();
 					return true;
 				}	
+			}
+
+			if(args[0].equalsIgnoreCase("tentacle")) {
+				Player p = (Player)sender;
+				if(args[1].equalsIgnoreCase("spawn")) {
+					int tNum = 3;
+					try {
+						tNum = Integer.valueOf(args[2]);
+					} catch(Exception ex) {}
+
+					TentacleMob test = new TentacleMob("Test", tNum);
+					test.spawn(p.getLocation());
+					return true;
+				}
+				if(args[1].equalsIgnoreCase("remove")) {
+					SwordCraftOnline.getPluginInstance().getMobManager().removeAllTentacleMobs();
+					return true;
+				}
 			}
 		}
 		return false;

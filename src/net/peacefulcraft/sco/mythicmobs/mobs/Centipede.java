@@ -13,6 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -22,6 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class Centipede implements Runnable {
 
@@ -41,6 +43,8 @@ public class Centipede implements Runnable {
 
     private BukkitTask moveTask;
 
+    private boolean isTentacle = false;
+
     public Centipede(String name, int size) {
         this(name, size, 20);
     }
@@ -55,43 +59,76 @@ public class Centipede implements Runnable {
     }
 
     /**
+     * Used to spawn component centipedes for bigger mobs
+     * @param name
+     * @param isTentacle
+     */
+    public Centipede(String name, boolean isTentacle) {
+        this(name, 5, 4);
+        this.isTentacle = isTentacle;
+    }
+
+    /**
      * Spawns centipede at given location with 1 block offset.
      */
     public void spawn(Location loc) {
         for(int i = 0; i < this.size; i++) {
-            Entity temp = loc.getWorld().spawnEntity(loc.add(0 + i, 0, 0), EntityType.ZOMBIE);
+            if(!isTentacle) {
+                Entity temp = loc.getWorld().spawnEntity(loc.add(0 + i, 0, 0), EntityType.ZOMBIE);
 
-            Zombie z = (Zombie)temp;
-            z.setHealth(1);
-            z.setBaby(true);
-            z.setSilent(true);
-            z.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1));
+                Zombie z = (Zombie)temp;
+                z.setHealth(1);
+                z.setBaby(true);
+                z.setSilent(true);
+                z.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1));
+    
+                EntityEquipment ee = z.getEquipment();
+                ee.setHelmet(new ItemStack(Material.BLACK_BED));
+                
+                this.list.add(temp);
+                if(i != 0) { 
+                    ((Mob)temp).setAI(false);
+                    temp.setInvulnerable(true);
+                    temp.setMetadata("centipede", new FixedMetadataValue(SwordCraftOnline.getPluginInstance(), 0));
+                } 
+                if(i == 0) {
+                    temp.setMetadata("centipede", new FixedMetadataValue(SwordCraftOnline.getPluginInstance(), 1));
+                    this.headLocation = temp.getLocation();
+                }
+            } else {
+                Entity temp = loc.getWorld().spawnEntity(loc.add(0 + i, 0, 0), EntityType.SLIME);
 
-            EntityEquipment ee = z.getEquipment();
-            ee.setHelmet(new ItemStack(Material.BLACK_BED));
-            
-            this.list.add(temp);
-            if(i != 0) { 
-                ((Mob)temp).setAI(false);
-                temp.setInvulnerable(true);
-                temp.setMetadata("centipede", new FixedMetadataValue(SwordCraftOnline.getPluginInstance(), 0));
-            } 
-            if(i ==0) {
-                this.headLocation = temp.getLocation();
-                temp.setMetadata("centipede", new FixedMetadataValue(SwordCraftOnline.getPluginInstance(), 1));
+                Slime s = (Slime)temp;
+                s.setHealth(1);
+                int size = this.size - i - 2;
+                if (size <= 0) { size = 1; }
+                s.setSize(size);
+                s.setSilent(true);
+
+                this.list.add(temp);
+                if(i != 0) {
+                    ((Mob)temp).setAI(false);
+                    temp.setInvulnerable(true);
+                    temp.setMetadata("centipede", new FixedMetadataValue(SwordCraftOnline.getPluginInstance(), 0));
+                } else if(i == 0) {
+                    ((Mob)temp).setAI(false);
+                    temp.setInvulnerable(true);
+                    temp.setMetadata("centipede", new FixedMetadataValue(SwordCraftOnline.getPluginInstance(), 0));
+                    this.headLocation = temp.getLocation();
+                }
             }
         }
         SwordCraftOnline.getPluginInstance().getMobManager().addCentipede(this.name, this);
     }
 
-    /**
-     * Mobs movement task logic.
-     * Teleports mobs sequentially behind each other.
-     */
-    @Override
-    public void run() {
-        Location previous = this.headLocation;
-        for(int i = 1; i < this.list.size(); i++) {
+    public void _run_() {
+        _run_(null);
+    }
+
+    public void _run_(Location setLoc) {
+        Location previous = setLoc == null  || LocationUtil.blockEqual(setLoc, this.headLocation)
+            ? this.headLocation : setLoc;
+        for(int i = 0; i < this.list.size(); i++) {
 
             Entity curr = this.list.get(i);
             Location currLoc = curr.getLocation();
@@ -107,6 +144,15 @@ public class Centipede implements Runnable {
             previous = currLoc.clone();
         }
         this.headLocation = this.list.getFirst().getLocation();
+    }
+
+    /**
+     * Mobs movement task logic.
+     * Teleports mobs sequentially behind each other.
+     */
+    @Override
+    public void run() {
+        _run_();
     }
 
     /**
