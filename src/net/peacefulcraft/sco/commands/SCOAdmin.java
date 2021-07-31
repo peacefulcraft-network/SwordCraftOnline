@@ -13,8 +13,10 @@ import org.bukkit.entity.Player;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.inventories.CraftingInventory;
+import net.peacefulcraft.sco.inventories.GambitInventory;
 import net.peacefulcraft.sco.inventories.InfusionInventory;
 import net.peacefulcraft.sco.inventories.InventoryType;
 import net.peacefulcraft.sco.inventories.PlayerDataInventory;
@@ -651,6 +653,32 @@ public class SCOAdmin implements CommandExecutor {
 					SwordCraftOnline.getPluginInstance().getMobManager().removeAllCentipede();
 					return true;
 				}	
+			}
+
+			if(args[0].equalsIgnoreCase("gambit")) {
+				Player p = (Player)sender;
+
+				SCOPlayer s = GameManager.findSCOPlayer(p);
+
+				if(args[1].equalsIgnoreCase("store")) {
+					GambitInventory gi = new GambitInventory(s);
+					gi.openInventory(s);
+				} else if(args[1].equalsIgnoreCase("challenge")) {
+					SCOPlayer ss = GameManager.findSCOPlayer(args[2]);
+					if (ss == null) {
+						Announcer.messagePlayer(s, "Could not find player", 0);
+						return true;
+					}
+
+					SwordCraftOnline.getPluginInstance().getPlayerArenaManager().initiateChallenge(s, ss);
+					return true;
+				} else if(args[1].equalsIgnoreCase("accept")) {
+					SwordCraftOnline.getPluginInstance().getPlayerArenaManager().respondChallenge(s, true);
+					return true;
+				} else if(args[1].equalsIgnoreCase("deny")) {
+					SwordCraftOnline.getPluginInstance().getPlayerArenaManager().respondChallenge(s, false);
+					return true;
+				}
 			}
 		}
 		return false;
