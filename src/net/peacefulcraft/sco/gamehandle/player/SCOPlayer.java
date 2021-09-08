@@ -29,6 +29,7 @@ import net.peacefulcraft.sco.inventories.PlayerInventory;
 import net.peacefulcraft.sco.inventories.QuestBookInventory;
 import net.peacefulcraft.sco.inventories.SwordSkillInventory;
 import net.peacefulcraft.sco.inventories.utilities.EmptyIdentifierGenerator;
+import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
@@ -36,6 +37,7 @@ import net.peacefulcraft.sco.mythicmobs.mobs.MythicPet;
 import net.peacefulcraft.sco.particles.DisplayType;
 import net.peacefulcraft.sco.quests.QuestBookManager;
 import net.peacefulcraft.sco.storage.PlayerDataManager;
+import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventoryRegistryLookupTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 import net.peacefulcraft.sco.swordskills.SwordSkillCaster;
@@ -242,6 +244,45 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 			// Create a new Inventory if one does not exist already
 			Long inventoryId = new InventorySaveTask(-1, this.playerRegistryId, InventoryType.SWORD_SKILL, EmptyIdentifierGenerator.generateEmptyIdentifierList(9)).saveInventory().get();
 			this.swordSkillInventory = new SwordSkillInventory(this, inventoryId, this.playerRegistryId);
+		}
+
+		// TODO: Convert this to XCOM @par
+		if (inventoryTypeIdMap.containsKey(InventoryType.DATA)) {
+			SwordCraftOnline.logDebug("Starting content fetch for DataInventory " + inventoryTypeIdMap.get(InventoryType.DATA));
+			CompletableFuture.runAsync(() -> {
+				new InventoryLoadTask(inventoryTypeIdMap.get(InventoryType.DATA)).fetchInventory().thenAcceptAsync((items) -> {
+					Bukkit.getScheduler().runTaskAsynchronously(SwordCraftOnline.getPluginInstance(), () -> {
+						for (ItemIdentifier ident : items) {
+							
+							if (ident.getDisplayName().equalsIgnoreCase("AlphaDataItem")) {
+								JsonObject obj = ((CustomDataHolder)ident).getCustomData();
+								
+								try {
+									alphaExperience = obj.get("AlphaExperience").getAsInt();
+								} catch(Exception ex) {
+									SwordCraftOnline.logDebug("[SCOPlayer] Issue loading Alpha Experience. Defaulted.");
+									alphaExperience = 0;
+								}
+
+								try {
+									alphaWinStreak = obj.get("AlphaWinStreak").getAsInt();
+								} catch(Exception ex) {
+									SwordCraftOnline.logDebug("[SCOPlayer] Issue loading Alpha Winstreak. Defaulted.");
+									alphaWinStreak = 0;
+								}
+								
+							}
+						}
+					});
+				});
+			});
+			SwordCraftOnline.logDebug("Successfully loaded DataInventory " + inventoryTypeIdMap.get(InventoryType.DATA) + ", Winstreak: " + alphaWinStreak + ", Exp: " + alphaExperience);
+		} else {
+			SwordCraftOnline.logDebug("Generating default DataInventory");
+			new InventorySaveTask(-1, this.playerRegistryId, InventoryType.DATA, EmptyIdentifierGenerator.generateEmptyIdentifierList(9)).saveInventory();
+
+			alphaExperience = 0;
+			alphaWinStreak = 0;
 		}
 
 		CompletableFuture.allOf(

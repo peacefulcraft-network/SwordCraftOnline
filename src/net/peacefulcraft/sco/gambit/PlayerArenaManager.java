@@ -60,7 +60,7 @@ public class PlayerArenaManager implements Runnable, Listener {
         while (iter.hasNext()) {
             Entry<Pair<SCOPlayer, SCOPlayer>, Long> entry = iter.next();
 
-            if (entry.getValue() + 3600 < System.currentTimeMillis()) {
+            if (entry.getValue() + 60000 < System.currentTimeMillis()) {
                 Pair<SCOPlayer, SCOPlayer> pair = entry.getKey();
                 Announcer.messagePlayer(
                     pair.getFirst(), 
@@ -85,7 +85,8 @@ public class PlayerArenaManager implements Runnable, Listener {
                     pair = playerQueue.remove();    
                 }
 
-                currentMatch = pair;
+                currentMatch = pair.clone();
+                SwordCraftOnline.logDebug("[PlayerArenaManager] CurrentMatch: " + currentMatch.toString());
 
                 pair.getFirst().getPlayer().teleport(ARENA_LOC);
                 pair.getSecond().getPlayer().teleport(ARENA_LOC);
@@ -94,7 +95,7 @@ public class PlayerArenaManager implements Runnable, Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void DeathPreventionListener(EntityDamageEvent ev) {
         // Don't care if match is null
         if (currentMatch == null) { return; }
@@ -112,6 +113,8 @@ public class PlayerArenaManager implements Runnable, Listener {
         // Main processing
         double damage = s.calculateDamage(ev.getCause().toString(), ev.getFinalDamage(), true);
         if (s.getHealth() - damage <= 0) { 
+
+            SwordCraftOnline.logDebug("[PlayerArenaManager] End match triggered.");
 
             if (s.getName().equalsIgnoreCase(currentMatch.getFirst().getName())) { 
                 endMatch(currentMatch.getSecond(), currentMatch.getFirst());
