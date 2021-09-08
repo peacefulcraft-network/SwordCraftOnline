@@ -104,6 +104,8 @@ public class GameManager {
 		// Unregister the Player's personal inventory from the InventoryEvent routing system
 		SwordCraftOnline.getInventoryListeners().unregisterPlayerInventoryView(s, p.getOpenInventory());
 
+		s.processLeave();
+
 		p.teleport(Teleports.getQuit());
 		players.remove(p.getUniqueId());
 

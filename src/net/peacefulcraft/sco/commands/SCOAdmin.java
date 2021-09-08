@@ -678,6 +678,14 @@ public class SCOAdmin implements CommandExecutor {
 				} else if(args[1].equalsIgnoreCase("deny")) {
 					SwordCraftOnline.getPluginInstance().getPlayerArenaManager().respondChallenge(s, false);
 					return true;
+				} else if (args[1].equalsIgnoreCase("setexp")) {
+					s.setAlphaExperience(Integer.valueOf(args[2]));
+					Announcer.messagePlayer(s, "[Gambit Admin]", "Gambit Experience set to: " + s.getAlphaExperience(), 0);
+					return true;
+				} else if (args[1].equalsIgnoreCase("setstreak")) {
+					s.setAlphaWinStreak(Integer.valueOf(args[2]));
+					Announcer.messagePlayer(s, "[Gambit Admin]", "Gambit Win Streak set to: " + s.getAlphaWinStreak(), 0);
+					return true;
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.gamehandle.player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.duel.Duel;
@@ -252,9 +254,10 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 			CompletableFuture.runAsync(() -> {
 				new InventoryLoadTask(inventoryTypeIdMap.get(InventoryType.DATA)).fetchInventory().thenAcceptAsync((items) -> {
 					Bukkit.getScheduler().runTaskAsynchronously(SwordCraftOnline.getPluginInstance(), () -> {
+						boolean set = false;
 						for (ItemIdentifier ident : items) {
 							
-							if (ident.getDisplayName().equalsIgnoreCase("AlphaDataItem")) {
+							if (ident.getName().equalsIgnoreCase("Alpha Data")) {
 								JsonObject obj = ((CustomDataHolder)ident).getCustomData();
 								
 								try {
@@ -270,13 +273,17 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 									SwordCraftOnline.logDebug("[SCOPlayer] Issue loading Alpha Winstreak. Defaulted.");
 									alphaWinStreak = 0;
 								}
-								
+								set = true;
 							}
+						}
+						if (!set) {
+							SwordCraftOnline.logInfo("Failed to load Alpha data");
+						} else {
+							SwordCraftOnline.logDebug("Successfully loaded DataInventory " + inventoryTypeIdMap.get(InventoryType.DATA) + ", Winstreak: " + alphaWinStreak + ", Exp: " + alphaExperience);
 						}
 					});
 				});
 			});
-			SwordCraftOnline.logDebug("Successfully loaded DataInventory " + inventoryTypeIdMap.get(InventoryType.DATA) + ", Winstreak: " + alphaWinStreak + ", Exp: " + alphaExperience);
 		} else {
 			SwordCraftOnline.logDebug("Generating default DataInventory");
 			new InventorySaveTask(-1, this.playerRegistryId, InventoryType.DATA, EmptyIdentifierGenerator.generateEmptyIdentifierList(9)).saveInventory();
@@ -289,6 +296,36 @@ public class SCOPlayer extends ModifierUser implements SwordSkillCaster
 			this.playerInventory.inventoryLoadPromise(),
 			this.swordSkillInventory.inventoryReadyPromise()
 		).get(10, TimeUnit.SECONDS);
+	}
+
+	/**
+	 * Handles necessary functionality of player
+	 * logging off SCO
+	 */
+	public void processLeave() {
+		try {
+			// Handling saving their Gambit data
+			InventoryRegistryLookupTask inventoriesLookup = new InventoryRegistryLookupTask(playerRegistryId);
+			Map<InventoryType, Long> inventoryTypeIdMap;
+			inventoryTypeIdMap = inventoriesLookup.fetchInventoryIds().get();
+			
+			JsonObject obj = new JsonObject();
+			obj.addProperty("AlphaExperience", this.alphaExperience);
+			obj.addProperty("AlphaWinStreak", this.alphaWinStreak);
+
+			ItemStack dataItem = ItemIdentifier.generateItem("AlphaData", ItemTier.COMMON, 1, obj);
+			ItemIdentifier dataIdent = ItemIdentifier.resolveItemIdentifier(dataItem);
+
+			Long dataId = inventoryTypeIdMap.get(InventoryType.DATA);
+			(new InventorySaveTask(dataId, getPlayerRegistryId(), InventoryType.DATA, Arrays.asList(dataIdent)))
+				.saveInventory()
+				.thenAccept((dataIdd) -> {
+					SwordCraftOnline.logDebug("DataInventory " + dataId + " saved successfully");
+				});
+		} catch (InterruptedException | ExecutionException e) {
+			SwordCraftOnline.logDebug("Failed to save player DataInventory. Winstreak: " + alphaWinStreak + ", Exp: " + alphaExperience);
+			e.printStackTrace();
+		}
 	}
 
 		/**
