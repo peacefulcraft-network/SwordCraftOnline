@@ -349,6 +349,7 @@ public class ModifierUser {
         Modifier m = getDamageModifier(type, incoming);
         if(m == null) { return damage; }
 
+        SwordCraftOnline.logDebug("[ModifierUser] Calculating damage on: " + type.toString());
         double dam = m.calculate(damage);
         return dam;
     }
@@ -637,6 +638,18 @@ public class ModifierUser {
      * @return Amount of correct damage to be set on health bar
      */
     public Double convertHealth(double damage, boolean set) {
+        return convertHealth(damage, set, false);
+    }
+
+    /**
+     * Converts users custom health values to
+     * their Attribute.MAX_HEALTH scale
+     * @param damage Incoming damage from event
+     * @param set If true, sets users health and living entity health
+     * @param isRegain Determines if health regain event
+     * @return Amount of correct damage to be set on health bar
+     */
+    public Double convertHealth(double damage, boolean set, boolean isRegain) {
         // Ratio of current health to max health
         // Ex: (100-2) / 100 = 0.98
         // DisplayedHealth = 20 * ratio
@@ -651,7 +664,11 @@ public class ModifierUser {
         if(set) {
             this.currHealth = this.currHealth - damagee < 0 ? 0 : this.currHealth - damagee;
             this.currHealth = this.currHealth > this.maxHealth ? this.maxHealth : this.currHealth;
-            getLivingEntity().setHealth(health);
+            SwordCraftOnline.logDebug("[ModifierUser] Calc: " + health + ", Curr: " + getLivingEntity().getHealth());
+            if ((isRegain && health >= getLivingEntity().getHealth()) || !isRegain) {
+                getLivingEntity().setHealth(health);
+                SwordCraftOnline.logDebug("[ModifierUser] Set health: " + getLivingEntity().getHealth());
+            } 
         }
 
         return health;

@@ -7,6 +7,8 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
@@ -17,10 +19,8 @@ import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredListener;
 
-import com.google.common.collect.Lists;
-
 public class CancellationDetector<TEvent extends Event> {
-    interface CancelListener<TEvent extends Event> {
+    public interface CancelListener<TEvent extends Event> {
         public void onCancelled(Plugin plugin, TEvent event);
     }
         
@@ -35,8 +35,8 @@ public class CancellationDetector<TEvent extends Event> {
         injectProxy();
     }
     
-    public void addListener(CancelListener<TEvent> listener) {
-        listeners.add(listener);
+    public void addListener(CancelListener<TEvent> cancelListener) {
+        listeners.add(cancelListener);
     }
     
     public void removeListener(CancelListener<Event> listener) {

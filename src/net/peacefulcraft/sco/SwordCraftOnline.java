@@ -5,6 +5,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.peacefulcraft.sco.commands.QuestMessager;
@@ -60,6 +63,8 @@ import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerDeathListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerMoveListener;
 import net.peacefulcraft.sco.swordskills.listeners.AbilityPlayerRespawnListener;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
+import net.peacefulcraft.sco.utilities.CancellationDetector;
+import net.peacefulcraft.sco.utilities.CancellationDetector.CancelListener;
 
 public class SwordCraftOnline extends JavaPlugin{
 
@@ -122,6 +127,8 @@ public class SwordCraftOnline extends JavaPlugin{
 	private MobArenaManager mobArenaManager;
 		public MobArenaManager getMobArenaManager() { return this.mobArenaManager; }
 
+	private CancellationDetector<EntityDamageByEntityEvent> detector = new CancellationDetector<EntityDamageByEntityEvent>(EntityDamageByEntityEvent.class);
+
 	public SwordCraftOnline() {
 
 		sco = this;
@@ -162,6 +169,18 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		this.playerArenaManager = new PlayerArenaManager();
 		this.mobArenaManager = new MobArenaManager();	
+
+		// Player damage event detector
+		detector.addListener(new CancelListener<EntityDamageByEntityEvent>() {
+
+			@Override
+			public void onCancelled(Plugin plugin, EntityDamageByEntityEvent event) {
+				SwordCraftOnline.logDebug("[CancelDetect] " + event + " cancelled by " + plugin);
+				SwordCraftOnline.logDebug("[CancelDetect] Event info: " + event.getCause().toString() + ", " + event.getDamager().getName());
+				HandlerList hl = event.getHandlers();
+				SwordCraftOnline.logDebug("[CancelDetect] " + hl.toString());
+			}
+		});
 		
 		this.getLogger().info("Sword Craft Online has been enabled!");
 	}
@@ -182,6 +201,8 @@ public class SwordCraftOnline extends JavaPlugin{
 
 		this.spawnerManager.save();
 		this.mobManager.save();
+
+		detector.close();
 		
 		this.saveConfig();
 		this.getLogger().info("Sword Craft Online has been disabled!");

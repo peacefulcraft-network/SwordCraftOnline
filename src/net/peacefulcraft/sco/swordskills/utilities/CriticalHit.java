@@ -20,7 +20,7 @@ public class CriticalHit {
      * @param damageModifier Any temporary crit damage value for this calculation
      */
     public static double damageCalc(ModifierUser damMu, double damage, int chanceModifier, double multModifier) {
-        double d = 0;
+        double d = damage;
 
         int chance = (int) (damMu.getCombatModifier(CombatModifier.CRITICAL_CHANCE) + chanceModifier);
         int mult = 1;

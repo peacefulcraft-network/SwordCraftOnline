@@ -24,7 +24,7 @@ import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.utilities.Pair;
 
-public class PlayerArenaManager implements Runnable, Listener {
+public class PlayerArenaManager implements Listener {
 
     private static final String GREED_PREFIX = ChatColor.RED + "[" + ChatColor.DARK_PURPLE + "Greed" + ChatColor.RED + "]";
         public static final String getPrefix() { return GREED_PREFIX; }
@@ -46,53 +46,9 @@ public class PlayerArenaManager implements Runnable, Listener {
         currentMatch = null;
 
         // Task runs every 15 seconds
-        challengeTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 300);
+        //challengeTask = Bukkit.getServer().getScheduler().runTaskTimer(SwordCraftOnline.getPluginInstance(), this, 20, 300);
 
         SwordCraftOnline.logDebug("[PlayerArenaManager] Loading complete!");
-    }
-
-    @Override
-    public void run() {
-        SwordCraftOnline.logDebug("[PlayerArenaManager] Initiating task run.");
-
-        // Clearing expired challenges
-        Iterator<Entry<Pair<SCOPlayer, SCOPlayer>, Long>> iter = openChallenges.entrySet().iterator();
-        while (iter.hasNext()) {
-            Entry<Pair<SCOPlayer, SCOPlayer>, Long> entry = iter.next();
-
-            if (entry.getValue() + 60000 < System.currentTimeMillis()) {
-                Pair<SCOPlayer, SCOPlayer> pair = entry.getKey();
-                Announcer.messagePlayer(
-                    pair.getFirst(), 
-                    GREED_PREFIX,
-                    "Challenge against " + pair.getSecond().getName() + " has expired", 
-                    0);
-                Announcer.messagePlayer(
-                    pair.getSecond(), 
-                    GREED_PREFIX,
-                    "Challenge from " + pair.getFirst().getName() + " has expired", 
-                    0);
-                iter.remove();
-            }
-        }
-
-        // Moving queue into arena
-        if (currentMatch == null) {
-            try {
-                SwordCraftOnline.logDebug("[PlayerArenaManager] Preparing new current match.");
-                Pair<SCOPlayer, SCOPlayer> pair = playerQueue.remove();
-                while (!pairHealthCheck(pair)) {
-                    pair = playerQueue.remove();    
-                }
-
-                currentMatch = pair.clone();
-                SwordCraftOnline.logDebug("[PlayerArenaManager] CurrentMatch: " + currentMatch.toString());
-
-                pair.getFirst().getPlayer().teleport(ARENA_LOC);
-                pair.getSecond().getPlayer().teleport(ARENA_LOC);
-
-            } catch(NoSuchElementException e) {}
-        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -125,6 +81,20 @@ public class PlayerArenaManager implements Runnable, Listener {
         }
     }
 
+    /**
+     * Handles event of player leaving mid-match
+     * @param s Player who left
+     */
+    public void playerLeave(SCOPlayer s) {
+        if (currentMatch == null) { return; }
+
+        if (s.getName().equalsIgnoreCase(currentMatch.getFirst().getName())) {
+            endMatch(currentMatch.getSecond(), currentMatch.getFirst());
+        } else if (s.getName().equalsIgnoreCase(currentMatch.getSecond().getName())) {
+            endMatch(currentMatch.getFirst(), currentMatch.getSecond());
+        }
+    }
+
     private void endMatch(SCOPlayer winner, SCOPlayer loser) {
         winner.getPlayer().teleport(SPAWN_LOC);
         loser.getPlayer().teleport(SPAWN_LOC);
@@ -147,6 +117,63 @@ public class PlayerArenaManager implements Runnable, Listener {
 
         // Clearing variables
         currentMatch = null;
+
+        // Moved new match processing into end match
+        // Removed Running Task
+
+        // Clearing expired challenges
+        // We only clear on expiration and not player leave
+        // to prevent redudancy
+        Iterator<Entry<Pair<SCOPlayer, SCOPlayer>, Long>> iter = openChallenges.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<Pair<SCOPlayer, SCOPlayer>, Long> entry = iter.next();
+
+            if (entry.getValue() + 60000 < System.currentTimeMillis()) {
+                Pair<SCOPlayer, SCOPlayer> pair = entry.getKey();
+                Announcer.messagePlayer(
+                    pair.getFirst(), 
+                    GREED_PREFIX,
+                    "Challenge against " + pair.getSecond().getName() + " has expired", 
+                    0);
+                Announcer.messagePlayer(
+                    pair.getSecond(), 
+                    GREED_PREFIX,
+                    "Challenge from " + pair.getFirst().getName() + " has expired", 
+                    0);
+                iter.remove();
+            }
+        }
+
+        startArena();
+    }
+
+    /**
+     * Initiates player arena if possible
+     * Peforms checks on queue and pair health
+     */
+    private void startArena() {
+        if (playerQueue.isEmpty()) {
+            SwordCraftOnline.logDebug("[PlayerArenaManager] Player Queue empty.");
+            return;
+        }
+
+        // Moving queue into arena
+        if (currentMatch == null) {
+            try {
+                SwordCraftOnline.logDebug("[PlayerArenaManager] Preparing new current match.");
+                Pair<SCOPlayer, SCOPlayer> pair = playerQueue.remove();
+                while (!pairHealthCheck(pair)) {
+                    pair = playerQueue.remove();    
+                }
+
+                currentMatch = pair.clone();
+                SwordCraftOnline.logDebug("[PlayerArenaManager] CurrentMatch: " + currentMatch.toString());
+
+                pair.getFirst().getPlayer().teleport(ARENA_LOC);
+                pair.getSecond().getPlayer().teleport(ARENA_LOC);
+
+            } catch(NoSuchElementException e) {}
+        }
     }
 
     /**
@@ -189,12 +216,15 @@ public class PlayerArenaManager implements Runnable, Listener {
             Pair<SCOPlayer, SCOPlayer> pair = entry.getKey();
             if (pair.getSecond().getName().equalsIgnoreCase(challenged.getName())) {
                 // Challenge expired
-                if (entry.getValue() + 3600 < System.currentTimeMillis()) {
+                if (entry.getValue() + 60000 < System.currentTimeMillis()) {
                     Announcer.messagePlayer(challenged, GREED_PREFIX, "Challenge has expired!", 0);
                     iter.remove();
                 } else {
                     if (accept) {
                         addToQueue(pair.getFirst(), pair.getSecond());
+                        
+                        // If they are the only pair in queue we start
+                        if (playerQueue.size() == 1) { startArena(); }
                         Announcer.messagePlayer(challenged, GREED_PREFIX, "Challenge accepted!", 0);
                     } else {
                         Announcer.messagePlayer(challenged, GREED_PREFIX, "Challenge denied!", 0);

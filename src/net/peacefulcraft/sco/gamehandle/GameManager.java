@@ -104,6 +104,9 @@ public class GameManager {
 		// Unregister the Player's personal inventory from the InventoryEvent routing system
 		SwordCraftOnline.getInventoryListeners().unregisterPlayerInventoryView(s, p.getOpenInventory());
 
+		// Gambit player leave processing
+		SwordCraftOnline.getPluginInstance().getPlayerArenaManager().playerLeave(s);
+
 		s.processLeave();
 
 		p.teleport(Teleports.getQuit());
