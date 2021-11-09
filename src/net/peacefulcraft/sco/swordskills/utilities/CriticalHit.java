@@ -20,7 +20,7 @@ public class CriticalHit {
      * @param damageModifier Any temporary crit damage value for this calculation
      */
     public static double damageCalc(ModifierUser damMu, double damage, int chanceModifier, double multModifier) {
-        double d = 0;
+        double d = damage;
 
         int chance = (int) (damMu.getCombatModifier(CombatModifier.CRITICAL_CHANCE) + chanceModifier);
         int mult = 1;
@@ -45,6 +45,27 @@ public class CriticalHit {
             }
         }
         return d;
+    }
+
+    /**
+     * Calculates a flat rate multiplier to be put against damage
+     */
+    public static double calculateMultiplier(ModifierUser damagerMu, int chanceModifier, double multModifier) {
+        int chance = (int) (damagerMu.getCombatModifier(CombatModifier.CRITICAL_CHANCE) + chanceModifier);
+        int mult = 1;
+        
+        if (chance > 100) {
+            for (; chance > 100; chance -= 100) {
+                mult++;
+            }
+        }
+        double multiplier = damagerMu.getCombatModifier(CombatModifier.CRITICAL_MULTIPLIER) + multModifier;
+        if (SwordCraftOnline.r.nextInt(100) <= chance) {
+            return mult * multiplier;
+        } else if(mult > 1) {
+            return (mult - 1) * multiplier;
+        }
+        return 1;
     }
 
     /**

@@ -9,15 +9,22 @@ import java.util.UUID;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
+import net.peacefulcraft.sco.gamehandle.announcer.Announcer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.CustomDataHolder;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
@@ -66,6 +73,12 @@ public class ModifierUser {
      * Weapon name -> Map of modifier by passve / active
      */
     protected HashMap<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> weaponModifiers = new HashMap<>();
+
+    /**
+     * Holds any elemental types of user
+     * Should be set in MU loading
+     */
+    protected ArrayList<ModifierType> types = new ArrayList<>();
     
     /**
      * Fetches implementing sub class living entity
@@ -327,6 +340,83 @@ public class ModifierUser {
     }
 
     /**
+     * Handles all damage calculations and inflicting
+     * @param damager Opposing modifier user
+     */
+    private void handleDamageByEvent(EntityDamageByEntityEvent ev, ModifierUser damager) {
+        // 1. Calculate parry chance
+        // 2. Split damage into typing from damager weapon
+        // 2a. Calculate damage of split typings
+        // 3. Crit multiplier
+        
+        double damage = ev.getDamage();
+
+        // 1. Parry.
+        // TODO: Effect of "Spiritual, physical, mental"
+        if(Parry.parryCalc(damager, this, 0)) {
+            ev.setCancelled(true);
+            return;
+        }
+
+        // 3. Critical Hit on all damage
+        double multiplier = CriticalHit.calculateMultiplier(damager, 0, 0);
+        if (multiplier != 1.0 && damager instanceof SCOPlayer) {
+            Announcer.messagePlayer((SCOPlayer)damager, "Critical Hit!", 0);
+        }
+
+        // 2. Splitting outgoing damages
+        HashMap<ModifierType, Double> damages = new HashMap<>();
+        WeaponAttributeHolder mainHand = damager.getWeaponInHand();
+        if (mainHand != null) {
+            for (ModifierType type : mainHand.getModifierTypes()) {
+                ModifierType[] primaryComp = ModifierType.getPrimaryModifierTypes(type);
+                double calcDamage = damage;
+                if (primaryComp != null) {
+                    // Applying flat 66% boost to avg of primarys
+                    double dam1 = damager.checkModifier(primaryComp[0], damage, false);
+                    double dam2 = damager.checkModifier(primaryComp[1], damage, false);
+                    calcDamage = ((dam1 + dam2) / 2) * 1.66 * multiplier;
+                } else {
+                    calcDamage = damager.checkModifier(type, damage, false) * multiplier;
+                }
+                // 4. Calculate against incoming damage
+                calcDamage = this.checkModifier(type, calcDamage, true);
+
+                damages.put(type, calcDamage);
+            }
+        }
+
+        // TODO: Add support for off hand
+
+        // 5. Inflict the damage onto the user.
+        // We sum the damage values and deal 1
+        // total damage packet
+        double total = 0.0;
+        for (double i : damages.values()) {
+            total += i;
+        }
+        this.convertHealth(total, true);
+    }
+
+    /**
+     * Handles all damage events on ModifierUser
+     * 
+     * @param ev Damage event
+     */
+    public void handleDamageByEvent(EntityDamageEvent ev) {
+        if (ev instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
+            ModifierUser damager = ModifierUser.getModifierUser(evv.getDamager());
+            if (damager == null) { return; }
+
+            this.handleDamageByEvent(evv, damager);
+            return;
+        }
+
+        
+    } 
+
+    /**
      * Checks users modifiers for match
      * @param type Type of damage
      * @param damage FinalDamage from event
@@ -338,6 +428,10 @@ public class ModifierUser {
 
         double dam = m.calculate(damage);
         return dam;
+    }
+
+    public double checkModifier(ModifierType type, double damage, boolean incoming) {
+        return checkModifier(type, damage, incoming);
     }
 
     /**
@@ -642,6 +736,52 @@ public class ModifierUser {
         }
 
         return health;
+    }
+
+    /*
+     *
+     * ===============================================================================================
+     * MODIFIER USER HELPER METHODS
+     * ===============================================================================================
+     * 
+     */
+
+    /**
+     * Fetches the weapon attribute holder in the main hand
+     * @return Weapon attribute holder if exists, null otherwise
+     */
+    protected WeaponAttributeHolder getWeaponInHand() {
+        ItemIdentifier ident = ItemIdentifier.resolveItemIdentifier(
+            getLivingEntity().getEquipment().getItemInMainHand()
+        );
+
+        if (ident.getMaterial().equals(Material.AIR)) { return null; }
+        if (ident instanceof CustomDataHolder) {
+            JsonObject obj = ((CustomDataHolder)ident).getCustomData();
+            if (obj.get("weapon") != null) {
+                return (WeaponAttributeHolder)ident;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Fetches the weapon attribute holder in the off hand
+     * @return Weapon attribute holder if exists, null otherwise
+     */
+    protected WeaponAttributeHolder getWeaponInOffHand() {
+        ItemIdentifier ident = ItemIdentifier.resolveItemIdentifier(
+            getLivingEntity().getEquipment().getItemInOffHand()
+        );
+
+        if (ident.getMaterial().equals(Material.AIR)) { return null; }
+        if (ident instanceof CustomDataHolder) {
+            JsonObject obj = ((CustomDataHolder)ident).getCustomData();
+            if (obj.get("weapon") != null) {
+                return (WeaponAttributeHolder)ident;
+            }
+        }
+        return null;
     }
 
     /*

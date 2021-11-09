@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifierList;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
@@ -47,6 +48,13 @@ public interface WeaponAttributeHolder {
      * @return
      */
     public abstract JsonObject getMaxReforge();
+
+    /**
+     * Returns elemental typing of weapon
+     * 
+     * @return
+     */
+    public abstract ModifierType[] getModifierTypes();
 
     /**
      * Parse weapons lore data into json object.

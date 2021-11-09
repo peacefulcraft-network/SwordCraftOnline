@@ -18,6 +18,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.items.utilities.Durability;
 import net.peacefulcraft.sco.items.utilities.ItemAttribute;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeHolder, CustomDataHolder, ItemIdentifier {
@@ -146,6 +147,11 @@ public class TestSwordItem implements WeaponAttributeHolder, EphemeralAttributeH
         maxReforge.addProperty(WeaponModifierType.PASSIVE.toString(), 2);
         maxReforge.addProperty(WeaponModifierType.ACTIVE.toString(), 1);
         return maxReforge;
+    }
+
+    @Override
+    public ModifierType[] getModifierTypes() {
+        return new ModifierType[] { ModifierType.WATER };
     }
 
     public TestSwordItem(ItemTier tier, Integer quantity) {
