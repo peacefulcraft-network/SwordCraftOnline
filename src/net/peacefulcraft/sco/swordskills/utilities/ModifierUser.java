@@ -369,18 +369,9 @@ public class ModifierUser {
         WeaponAttributeHolder mainHand = damager.getWeaponInHand();
         if (mainHand != null) {
             for (ModifierType type : mainHand.getModifierTypes()) {
-                ModifierType[] primaryComp = ModifierType.getPrimaryModifierTypes(type);
-                double calcDamage = damage;
-                if (primaryComp != null) {
-                    // Applying flat 66% boost to avg of primarys
-                    double dam1 = damager.checkModifier(primaryComp[0], damage, false);
-                    double dam2 = damager.checkModifier(primaryComp[1], damage, false);
-                    calcDamage = ((dam1 + dam2) / 2) * 1.66 * multiplier;
-                } else {
-                    calcDamage = damager.checkModifier(type, damage, false) * multiplier;
-                }
+                double calcDamage = this.calculateDamage(type, damage, false) * multiplier;
                 // 4. Calculate against incoming damage
-                calcDamage = this.checkModifier(type, calcDamage, true);
+                calcDamage = this.calculateDamage(type, calcDamage, true);
 
                 damages.put(type, calcDamage);
             }
@@ -413,7 +404,13 @@ public class ModifierUser {
             return;
         }
 
-        
+        // Non-entity events are converted to elemental modifiers
+        // and totaled to player.
+        double damage = 0.0;
+        for (ModifierType type : ModifierType.get(ev.getCause())) {
+            damage += this.calculateDamage(type, ev.getDamage(), true);
+        }
+        this.convertHealth(damage, true);
     } 
 
     /**
@@ -423,30 +420,17 @@ public class ModifierUser {
      * @return modified damage
      */
     public double calculateDamage(ModifierType type, double damage, boolean incoming) {
+        ModifierType[] primaryComp = ModifierType.getPrimaryModifierTypes(type);
+        if (primaryComp != null) {
+            double dam1 = this.calculateDamage(primaryComp[0], damage, incoming);
+            double dam2 = this.calculateDamage(primaryComp[1], damage, incoming);
+            return ((dam1 + dam2) / 2) * 1.66;
+        }
+        
         Modifier m = getDamageModifier(type, incoming);
         if(m == null) { return damage; }
 
-        double dam = m.calculate(damage);
-        return dam;
-    }
-
-    public double checkModifier(ModifierType type, double damage, boolean incoming) {
-        return checkModifier(type, damage, incoming);
-    }
-
-    /**
-     * Checks users modifiers for match
-     * @param type Type of damage in string
-     * @param damage FinalDamage from event
-     * @return modified damage
-     */
-    public double checkModifier(String type, double damage, boolean incoming) {
-        try{
-            return calculateDamage(ModifierType.valueOf(type), damage, incoming);
-        } catch(IllegalArgumentException ex) {
-            SwordCraftOnline.logDebug("[ModifierUser] IllegalArgumentException thrown in checkModifier method. Input: " + type);
-            return damage;
-        }
+        return m.calculate(damage);
     }
 
     /**
