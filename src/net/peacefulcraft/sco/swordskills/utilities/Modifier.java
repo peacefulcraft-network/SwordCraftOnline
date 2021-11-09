@@ -60,64 +60,63 @@ public class Modifier {
         public static ModifierType[] get(DamageCause cause) {
             switch(cause) {
             case BLOCK_EXPLOSION:
-                break;
+                return new ModifierType[] { FIRE };
             case CONTACT:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case CRAMMING:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case CUSTOM:
-                break;
+                return new ModifierType[] { SPIRITUAL };
             case DRAGON_BREATH:
-                break;
+                return new ModifierType[] { FIRE, WATER, AIR, SPIRITUAL };
             case DROWNING:
-                break;
+                return new ModifierType[] { WATER };
             case DRYOUT:
-                break;
+                return new ModifierType[] { AIR };
             case ENTITY_ATTACK:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case ENTITY_EXPLOSION:
-                break;
+                return new ModifierType[] { FIRE };
             case ENTITY_SWEEP_ATTACK:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case FALL:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case FALLING_BLOCK:
-                break;
+                return new ModifierType[] { EARTH };
             case FIRE:
-                break;
+                return new ModifierType[] { FIRE };
             case FIRE_TICK:
-                break;
+                return new ModifierType[] { FIRE };    
             case FLY_INTO_WALL:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case HOT_FLOOR:
-                break;
+                return new ModifierType[] { FIRE };
             case LAVA:
-                break;
+                return new ModifierType[] { FIRE, EARTH };
             case LIGHTNING:
-                break;
+                return new ModifierType[] { LIGHTNING };
             case MAGIC:
-                break;
+                return new ModifierType[] { SPIRITUAL };
             case MELTING:
-                break;
+                return new ModifierType[] { ICE };
             case POISON:
-                break;
+                return new ModifierType[] { PHYSICAL, MENTAL };
             case PROJECTILE:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case STARVATION:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case SUFFOCATION:
-                break;
+                return new ModifierType[] { AIR };
             case SUICIDE:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case THORNS:
-                break;
+                return new ModifierType[] { PHYSICAL };
             case VOID:
-                break;
+                return new ModifierType[] { SPIRITUAL };
             case WITHER:
-                break;
+                return new ModifierType[] { PHYSICAL, MENTAL, SPIRITUAL };
             default:
-                break;
-
+                return new ModifierType[] { PHYSICAL };
             }
         }
     }
