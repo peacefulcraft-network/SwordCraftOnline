@@ -9,6 +9,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class UnfortunateDivisorSkill extends SwordSkill {
 
@@ -44,8 +45,11 @@ public class UnfortunateDivisorSkill extends SwordSkill {
             ModifierUser mu = ModifierUser.getModifierUser(vic);
             if(mu == null) { return; }
 
+            ModifierUser userMu = (ModifierUser)c;
+            double mult = userMu.getMultiplier(ModifierType.SPIRITUAL, false);
+
             mu.convertHealth(
-                mu.getHealth() / 2,
+                (mu.getHealth() / 2) * mult,
                 true);
             SkillAnnouncer.messageSkill(
                 mu, 

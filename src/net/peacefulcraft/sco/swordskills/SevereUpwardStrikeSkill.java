@@ -9,6 +9,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class SevereUpwardStrikeSkill extends SwordSkill {
 
@@ -39,6 +40,9 @@ public class SevereUpwardStrikeSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
         if(ev instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
             if(evv.getEntity() instanceof LivingEntity) {
@@ -46,7 +50,7 @@ public class SevereUpwardStrikeSkill extends SwordSkill {
     
                 liv.setVelocity(
                     liv.getLocation().getDirection()
-                        .multiply(-1 * (2 + this.vectorMultiplier)).add(new Vector(0, 5, 0))
+                        .multiply(-1 * (2 + this.vectorMultiplier) * mult).add(new Vector(0, 5, 0))
                 );
             }
         }

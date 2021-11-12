@@ -9,6 +9,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class SoulsOfTheFallenSkill extends SwordSkill {
@@ -39,8 +40,10 @@ public class SoulsOfTheFallenSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         SCOPlayer s = (SCOPlayer)c;
+        double mult = s.getMultiplier(new ModifierType[] { ModifierType.SPIRITUAL, ModifierType.FIRE }, false);
+
         double damage = s.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
-        damage += ((0.2 + (0.1 * this.levelModifier)) * s.getPlayerKills());
+        damage += ((0.2 + (0.1 * this.levelModifier)) * s.getPlayerKills()) * mult;
 
         s.queueChange(
             Attribute.GENERIC_ATTACK_DAMAGE, 

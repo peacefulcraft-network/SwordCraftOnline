@@ -11,6 +11,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class FinalStandVenomSkill extends SwordSkill {
@@ -39,6 +40,9 @@ public class FinalStandVenomSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.LIGHTNING, false);
+        int poisonLvl = (int) Math.ceil(mult * 3);
         
         for(Entity e : mu.getLivingEntity().getNearbyEntities(5, 5, 5)) {
             if(e instanceof LivingEntity) {
@@ -46,7 +50,7 @@ public class FinalStandVenomSkill extends SwordSkill {
                 liv.addPotionEffect(new PotionEffect(
                     PotionEffectType.POISON, 
                     200, 
-                    3));
+                    poisonLvl));
             }
             ModifierUser vic = ModifierUser.getModifierUser(e);
             if(vic == null) { continue; }
@@ -54,7 +58,7 @@ public class FinalStandVenomSkill extends SwordSkill {
                 vic, 
                 "Final Stand: Venom", 
                 tier, 
-                new Pair<String,Integer>(PotionEffectType.POISON.toString(), 3));
+                new Pair<String,Integer>(PotionEffectType.POISON.toString(), poisonLvl));
         }
 
         mu.queueChange(

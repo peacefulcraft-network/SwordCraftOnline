@@ -14,6 +14,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class DangerousGameExplosionTagSkill extends SwordSkill {
 
@@ -54,12 +55,14 @@ public class DangerousGameExplosionTagSkill extends SwordSkill {
                 "Dangerous Game: Explosion Tag", 
                 tier);
 
+            double mult = mu.getMultiplier(ModifierType.FIRE, false);
+
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
                 public void run() {
                     for(LivingEntity liv : tagList) {
                         liv.getLocation().getWorld().createExplosion(
                             liv.getLocation(), 
-                            2,
+                            (float) (2.0 * mult),
                             false,
                             false);
                     }

@@ -15,6 +15,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 import net.peacefulcraft.sco.utilities.Pair;
@@ -66,13 +67,16 @@ public class SystemChainAccelerantDriveSkill extends SwordSkill {
             curr.setType(Material.AIR);
         }
         if(fireCount == 0) { return; }
+
+        double mult = mu.getMultiplier(ModifierType.FIRE, false);
+
         mu.queueChange(
             Attribute.GENERIC_ATTACK_DAMAGE, 
-            mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) + (0.1 * fireCount), 
+            (mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) + (0.1 * fireCount)) * mult, 
             10);
         mu.queueChange(
             CombatModifier.CRITICAL_MULTIPLIER, 
-            1,
+            1 * mult,
             10);
         
         SkillAnnouncer.messageSkill(

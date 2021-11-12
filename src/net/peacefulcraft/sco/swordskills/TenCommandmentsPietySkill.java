@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class TenCommandmentsPietySkill extends SwordSkill implements Runnable {
 
@@ -51,11 +52,15 @@ public class TenCommandmentsPietySkill extends SwordSkill implements Runnable {
 
             if(vicMu.getLivingEntity().hasPotionEffect(PotionEffectType.REGENERATION)) {
                 if(vicMap.containsKey(vicMu)) { continue; }
+
+                double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
+                int poiLvl = (int) Math.ceil(2 * mult);
+
                 vicMap.put(vicMu, System.currentTimeMillis() + 20000);
                 vicMu.getLivingEntity().addPotionEffect(new PotionEffect(
                     PotionEffectType.POISON, 
                     99999, 
-                    2));
+                    poiLvl));
 
                 SkillAnnouncer.messageSkill(
                     vicMu,

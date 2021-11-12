@@ -9,6 +9,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.BasicCombo;
 import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 
@@ -42,8 +43,11 @@ public class PoorMansThirdStrikeSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         if(ev instanceof PlayerInteractEvent) { return; }
 
+        ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
-        evv.setDamage(evv.getDamage() * 1.8);
+        evv.setDamage(evv.getDamage() * 1.8 * mult);
         
         SkillAnnouncer.messageSkill(
             (ModifierUser)c, 

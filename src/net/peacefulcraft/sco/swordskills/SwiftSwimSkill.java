@@ -11,6 +11,7 @@ import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class SwiftSwimSkill extends SwordSkill {
@@ -42,11 +43,13 @@ public class SwiftSwimSkill extends SwordSkill {
         ModifierUser mu = ModifierUser.getModifierUser(evv.getPlayer());
         if(mu == null) { return; }
 
+        double mult = mu.getMultiplier(ModifierType.WATER, false);
+
         Location loc = evv.getTo();
         if(loc.getWorld().hasStorm() && !rainBoosted) {
             change1 = mu.queueChange(
                 Attribute.GENERIC_MOVEMENT_SPEED, 
-                ModifierUser.getBaseGenericMovement(mu) * 0.2, 
+                ModifierUser.getBaseGenericMovement(mu) * 0.2 * mult, 
                 -1);
             rainBoosted = true;
             SkillAnnouncer.messageSkill(

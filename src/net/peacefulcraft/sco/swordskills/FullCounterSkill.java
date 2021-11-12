@@ -9,6 +9,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class FullCounterSkill extends SwordSkill {
 
@@ -45,13 +46,19 @@ public class FullCounterSkill extends SwordSkill {
             ModifierUser mu = ModifierUser.getModifierUser(evv.getDamager());
             if(mu == null) { return; }
 
+            double mult = mu.getMultiplier(
+                new ModifierType[] {ModifierType.PHYSICAL, ModifierType.SPIRITUAL, ModifierType.MENTAL}, 
+                false);
+
+            double retDamage = damage * 2 * mult;
+
             SwordCraftOnline.logDebug("[Full Counter] Health: " + mu.getHealth() + ", Ret Damage: " + (damage * 2));
             //mu.setHealth((int)(mu.getHealth() - (damage * 2)));
-            mu.convertHealth(damage * 2, true);
+            mu.convertHealth(retDamage, true);
 
             SkillAnnouncer.messageSkill(
                 mu, 
-                damage*2,
+                retDamage,
                 "Damage returned twofold.", 
                 "Full Counter", 
                 tier);

@@ -15,6 +15,7 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class TenCommandmentsReposeSkill extends SwordSkill implements Runnable {
 
@@ -48,10 +49,13 @@ public class TenCommandmentsReposeSkill extends SwordSkill implements Runnable {
 
             if(vicMu.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) >= ModifierUser.getBaseGenericMovement(vicMu)) {
                 if(vicMap.containsKey(vicMu)) { continue; }
+
+                double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
+
                 vicMap.put(vicMu, System.currentTimeMillis() + 35000);
                 vicMu.queueChange(
                     Attribute.GENERIC_ATTACK_DAMAGE, 
-                    -(vicMu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) / 2), 
+                    -((vicMu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) / 2) * mult), 
                     35);
 
                 SkillAnnouncer.messageSkill(

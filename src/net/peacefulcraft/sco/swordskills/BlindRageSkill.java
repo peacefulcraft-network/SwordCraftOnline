@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class BlindRageSkill extends SwordSkill {
@@ -40,12 +41,17 @@ public class BlindRageSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
-        mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 300, 2));
-        mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 1));
+
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+        int strengthLvl = (int) Math.ceil(2.0 * mult);
+        int blindLvl = (int) Math.ceil(1.0 * mult);
+
+        mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 300, strengthLvl));
+        mu.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, blindLvl));
 
         List<Pair<String, Integer>> effects = new ArrayList<>();
-        effects.add(new Pair<String, Integer>(PotionEffectType.INCREASE_DAMAGE.toString(), 2));
-        effects.add(new Pair<String, Integer>(PotionEffectType.BLINDNESS.toString(), 1));
+        effects.add(new Pair<String, Integer>(PotionEffectType.INCREASE_DAMAGE.toString(), strengthLvl));
+        effects.add(new Pair<String, Integer>(PotionEffectType.BLINDNESS.toString(), blindLvl));
         SkillAnnouncer.messageSkill(mu, "Blind Rage", tier, effects);
     }
 

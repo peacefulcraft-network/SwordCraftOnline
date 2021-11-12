@@ -18,9 +18,12 @@ public class BasicCombo implements SwordSkillModule {
         public void resetComboAccumulation() { this.comboAccumulation = 0.0; }
         public void comboAccumulate(double value) { comboAccumulation += value; }
 
+    protected SwordSkill ss;
+
     public BasicCombo(SwordSkill ss, SwordSkillComboType comboType, double activationThreshold) {
         this.comboType = comboType;
         this.activationThreshold = activationThreshold;
+        this.ss = ss;
 
         // Register the combo to reset on damage receive events
         if(

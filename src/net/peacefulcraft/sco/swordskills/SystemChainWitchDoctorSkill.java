@@ -8,6 +8,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class SystemChainWitchDoctorSkill extends SwordSkill {
 
@@ -36,17 +37,22 @@ public class SystemChainWitchDoctorSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
 
+        double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
+
         int healthTotal = 0;
         for(Entity e : mu.getLivingEntity().getNearbyEntities(10, 10, 10)) {
             ModifierUser vic = ModifierUser.getModifierUser(e);
             if(vic == null) { continue; }
 
-            vic.convertHealth(15, true);
-            healthTotal += 12;
+            int drain = (int) Math.ceil(15 * mult);
+            int ret = (int) Math.ceil(drain - (drain * 0.3));
+
+            vic.convertHealth(drain, true);
+            healthTotal += ret;
 
             SkillAnnouncer.messageSkill(
                 mu, 
-                "Health drained by 15!", 
+                "Health drained by " + drain + "!", 
                 "System Chain: Witch Doctor", 
                 tier);
         }

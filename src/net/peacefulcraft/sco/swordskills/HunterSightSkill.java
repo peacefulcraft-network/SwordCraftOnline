@@ -14,6 +14,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class HunterSightSkill extends SwordSkill {
 
@@ -42,12 +43,14 @@ public class HunterSightSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
 
+        double mult = mu.getMultiplier(ModifierType.MENTAL, false);
+
         for(Entity e : mu.getLivingEntity().getNearbyEntities(10, 10, 10)) {
             if(e instanceof LivingEntity) {
                 LivingEntity liv = (LivingEntity)e;
                 liv.addPotionEffect(new PotionEffect(
                     PotionEffectType.GLOWING, 
-                    400, 
+                    (int) (400 * mult), 
                     1));
             }
             if(e instanceof Player) {

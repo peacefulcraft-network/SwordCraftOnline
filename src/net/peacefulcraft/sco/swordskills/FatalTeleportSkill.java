@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class FatalTeleportSkill extends SwordSkill {
 
@@ -58,6 +59,8 @@ public class FatalTeleportSkill extends SwordSkill {
             ModifierUser mu = ModifierUser.getModifierUser(evv.getPlayer());
             if(mu == null) { return; }
 
+            double mult = mu.getMultiplier(ModifierType.AIR, false);
+
             Vector inverse = lastHit.getLivingEntity().getLocation().getDirection().normalize().multiply(-1);
             Location behind = lastHit.getLivingEntity().getLocation().add(inverse);
 
@@ -70,7 +73,7 @@ public class FatalTeleportSkill extends SwordSkill {
             mu.getLivingEntity().teleport(behind);
             mu.queueChange(
                 Attribute.GENERIC_ATTACK_DAMAGE,
-                mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) + damageModifier, 
+                (mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) + damageModifier) * mult, 
                 2);
         }
     }

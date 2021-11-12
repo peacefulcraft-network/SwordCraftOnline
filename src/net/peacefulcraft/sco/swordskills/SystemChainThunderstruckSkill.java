@@ -16,6 +16,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class SystemChainThunderstruckSkill extends SwordSkill {
@@ -50,11 +51,13 @@ public class SystemChainThunderstruckSkill extends SwordSkill {
         Location start = mu.getLivingEntity().getLocation();
         Location end = mu.getLivingEntity().getTargetBlock((Set<Material>)null, rangeModifier).getLocation();
 
+        double mult = mu.getMultiplier(ModifierType.LIGHTNING, false);
+
         List<Location> blocks = LocationUtil.getPathLocations(
             start, 
             end, 
-            rangeModifier, 
-            2, 
+            (int) Math.ceil(rangeModifier * mult), 
+            (int) Math.ceil(2 * mult), 
             true);
         
         List<List<Location>> part = Lists.partition(blocks, 5);

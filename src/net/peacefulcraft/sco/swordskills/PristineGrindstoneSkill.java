@@ -6,6 +6,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class PristineGrindstoneSkill extends SwordSkill {
 
@@ -33,7 +34,13 @@ public class PristineGrindstoneSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         if(this.c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
-            change1 = mu.queueChange(Attribute.GENERIC_ATTACK_DAMAGE, this.increase, -1);
+            double mult = mu.getMultiplier(ModifierType.EARTH, false);
+
+            change1 = mu.queueChange(
+                Attribute.GENERIC_ATTACK_DAMAGE, 
+                this.increase * mult, 
+                -1
+            );
         }
     }
 

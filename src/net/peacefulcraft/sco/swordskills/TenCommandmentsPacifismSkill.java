@@ -17,6 +17,7 @@ import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable {
 
@@ -71,10 +72,14 @@ public class TenCommandmentsPacifismSkill extends SwordSkill implements Runnable
 
         if(mu.getLivingEntity().getNearbyEntities(15, 15, 15).contains(evv.getDamager())) {
             if(vicMap.containsKey(damMu)) { return; }
-            vicMap.put(damMu, System.currentTimeMillis() + 40000);
+
+            double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
+            int duration = (int) Math.ceil(40 * mult);
+
+            vicMap.put(damMu, System.currentTimeMillis() + (duration * 1000));
             damMu.queueChange(
                 -(damMu.getMaxHealth() / 2), 
-                40);
+                duration);
             if(evv.getDamager() instanceof Player) {
                 SCOPlayer s = GameManager.findSCOPlayer((Player)evv.getDamager());
                 if(s == null) { return; }

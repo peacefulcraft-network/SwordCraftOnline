@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class ArmoredAgilitySkill extends SwordSkill {
@@ -34,9 +35,11 @@ public class ArmoredAgilitySkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
 
+        double muMult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
         speedChange = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            ModifierUser.getBaseGenericMovement(mu) * (0.05 + (0.01 * this.levelModifier)), 
+            (ModifierUser.getBaseGenericMovement(mu) * (0.05 + (0.01 * this.levelModifier))) * muMult , 
             -1);
         armorChange = mu.queueChange(
             Attribute.GENERIC_ARMOR, 

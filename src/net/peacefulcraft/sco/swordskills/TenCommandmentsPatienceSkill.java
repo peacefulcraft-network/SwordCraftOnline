@@ -19,6 +19,7 @@ import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class TenCommandmentsPatienceSkill extends SwordSkill implements Runnable {
 
@@ -53,11 +54,15 @@ public class TenCommandmentsPatienceSkill extends SwordSkill implements Runnable
 
             if(vicMu.getAttribute(Attribute.GENERIC_ARMOR) > 5) {
                 if(vicMap.containsKey(vicMu)) { continue; }
+
+                double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
+                int blindLvl = (int) Math.ceil(3 * mult);
+
                 vicMap.put(vicMu, System.currentTimeMillis() + 40000);
                 vicMu.getLivingEntity().addPotionEffect(new PotionEffect(
                     PotionEffectType.BLINDNESS, 
                     99999, 
-                    3));
+                    blindLvl));
                 if(vicMu instanceof SCOPlayer) {
                     SkillAnnouncer.messageSkill(
                         vicMu, "Stay collected near my conduit... else you may lose your eyes.", 

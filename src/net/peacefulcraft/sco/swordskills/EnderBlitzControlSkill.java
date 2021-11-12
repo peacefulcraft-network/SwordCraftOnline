@@ -16,6 +16,7 @@ import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 import net.peacefulcraft.sco.swordskills.utilities.DirectionalUtil.Movement;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class EnderBlitzControlSkill extends SwordSkill {
@@ -52,6 +53,9 @@ public class EnderBlitzControlSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         SCOPlayer s = (SCOPlayer)c;
+
+        double mult = s.getMultiplier(ModifierType.PHYSICAL, false);
+
         id = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
             public void run() {
                 if(repetitions == 4) {
@@ -84,7 +88,7 @@ public class EnderBlitzControlSkill extends SwordSkill {
 
                 s.queueChange(
                     Attribute.GENERIC_ATTACK_DAMAGE, 
-                    s.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE), 
+                    s.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) * mult, 
                     2);
                 repetitions++;
             }

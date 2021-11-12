@@ -6,6 +6,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class VampireCarvingSkill extends SwordSkill {
 
@@ -39,8 +40,11 @@ public class VampireCarvingSkill extends SwordSkill {
 
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
         
         int addHealth = evv.getDamage() * healAdd < 1 ? 1 : (int) (evv.getDamage() * healAdd);
+        addHealth *= mult;
         mu.convertHealth(-addHealth, true);
         SkillAnnouncer.messageSkill(
             mu, 

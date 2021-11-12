@@ -34,7 +34,11 @@ public class SerratedBladeSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
-        change1 = mu.queueChange(CombatModifier.CRITICAL_CHANCE, this.increase, -1);       
+        change1 = mu.queueChange(
+            CombatModifier.CRITICAL_CHANCE, 
+            this.increase, 
+            -1
+        );       
     }
 
     @Override

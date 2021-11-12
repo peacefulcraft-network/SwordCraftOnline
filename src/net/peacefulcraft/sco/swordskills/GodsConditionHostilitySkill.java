@@ -25,6 +25,8 @@ import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
+import net.peacefulcraft.sco.utilities.RomanNumber;
 
 public class GodsConditionHostilitySkill extends SwordSkill implements Runnable {
 
@@ -106,7 +108,7 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
             if(entry.getKey() <= System.currentTimeMillis()) {
                 liv.removePotionEffect(PotionEffectType.SLOW);
                 iter.remove();
-                SwordCraftOnline.logDebug("[Gods Condition: Hostility] Removed.");
+                //SwordCraftOnline.logDebug("[Gods Condition: Hostility] Removed.");
             }
             ModifierUser mu = ModifierUser.getModifierUser(liv);
             if(mu == null) { continue; }
@@ -132,20 +134,25 @@ public class GodsConditionHostilitySkill extends SwordSkill implements Runnable 
     }
     
     private void setSlow(LivingEntity liv) {
+        ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
+        int slowLvl = (int) Math.ceil(10 * mult);
+
         liv.addPotionEffect(new PotionEffect(
             PotionEffectType.SLOW,
             999999,
-            10
+            slowLvl
         ));
         if(liv instanceof Player) {
             SCOPlayer s = GameManager.findSCOPlayer((Player)liv);
             if(s == null) { return; }
             SkillAnnouncer.messageSkill(
                 s, 
-                "You must now meet my condition, inflicted slowness X", 
+                "You must now meet my condition, inflicted slowness " + RomanNumber.toRoman(slowLvl), 
                 "Gods Condition: Hostility", 
                 tier);
-            SwordCraftOnline.logDebug("[Gods Condition: Hostility] Inflicted.");
+            //SwordCraftOnline.logDebug("[Gods Condition: Hostility] Inflicted.");
         }
     }
 }

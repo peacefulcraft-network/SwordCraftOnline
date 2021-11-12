@@ -6,6 +6,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class ElephantHeartSkill extends SwordSkill {
 
@@ -33,11 +34,13 @@ public class ElephantHeartSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         if(c instanceof ModifierUser) {
             ModifierUser mu = (ModifierUser)c;
+            double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
             this.maxHealth = mu.getMaxHealth();
-            change1 = mu.queueChange((int) (this.maxHealth * 0.5), -1);
+            change1 = mu.queueChange((int) (this.maxHealth * 0.5 * mult), -1);
             change2 = mu.queueChange(
                 Attribute.GENERIC_MOVEMENT_SPEED,
-                -(ModifierUser.getBaseGenericMovement(mu) * 0.2),
+                -(ModifierUser.getBaseGenericMovement(mu) * 0.2 * mult),
                 -1);
         }
     }

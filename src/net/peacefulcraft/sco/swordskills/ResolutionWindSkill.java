@@ -10,6 +10,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class ResolutionWindSkill extends SwordSkill {
 
@@ -41,6 +42,8 @@ public class ResolutionWindSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.AIR, false);
+
         Location center = mu.getLivingEntity().getLocation();
 
         for(Entity e : mu.getLivingEntity().getNearbyEntities(5, 5, 5)) {
@@ -51,7 +54,7 @@ public class ResolutionWindSkill extends SwordSkill {
 
                 t.getDirection().normalize().multiply(-1);
                 t.multiply(distance / 1.2);
-                t.multiply(2 + vectorModifier);
+                t.multiply(2 + vectorModifier * mult);
 
                 liv.setVelocity(t.toVector());
 

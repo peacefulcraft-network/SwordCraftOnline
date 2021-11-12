@@ -14,6 +14,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class SystemBreakAccelerantBurstSkill extends SwordSkill {
@@ -62,10 +63,13 @@ public class SystemBreakAccelerantBurstSkill extends SwordSkill {
             curr.setType(Material.AIR);
         }
         if(fireCount == 0) { return; }
+
+        double mult = mu.getMultiplier(ModifierType.FIRE, false);
+
         List<Location> explodeLocs = LocationUtil.getRandomLocations(
             mu.getLivingEntity().getLocation(), 
             20, 
-            fireCount);
+            (int) Math.ceil(fireCount * mult));
         for(Location loc : explodeLocs) {
             loc.getWorld().createExplosion(
                 loc, 

@@ -10,6 +10,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class ForwardLungeSkill extends SwordSkill {
@@ -42,6 +43,8 @@ public class ForwardLungeSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
 
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
         LivingEntity p = mu.getLivingEntity();
 
         Vector v = new Vector(p.getVelocity().getX(), p.getVelocity().getY(), p.getVelocity().getZ());
@@ -50,7 +53,7 @@ public class ForwardLungeSkill extends SwordSkill {
 
         p.setVelocity(v);
 
-        Double amount = mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) * this.increase;
+        Double amount = mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) * this.increase * mult;
         mu.queueChange(
             Attribute.GENERIC_ATTACK_DAMAGE, 
             amount, 

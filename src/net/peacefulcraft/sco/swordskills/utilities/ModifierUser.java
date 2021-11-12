@@ -147,7 +147,7 @@ public class ModifierUser {
         obj.addProperty("incoming", incoming);
         this.queuedChanges.put(id, obj);
         addToMultiplier(modifier, incoming, amount, duration, id);
-        SwordCraftOnline.logDebug("[Modifier User] Modifier " + modifier.toString() + ". Set to " + getDamageModifier(modifier, incoming));
+        SwordCraftOnline.logDebug("[Modifier User] Modifier " + modifier.toString() + ". Set to " + getModifier(modifier, incoming));
 
         return id;
     }
@@ -427,7 +427,7 @@ public class ModifierUser {
             return ((dam1 + dam2) / 2) * 1.66;
         }
         
-        Modifier m = getDamageModifier(type, incoming);
+        Modifier m = getModifier(type, incoming);
         if(m == null) { return damage; }
 
         return m.calculate(damage);
@@ -443,7 +443,7 @@ public class ModifierUser {
      * @param duration
      */
     private void addToMultiplier(ModifierType type, boolean incoming, double value, int duration, UUID id) {
-        Modifier m = getDamageModifier(type, incoming);
+        Modifier m = getModifier(type, incoming);
         value = m != null ? m.getMultiplier() + value : 1 + value;
 
         if(m == null) {
@@ -471,13 +471,41 @@ public class ModifierUser {
 	 * @param type Type to be searched for
 	 * @return Clone of Modifier if found. Null otherwise
 	 */
-	public Modifier getDamageModifier(ModifierType type, boolean incoming) {
+	public Modifier getModifier(ModifierType type, boolean incoming) {
         try {
             return this.damageModifiers.get(type).get(incoming);
         } catch(NullPointerException ex) {
             return null;
         }
-	}
+    }
+    
+    /**
+     * Fetches the users multiplier of this type
+     * @param type Type of modifier
+     * @param incoming Is incoming
+     * @return Multiplier value or 1.0
+     */
+    public double getMultiplier(ModifierType type, boolean incoming) {
+        Modifier m = getModifier(type, incoming);
+        return m == null ? 1.0 : m.getMultiplier();
+    }
+
+    /**
+     * Fetches the users multiplier of average of multiple types
+     * @param types Types we want average of
+     * @param incoming Is incoming
+     * @param bonus Bonus multiplier multiplied against average
+     * @return
+     */
+    public double getMultiplier(ModifierType[] types, boolean incoming) {
+        double sum = 0.0;
+        int i = 0;
+        for (ModifierType type : types) {
+            sum += getMultiplier(type, incoming);
+            i++;
+        }
+        return sum / i;
+    }
 
     /*
      * 

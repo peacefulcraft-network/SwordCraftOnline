@@ -15,6 +15,7 @@ import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class GuardianSkill extends SwordSkill {
@@ -44,13 +45,20 @@ public class GuardianSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.EARTH, false);
+
         // TODO: Clean up this iteration style to one loop
         if(c instanceof SCOPlayer) {
             for(Entity entity : ((SCOPlayer)c).getLivingEntity().getNearbyEntities(10, 10, 10)) {
                 if(entity instanceof Player) {
                     SCOPlayer s = GameManager.findSCOPlayer((Player)entity);
                     if(s == null) { continue; }
-                    s.queueChange(Attribute.GENERIC_ARMOR, this.armorModifier, 20);
+                    s.queueChange(
+                        Attribute.GENERIC_ARMOR, 
+                        this.armorModifier * mult, 
+                        20);
 
                     SkillAnnouncer.messageSkill(
                         s, 
@@ -67,7 +75,10 @@ public class GuardianSkill extends SwordSkill {
                         .getMobRegistry()
                         .get(entity.getUniqueId());
                     if(am == null) { continue; }
-                    am.queueChange(Attribute.GENERIC_ARMOR, this.armorModifier, 20);
+                    am.queueChange(
+                        Attribute.GENERIC_ARMOR, 
+                        this.armorModifier * mult, 
+                        20);
                 }
             }
         }

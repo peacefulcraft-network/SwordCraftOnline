@@ -7,6 +7,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class ThunderstruckSkill extends SwordSkill {
 
@@ -31,9 +33,15 @@ public class ThunderstruckSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         Entity entity = evv.getEntity();
+
+        ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.LIGHTNING, false);
+
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
             public void run() {
-                entity.getWorld().strikeLightning(entity.getLocation());
+                for (double i = 0.0; i < mult; i++) {
+                    entity.getWorld().strikeLightning(entity.getLocation());
+                }
             }
         }, 20);
     }

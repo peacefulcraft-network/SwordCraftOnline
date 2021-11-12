@@ -7,6 +7,7 @@ import org.bukkit.util.Vector;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class BackPedalSkill extends SwordSkill {
@@ -38,11 +39,15 @@ public class BackPedalSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        ModifierUser user = (ModifierUser)c;
+
+        double mult = user.getMultiplier(ModifierType.PHYSICAL, false);
+
         if(ev instanceof EntityDamageByEntityEvent) {
             ModifierUser mu = (ModifierUser)c;
             mu.getLivingEntity().setVelocity(
                 mu.getLivingEntity().getLocation().getDirection()
-                    .multiply(-1 * vectorMultiplier).add(new Vector(0, 0.1, 0))
+                    .multiply(-1 * vectorMultiplier * mult).add(new Vector(0, 0.1, 0))
             );
         }
     }

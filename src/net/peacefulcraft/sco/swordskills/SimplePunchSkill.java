@@ -9,6 +9,8 @@ import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.utilities.ItemAttribute;
+import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class SimplePunchSkill extends SwordSkill {
 
@@ -57,7 +59,10 @@ public class SimplePunchSkill extends SwordSkill {
         if(this.damage == null) { return; }
         if(!(ev instanceof EntityDamageByEntityEvent)) { return; }
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
-        evv.setDamage(this.damage);
+
+        ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.MENTAL, false);
+        evv.setDamage(this.damage * mult);
     }
 
     @Override

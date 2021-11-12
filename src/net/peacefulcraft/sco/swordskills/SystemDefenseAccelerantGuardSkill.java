@@ -15,6 +15,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 import net.peacefulcraft.sco.utilities.Pair;
 
@@ -65,14 +66,18 @@ public class SystemDefenseAccelerantGuardSkill extends SwordSkill {
             curr.setType(Material.AIR);
         }
         if(fireCount == 0) { return; }
+
+        double mult = mu.getMultiplier(ModifierType.FIRE, false);
+        double boost = 0.1 * fireCount * mult;
+
         mu.queueChange(
             Attribute.GENERIC_ARMOR, 
-            mu.getAttribute(Attribute.GENERIC_ARMOR) + (0.1 * fireCount), 
+            mu.getAttribute(Attribute.GENERIC_ARMOR) + boost, 
             13);
 
         SkillAnnouncer.messageSkill(
             mu, 
-            new Pair<String, Double>(Attribute.GENERIC_ARMOR.toString(), (0.1 * fireCount)), 
+            new Pair<String, Double>(Attribute.GENERIC_ARMOR.toString(), boost), 
             "System Defense: Accelerant Guard", 
             tier);
         

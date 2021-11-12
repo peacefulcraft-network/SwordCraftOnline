@@ -13,6 +13,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 import net.peacefulcraft.sco.utilities.Pair;
 
@@ -43,9 +44,18 @@ public class SystemDefenseThunderstruckSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
         List<Location> blocks = LocationUtil.getCylinderLocations(
-            mu.getLivingEntity().getLocation(), 1, 7, true);
+            mu.getLivingEntity().getLocation(), 
+            1, 
+            7, 
+            true
+        );
+
+        double mult = mu.getMultiplier(ModifierType.LIGHTNING, false);
+
         for(Block b : LocationUtil.locationsToBlocks(blocks)) {
-            mu.getLivingEntity().getLocation().getWorld().strikeLightning(b.getLocation());
+            for (double i = 0; i < Math.ceil(1 * mult); i++) {
+                mu.getLivingEntity().getLocation().getWorld().strikeLightning(b.getLocation());
+            }
         }
 
         if(tier.equals(ItemTier.ETHEREAL)) {

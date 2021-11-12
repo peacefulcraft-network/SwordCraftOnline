@@ -19,6 +19,7 @@ import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class SerrationWaveSkill extends SwordSkill {
 
@@ -47,6 +48,8 @@ public class SerrationWaveSkill extends SwordSkill {
 
     @Override
     public void triggerSkill(Event ev) {
+        ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.AIR, false);
 
         //TODO: Clean up this if statement to use Modifier User
 
@@ -64,7 +67,7 @@ public class SerrationWaveSkill extends SwordSkill {
                 return;
             }
             damage *= s.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
-            damage *= multiplier;
+            damage *= multiplier * mult;
             entities = s.getPlayer().getNearbyEntities(5, 5, 5);
 
             for(Entity e : entities) {
@@ -86,7 +89,7 @@ public class SerrationWaveSkill extends SwordSkill {
             }
         } else if(this.c instanceof ActiveMob) {
             ActiveMob am = (ActiveMob)this.c;
-            damage *= am.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+            damage *= am.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) * mult;
             entities = am.getLivingEntity().getNearbyEntities(5, 5, 5);
 
             for(Entity e : entities) {

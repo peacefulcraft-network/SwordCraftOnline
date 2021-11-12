@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
 
 public class ArtificialHopeSkill extends SwordSkill {
@@ -34,18 +35,20 @@ public class ArtificialHopeSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
         
         change1 = mu.queueChange(
             Attribute.GENERIC_ATTACK_DAMAGE,
-            1 + (0.2 + valueModifier), 
+            (1 + (0.2 + valueModifier)) * mult, 
             -1);
         change2 = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            ModifierUser.getBaseGenericMovement(mu) * (0.12 + valueModifier), 
+            ModifierUser.getBaseGenericMovement(mu) * (0.12 + valueModifier) * mult, 
             -1);
         change3 = mu.queueChange(
             Attribute.GENERIC_ARMOR, 
-            -2, 
+            -2 * mult, 
             -1);
     }
 

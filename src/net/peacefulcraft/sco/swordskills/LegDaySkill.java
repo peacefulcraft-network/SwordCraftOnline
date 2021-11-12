@@ -6,6 +6,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class LegDaySkill extends SwordSkill {
 
@@ -32,9 +33,12 @@ public class LegDaySkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
         mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED, 
-            ModifierUser.getBaseGenericMovement(mu) * (0.2 + movementModifier), 
+            ModifierUser.getBaseGenericMovement(mu) * (0.2 + movementModifier) * mult, 
             -1);
     }
 

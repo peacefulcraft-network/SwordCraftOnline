@@ -121,17 +121,6 @@ public class Modifier {
         }
     }
 
-    /**
-     * Given two modifiers
-     * @param m1
-     * @param m2
-     * @return
-     */
-    public static double combinePrimaryTypes(Modifier m1, Modifier m2) {
-
-        return 0.0;
-    }
-
     /**The Type of mob it is effective against */
     ModifierType type;
     /**The amount to modify the damage*/

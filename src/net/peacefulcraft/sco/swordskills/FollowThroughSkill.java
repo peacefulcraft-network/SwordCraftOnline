@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class FollowThroughSkill extends SwordSkill {
@@ -32,7 +33,13 @@ public class FollowThroughSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
-        change1 = mu.queueChange(CombatModifier.CRITICAL_MULTIPLIER, 0.5 + critModifier, -1);
+
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, true);
+
+        change1 = mu.queueChange(
+            CombatModifier.CRITICAL_MULTIPLIER, 
+            (0.5 + critModifier) * mult, 
+            -1);
     }
 
     @Override

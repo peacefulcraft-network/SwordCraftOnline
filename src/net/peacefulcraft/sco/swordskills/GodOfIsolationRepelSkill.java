@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class GodOfIsolationRepelSkill extends SwordSkill {
@@ -40,6 +41,10 @@ public class GodOfIsolationRepelSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+
+        double airMult = mu.getMultiplier(ModifierType.AIR, false);
+        double lightMult = mu.getMultiplier(ModifierType.LIGHTNING, false);
+
         Location center = mu.getLivingEntity().getLocation();
         
         for(Entity e : mu.getLivingEntity().getNearbyEntities(5, 5, 5)) {
@@ -50,21 +55,23 @@ public class GodOfIsolationRepelSkill extends SwordSkill {
 
                 t.getDirection().normalize().multiply(-1);
                 t.multiply(distance / 1.2);
-                t.multiply(2);
+                t.multiply(2 * airMult);
 
                 liv.setVelocity(t.toVector());
+
+                int poiLvl = (int) Math.ceil(2 * lightMult);
 
                 liv.addPotionEffect(new PotionEffect(
                     PotionEffectType.BLINDNESS, 
                     100, 
-                    2));
+                    poiLvl));
                 ModifierUser vic = ModifierUser.getModifierUser(e);
                 if(vic == null) { continue; }
                 SkillAnnouncer.messageSkill(
                     vic, 
                     "God of Isolation: Repel",
                     tier, 
-                    new Pair<String, Integer>(PotionEffectType.BLINDNESS.toString(), 2));
+                    new Pair<String, Integer>(PotionEffectType.BLINDNESS.toString(), poiLvl));
             }
         }
         mu.getLivingEntity().addPotionEffect(new PotionEffect(

@@ -14,6 +14,7 @@ import net.peacefulcraft.sco.particles.effect.FlameEffect;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class OverheatSkill extends SwordSkill {
@@ -41,6 +42,8 @@ public class OverheatSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
 
+        double mult = mu.getMultiplier(ModifierType.FIRE, false);
+
         FlameEffect fe = new FlameEffect(SwordCraftOnline.getEffectManager());
         fe.setEntity(mu.getLivingEntity());
         fe.iterations = 800;
@@ -64,7 +67,10 @@ public class OverheatSkill extends SwordSkill {
                 }
             }
 
-            SwordCraftOnline.getPluginInstance().getFireManager().registerFire(14000, curr.getLocation());
+            SwordCraftOnline.getPluginInstance().getFireManager().registerFire(
+                (int) Math.ceil(14000 * mult), 
+                curr.getLocation()
+            );
         }
     }
 

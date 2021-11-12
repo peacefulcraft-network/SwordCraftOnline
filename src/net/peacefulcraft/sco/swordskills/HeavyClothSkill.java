@@ -6,6 +6,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class HeavyClothSkill extends SwordSkill {
 
@@ -33,13 +34,16 @@ public class HeavyClothSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
         change1 = mu.queueChange(
             Attribute.GENERIC_ARMOR, 
-            2 + armorModifier, 
+            (2 + armorModifier) * mult, 
             -1);
         change2 = mu.queueChange(
             Attribute.GENERIC_ARMOR_TOUGHNESS, 
-            2 + armorModifier, 
+            (2 + armorModifier) * mult, 
             -1);
     }
 

@@ -15,6 +15,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.Pair;
 
@@ -47,9 +48,11 @@ public class KillerSenseSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+
+        double mult = mu.getMultiplier(ModifierType.MENTAL, false);
         
-        int armorChange = -1 - levelModifier;
-        double parryChange = -0.05;
+        double armorChange = (-1 - levelModifier) * mult;
+        double parryChange = -0.05 * mult;
 
         List<Pair<String,Double>> statPair = new ArrayList<>();
         statPair.add(new Pair<String, Double>(Attribute.GENERIC_ARMOR.toString(), (double)armorChange));

@@ -12,6 +12,7 @@ import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.SwordSkill;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 /**
@@ -25,6 +26,8 @@ public class EffectCombo extends BasicCombo {
     private ItemTier tier;
     private String name;
 
+    private ModifierType[] modifiers;
+
     public EffectCombo(SwordSkill ss, double activationThreshold, HashMap<Integer, PotionEffectType> effects, int effectLevel, int effectDuration, ItemTier tier, String name) {
         super(ss, SwordSkillComboType.CONSECUTIVE_HITS_WITHOUT_TAKING_DAMAGE, activationThreshold);
         
@@ -33,6 +36,12 @@ public class EffectCombo extends BasicCombo {
         this.effectDuration = effectDuration;
         this.tier = tier;
         this.name = name;
+    }
+
+    public EffectCombo(SwordSkill ss, double activationThreshold, HashMap<Integer, PotionEffectType> effects, int effectLevel, int effectDuration, ItemTier tier, String name, ModifierType[] modifiers) {
+        this(ss, activationThreshold, effects, effectLevel, effectDuration, tier, name);
+
+        this.modifiers = modifiers;
     }
 
     @Override
@@ -52,13 +61,19 @@ public class EffectCombo extends BasicCombo {
 
         EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
         ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
+
+        ModifierUser userMu = (ModifierUser)this.ss.getSwordSkillCaster();
+        double mult = this.modifiers == null ? 1.0 : userMu.getMultiplier(modifiers, false);
+
+        int lvl = (int) Math.ceil(this.effectLevel * mult);
+
         mu.getLivingEntity().addPotionEffect(
-            new PotionEffect(effects.get((int)this.comboAccumulation), this.effectDuration, this.effectLevel));
+            new PotionEffect(effects.get((int)this.comboAccumulation), this.effectDuration, lvl));
         SkillAnnouncer.messageSkill(
             mu, 
             name, 
             tier, 
-            new Pair<String, Integer>(effects.get((int)this.comboAccumulation).toString(), this.effectLevel));
+            new Pair<String, Integer>(effects.get((int)this.comboAccumulation).toString(), lvl));
     }
     
 }

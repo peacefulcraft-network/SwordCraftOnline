@@ -6,6 +6,7 @@ import net.peacefulcraft.sco.swordskills.modules.BasicCombo;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.BasicCombo.SwordSkillComboType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 
 public class CriticalComboSkill extends SwordSkill {
@@ -31,9 +32,11 @@ public class CriticalComboSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.LIGHTNING, false);
+
         mu.queueChange(
             CombatModifier.CRITICAL_CHANCE, 
-            mu.getCombatModifier(CombatModifier.CRITICAL_CHANCE),
+            mu.getCombatModifier(CombatModifier.CRITICAL_CHANCE) * mult,
             4);
     }
 

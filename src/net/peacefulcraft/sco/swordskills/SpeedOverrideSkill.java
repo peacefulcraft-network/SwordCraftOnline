@@ -6,6 +6,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class SpeedOverrideSkill extends SwordSkill {
 
@@ -31,14 +32,15 @@ public class SpeedOverrideSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+        double mult = mu.getMultiplier(ModifierType.MENTAL, false);
 
         atkSpeedChange = mu.queueChange(
             Attribute.GENERIC_ATTACK_SPEED, 
-            4, 
+            4 * mult, 
             -1);
         movSpeedChange = mu.queueChange(
             Attribute.GENERIC_MOVEMENT_SPEED,
-            ModifierUser.getBaseGenericMovement(mu) * 0.3, 
+            ModifierUser.getBaseGenericMovement(mu) * 0.3 * mult, 
             -1);
     }
 

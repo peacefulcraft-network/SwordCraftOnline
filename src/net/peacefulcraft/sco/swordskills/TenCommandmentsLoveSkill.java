@@ -8,6 +8,7 @@ import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class TenCommandmentsLoveSkill extends SwordSkill {
 
@@ -40,7 +41,10 @@ public class TenCommandmentsLoveSkill extends SwordSkill {
         ModifierUser damMu = ModifierUser.getModifierUser(evv.getDamager());
         if(damMu == null || !(damMu instanceof SCOPlayer)) { return; }
         SCOPlayer s = (SCOPlayer)damMu;
-        if(s.getPlayerKills() > 0) { return; }
+
+        double mult = mu.getMultiplier(ModifierType.SPIRITUAL, false);
+
+        if(mult < 2.0 && s.getPlayerKills() == 0) { return; }
 
         if(mu.getLivingEntity().getNearbyEntities(15, 15, 15).contains(evv.getDamager())) {
             evv.setCancelled(true);

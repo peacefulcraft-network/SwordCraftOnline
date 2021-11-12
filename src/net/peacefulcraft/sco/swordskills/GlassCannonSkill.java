@@ -6,6 +6,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class GlassCannonSkill extends SwordSkill {
 
@@ -35,16 +36,18 @@ public class GlassCannonSkill extends SwordSkill {
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
 
+        double mult = mu.getMultiplier(ModifierType.ICE, false);
+
         damageChange = mu.queueChange(
             Attribute.GENERIC_ATTACK_DAMAGE, 
-            4 + levelModifier, 
+            (4 + levelModifier) * mult, 
             -1);
         healthChange = mu.queueChange(
-            (int)(mu.getMaxHealth() * (0.3 + (0.05 * this.levelModifier))), 
+            (int)(mu.getMaxHealth() * (0.3 + (0.05 * this.levelModifier)) * mult), 
             -1);
         armorChange = mu.queueChange(
             Attribute.GENERIC_ARMOR, 
-            -1 - levelModifier, 
+            (-1 - levelModifier) * mult, 
             -1);
     }
 

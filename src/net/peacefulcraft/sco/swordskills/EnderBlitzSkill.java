@@ -13,6 +13,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.LocationUtil;
 
 public class EnderBlitzSkill extends SwordSkill {
@@ -44,6 +45,9 @@ public class EnderBlitzSkill extends SwordSkill {
     @Override
     public void triggerSkill(Event ev) {
         ModifierUser mu = (ModifierUser)c;
+        
+        double mult = mu.getMultiplier(ModifierType.PHYSICAL, false);
+
         List<Location> locs = LocationUtil.getRandomLocations(
             mu.getLivingEntity().getLocation(), 
             7, 
@@ -57,7 +61,7 @@ public class EnderBlitzSkill extends SwordSkill {
                 mu.getLivingEntity().teleport(locs.get(repetitions).add(0, 1, 0));
                 mu.queueChange(
                     Attribute.GENERIC_ATTACK_DAMAGE, 
-                    mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE), 
+                    mu.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) * mult, 
                     2);
                 repetitions++;
             }
