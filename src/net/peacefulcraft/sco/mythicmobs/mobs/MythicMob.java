@@ -1,6 +1,7 @@
 package net.peacefulcraft.sco.mythicmobs.mobs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,10 @@ import org.bukkit.util.Vector;
 
 import net.peacefulcraft.log.Banners;
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.ArmorAttributeHolder;
+import net.peacefulcraft.sco.items.ItemIdentifier;
+import net.peacefulcraft.sco.items.ItemTier;
+import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.mythicmobs.adapters.BukkitAdapter;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractEntity;
 import net.peacefulcraft.sco.mythicmobs.adapters.abstracts.AbstractLocation;
@@ -55,7 +60,10 @@ import net.peacefulcraft.sco.mythicmobs.mobs.entities.MythicEntityType;
 import net.peacefulcraft.sco.particles.effect.SmokeEffect;
 import net.peacefulcraft.sco.swordskills.SwordSkillProvider;
 import net.peacefulcraft.sco.swordskills.SwordSkillTrigger;
+import net.peacefulcraft.sco.swordskills.armorskills.ArmorModifier;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
+import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
 /**
  * Holds custom mob data read from YML in mob mananger.
@@ -899,7 +907,7 @@ public class MythicMob implements Comparable<MythicMob> {
     }
 
     /**Mob options modified if mob is herculean level */
-    public void applyHerculeanEffects() {
+    private void applyHerculeanEffects() {
         if(this.isHerculean) {
             this.damage *= 1.5;
             this.armor *= 2;
@@ -908,7 +916,7 @@ public class MythicMob implements Comparable<MythicMob> {
     }
 
     /**Applies any name modifiers. Color, healthbar, etc. */
-    public ActiveMob applyDisplayName(ActiveMob am, int level) {
+    private ActiveMob applyDisplayName(ActiveMob am, int level) {
         if(!SwordCraftOnline.getSCOConfig().healthBarEnabled()) { return am; }
         if(!this.usesHealthBar) { return am; }
 
@@ -929,7 +937,7 @@ public class MythicMob implements Comparable<MythicMob> {
     /**
      * Applies swordskills and registers to mob.
      */
-    public ActiveMob applySkills(ActiveMob am) {
+    private ActiveMob applySkills(ActiveMob am) {
         for(String s : this.skills) {
             try{
                 SwordSkillProvider prov = SwordSkillProvider.generateProviderFromLongString(s);
@@ -999,38 +1007,89 @@ public class MythicMob implements Comparable<MythicMob> {
             /**
              * Handling equipment. ALL drop chances set to 0. 
              * Drops handled by drop tables
-             * Format: 0-Material, 1-Location
+             * Format: 0-Identifier, 1-Location
              */
             if(!this.equipment.isEmpty()) {
+                HashMap<String, ArrayList<ArmorModifier>> armorSkills = new HashMap<>();
+                HashMap<String, ArrayList<WeaponModifier>> actives = new HashMap<>();
+                HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
+
                 EntityEquipment ee = asLiving.getEquipment();
                 for(String s : this.equipment) {
                     String[] split = s.split(" ");
-                    /**TODO: Add compatability with Custom Items.
-                     * Check if item is in custom item list.
-                    */
+                    String[] splitt = split[0].split("-");
+                    String name = splitt[0];
+                    ItemTier tier = ItemTier.valueOf(splitt[1]);
+
+                    ItemIdentifier ident = ItemIdentifier.generateIdentifier(name, tier, 1);
+                    if (ident == null || ident.getMaterial() == Material.AIR) { 
+                        SwordCraftOnline.logDebug("[MythicMob] Failure to load " + split[1] + " armor in " + this.internalName);
+                        continue; 
+                    }
+
+                    ItemStack item = ItemIdentifier.generateItem(ident);
+
+                    // TODO: Clean up this duplicate code somehow
                     try {
                         if(split[1].equalsIgnoreCase("HEAD")) {
-                            ee.setHelmet(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setHelmet(item);
                             ee.setHelmetDropChance(0.0F);
+                            ArrayList<ArmorModifier> mods = ArmorAttributeHolder.parseLore(item);
+                            if (mods == null || mods.isEmpty()) { continue; }
+                            armorSkills.put(ChatColor.stripColor(ident.getDisplayName()), mods);
                         } else if(split[1].equalsIgnoreCase("CHEST")) {
-                            ee.setChestplate(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setChestplate(item);
                             ee.setChestplateDropChance(0.0F);
+                            ArrayList<ArmorModifier> mods = ArmorAttributeHolder.parseLore(item);
+                            if (mods == null || mods.isEmpty()) { continue; }
+                            armorSkills.put(ChatColor.stripColor(ident.getDisplayName()), mods);
                         } else if(split[1].equalsIgnoreCase("LEGS")) {
-                            ee.setLeggings(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setLeggings(item);
                             ee.setLeggingsDropChance(0.0F);
+                            ArrayList<ArmorModifier> mods = ArmorAttributeHolder.parseLore(item);
+                            if (mods == null || mods.isEmpty()) { continue; }
+                            armorSkills.put(ChatColor.stripColor(ident.getDisplayName()), mods);
                         } else if(split[1].equalsIgnoreCase("FEET")) {
-                            ee.setBoots(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setBoots(item);
                             ee.setBootsDropChance(0.0F);
+                            ArrayList<ArmorModifier> mods = ArmorAttributeHolder.parseLore(item);
+                            if (mods == null || mods.isEmpty()) { continue; }
+                            armorSkills.put(ChatColor.stripColor(ident.getDisplayName()), mods);
                         } else if(split[1].equalsIgnoreCase("HAND")) {
-                            ee.setItemInMainHand(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setItemInMainHand(item);
                             ee.setItemInMainHandDropChance(0.0F);
+
+                            if (ident instanceof WeaponAttributeHolder) {
+                                HashMap<WeaponModifierType, ArrayList<WeaponModifier>> map = WeaponAttributeHolder.parseLore(item);
+                                if (map == null || map.isEmpty()) { continue; }
+
+                                ArrayList<WeaponModifier> activeMods = map.get(WeaponModifierType.ACTIVE);
+                                if (activeMods != null && !activeMods.isEmpty()) { actives.put(ChatColor.stripColor(ident.getDisplayName()), activeMods); }
+                                ArrayList<WeaponModifier> passiveMods = map.get(WeaponModifierType.PASSIVE);
+                                if (passiveMods != null && !passiveMods.isEmpty()) { passives.put(ChatColor.stripColor(ident.getDisplayName()), passiveMods); }
+                            }
                         } else if(split[1].equalsIgnoreCase("OFFHAND")) {
-                            ee.setItemInOffHand(new ItemStack(Material.getMaterial(split[0])));
+                            ee.setItemInOffHand(item);
                             ee.setItemInOffHandDropChance(0.0F);
+
+                            if (ident instanceof WeaponAttributeHolder) {
+                                HashMap<WeaponModifierType, ArrayList<WeaponModifier>> map = WeaponAttributeHolder.parseLore(item);
+                                if (map == null || map.isEmpty()) { continue; }
+
+                                ArrayList<WeaponModifier> activeMods = map.get(WeaponModifierType.ACTIVE);
+                                if (activeMods != null && !activeMods.isEmpty()) { actives.put(ChatColor.stripColor(ident.getDisplayName()), activeMods); }
+                                ArrayList<WeaponModifier> passiveMods = map.get(WeaponModifierType.PASSIVE);
+                                if (passiveMods != null && !passiveMods.isEmpty()) { passives.put(ChatColor.stripColor(ident.getDisplayName()), passiveMods); }
+                            }
                         }
                     } catch(Exception ex) {
-                        SwordCraftOnline.logInfo(Banners.get(Banners.MYTHIC_MOB) + "Could not load items. Invalid material name.");
+                        SwordCraftOnline.logInfo("[MythicMob] Could not load items. Invalid material name.");
                     }
+
+                    // Applying all our armor and weapon modifiers
+                    am.applyArmorModifiers(armorSkills);
+                    am.applyWeaponModifiers(passives, WeaponModifierType.PASSIVE);
+                    am.applyWeaponModifiers(actives, WeaponModifierType.ACTIVE);
                 }
 
                 /**
