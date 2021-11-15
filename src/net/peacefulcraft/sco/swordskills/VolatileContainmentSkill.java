@@ -1,5 +1,8 @@
 package net.peacefulcraft.sco.swordskills;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -13,6 +16,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser.CombatModifier;
 import net.peacefulcraft.sco.utilities.Pair;
 
@@ -53,6 +57,8 @@ public class VolatileContainmentSkill extends SwordSkill {
             "Volatile Containment", 
             tier);
 
+        double mult = mu.getMultiplier(new ModifierType[] { ModifierType.ICE, ModifierType.FIRE }, false);
+
         taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(SwordCraftOnline.getPluginInstance(), new Runnable(){
             int count = 0;
             
@@ -68,14 +74,23 @@ public class VolatileContainmentSkill extends SwordSkill {
                         liv.addPotionEffect(new PotionEffect(
                             PotionEffectType.WITHER, 
                             100, 
-                            2));
+                            (int) Math.ceil(2 * mult)));
+                        liv.addPotionEffect(new PotionEffect(
+                            PotionEffectType.SLOW,
+                            60,
+                            (int) Math.ceil(1 * mult)));
+
                         ModifierUser mu = ModifierUser.getModifierUser(liv);
                         if(mu == null) { continue; }
+
+                        List<Pair<String,Integer>> posLis = new ArrayList<>();
+                        posLis.add(new Pair<String, Integer>(PotionEffectType.WITHER.toString(), 5));
+                        posLis.add(new Pair<String, Integer>(PotionEffectType.SLOW.toString(), 3));
                         SkillAnnouncer.messageSkill(
                             mu, 
                             "Volatile Containment", 
                             tier, 
-                            new Pair<String, Integer>(PotionEffectType.WITHER.toString(), 2));
+                            posLis);
                     }
                 }
                 count++;

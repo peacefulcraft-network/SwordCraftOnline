@@ -9,6 +9,7 @@ import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.modules.TimedCooldown;
 import net.peacefulcraft.sco.swordskills.modules.Trigger;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 
 public class WildSliceSkill extends SwordSkill {
 
@@ -40,15 +41,17 @@ public class WildSliceSkill extends SwordSkill {
             EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
             ModifierUser mu = (ModifierUser)c;
 
+            double mult = mu.getMultiplier(ModifierType.LIGHTNING, false);
+
             int roll = SwordCraftOnline.r.nextInt(2);
             double multiplier = 0.1;
             switch(roll) {
                 case 0:
-                    multiplier = 0.5;
+                    multiplier = 0.5 * mult;
                 break; case 1:
-                    multiplier = 2.0;
+                    multiplier = 2.0 * mult;
                 break; case 2:
-                    multiplier = 4.0;
+                    multiplier = 4.0 * mult;
             }
             evv.setDamage(evv.getDamage() * multiplier);
             SkillAnnouncer.messageSkill(

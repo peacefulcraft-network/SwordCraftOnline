@@ -8,6 +8,7 @@ import org.bukkit.potion.PotionEffectType;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class WitheringNecrolysisSkill extends SwordSkill {
@@ -39,15 +40,18 @@ public class WitheringNecrolysisSkill extends SwordSkill {
         ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
         if(mu == null) { return; }
 
+        ModifierUser userMu = (ModifierUser)c;
+        double mult = userMu.getMultiplier(ModifierType.FIRE, false);
+
         mu.getLivingEntity().addPotionEffect(
-            new PotionEffect(PotionEffectType.WITHER, 100, witherModifier)
+            new PotionEffect(PotionEffectType.WITHER, 100, (int) Math.ceil(witherModifier * mult))
         );
 
         SkillAnnouncer.messageSkill(
             mu, 
             "Withering Necrolysis", 
             tier, 
-            new Pair<String, Integer>(PotionEffectType.WITHER.toString(), witherModifier));
+            new Pair<String, Integer>(PotionEffectType.WITHER.toString(), 5));
     }
 
     @Override

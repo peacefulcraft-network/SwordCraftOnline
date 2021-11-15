@@ -8,6 +8,7 @@ import org.bukkit.potion.PotionEffectType;
 import net.peacefulcraft.sco.gamehandle.announcer.SkillAnnouncer;
 import net.peacefulcraft.sco.items.ItemTier;
 import net.peacefulcraft.sco.swordskills.utilities.ModifierUser;
+import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.utilities.Pair;
 
 public class WeakenedPulseSkill extends SwordSkill {
@@ -39,8 +40,13 @@ public class WeakenedPulseSkill extends SwordSkill {
         ModifierUser mu = ModifierUser.getModifierUser(evv.getEntity());
         if(mu == null) { return; }
 
+        ModifierUser userMu = (ModifierUser)c;
+        double mult = userMu.getMultiplier(ModifierType.PHYSICAL, false);
+
+        int weakLvl = (int) Math.ceil(weakModifier * mult);
+
         mu.getLivingEntity().addPotionEffect(
-            new PotionEffect(PotionEffectType.WEAKNESS, 100, weakModifier)
+            new PotionEffect(PotionEffectType.WEAKNESS, 100, weakLvl)
         );
 
         SkillAnnouncer.messageSkill(
