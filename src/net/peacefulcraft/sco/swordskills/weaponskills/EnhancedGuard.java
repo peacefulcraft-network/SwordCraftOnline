@@ -55,5 +55,9 @@ public class EnhancedGuard implements WeaponModifier {
         obj.addProperty(Attribute.GENERIC_ARMOR.toString(), getModifierAmount());
         return obj;
     }
+
+    public EnhancedGuard(String level) {
+        this.level = level;
+    }
     
 }

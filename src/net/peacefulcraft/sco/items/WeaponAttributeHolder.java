@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.peacefulcraft.sco.SwordCraftOnline;
+import net.peacefulcraft.sco.items.utilities.DispositionHandler;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifierList;
@@ -279,7 +280,7 @@ public interface WeaponAttributeHolder {
      * @return Weaponmodifier
      * @throws RuntimeException on invalid parsing
      */
-    public static WeaponModifier parseWeaponModifier(List<String> lore, int j) {
+    private static WeaponModifier parseWeaponModifier(List<String> lore, int j) {
         String[] split = ChatColor.stripColor(lore.get(j)).replace(" -", "").split(" ");
         String level = "";
         String skillName = "";
@@ -328,10 +329,9 @@ public interface WeaponAttributeHolder {
         JsonArray newActiveAr = new JsonArray();
         for(int i = 0; i < maxAR; i++) {
             // Rolling disposition / 10 chance for reforge
-            if((SwordCraftOnline.r.nextInt(9) + 1) <= disposition * 2) {
+            if(DispositionHandler.rollReforgeChance(disposition)) {
                 String newModifier = WeaponModifierList.getRandomModifier(true);
-                int roll = (1 + disposition * 750) / (SwordCraftOnline.r.nextInt(99) + 1);
-                if(roll > 100) { roll = 100; }
+                int roll = DispositionHandler.rollReforgeLevel(disposition);
 
                 int maxLevel = WeaponModifier.getWeaponMaxLevel(newModifier);
                 int segment = 100 / maxLevel;
@@ -345,10 +345,9 @@ public interface WeaponAttributeHolder {
         JsonArray newPassiveAr = new JsonArray();
         for(int i = 0; i < maxPR; i++) {
             // Rolling disposition / 10 chance for reforge
-            if((SwordCraftOnline.r.nextInt(9) + 1) <= disposition * 2) {
+            if(DispositionHandler.rollReforgeChance(disposition)) {
                 String newModifier = WeaponModifierList.getRandomModifier(true);
-                int roll = (1 + disposition * 750) / (SwordCraftOnline.r.nextInt(99) + 1);
-                if(roll > 100) { roll = 100; }
+                int roll = DispositionHandler.rollReforgeLevel(disposition);
 
                 int maxLevel = WeaponModifier.getWeaponMaxLevel(newModifier);
                 int segment = 100 / maxLevel;

@@ -25,12 +25,14 @@ import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.sco.SwordCraftOnline;
 import net.peacefulcraft.sco.gamehandle.GameManager;
 import net.peacefulcraft.sco.gamehandle.player.SCOPlayer;
+import net.peacefulcraft.sco.items.ArmorAttributeHolder;
 import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.storage.tasks.InventoryLoadTask;
 import net.peacefulcraft.sco.storage.tasks.InventorySaveTask;
 import net.peacefulcraft.sco.swordskills.SwordSkillType;
+import net.peacefulcraft.sco.swordskills.armorskills.ArmorModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
 
@@ -261,6 +263,7 @@ public class PlayerInventory extends BukkitInventoryBase {
   public void onInventoryClose(InventoryCloseEvent ev) {
     HashMap<String, ArrayList<WeaponModifier>> passives = new HashMap<>();
 
+    // Checking hotbar items for passive weapon modifiers
     for(int i = 0; i <= 8; i++) {
       ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
       if(!item.getMaterial().equals(Material.AIR) && item instanceof WeaponAttributeHolder) {
@@ -270,12 +273,27 @@ public class PlayerInventory extends BukkitInventoryBase {
       }
     }
 
+    // If we don't have a sword, knife, or range item in hotbar
+    // we nullify the passive map
     HashMap<String, Integer> check = getHotbarWeapons();
     if(check.get("sword") == 0 && check.get("knife") == 0 && check.get("range") == 0) {
       passives = null;
     }
     GameManager.findSCOPlayer((Player)ev.getPlayer()).applyWeaponModifiers(passives, WeaponModifierType.PASSIVE);
 
+    HashMap<String, ArrayList<ArmorModifier>> armorSkills = new HashMap<>();
+
+    // Checking armor slots for armor modifiers
+    for (int i = 36; i <= 39; i++) {
+      ItemIdentifier item = ItemIdentifier.resolveItemIdentifier(this.inventory.getItem(i));
+      if (!item.getMaterial().equals(Material.AIR) && item instanceof ArmorAttributeHolder) {
+        ArrayList<ArmorModifier> mods = ArmorAttributeHolder.parseLore(this.inventory.getItem(i));
+        if (mods == null || mods.isEmpty()) { continue; }
+        armorSkills.put(ChatColor.stripColor(item.getDisplayName()), mods);
+      }
+    }
+    GameManager.findSCOPlayer((Player)ev.getPlayer()).applyArmorModifiers(armorSkills);
+    
     this.saveInventory();
   }
 

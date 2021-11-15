@@ -26,6 +26,7 @@ import net.peacefulcraft.sco.items.CustomDataHolder;
 import net.peacefulcraft.sco.items.ItemIdentifier;
 import net.peacefulcraft.sco.items.WeaponAttributeHolder;
 import net.peacefulcraft.sco.mythicmobs.mobs.ActiveMob;
+import net.peacefulcraft.sco.swordskills.armorskills.ArmorModifier;
 import net.peacefulcraft.sco.swordskills.utilities.Modifier.ModifierType;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier;
 import net.peacefulcraft.sco.swordskills.weaponskills.WeaponModifier.WeaponModifierType;
@@ -73,6 +74,12 @@ public class ModifierUser {
      * Weapon name -> Map of modifier by passve / active
      */
     protected HashMap<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> weaponModifiers = new HashMap<>();
+
+    /**
+     * Holds armor modifiers of user
+     * Armor name -> List of armor modifiers
+     */
+    protected HashMap<String, ArrayList<ArmorModifier>> armorModifiers = new HashMap<>();
 
     /**
      * Holds any elemental types of user
@@ -260,8 +267,8 @@ public class ModifierUser {
      * if passed value is empty or null all weapon modifiers are removed and cleared
      */
     public void applyWeaponModifiers(HashMap<String, ArrayList<WeaponModifier>> wModifiers, WeaponModifierType processType) {
-        //SwordCraftOnline.logDebug("wModifiers value: " + wModifiers + ", processType: " + processType);
-
+        
+        // Stripping weapon modifiers on various cases
         Iterator<Entry<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>>> iter = weaponModifiers.entrySet().iterator();
         while(iter.hasNext()) {
             Entry<String, HashMap<WeaponModifierType, ArrayList<WeaponModifier>>> entry = iter.next();
@@ -274,13 +281,11 @@ public class ModifierUser {
                 if(passiveList != null && !passiveList.isEmpty()) {
                     for(WeaponModifier wm : passiveList) {
                         wm.removeEffects(this);
-                        //SwordCraftOnline.logDebug("Case 1, cleared passive weapon modifier: " + WeaponModifier.parseName(wm));
                     }
                 }
                 if(activeList != null && !activeList.isEmpty()) {
                     for(WeaponModifier wm : activeList) {
                         wm.removeEffects(this);
-                        //SwordCraftOnline.logDebug("Case 1, cleared active weapon modifier: " + WeaponModifier.parseName(wm));
                     }
                 }
                 weaponModifiers.clear();
@@ -291,26 +296,24 @@ public class ModifierUser {
                 if(wmList != null && !wmList.isEmpty()) {
                     for(WeaponModifier wm : wmList) {
                         wm.removeEffects(this);
-                        //SwordCraftOnline.logDebug("Case 2, cleared " + processType.toString() + " weapon modifier: "+ WeaponModifier.parseName(wm));
                     }
                     entry.getValue().remove(processType);
                 }
             } else {
                 // Case 3: Hotbar passed through. Removing passive and active modifiers not in hotbar
 
+                // If weapon name not in passed data
                 if(!wModifiers.keySet().contains(entry.getKey())) {
                     ArrayList<WeaponModifier> passiveList = entry.getValue().get(WeaponModifierType.PASSIVE);
                     ArrayList<WeaponModifier> activeList = entry.getValue().get(WeaponModifierType.ACTIVE);
                     if(passiveList != null && !passiveList.isEmpty()) {
                         for(WeaponModifier wm : passiveList) {
                             wm.removeEffects(this);
-                            //SwordCraftOnline.logDebug("Case 3, removed passive effects of: " + WeaponModifier.parseName(wm));
                         }
                     }
                     if(activeList != null && !activeList.isEmpty()) {
                         for(WeaponModifier wm : activeList) {
                             wm.removeEffects(this);
-                            //SwordCraftOnline.logDebug("Case 3, active removed effects of: " + WeaponModifier.parseName(wm));
                         }
                     }
                     iter.remove();
@@ -337,6 +340,64 @@ public class ModifierUser {
             }
             weaponModifiers.get(entryy.getKey()).put(processType, entryy.getValue());
         }
+    }
+
+    /**
+     * Applies armor modifiers effects onto modifier user
+     * Removes old modifiers
+     * 
+     * @param aModifiers A COMPLETE list of armor modifiers equipped currently
+     */
+    public void applyArmorModifiers(HashMap<String, ArrayList<ArmorModifier>> aModifiers) {
+
+        // Remove armor modifiers on various cases
+        // 1. aModifiers is null, no submitted changes
+        // 2. aModifiers is empty.
+        // 3. aModifiers passes with data
+        Iterator<Entry<String, ArrayList<ArmorModifier>>> iter = this.armorModifiers.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<String, ArrayList<ArmorModifier>> entry = iter.next();
+
+            if (aModifiers == null || aModifiers.isEmpty()) {
+                // Case 1 & 2
+                ArrayList<ArmorModifier> lis = entry.getValue();
+                if (lis != null && !lis.isEmpty()) {
+                    for (ArmorModifier am : lis) {
+                        am.removeEffects(this);
+                    }
+                }
+                this.armorModifiers.clear();
+            } else {
+                // Case 3
+
+                // If armor name not in passed data. Remove effects
+                if(!aModifiers.keySet().contains(entry.getKey())) {
+                    ArrayList<ArmorModifier> lis = entry.getValue();
+                    if (lis != null && !lis.isEmpty()) {
+                        for (ArmorModifier am : lis) {
+                            am.removeEffects(this);
+                        }
+                    }
+                    iter.remove();
+                }
+            }
+        }
+
+        // Applying any armor effects that are passed through
+        if(aModifiers == null || aModifiers.entrySet() == null || aModifiers.entrySet().isEmpty()) { return; }
+        Iterator<Entry<String, ArrayList<ArmorModifier>>> iterr = aModifiers.entrySet().iterator();
+        while (iterr.hasNext()) {
+            Entry<String, ArrayList<ArmorModifier>> entry = iterr.next();
+
+            ArrayList<ArmorModifier> compareLis = this.armorModifiers.get(entry.getKey());
+            if (compareLis != null && !compareLis.isEmpty()) { continue; }
+
+            for (ArmorModifier am : entry.getValue()) {
+                am.applyEffects(this);
+            }
+            this.armorModifiers.put(entry.getKey(), entry.getValue());
+        }
+
     }
 
     /**

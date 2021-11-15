@@ -60,5 +60,9 @@ public class ExtremePrecision implements WeaponModifier {
         obj.addProperty(CombatModifier.CRITICAL_CHANCE.toString(), getModifierAmount());
         return obj;
     }
+
+    public ExtremePrecision(String level) {
+        this.level = level;
+    }
     
 }
